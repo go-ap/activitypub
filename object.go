@@ -7,7 +7,9 @@ const (
 	LinkType     string = "Link"
 	ActivityType string = "Activity"
 	ActorType    string = "Actor"
-	
+	CollectionType string = "Collection"
+	OrderedCollectionType string = "OrderedCollection"
+
 	// Object Types
 	ArticleType string = "Article"
 	AudioType string = "Audio"
@@ -24,43 +26,6 @@ const (
 
 	// Link Types
 	MentionType string = "Mention"
-
-	// Activity Types
-	AcceptType          string = "Accept"
-	AddType             string = "Add"
-	AnnounceType        string = "Announce"
-	ArriveType          string = "Arrive"
-	BlockType           string = "Block"
-	CreateType          string = "Create"
-	DeleteType          string = "Delete"
-	DislikeType         string = "Dislike"
-	FlagType            string = "Flag"
-	FollowType          string = "Follow"
-	IgnoreType          string = "Ignore"
-	InviteType          string = "Invite"
-	JoinType            string = "Join"
-	LeaveType           string = "Leave"
-	LikeType            string = "Like"
-	ListenType          string = "Listen"
-	MoveType            string = "Move"
-	OfferType           string = "Offer"
-	QuestionType        string = "Question"
-	RejectType          string = "Reject"
-	ReadType            string = "Read"
-	RemoveType          string = "Remove"
-	TentativeRejectType string = "TentativeReject"
-	TentativeAcceptType string = "TentativeAccept"
-	TravelType          string = "Travel"
-	UndoType            string = "Undo"
-	UpdateType          string = "Update"
-	ViewType            string = "View"
-
-	// Actor Types
-	ApplicationType  string = "Application"
-	GroupType        string = "Group"
-	OrganizationType string = "Organization"
-	PersonType       string = "Person"
-	ServiceType      string = "Service"
 )
 
 var validObjectTypes = [...]string{
@@ -77,39 +42,9 @@ var validObjectTypes = [...]string{
 	TombstoneType,
 	VideoType,
 }
+
 var validLinkTypes = [...]string{
 	MentionType,
-}
-var validActivityTypes = [...]string{
-	AcceptType,
-	AddType,
-	AnnounceType,
-	ArriveType,
-	BlockType,
-	CreateType,
-	DeleteType,
-	DislikeType,
-	FlagType,
-	FollowType,
-	IgnoreType,
-	InviteType,
-	JoinType,
-	LeaveType,
-	LikeType,
-	ListenType,
-	MoveType,
-	OfferType,
-	QuestionType,
-	RejectType,
-	ReadType,
-	RemoveType,
-	TentativeRejectType,
-	TentativeAcceptType,
-	TravelType,
-	UndoType,
-	UpdateType,
-	ViewType,
-	// Actor Types
 }
 
 type NaturalLanguageValue map[string]string
@@ -125,16 +60,10 @@ type BaseObject struct {
 }
 
 type ContentType string
+
 type Source struct {
 	Content   ContentType
 	MediaType string
-}
-
-type ActivityObject struct {
-	BaseObject
-	Actor  Actor
-	Object BaseObject
-	Source Source
 }
 
 func ValidObjectType(_type string) bool {
@@ -155,15 +84,6 @@ func ValidLinkType(_type string) bool {
 	return false
 }
 
-func ValidActivityType(_type string) bool {
-	for _, v := range validActivityTypes {
-		if v == _type {
-			return true
-		}
-	}
-	return false
-}
-
 func ObjectNew(id ObjectId, _type string) BaseObject {
 	if !ValidObjectType(_type) {
 		_type = ObjectType
@@ -176,13 +96,4 @@ func LinkNew(id ObjectId, _type string) BaseObject {
 		_type = LinkType
 	}
 	return BaseObject{Id: id, Type:_type}
-}
-
-func ActivityNew(id ObjectId, _type string) ActivityObject {
-	if !ValidActivityType(_type) {
-		_type = ActivityType
-	}
-	o := BaseObject{Id: id, Type: _type}
-
-	return ActivityObject{BaseObject: o}
 }
