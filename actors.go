@@ -1,6 +1,21 @@
 package activitypub
 
-type ActorCollection = []Actor
+const (
+	// Actor Types
+	ApplicationType  string = "Application"
+	GroupType        string = "Group"
+	OrganizationType string = "Organization"
+	PersonType       string = "Person"
+	ServiceType      string = "Service"
+)
+
+var validActorTypes = [...]string{
+	ApplicationType,
+	GroupType,
+	OrganizationType,
+	PersonType,
+	ServiceType,
+}
 
 type Actor struct {
 	BaseObject
@@ -28,14 +43,6 @@ type Actor struct {
 		sharedInbox
 	}
 	/**/
-}
-
-var validActorTypes = [...]string{
-	ApplicationType,
-	GroupType,
-	OrganizationType,
-	PersonType,
-	ServiceType,
 }
 
 func ValidActorType(_type string) bool {
