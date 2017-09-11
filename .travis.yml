@@ -5,7 +5,7 @@ go:
     - tip
 
 script:
-    - go test 
+    - go test -v
 
 matrix:
   allow_failures:
