@@ -1,20 +1,16 @@
 package activitypub
 
 type Collection struct {
-	*BaseObject
+	BaseObject
+	CollectionPage
 	Summary    string
 	TotalItems int
 	Items      ItemCollection
-	Current    Page
-	First      Page
-	Last       Page
-	Next       Page
-	Prev       Page
 }
 
 type OrderedCollection struct {
-	*BaseObject
-	*CollectionPage
+	BaseObject
+	CollectionPage
 	Summary      string
 	TotalItems   int
 	OrderedItems ItemCollection
@@ -30,18 +26,13 @@ type CollectionPage struct {
 	Prev    Page
 }
 
-//
-//
-//func Test() {
-//	o := &BaseObject{
-//		Id: "test",
-//	}
-//	p := &CollectionPage{Current: "http://localhost"}
-//	t := &OrderedCollection{
-//		BaseObject:         o,
-//		CollectionPage: p,
-//		Summary:        "tes",
-//	}
-//
-//	fmt.Print(t)
-//}
+func CollectionNew(id ObjectId) Collection {
+	o := BaseObject{Id: id, Type: CollectionType}
+
+	return Collection{BaseObject:o}
+}
+func OrderedCollectionNew(id ObjectId) OrderedCollection {
+	o := BaseObject{Id: id, Type: OrderedCollectionType}
+
+	return OrderedCollection{BaseObject:o}
+}
