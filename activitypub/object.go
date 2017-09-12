@@ -7,14 +7,14 @@ import (
 type ObjectId string
 
 const (
-	ActivityBaseURI Uri = Uri("https://www.w3.org/ns/activitystreams#")
-	ObjectType   string = "Object"
-	LinkType     string = "Link"
-	ActivityType string = "Activity"
+	ActivityBaseURI          URI    = URI("https://www.w3.org/ns/activitystreams#")
+	ObjectType               string = "Object"
+	LinkType                 string = "Link"
+	ActivityType             string = "Activity"
 	IntransitiveActivityType string = "IntransitiveActivity"
-	ActorType    string = "Actor"
-	CollectionType string = "Collection"
-	OrderedCollectionType string = "OrderedCollection"
+	ActorType                string = "Actor"
+	CollectionType           string = "Collection"
+	OrderedCollectionType    string = "OrderedCollection"
 
 	// Object Types
 	ArticleType string = "Article"
@@ -172,7 +172,7 @@ type Link struct {
 	// Identifies an entity that provides a preview of this object.
 	Preview			ObjectOrLink			`jsonld:"preview,omitempty"`
 	// The target resource pointed to by a Link.
-	Href       		Uri                 	`jsonld:"href,omitempty"`
+	Href URI `jsonld:"href,omitempty"`
 	// Hints as to the language used by the target resource.
 	// Value must be a [BCP47](https://tools.ietf.org/html/bcp47) Language-Tag.
 	HrefLang   		LangRef                	`jsonld:"hrefLang,omitempty"`
