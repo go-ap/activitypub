@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"time"
+	"encoding/json"
 )
 
 type ObjectId string
@@ -60,6 +61,16 @@ type ImageOrLink interface{}
 type MimeType string
 type LangRef string
 type NaturalLanguageValue map[LangRef]string
+
+func (this NaturalLanguageValue) MarshalJSON() ([]byte, error) {
+    if len(this) == 1 {
+        for _, v := range this {
+            return json.Marshal(v)
+        }
+    }
+
+    return json.Marshal(map[LangRef]string(this))
+}
 
 // Describes an object of any kind.
 // The Object type serves as the base type for most of the other kinds of objects defined in the Activity Vocabulary,

@@ -73,12 +73,30 @@ func TestValidLinkType(t *testing.T) {
 	}
 }
 
-func TestBaseObject_Serialize(t *testing.T) {
-	//var testValue = ObjectId("test")
-	//var testType = ArticleType
-	//
-	//o := ObjectNew(testValue, testType)
-	//if o.Serialize() != "" {
-	//	t.Errorf("Invalid serialize result")
-	//}
+func TestMarshalJSON(t *testing.T) {
+	m := make(map[LangRef]string)
+	m["en"] = "test"
+	m["de"] = "test"
+
+	n := NaturalLanguageValue(m)
+	result, err := n.MarshalJSON()
+	if err != nil {
+		t.Errorf("Failed marshaling '%v'", err)
+	}
+	m_res := "{\"de\":\"test\",\"en\":\"test\"}"
+	if string(result) != m_res {
+		t.Errorf("Different results '%v' vs. '%v'", string(result), m_res)
+	}
+
+	s := make(map[LangRef]string)
+	s["en"] = "test"
+	n1 := NaturalLanguageValue(s)
+	result1, err1 := n1.MarshalJSON()
+	if err1 != nil {
+		t.Errorf("Failed marshaling '%v'", err1)
+	}
+	m_res1 := "\"test\""
+	if string(result1) != m_res1 {
+		t.Errorf("Different results '%v' vs. '%v'", string(result1), m_res1)
+	}
 }
