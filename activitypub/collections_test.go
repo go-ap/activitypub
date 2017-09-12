@@ -27,3 +27,24 @@ func TestOrderedCollectionsNew(t *testing.T) {
 		t.Errorf("Object Type '%v' different than expected '%v'", c.Type, OrderedCollectionType)
 	}
 }
+
+func TestCollectionPageNew(t *testing.T) {
+	var testValue = ObjectId("test")
+
+	c := CollectionNew(testValue)
+	p := CollectionPageNew(c)
+	if p.PartOf != c {
+		t.Errorf("Invalid collection '%v'", p.PartOf)
+	}
+}
+
+func TestOrderedCollectionPageNew(t *testing.T) {
+	var testValue = ObjectId("test")
+
+	c := OrderedCollectionNew(testValue)
+	p := OrderedCollectionPageNew(c)
+	if p.PartOf != c {
+		t.Errorf("Invalid collection '%v'", p.PartOf)
+	}
+
+}
