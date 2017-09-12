@@ -40,3 +40,35 @@ func TestLinkNew(t *testing.T) {
 		t.Errorf("Object Type '%v' different than expected '%v'", l.Type, LinkType)
 	}
 }
+
+func TestValidObjectType(t *testing.T) {
+	var invalidType string = "RandomType"
+
+	if ValidObjectType(ObjectType) {
+		t.Errorf("Generic Object Type '%v' should not be valid", ObjectType)
+	}
+	if ValidObjectType(invalidType) {
+		t.Errorf("Object Type '%v' should not be valid", invalidType)
+	}
+	for _, validType := range validObjectTypes {
+		if !ValidObjectType(validType) {
+			t.Errorf("Object Type '%v' should be valid", validType)
+		}
+	}
+}
+
+func TestValidLinkType(t *testing.T) {
+	var invalidType string = "RandomType"
+
+	if ValidLinkType(LinkType) {
+		t.Errorf("Generic Link Type '%v' should not be valid", LinkType)
+	}
+	if ValidLinkType(invalidType) {
+		t.Errorf("Link Type '%v' should not be valid", invalidType)
+	}
+	for _, validType := range validLinkTypes {
+		if !ValidLinkType(validType) {
+			t.Errorf("Link Type '%v' should be valid", validType)
+		}
+	}
+}
