@@ -27,7 +27,7 @@ func TestActorNew(t *testing.T) {
 }
 
 func TestPersonNew(t *testing.T) {
-	var testValue= ObjectId("test")
+	var testValue = ObjectId("test")
 
 	o := PersonNew(testValue)
 	if o.Id != testValue {
@@ -39,7 +39,7 @@ func TestPersonNew(t *testing.T) {
 }
 
 func TestApplicationNew(t *testing.T) {
-	var testValue= ObjectId("test")
+	var testValue = ObjectId("test")
 
 	o := ApplicationNew(testValue)
 	if o.Id != testValue {
@@ -51,7 +51,7 @@ func TestApplicationNew(t *testing.T) {
 }
 
 func TestGroupNew(t *testing.T) {
-	var testValue= ObjectId("test")
+	var testValue = ObjectId("test")
 
 	o := GroupNew(testValue)
 	if o.Id != testValue {
@@ -63,7 +63,7 @@ func TestGroupNew(t *testing.T) {
 }
 
 func TestOrganizationNew(t *testing.T) {
-	var testValue= ObjectId("test")
+	var testValue = ObjectId("test")
 
 	o := OrganizationNew(testValue)
 	if o.Id != testValue {
@@ -75,7 +75,7 @@ func TestOrganizationNew(t *testing.T) {
 }
 
 func TestServiceNew(t *testing.T) {
-	var testValue= ObjectId("test")
+	var testValue = ObjectId("test")
 
 	o := ServiceNew(testValue)
 	if o.Id != testValue {

@@ -64,7 +64,6 @@ func TestValidActivityType(t *testing.T) {
 	}
 }
 
-
 func TestAcceptNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
@@ -419,7 +418,7 @@ func TestUpdateNew(t *testing.T) {
 func TestViewNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a :=  ViewNew(testValue)
+	a := ViewNew(testValue)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
