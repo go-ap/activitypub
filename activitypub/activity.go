@@ -75,7 +75,7 @@ type Activity struct {
 	// For instance, in the activity "John added a movie to his wishlist",
 	//  the object of the activity is the movie added.
 	// When used within a Relationship describes the entity to which the subject is related.
-	Object 			ObjectOrLink 			`jsonld:"object,omitempty"`
+	Object 			ObjectOrLink 			`jsonld:"object"`
 }
 
 // Indicates that the actor accepts the object. The target property can be used in certain circumstances to indicate
@@ -193,12 +193,12 @@ type Question struct {
 	*IntransitiveActivity
 	// Identifies an exclusive option for a Question. Use of oneOf implies that the Question
 	//  can have only a single answer. To indicate that a Question can have multiple answers, use anyOf.
-	OneOf	ObjectOrLink	`jsonld:"oneOf,omitempty"`
+	OneOf	ObjectOrLink	`jsonld:"oneOf"`
 	// Identifies an inclusive option for a Question. Use of anyOf implies that the Question can have multiple answers.
 	// To indicate that a Question can have only one answer, use oneOf.
-	AnyOf	ObjectOrLink	`jsonld:"anyOf,omitempty"`
+	AnyOf	ObjectOrLink	`jsonld:"anyOf"`
 	// Indicates that a question has been closed, and answers are no longer accepted.
-	Closed	bool			`jsonld:"closed,omitempty"`
+	Closed	bool			`jsonld:"closed"`
 }
 
 // Instances of IntransitiveActivity are a subtype of Activity representing intransitive actions.
@@ -207,22 +207,22 @@ type IntransitiveActivity struct {
 	*BaseObject
 	// Describes one or more entities that either performed or are expected to perform the activity.
 	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
-	Actor  			Actor 					`jsonld:"actor,omitempty"`
+	Actor  			Actor 					`jsonld:"actor"`
 	// Describes the indirect object, or target, of the activity.
 	// The precise meaning of the target is largely dependent on the type of action being described
 	//  but will often be the object of the English preposition "to".
 	// For instance, in the activity "John added a movie to his wishlist",
 	//  the target of the activity is John's wishlist. An activity can have more than one target.
-	Target 			ObjectOrLink 			`jsonld:"actor,omitempty"`
+	Target 			ObjectOrLink 			`jsonld:"actor"`
 	// Describes the result of the activity. For instance, if a particular action results in the creation
 	//  of a new resource, the result property can be used to describe that new resource.
-	Result 			ObjectOrLink 			`jsonld:"actor,omitempty"`
+	Result 			ObjectOrLink 			`jsonld:"actor"`
 	// Describes an indirect object of the activity from which the activity is directed.
 	// The precise meaning of the origin is the object of the English preposition "from".
 	// For instance, in the activity "John moved an item to List B from List A", the origin of the activity is "List A".
-	Origin 			ObjectOrLink			`jsonld:"origin,omitempty"`
+	Origin 			ObjectOrLink			`jsonld:"origin"`
 	// Identifies one or more objects used (or to be used) in the completion of an Activity.
-	Instrument 		ObjectOrLink			`jsonld:"instrument,omitempty"`
+	Instrument 		ObjectOrLink			`jsonld:"instrument"`
 	Source Source
 }
 
