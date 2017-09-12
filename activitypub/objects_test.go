@@ -72,3 +72,13 @@ func TestValidLinkType(t *testing.T) {
 		}
 	}
 }
+
+func TestBaseObject_Serialize(t *testing.T) {
+	//var testValue = ObjectId("test")
+	//var testType = ArticleType
+	//
+	//o := ObjectNew(testValue, testType)
+	//if o.Serialize() != "" {
+	//	t.Errorf("Invalid serialize result")
+	//}
+}
