@@ -25,6 +25,29 @@ func TestActivityNew(t *testing.T) {
 	}
 }
 
+func TestIntransitiveActivityNew(t *testing.T) {
+	var testValue = ObjectId("test")
+	var testType string = "Accept"
+
+	a := IntransitiveActivityNew(testValue, testType)
+
+	if a.Id != testValue {
+		t.Errorf("IntransitiveActivity Id '%v' different than expected '%v'", a.Id, testValue)
+	}
+	if a.Type != testType {
+		t.Errorf("IntransitiveActivity Type '%v' different than expected '%v'", a.Type, testType)
+	}
+
+	g := IntransitiveActivityNew(testValue, "")
+
+	if g.Id != testValue {
+		t.Errorf("IntransitiveActivity Id '%v' different than expected '%v'", g.Id, testValue)
+	}
+	if g.Type != IntransitiveActivityType {
+		t.Errorf("IntransitiveActivity Type '%v' different than expected '%v'", g.Type, IntransitiveActivityType)
+	}
+}
+
 func TestValidActivityType(t *testing.T) {
 	var invalidType string = "RandomType"
 
