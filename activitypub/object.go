@@ -78,7 +78,7 @@ type Object struct {
 	*BaseObject
 	// Identifies a resource attached or related to an object that potentially requires special handling.
 	// The intent is to provide a model that is at least semantically similar to attachments in email.
-	Attachment		ObjectOrLink			`jsonld:"Attachment,omitempty"`
+	Attachment		ObjectOrLink			`jsonld:"attachment,omitempty"`
 	// Identifies one or more entities to which this object is attributed. The attributed entities might not be Actors.
 	// For instance, an object might be attributed to the completion of another activity.
 	AttributedTo	ObjectOrLink			`jsonld:"attributedTo,omitempty"`

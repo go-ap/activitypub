@@ -71,7 +71,10 @@ var validActivityTypes = [...]string{
 //  about the kind of action being taken.
 type Activity struct {
 	*IntransitiveActivity
-	// @see activitypub.Object
+	// When used within an Activity, describes the direct object of the activity.
+	// For instance, in the activity "John added a movie to his wishlist",
+	//  the object of the activity is the movie added.
+	// When used within a Relationship describes the entity to which the subject is related.
 	Object 			ObjectOrLink 			`jsonld:"object,omitempty"`
 }
 
