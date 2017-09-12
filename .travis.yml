@@ -4,9 +4,17 @@ go:
     - 1.9
     - tip
 
-script:
-    - go test -v
+secure: "r9Mtaub+wd6KlPRki0UgzWTIGmzK0jg7prcpjVx0eXHTO4Tolu5sDfWyi7o+5fG2ZmwA0xkcqOzrrjRXWV9+EDYANeMD9Sl0tuNpSOSLW0EqWAyzE+0whM4gtT2PPguf5+HlkSArEn37KBR2bJpIxy+xHMlezoO4PsEVTrb0IutxJ16IsmsVe3Jhb46SnBDdqMajpTQlzaHF0vXmIEiScRUEXGk+BXtwJp0lCCmJUIqNrZAq9HQvCH3wr2Q0cYS0eUoYIVzcjhaevjm/0eLQkiXNwkTAecg4bTAiO+BbA9rZfUfEXmXP9+vsd4nv0LETpFvfbsj3zlkVdMIp+tk7AXtD0O2nIGm6U+SGhEtmrQsfxkqigVJ5Hy7SPspQWyBEtgHEAiWGuMw83V8kWtIh8u9+gNrCUW47yXEnliyqEj+/WlrU9g/IY0NsDPVKWjnQBx6Xa7GE/xfUtlbWDswI1IBwewa9O0N97VmLN5GeRkxQA/en19PKWEZ+ZrYa+Uqbw/yJgBAD2Grzg2PwwfQIuXLhCG2cv+x/voe+QG6SsE1TwLRJtnr6Ud0JfDcd40HtXWgxefM6UEkQo69zWQPoeWmywgZbriAucVxi0K1nsYX13LimX8u8Le2AC/ZxsLxJbTN7Fr6o3fjLy9973Vk6/msVh5ufo2dvCF0SGcPa9MM="
 
 matrix:
   allow_failures:
       - go: tip
+  fast_finish: true
+
+install:
+  - go get golang.org/x/tools/cmd/cover
+  - go get github.com/mattn/goveralls
+
+script:
+    - go test -v
+    - go test -v -covermode=count -coverprofile=coverage.out $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
