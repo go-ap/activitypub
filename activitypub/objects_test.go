@@ -44,9 +44,6 @@ func TestLinkNew(t *testing.T) {
 func TestValidObjectType(t *testing.T) {
 	var invalidType string = "RandomType"
 
-	if ValidObjectType(ObjectType) {
-		t.Errorf("Generic Object Type '%v' should not be valid", ObjectType)
-	}
 	if ValidObjectType(invalidType) {
 		t.Errorf("Object Type '%v' should not be valid", invalidType)
 	}

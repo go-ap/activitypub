@@ -162,7 +162,6 @@ type Remove Activity
 type TentativeReject Reject
 
 // A specialization of Accept indicating that the acceptance is tentative.
-// A specialization of Accept indicating that the acceptance is tentative.
 type TentativeAccept Accept
 
 // Indicates that the actor is traveling to target from origin.
@@ -204,7 +203,7 @@ type Question struct {
 // Instances of IntransitiveActivity are a subtype of Activity representing intransitive actions.
 // The object property is therefore inappropriate for these activities.
 type IntransitiveActivity struct {
-	*BaseObject
+	*Object
 	// Describes one or more entities that either performed or are expected to perform the activity.
 	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
 	Actor Actor `jsonld:"actor"`
@@ -380,8 +379,8 @@ func ActivityNew(id ObjectId, _type string) *Activity {
 	if !ValidActivityType(_type) {
 		_type = ActivityType
 	}
-	o := BaseObject{Id: id, Type: _type}
-	a := IntransitiveActivity{BaseObject: &o}
+	o := ObjectNew(id, _type)
+	a := IntransitiveActivity{Object: o}
 
 	return &Activity{IntransitiveActivity: &a}
 }
@@ -390,7 +389,7 @@ func IntransitiveActivityNew(id ObjectId, _type string) *IntransitiveActivity {
 	if !ValidActivityType(_type) {
 		_type = IntransitiveActivityType
 	}
-	o := BaseObject{Id: id, Type: _type}
+	o := ObjectNew(id, _type)
 
-	return &IntransitiveActivity{BaseObject: &o}
+	return &IntransitiveActivity{Object: o}
 }

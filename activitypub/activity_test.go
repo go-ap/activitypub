@@ -7,7 +7,6 @@ func TestActivityNew(t *testing.T) {
 	var testType string = "Accept"
 
 	a := ActivityNew(testValue, testType)
-
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
 	}
@@ -53,6 +52,11 @@ func TestValidActivityType(t *testing.T) {
 
 	if ValidActivityType(ActivityType) {
 		t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
+	}
+	for _, inValidType := range validObjectTypes {
+		if ValidActivityType(inValidType) {
+			t.Errorf("Object Type '%v' should be invalid", inValidType)
+		}
 	}
 	if ValidActivityType(invalidType) {
 		t.Errorf("Activity Type '%v' should not be valid", invalidType)

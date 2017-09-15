@@ -196,13 +196,29 @@ type Source struct {
 	MediaType string
 }
 
+func ValidGenericType(_type string) bool {
+	validGenericTypes := [...]string{
+		ActivityType,
+		IntransitiveActivityType,
+		ObjectType,
+		LinkType,
+	}
+
+	for _, v := range validGenericTypes {
+		if v == _type {
+			return true
+		}
+	}
+	return false
+}
+
 func ValidObjectType(_type string) bool {
 	for _, v := range validObjectTypes {
 		if v == _type {
 			return true
 		}
 	}
-	return false
+	return ValidActivityType(_type) || ValidGenericType(_type)
 }
 
 func ValidLinkType(_type string) bool {
@@ -215,7 +231,7 @@ func ValidLinkType(_type string) bool {
 }
 
 func ObjectNew(id ObjectId, _type string) *Object {
-	if !ValidObjectType(_type) {
+	if !(ValidObjectType(_type)) {
 		_type = ObjectType
 	}
 	p := BaseObject{Id: id, Type: _type}
