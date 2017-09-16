@@ -58,22 +58,23 @@ var validObjectTypes = [...]string{
 	VideoType,
 }
 
-type ObjectOrLink interface{}
-type LinkOrUri interface{}
-type ImageOrLink interface{}
+type (
+	ObjectOrLink         interface{}
+	LinkOrUri            interface{}
+	ImageOrLink          interface{}
+	MimeType             string
+	LangRef              string
+	NaturalLanguageValue map[LangRef]string
+)
 
-type MimeType string
-type LangRef string
-type NaturalLanguageValue map[LangRef]string
-
-func (this NaturalLanguageValue) MarshalJSON() ([]byte, error) {
-	if len(this) == 1 {
-		for _, v := range this {
+func (n NaturalLanguageValue) MarshalJSON() ([]byte, error) {
+	if len(n) == 1 {
+		for _, v := range n {
 			return json.Marshal(v)
 		}
 	}
 
-	return json.Marshal(map[LangRef]string(this))
+	return json.Marshal(map[LangRef]string(n))
 }
 
 // Describes an object of any kind.
