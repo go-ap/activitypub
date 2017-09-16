@@ -1,5 +1,7 @@
 package activitypub
 
-type InboxStream Inbox
+type (
+	InboxStream Inbox
 
-type Inbox OrderedCollection
+	Inbox OrderedCollection
+)

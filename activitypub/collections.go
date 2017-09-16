@@ -18,8 +18,6 @@ type OrderedCollection struct {
 	OrderedItems ItemCollection `jsonld:"orderedItems"`
 }
 
-type Page ObjectOrLink
-
 type CollectionPage struct {
 	PartOf *Collection
 	// In a paged Collection, indicates the page that contains the most recently updated member items.

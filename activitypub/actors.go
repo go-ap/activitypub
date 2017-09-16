@@ -69,20 +69,22 @@ type Actor struct {
 	Streams []Collection `jsonld:"streams"`
 }
 
-// Describes a software application.
-type Application Actor
+type (
+	// Describes a software application.
+	Application Actor
 
-// Represents a formal or informal collective of Actors.
-type Group Actor
+	// Represents a formal or informal collective of Actors.
+	Group Actor
 
-// Represents an organization.
-type Organization Actor
+	// Represents an organization.
+	Organization Actor
 
-// Represents an individual person.
-type Person Actor
+	// Represents an individual person.
+	Person Actor
 
-// Represents a service of any kind.
-type Service Actor
+	// Represents a service of any kind.
+	Service Actor
+)
 
 func ValidActorType(_type string) bool {
 	for _, v := range validActorTypes {

@@ -1,4 +1,7 @@
 package activitypub
 
-type Iri URI
-type URI string
+type (
+	IRI URI
+
+	URI string
+)

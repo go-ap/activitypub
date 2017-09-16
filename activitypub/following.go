@@ -1,5 +1,7 @@
 package activitypub
 
-type FollowingCollection Following
+type (
+	FollowingCollection Following
 
-type Following Collection
+	Following Collection
+)

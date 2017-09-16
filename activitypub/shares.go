@@ -1,5 +1,7 @@
 package activitypub
 
-type SharesCollection Shares
+type (
+	SharesCollection Shares
 
-type Shares OrderedCollection
+	Shares OrderedCollection
+)

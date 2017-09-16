@@ -1,5 +1,7 @@
 package activitypub
 
-type LikesCollection Likes
+type (
+	LikesCollection Likes
 
-type Likes OrderedCollection
+	Likes OrderedCollection
+)
