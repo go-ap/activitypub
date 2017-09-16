@@ -46,5 +46,16 @@ func TestOrderedCollectionPageNew(t *testing.T) {
 	if p.PartOf != c {
 		t.Errorf("Invalid collection '%v'", p.PartOf)
 	}
+}
+
+func TestCollectionNew(t *testing.T) {
+
+}
+
+func TestOrderedCollectionNew(t *testing.T) {
+
+}
+
+func TestValidCollectionType(t *testing.T) {
 
 }

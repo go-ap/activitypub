@@ -27,6 +27,14 @@ func TestObjectNew(t *testing.T) {
 
 }
 
+func TestValidGenericType(t *testing.T) {
+	for _, validType := range validGenericTypes {
+		if !ValidObjectType(validType) {
+			t.Errorf("Generic Type '%v' should be valid", validType)
+		}
+	}
+}
+
 func TestValidObjectType(t *testing.T) {
 	var invalidType string = "RandomType"
 
@@ -65,5 +73,33 @@ func TestMarshalJSON(t *testing.T) {
 	m_res1 := "\"test\""
 	if string(result1) != m_res1 {
 		t.Errorf("Different results '%v' vs. '%v'", string(result1), m_res1)
+	}
+}
+
+func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
+	p := make(NaturalLanguageValue, 2)
+	p["en"] = "the test"
+	p["fr"] = "le test"
+
+	js := "{\"en\":\"the test\",\"fr\":\"le test\"}"
+	out, err := p.MarshalJSON()
+
+	if err != nil {
+		t.Errorf("Error: '%s'", err)
+	}
+	if js != string(out) {
+		t.Errorf("Different marshal result '%s', instead of '%s'", out, js)
+	}
+	p1 := make(NaturalLanguageValue, 1)
+	p1["en"] = "the test"
+
+	out1, err1 := p1.MarshalJSON()
+
+	if err1 != nil {
+		t.Errorf("Error: '%s'", err1)
+	}
+	txt := "\"the test\""
+	if txt != string(out1) {
+		t.Errorf("Different marshal result '%s', instead of '%s'", out1, txt)
 	}
 }
