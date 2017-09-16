@@ -4,18 +4,18 @@ type Collection struct {
 	*BaseObject
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
-	TotalItems uint				`jsonld:"totalItems"`
+	TotalItems uint `jsonld:"totalItems"`
 	// Identifies the items contained in a collection. The items might be ordered or unordered.
-	Items      ItemCollection	`jsonld:"items"`
+	Items ItemCollection `jsonld:"items"`
 }
 
 type OrderedCollection struct {
 	*BaseObject
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
-	TotalItems		uint			`jsonld:"totalItems"`
+	TotalItems uint `jsonld:"totalItems"`
 	// Identifies the items contained in a collection. The items might be ordered or unordered.
-	OrderedItems	ItemCollection	`jsonld:"orderedItems"`
+	OrderedItems ItemCollection `jsonld:"orderedItems"`
 }
 
 type Page ObjectOrLink
@@ -25,42 +25,41 @@ type CollectionPage struct {
 	// In a paged Collection, indicates the page that contains the most recently updated member items.
 	Current Page `jsonld:"current"`
 	// In a paged Collection, indicates the furthest preceeding page of items in the collection.
-	First   Page `jsonld:"first"`
+	First Page `jsonld:"first"`
 	// In a paged Collection, indicates the furthest proceeding page of the collection.
-	Last    Page `jsonld:"last"`
+	Last Page `jsonld:"last"`
 	// In a paged Collection, indicates the next page of items.
-	Next    Page `jsonld:"next"`
+	Next Page `jsonld:"next"`
 	// In a paged Collection, identifies the previous page of items.
-	Prev    Page `jsonld:"prev"`
+	Prev Page `jsonld:"prev"`
 }
 
 type OrderedCollectionPage struct {
 	PartOf *OrderedCollection
 	// In a paged Collection, indicates the page that contains the most recently updated member items.
-	Current 	Page 	`jsonld:"current"`
+	Current Page `jsonld:"current"`
 	// In a paged Collection, indicates the furthest preceeding page of items in the collection.
-	First   	Page 	`jsonld:"first"`
+	First Page `jsonld:"first"`
 	// In a paged Collection, indicates the furthest proceeding page of the collection.
-	Last    	Page 	`jsonld:"last"`
+	Last Page `jsonld:"last"`
 	// In a paged Collection, indicates the next page of items.
-	Next    	Page 	`jsonld:"next"`
+	Next Page `jsonld:"next"`
 	// In a paged Collection, identifies the previous page of items.
-	Prev    	Page 	`jsonld:"prev"`
+	Prev Page `jsonld:"prev"`
 	// A non-negative integer value identifying the relative position within the logical view of a strictly ordered collection.
-	StartIndex	uint	`jsonld:"startIndex"`
+	StartIndex uint `jsonld:"startIndex"`
 }
-
 
 func CollectionNew(id ObjectId) *Collection {
 	o := BaseObject{Id: id, Type: CollectionType}
 
-	return &Collection{BaseObject:&o}
+	return &Collection{BaseObject: &o}
 }
 
 func OrderedCollectionNew(id ObjectId) *OrderedCollection {
-	o := BaseObject{Id: id, Type:  OrderedCollectionType}
+	o := BaseObject{Id: id, Type: OrderedCollectionType}
 
-	return &OrderedCollection{BaseObject:&o}
+	return &OrderedCollection{BaseObject: &o}
 }
 
 func CollectionPageNew(parent *Collection) *CollectionPage {
