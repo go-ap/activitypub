@@ -1,9 +1,11 @@
 package activitypub
 
+var validCollectionTypes = [...]string{}
+
 type Page ObjectOrLink
 
 type Collection struct {
-	*BaseObject
+	*Object
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
 	TotalItems uint `jsonld:"totalItems"`
@@ -12,7 +14,7 @@ type Collection struct {
 }
 
 type OrderedCollection struct {
-	*BaseObject
+	*Object
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
 	TotalItems uint `jsonld:"totalItems"`
@@ -50,16 +52,25 @@ type OrderedCollectionPage struct {
 	StartIndex uint `jsonld:"startIndex"`
 }
 
-func CollectionNew(id ObjectId) *Collection {
-	o := BaseObject{Id: id, Type: CollectionType}
+func ValidCollectionType(_type string) bool {
+	for _, v := range validCollectionTypes {
+		if v == _type {
+			return true
+		}
+	}
+	return false
+}
 
-	return &Collection{BaseObject: &o}
+func CollectionNew(id ObjectId) *Collection {
+	o := ObjectNew(id, CollectionType)
+
+	return &Collection{Object: o}
 }
 
 func OrderedCollectionNew(id ObjectId) *OrderedCollection {
-	o := BaseObject{Id: id, Type: OrderedCollectionType}
+	o := ObjectNew(id, OrderedCollectionType)
 
-	return &OrderedCollection{BaseObject: &o}
+	return &OrderedCollection{Object: o}
 }
 
 func CollectionPageNew(parent *Collection) *CollectionPage {

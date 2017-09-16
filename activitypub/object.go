@@ -41,6 +41,8 @@ var validGenericTypes = [...]string{
 	ObjectType,
 	LinkType,
 	ActorType,
+	CollectionType,
+	OrderedCollectionType,
 }
 
 var validObjectTypes = [...]string{
@@ -186,7 +188,7 @@ func ValidObjectType(_type string) bool {
 			return true
 		}
 	}
-	return ValidActivityType(_type) || ValidActorType(_type) || ValidGenericType(_type)
+	return ValidActivityType(_type) || ValidActorType(_type) || ValidCollectionType(_type) || ValidGenericType(_type)
 }
 
 func ObjectNew(id ObjectId, _type string) *Object {
