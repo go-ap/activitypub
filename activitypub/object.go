@@ -35,6 +35,14 @@ const (
 	MentionType string = "Mention"
 )
 
+var validGenericTypes = [...]string{
+	ActivityType,
+	IntransitiveActivityType,
+	ObjectType,
+	LinkType,
+	ActorType,
+}
+
 var validObjectTypes = [...]string{
 	ArticleType,
 	AudioType,
@@ -48,10 +56,6 @@ var validObjectTypes = [...]string{
 	RelationshipType,
 	TombstoneType,
 	VideoType,
-}
-
-var validLinkTypes = [...]string{
-	MentionType,
 }
 
 type ObjectOrLink interface{}
@@ -159,36 +163,6 @@ type Object struct {
 	Duration time.Duration `jsonld:"duration"`
 }
 
-// A Link is an indirect, qualified reference to a resource identified by a URL.
-// The fundamental model for links is established by [ RFC5988].
-// Many of the properties defined by the Activity Vocabulary allow values that are either instances of Object or Link.
-// When a Link is used, it establishes a qualified relation connecting the subject
-//  (the containing object) to the resource identified by the href.
-// Properties of the Link are properties of the reference as opposed to properties of the resource.
-type Link struct {
-	*BaseObject
-	// A link relation associated with a Link. The value must conform to both the [HTML5] and
-	//  [RFC5988](https://tools.ietf.org/html/rfc5988) "link relation" definitions.
-	// In the [HTML5], any string not containing the "space" U+0020, "tab" (U+0009), "LF" (U+000A),
-	//  "FF" (U+000C), "CR" (U+000D) or "," (U+002C) characters can be used as a valid link relation.
-	Rel *Link `jsonld:"rel"`
-	// When used on a Link, identifies the MIME media type of the referenced resource.
-	// When used on an Object, identifies the MIME media type of the value of the content property.
-	// If not specified, the content property is assumed to contain text/html content.
-	MediaType MimeType `jsonld:"mediaType"`
-	// On a Link, specifies a hint as to the rendering height in device-independent pixels of the linked resource.
-	Height uint `jsonld:"height"`
-	// On a Link, specifies a hint as to the rendering width in device-independent pixels of the linked resource.
-	Width uint `jsonld:"width"`
-	// Identifies an entity that provides a preview of this object.
-	Preview ObjectOrLink `jsonld:"preview"`
-	// The target resource pointed to by a Link.
-	Href URI `jsonld:"href"`
-	// Hints as to the language used by the target resource.
-	// Value must be a [BCP47](https://tools.ietf.org/html/bcp47) Language-Tag.
-	HrefLang LangRef `jsonld:"hrefLang"`
-}
-
 type ContentType string
 
 type Source struct {
@@ -197,13 +171,6 @@ type Source struct {
 }
 
 func ValidGenericType(_type string) bool {
-	validGenericTypes := [...]string{
-		ActivityType,
-		IntransitiveActivityType,
-		ObjectType,
-		LinkType,
-	}
-
 	for _, v := range validGenericTypes {
 		if v == _type {
 			return true
@@ -218,16 +185,7 @@ func ValidObjectType(_type string) bool {
 			return true
 		}
 	}
-	return ValidActivityType(_type) || ValidGenericType(_type)
-}
-
-func ValidLinkType(_type string) bool {
-	for _, v := range validLinkTypes {
-		if v == _type {
-			return true
-		}
-	}
-	return false
+	return ValidActivityType(_type) || ValidActorType(_type) || ValidGenericType(_type)
 }
 
 func ObjectNew(id ObjectId, _type string) *Object {
@@ -236,12 +194,4 @@ func ObjectNew(id ObjectId, _type string) *Object {
 	}
 	p := BaseObject{Id: id, Type: _type}
 	return &Object{BaseObject: &p}
-}
-
-func LinkNew(id ObjectId, _type string) *Link {
-	if !ValidLinkType(_type) {
-		_type = LinkType
-	}
-	p := BaseObject{Id: id, Type: _type}
-	return &Link{BaseObject: &p}
 }
