@@ -42,7 +42,7 @@ type Endpoints struct {
 
 // Actor types are Object types that are capable of performing activities.
 type Actor struct {
-	*BaseObject
+	*Object
 	// A reference to an [ActivityStreams] OrderedCollection comprised of all the messages received by the actor;
 	//  see 5.2 Inbox.
 	Inbox InboxStream `jsonld:"inbox"`
@@ -97,9 +97,9 @@ func ActorNew(id ObjectId, _type string) *Actor {
 	if !ValidActorType(_type) {
 		_type = ActorType
 	}
-	o := BaseObject{Id: id, Type: _type}
+	o := ObjectNew(id, _type)
 
-	return &Actor{BaseObject: &o}
+	return &Actor{Object: o}
 }
 
 func ApplicationNew(id ObjectId) *Application {
