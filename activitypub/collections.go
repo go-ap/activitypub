@@ -1,5 +1,7 @@
 package activitypub
 
+type Page ObjectOrLink
+
 type Collection struct {
 	*BaseObject
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
