@@ -16,6 +16,9 @@ install:
 - go get github.com/mattn/goveralls
 
 script:
-- go test -v ./activitypub
-- go test -v -covermode=count -coverprofile=coverage.out ./activitypub
-- goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+- export GOPATH=$GOPATH:$(pwd)
+- go test -v ./...
+- go test -covermode=count -coverprofile=coverage_activitypub.out activitypub
+- go test -covermode=count -coverprofile=coverage_jsonld.out jsonld
+- goveralls -coverprofile=coverage_activitypub.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+- goveralls -coverprofile=coverage_jsonld.out -service=travis-ci -repotoken $COVERALLS_TOKEN
