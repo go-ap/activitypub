@@ -10,6 +10,7 @@ type mock_base struct {
 	Name string
 	Type string
 }
+
 type mock_type_a struct {
 	*mock_base
 	PropA string
