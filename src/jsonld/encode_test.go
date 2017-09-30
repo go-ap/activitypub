@@ -5,32 +5,47 @@ import (
 	"testing"
 )
 
-type mock_base struct {
+type mockBase struct {
 	Id   string
 	Name string
 	Type string
 }
 
-type mock_type_a struct {
-	*mock_base
+type mockTypeA struct {
+	*mockBase
 	PropA string
 	PropB float32
 }
 
 func TestMarshal(t *testing.T) {
-	a := mock_type_a{&mock_base{"base_id", "MockObjA", "mock_obj"}, "prop_a", 0.001}
+	a := mockTypeA{&mockBase{"base_id", "MockObjA", "mock_obj"}, "prop_a", 0.001}
+	b := mockTypeA{}
 
 	c := Context{URL: "http://www.habarnam.ro"}
-	out, err := Marshal(a, &c)
+	var err error
+	var out []byte
+
+	out, err = Marshal(a, &c)
 	if err != nil {
 		t.Errorf("%s", err)
 	}
-	outj, errj := json.Marshal(a)
-	if errj != nil {
-		t.Errorf("%s", errj)
+	err = json.Unmarshal(out, &b)
+	if err != nil {
+		t.Errorf("%s", err)
 	}
-	if string(outj) != string(out) {
-		t.Errorf("Invalid json serialization %s != %s", outj, out)
+	if a.Id != b.Id {
+		t.Errorf("Id isn't equal '%s' expected '%s'", a.Id, b.Id)
 	}
-	t.Logf("%s", out)
+	if a.Name != b.Name {
+		t.Errorf("Name isn't equal '%s' expected '%s'", a.Name, b.Name)
+	}
+	if a.Type != b.Type {
+		t.Errorf("Type isn't equal '%s' expected '%s'", a.Type, b.Type)
+	}
+	if a.PropA != b.PropA {
+		t.Errorf("PropA isn't equal '%s' expected '%s'", a.PropA, b.PropA)
+	}
+	if a.PropB != b.PropB {
+		t.Errorf("PropB isn't equal %f expected %f", a.PropB, b.PropB)
+	}
 }
