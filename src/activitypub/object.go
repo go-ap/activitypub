@@ -196,5 +196,9 @@ func ObjectNew(id ObjectId, _type string) *Object {
 		_type = ObjectType
 	}
 	p := BaseObject{Id: id, Type: _type}
-	return &Object{BaseObject: &p}
+	p.Name = make(NaturalLanguageValue, 0)
+	o := Object{BaseObject: &p}
+	o.Content = make(NaturalLanguageValue, 0)
+	o.Summary = make(NaturalLanguageValue, 0)
+	return &o
 }
