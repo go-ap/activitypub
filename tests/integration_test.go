@@ -6,7 +6,7 @@ import (
 	"jsonld"
 )
 
-func Test_AcceptSerialization(t *testing.T) {
+func TestAcceptSerialization(t *testing.T) {
 	o := activitypub.AcceptNew("https://localhost/myactivity")
 	o.Name = make(activitypub.NaturalLanguageValue, 1)
 	o.Name["en"] = "test"
