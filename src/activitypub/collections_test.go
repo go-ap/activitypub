@@ -2,7 +2,7 @@ package activitypub
 
 import "testing"
 
-func TestCollectionsNew(t *testing.T) {
+func TestCollectionNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
 	c := CollectionNew(testValue)
@@ -15,7 +15,7 @@ func TestCollectionsNew(t *testing.T) {
 	}
 }
 
-func TestOrderedCollectionsNew(t *testing.T) {
+func TestOrderedCollectionNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
 	c := OrderedCollectionNew(testValue)
@@ -48,14 +48,10 @@ func TestOrderedCollectionPageNew(t *testing.T) {
 	}
 }
 
-func TestCollectionNew(t *testing.T) {
-
-}
-
-func TestOrderedCollectionNew(t *testing.T) {
-
-}
-
 func TestValidCollectionType(t *testing.T) {
-
+	for _, validType := range validCollectionTypes {
+		if !ValidCollectionType(validType) {
+			t.Errorf("Generic Type '%#v' should be valid", validType)
+		}
+	}
 }

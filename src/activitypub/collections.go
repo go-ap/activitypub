@@ -1,6 +1,6 @@
 package activitypub
 
-var validCollectionTypes = [...]string{}
+var validCollectionTypes = [...]string{CollectionType, OrderedCollectionType}
 
 type Page ObjectOrLink
 
@@ -76,6 +76,7 @@ func OrderedCollectionNew(id ObjectId) *OrderedCollection {
 func CollectionPageNew(parent *Collection) *CollectionPage {
 	return &CollectionPage{PartOf: parent}
 }
+
 func OrderedCollectionPageNew(parent *OrderedCollection) *OrderedCollectionPage {
 	return &OrderedCollectionPage{PartOf: parent}
 }
