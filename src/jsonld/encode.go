@@ -2,7 +2,6 @@ package jsonld
 
 import (
 	"encoding/json"
-	"fmt"
 	"reflect"
 )
 
@@ -81,7 +80,7 @@ type Encoder struct{}
 
 func Marshal(v interface{}, c *Context) ([]byte, error) {
 	if c == nil {
-		return nil, fmt.Errorf("nil error")
+		return json.Marshal(v)
 	}
 	p := payloadWithContext{*c, &v}
 	return p.MarshalJSON()

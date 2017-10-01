@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"bytes"
 )
 
 type mockBase struct {
@@ -53,6 +54,25 @@ func TestMarshal(t *testing.T) {
 	}
 	if a.PropB != b.PropB {
 		t.Errorf("PropB isn't equal %f expected %f", a.PropB, b.PropB)
+	}
+}
+
+func TestMarshalNullContext(t *testing.T) {
+	var a = struct {
+		PropA string
+		PropB float64
+	} {"test", 0.0004}
+
+	outL, errL := Marshal(a, nil )
+	if errL != nil {
+		t.Errorf("%s", errL)
+	}
+	outJ, errJ := Marshal(a, nil )
+	if errJ != nil {
+		t.Errorf("%s", errJ)
+	}
+	if !bytes.Equal(outL, outJ) {
+		t.Errorf("Json output should be euqlal '%s', received '%s'", outL, outJ)
 	}
 }
 
