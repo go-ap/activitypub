@@ -100,8 +100,9 @@ func ActorNew(id ObjectId, _type string) *Actor {
 		_type = ActorType
 	}
 	o := ObjectNew(id, _type)
-
-	return &Actor{Object: o}
+	a := Actor{Object: o}
+	a.PreferredUsername = make(NaturalLanguageValue, 0)
+	return &a
 }
 
 func ApplicationNew(id ObjectId) *Application {
