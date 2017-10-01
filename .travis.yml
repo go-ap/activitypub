@@ -16,7 +16,7 @@ install:
 - go get github.com/mattn/goveralls
 
 script:
-- go test -v ./...
+- GOPATH=$GOPATH:$(pwd) go test -v ./...
 
 after_success:
 - go test -covermode=count -coverprofile=coverage_activitypub.out activitypub
