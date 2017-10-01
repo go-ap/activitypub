@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"strings"
 	"testing"
+	"activitypub"
 )
 
 func TestRef_MarshalText(t *testing.T) {
@@ -21,7 +22,7 @@ func TestRef_MarshalText(t *testing.T) {
 
 func TestContext_Ref(t *testing.T) {
 	url := "test"
-	c := Context{url}
+	c := Context{URL: Ref(url)}
 
 	if c.Ref() != Ref(url) {
 		t.Errorf("Invalid result %#v, expected %#v", c.Ref(), Ref(url))
@@ -30,7 +31,9 @@ func TestContext_Ref(t *testing.T) {
 
 func TestContext_MarshalJSON(t *testing.T) {
 	url := "test"
-	c := Context{url}
+	c := Context{URL: Ref(url)}
+	c.Language = make(activitypub.NaturalLanguageValue, 1)
+	c.Language["en"] = "en-GB"
 
 	out, err := c.MarshalJSON()
 	if err != nil {
@@ -39,4 +42,5 @@ func TestContext_MarshalJSON(t *testing.T) {
 	if !strings.Contains(string(out), url) {
 		t.Errorf("Json doesn't contain %#v, %#v", url, string(out))
 	}
+	t.Logf("%s", out)
 }

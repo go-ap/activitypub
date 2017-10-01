@@ -25,7 +25,7 @@ func TestMarshal(t *testing.T) {
 	b := mockTypeA{}
 
 	url := "http://www.habarnam.ro"
-	c := Context{URL: url}
+	c := Context{URL: Ref(url)}
 	var err error
 	var out []byte
 
@@ -110,8 +110,8 @@ func TestIsEmpty(t *testing.T) {
 }
 
 func TestPayloadWithContext_MarshalJSON(t *testing.T) {
-	t.SkipNow()
+	t.Skipf("Not implemented")
 }
 func TestPayloadWithContext_UnmarshalJSON(t *testing.T) {
-	t.SkipNow()
+	t.Skipf("Not implemented")
 }

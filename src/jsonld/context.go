@@ -1,10 +1,15 @@
 package jsonld
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"activitypub"
+)
 
 type Ref string
+
 type Context struct {
-	URL string
+	URL      Ref                                 `json:"_"`
+	Language activitypub.NaturalLanguageValue    `json:"@language"`
 }
 
 func (c *Context) Ref() Ref {
@@ -15,5 +20,7 @@ func (r *Ref) MarshalText() ([]byte, error) {
 }
 
 func (c *Context) MarshalJSON() ([]byte, error) {
-	return json.Marshal(getMap(c))
+	var a map[string]interface{}
+	a = getMap(c)
+	return json.Marshal(a)
 }
