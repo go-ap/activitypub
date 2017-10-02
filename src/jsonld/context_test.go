@@ -1,10 +1,10 @@
 package jsonld
 
 import (
+	"activitypub"
 	"bytes"
 	"strings"
 	"testing"
-	"activitypub"
 )
 
 func TestRef_MarshalText(t *testing.T) {

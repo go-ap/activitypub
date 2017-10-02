@@ -118,8 +118,27 @@ func TestIsEmpty(t *testing.T) {
 }
 
 func TestPayloadWithContext_MarshalJSON(t *testing.T) {
-	t.Skipf("Not implemented")
-}
-func TestPayloadWithContext_UnmarshalJSON(t *testing.T) {
-	t.Skipf("Not implemented")
+	empty := payloadWithContext{}
+	eData, eErr := empty.MarshalJSON()
+
+	if eErr != nil {
+		t.Errorf("Error: %s", eErr)
+	}
+	n, _ := json.Marshal(nil)
+	if bytes.Compare(eData, n) != 0 {
+		t.Errorf("Empty payload should resolve to null json value '%s', received '%s'", n, eData)
+	}
+
+	var a interface{}
+	a = 1
+	p := payloadWithContext{Obj: &a}
+	pData, pErr := p.MarshalJSON()
+
+	if pErr != nil {
+		t.Errorf("Error: %s", pErr)
+	}
+	av, _ := json.Marshal(a)
+	if bytes.Compare(pData, av) != 0 {
+		t.Errorf("Empty payload should resolve to value '%#v', received '%s'", av, pData)
+	}
 }

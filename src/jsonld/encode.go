@@ -49,13 +49,45 @@ func isEmptyValue(v reflect.Value) bool {
 	return false
 }
 
-func reflectToJsonLdMap(v interface{}) map[string]interface{} {
-	a := make(map[string]interface{})
+type jsonCapableValue struct {
+	isScalar bool
+	scalar   interface{}
+	object   map[string]interface{}
+}
+
+func reflectToJsonValue(v interface{}) jsonCapableValue {
+	a := jsonCapableValue{}
+	a.object = make(map[string]interface{})
 	typ := reflect.TypeOf(v)
 	val := reflect.ValueOf(v)
 	if typ.Kind() == reflect.Ptr {
 		typ = typ.Elem()
 		val = val.Elem()
+	}
+	switch typ.Kind() {
+	case reflect.Array, reflect.Map, reflect.Slice, reflect.String:
+		a.scalar = val.Interface()
+		a.isScalar = true
+		return a
+	case reflect.Bool:
+		a.scalar = val.Bool()
+		a.isScalar = true
+		return a
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		a.scalar = val.Int()
+		a.isScalar = true
+		return a
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		a.scalar = val.Uint()
+		a.isScalar = true
+		return a
+	case reflect.Float32, reflect.Float64:
+		a.scalar = val.Float()
+		a.isScalar = true
+		return a
+	case reflect.Interface, reflect.Ptr:
+		a.isScalar = true
+		return a
 	}
 
 	for i := 0; i < typ.NumField(); i++ {
@@ -69,14 +101,17 @@ func reflectToJsonLdMap(v interface{}) map[string]interface{} {
 			continue
 		}
 		if cField.Anonymous {
-			for k, v := range reflectToJsonLdMap(cValue.Interface()) {
-				a[k] = v
+			anonJsonVal := reflectToJsonValue(cValue.Interface())
+			if anonJsonVal.isScalar {
+				continue
 			}
-			continue
+			for k, v := range anonJsonVal.object {
+				a.object[k] = v
+			}
 		}
 		empty := isEmptyValue(cValue)
 		if !empty || empty && !omitEmpty {
-			a[jsonLdName(cField.Name, jsonLdTag)] = cValue.Interface()
+			a.object[jsonLdName(cField.Name, jsonLdTag)] = cValue.Interface()
 		}
 	}
 
@@ -84,37 +119,49 @@ func reflectToJsonLdMap(v interface{}) map[string]interface{} {
 }
 
 func (p *payloadWithContext) MarshalJSON() ([]byte, error) {
-	a := make(map[string]interface{})
+	a := jsonCapableValue{}
+	a.isScalar = true
+	a.object = make(map[string]interface{})
 	if p.Context != nil {
+		a.isScalar = false
 		typ := reflect.TypeOf(*p)
 		cMirror, _ := typ.FieldByName("Context")
 		jsonLdTag, ok := loadJsonLdTag(cMirror.Tag)
 		omitEmpty := ok && jsonLdTag.omitEmpty
 		collapsible := ok && jsonLdTag.collapsible
 
-		con := reflectToJsonLdMap(p.Context)
-		if len(con) > 0 || !omitEmpty {
-			for _, v := range con {
-				a[jsonLdName(cMirror.Name, jsonLdTag)] = v
-				if len(con) == 1 && collapsible {
+		con := reflectToJsonValue(p.Context)
+		if len(con.object) > 0 || !omitEmpty {
+			for _, v := range con.object {
+				a.object[jsonLdName(cMirror.Name, jsonLdTag)] = v
+				if len(con.object) == 1 && collapsible {
 					break
 				}
 			}
 		}
 	}
-	if *p.Obj != nil {
-		oMap := reflectToJsonLdMap(*p.Obj)
-		if len(oMap) == 0 {
-			return nil, fmt.Errorf("invalid object to marshall")
-		}
-		for k, v := range oMap {
-			a[k] = v
+	if p.Obj != nil {
+		oMap := reflectToJsonValue(*p.Obj)
+		if oMap.isScalar && a.isScalar {
+			a.isScalar = true
+			a.scalar = oMap.scalar
+		} else {
+			if len(oMap.object) == 0 {
+				return nil, fmt.Errorf("invalid object to marshall")
+			} else {
+				a.isScalar = false
+			}
+			for k, v := range oMap.object {
+				a.object[k] = v
+			}
 		}
 	}
-	return json.Marshal(a)
+	if a.isScalar {
+		return json.Marshal(a.scalar)
+	} else {
+		return json.Marshal(a.object)
+	}
 }
-
-func (p *payloadWithContext) UnmarshalJSON() {}
 
 type Encoder struct{}
 

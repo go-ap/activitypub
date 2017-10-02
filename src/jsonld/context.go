@@ -20,8 +20,12 @@ func (c *Context) Ref() Ref {
 func (r *Ref) MarshalText() ([]byte, error) {
 	return []byte(*r), nil
 }
+
 func (c *Context) MarshalJSON() ([]byte, error) {
-	var a map[string]interface{}
-	a = reflectToJsonLdMap(c)
-	return json.Marshal(a)
+	a := reflectToJsonValue(c)
+	if a.isScalar {
+		return json.Marshal(a.scalar)
+	} else {
+		return json.Marshal(a.object)
+	}
 }
