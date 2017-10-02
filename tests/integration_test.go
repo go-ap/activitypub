@@ -27,13 +27,16 @@ func TestCreateActivityHTTPSerialization(t *testing.T) {
 
 	baseUri := string(activitypub.ActivityBaseURI)
 	c := jsonld.Context{
-		URL: jsonld.Ref(baseUri + o.Type),
+		URL: jsonld.Ref(baseUri + string(o.Type)),
 	}
 
 	out, err := jsonld.Marshal(o, &c)
-	//out, err := jsonld.Marshal(o)
 	if err != nil {
 		t.Error(err)
 	}
-	t.Logf("%s", out)
+	outNoC, errNoC := jsonld.Marshal(o, nil)
+	if errNoC != nil {
+		t.Error(errNoC)
+	}
+	t.Logf("%s\n\n%s", out, outNoC)
 }

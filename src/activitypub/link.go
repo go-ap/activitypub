@@ -1,6 +1,6 @@
 package activitypub
 
-var validLinkTypes = [...]string{
+var validLinkTypes = [...]ActivityVocabularyType{
 	MentionType,
 }
 
@@ -20,23 +20,23 @@ type Link struct {
 	// When used on a Link, identifies the MIME media type of the referenced resource.
 	// When used on an Object, identifies the MIME media type of the value of the content property.
 	// If not specified, the content property is assumed to contain text/html content.
-	MediaType MimeType `jsonld:"mediaType"`
+	MediaType MimeType `jsonld:"mediaType,omitempty"`
 	// On a Link, specifies a hint as to the rendering height in device-independent pixels of the linked resource.
-	Height uint `jsonld:"height"`
+	Height uint `jsonld:"height,omitempty"`
 	// On a Link, specifies a hint as to the rendering width in device-independent pixels of the linked resource.
-	Width uint `jsonld:"width"`
+	Width uint `jsonld:"width,omitempty"`
 	// Identifies an entity that provides a preview of this object.
-	Preview ObjectOrLink `jsonld:"preview"`
+	Preview ObjectOrLink `jsonld:"preview,omitempty"`
 	// The target resource pointed to by a Link.
-	Href URI `jsonld:"href"`
+	Href URI `jsonld:"href,omitempty"`
 	// Hints as to the language used by the target resource.
 	// Value must be a [BCP47](https://tools.ietf.org/html/bcp47) Language-Tag.
-	HrefLang LangRef `jsonld:"hrefLang"`
+	HrefLang LangRef `jsonld:"hrefLang,omitempty"`
 }
 
 type Mention Link
 
-func ValidLinkType(_type string) bool {
+func ValidLinkType(_type ActivityVocabularyType) bool {
 	for _, v := range validLinkTypes {
 		if v == _type {
 			return true
@@ -45,10 +45,31 @@ func ValidLinkType(_type string) bool {
 	return false
 }
 
-func LinkNew(id ObjectId, _type string) *Link {
+func LinkNew(id ObjectId, _type ActivityVocabularyType) *Link {
 	if !ValidLinkType(_type) {
 		_type = LinkType
 	}
 	p := BaseObject{Id: id, Type: _type}
 	return &Link{BaseObject: &p}
+}
+
+func MentionNew(id ObjectId) *Mention {
+	p := BaseObject{Id: id, Type: MentionType}
+	return &Mention{BaseObject: &p}
+}
+
+func (l *Link) IsLink() bool {
+	return l.Type == LinkType || ValidLinkType(l.Type)
+}
+
+func (l *Link) IsObject() bool {
+	return l.Type == ObjectType || ValidObjectType(l.Type)
+}
+
+func (l *Mention) IsLink() bool {
+	return l.Type == MentionType || ValidLinkType(l.Type)
+}
+
+func (l *Mention) IsObject() bool {
+	return l.Type == ObjectType || ValidObjectType(l.Type)
 }

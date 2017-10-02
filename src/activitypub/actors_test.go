@@ -85,3 +85,16 @@ func TestServiceNew(t *testing.T) {
 		t.Errorf("Object Type '%v' different than expected '%v'", o.Type, ServiceType)
 	}
 }
+
+func TestValidActorType(t *testing.T) {
+	var invalidType ActivityVocabularyType = "RandomType"
+
+	if ValidActorType(invalidType) {
+		t.Errorf("Object Type '%v' should not be valid", invalidType)
+	}
+	for _, validType := range validActorTypes {
+		if !ValidActorType(validType) {
+			t.Errorf("Object Type '%v' should be valid", validType)
+		}
+	}
+}

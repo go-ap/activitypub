@@ -4,7 +4,7 @@ import "testing"
 
 func TestActivityNew(t *testing.T) {
 	var testValue = ObjectId("test")
-	var testType string = "Accept"
+	var testType ActivityVocabularyType = "Accept"
 
 	a := ActivityNew(testValue, testType)
 	if a.Id != testValue {
@@ -26,7 +26,7 @@ func TestActivityNew(t *testing.T) {
 
 func TestIntransitiveActivityNew(t *testing.T) {
 	var testValue = ObjectId("test")
-	var testType string = "Accept"
+	var testType ActivityVocabularyType = "Accept"
 
 	a := IntransitiveActivityNew(testValue, testType)
 
@@ -48,7 +48,7 @@ func TestIntransitiveActivityNew(t *testing.T) {
 }
 
 func TestValidActivityType(t *testing.T) {
-	var invalidType string = "RandomType"
+	var invalidType ActivityVocabularyType = "RandomType"
 
 	if ValidActivityType(ActivityType) {
 		t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)

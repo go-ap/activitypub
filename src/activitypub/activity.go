@@ -2,37 +2,37 @@ package activitypub
 
 const (
 	// Activity Types
-	AcceptType          string = "Accept"
-	AddType             string = "Add"
-	AnnounceType        string = "Announce"
-	ArriveType          string = "Arrive"
-	BlockType           string = "Block"
-	CreateType          string = "Create"
-	DeleteType          string = "Delete"
-	DislikeType         string = "Dislike"
-	FlagType            string = "Flag"
-	FollowType          string = "Follow"
-	IgnoreType          string = "Ignore"
-	InviteType          string = "Invite"
-	JoinType            string = "Join"
-	LeaveType           string = "Leave"
-	LikeType            string = "Like"
-	ListenType          string = "Listen"
-	MoveType            string = "Move"
-	OfferType           string = "Offer"
-	QuestionType        string = "Question"
-	RejectType          string = "Reject"
-	ReadType            string = "Read"
-	RemoveType          string = "Remove"
-	TentativeRejectType string = "TentativeReject"
-	TentativeAcceptType string = "TentativeAccept"
-	TravelType          string = "Travel"
-	UndoType            string = "Undo"
-	UpdateType          string = "Update"
-	ViewType            string = "View"
+	AcceptType          ActivityVocabularyType = "Accept"
+	AddType             ActivityVocabularyType = "Add"
+	AnnounceType        ActivityVocabularyType = "Announce"
+	ArriveType          ActivityVocabularyType = "Arrive"
+	BlockType           ActivityVocabularyType = "Block"
+	CreateType          ActivityVocabularyType = "Create"
+	DeleteType          ActivityVocabularyType = "Delete"
+	DislikeType         ActivityVocabularyType = "Dislike"
+	FlagType            ActivityVocabularyType = "Flag"
+	FollowType          ActivityVocabularyType = "Follow"
+	IgnoreType          ActivityVocabularyType = "Ignore"
+	InviteType          ActivityVocabularyType = "Invite"
+	JoinType            ActivityVocabularyType = "Join"
+	LeaveType           ActivityVocabularyType = "Leave"
+	LikeType            ActivityVocabularyType = "Like"
+	ListenType          ActivityVocabularyType = "Listen"
+	MoveType            ActivityVocabularyType = "Move"
+	OfferType           ActivityVocabularyType = "Offer"
+	QuestionType        ActivityVocabularyType = "Question"
+	RejectType          ActivityVocabularyType = "Reject"
+	ReadType            ActivityVocabularyType = "Read"
+	RemoveType          ActivityVocabularyType = "Remove"
+	TentativeRejectType ActivityVocabularyType = "TentativeReject"
+	TentativeAcceptType ActivityVocabularyType = "TentativeAccept"
+	TravelType          ActivityVocabularyType = "Travel"
+	UndoType            ActivityVocabularyType = "Undo"
+	UpdateType          ActivityVocabularyType = "Update"
+	ViewType            ActivityVocabularyType = "View"
 )
 
-var validActivityTypes = [...]string{
+var validActivityTypes = [...]ActivityVocabularyType{
 	AcceptType,
 	AddType,
 	AnnounceType,
@@ -70,23 +70,23 @@ type IntransitiveActivity struct {
 	*Object
 	// Describes one or more entities that either performed or are expected to perform the activity.
 	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
-	Actor Actor `jsonld:"actor"`
+	Actor Actor `jsonld:"actor,omitempty"`
 	// Describes the indirect object, or target, of the activity.
 	// The precise meaning of the target is largely dependent on the type of action being described
 	//  but will often be the object of the English preposition "to".
 	// For instance, in the activity "John added a movie to his wishlist",
 	//  the target of the activity is John's wishlist. An activity can have more than one target.
-	Target ObjectOrLink `jsonld:"actor"`
+	Target ObjectOrLink `jsonld:"target,omitempty"`
 	// Describes the result of the activity. For instance, if a particular action results in the creation
 	//  of a new resource, the result property can be used to describe that new resource.
-	Result ObjectOrLink `jsonld:"actor"`
+	Result ObjectOrLink `jsonld:"result,omitempty"`
 	// Describes an indirect object of the activity from which the activity is directed.
 	// The precise meaning of the origin is the object of the English preposition "from".
 	// For instance, in the activity "John moved an item to List B from List A", the origin of the activity is "List A".
-	Origin ObjectOrLink `jsonld:"origin"`
+	Origin ObjectOrLink `jsonld:"origin,omitempty"`
 	// Identifies one or more objects used (or to be used) in the completion of an Activity.
-	Instrument ObjectOrLink `jsonld:"instrument"`
-	Source     Source
+	Instrument ObjectOrLink `jsonld:"instrument,omitempty"`
+	Source     Source       `jsonld:"source,omitempty"`
 }
 
 // An Activity is a subtype of Object that describes some form of action that may happen,
@@ -100,7 +100,7 @@ type Activity struct {
 	// For instance, in the activity "John added a movie to his wishlist",
 	//  the object of the activity is the movie added.
 	// When used within a Relationship describes the entity to which the subject is related.
-	Object ObjectOrLink `jsonld:"object"`
+	Object ObjectOrLink `jsonld:"object,omitempty"`
 }
 
 type (
@@ -219,12 +219,12 @@ type Question struct {
 	*IntransitiveActivity
 	// Identifies an exclusive option for a Question. Use of oneOf implies that the Question
 	//  can have only a single answer. To indicate that a Question can have multiple answers, use anyOf.
-	OneOf ObjectOrLink `jsonld:"oneOf"`
+	OneOf ObjectOrLink `jsonld:"oneOf,omitempty"`
 	// Identifies an inclusive option for a Question. Use of anyOf implies that the Question can have multiple answers.
 	// To indicate that a Question can have only one answer, use oneOf.
-	AnyOf ObjectOrLink `jsonld:"anyOf"`
+	AnyOf ObjectOrLink `jsonld:"anyOf,omitempty"`
 	// Indicates that a question has been closed, and answers are no longer accepted.
-	Closed bool `jsonld:"closed"`
+	Closed bool `jsonld:"closed,omitempty"`
 }
 
 func AcceptNew(id ObjectId) *Accept {
@@ -368,7 +368,7 @@ func QuestionNew(id ObjectId) *Question {
 	return &o
 }
 
-func ValidActivityType(_type string) bool {
+func ValidActivityType(_type ActivityVocabularyType) bool {
 	for _, v := range validActivityTypes {
 		if v == _type {
 			return true
@@ -377,7 +377,7 @@ func ValidActivityType(_type string) bool {
 	return false
 }
 
-func ActivityNew(id ObjectId, _type string) *Activity {
+func ActivityNew(id ObjectId, _type ActivityVocabularyType) *Activity {
 	if !ValidActivityType(_type) {
 		_type = ActivityType
 	}
@@ -387,7 +387,7 @@ func ActivityNew(id ObjectId, _type string) *Activity {
 	return &Activity{IntransitiveActivity: &a}
 }
 
-func IntransitiveActivityNew(id ObjectId, _type string) *IntransitiveActivity {
+func IntransitiveActivityNew(id ObjectId, _type ActivityVocabularyType) *IntransitiveActivity {
 	if !ValidActivityType(_type) {
 		_type = IntransitiveActivityType
 	}

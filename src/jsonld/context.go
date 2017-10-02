@@ -2,14 +2,15 @@ package jsonld
 
 import (
 	"encoding/json"
+
 	"activitypub"
 )
 
 type Ref string
 
 type Context struct {
-	URL      Ref                                 `json:"_"`
-	Language activitypub.NaturalLanguageValue    `json:"@language"`
+	URL      Ref                              `jsonld:"_"`
+	Language activitypub.NaturalLanguageValue `jsonld:"@language,omitempty,collapsible"`
 }
 
 func (c *Context) Ref() Ref {

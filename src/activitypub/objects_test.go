@@ -28,7 +28,7 @@ func TestObjectNew(t *testing.T) {
 }
 
 func TestValidGenericType(t *testing.T) {
-	for _, validType := range validGenericTypes {
+	for _, validType := range validGenericObjectTypes {
 		if !ValidObjectType(validType) {
 			t.Errorf("Generic Type '%v' should be valid", validType)
 		}
@@ -36,7 +36,7 @@ func TestValidGenericType(t *testing.T) {
 }
 
 func TestValidObjectType(t *testing.T) {
-	var invalidType string = "RandomType"
+	var invalidType ActivityVocabularyType = "RandomType"
 
 	if ValidObjectType(invalidType) {
 		t.Errorf("Object Type '%v' should not be valid", invalidType)
@@ -101,5 +101,27 @@ func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
 	txt := "\"the test\""
 	if txt != string(out1) {
 		t.Errorf("Different marshal result '%s', instead of '%s'", out1, txt)
+	}
+}
+
+func TestObject_IsLink(t *testing.T) {
+	o := ObjectNew("test", ObjectType)
+	if o.IsLink() {
+		t.Errorf("%#v should not be a valid link", o.Type)
+	}
+	m := ObjectNew("test", AcceptType)
+	if m.IsLink() {
+		t.Errorf("%#v should not be a valid link", m.Type)
+	}
+}
+
+func TestObject_IsObject(t *testing.T) {
+	o := ObjectNew("test", ObjectType)
+	if !o.IsObject() {
+		t.Errorf("%#v should be a valid object", o.Type)
+	}
+	m := ObjectNew("test", AcceptType)
+	if !m.IsObject() {
+		t.Errorf("%#v should be a valid object", m.Type)
 	}
 }
