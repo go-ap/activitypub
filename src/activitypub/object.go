@@ -67,12 +67,16 @@ var validObjectTypes = [...]ActivityVocabularyType{
 
 type (
 	ActivityVocabularyType string
-	ObjectOrLink           interface{}
-	LinkOrUri              interface{}
-	ImageOrLink            interface{}
-	MimeType               string
-	LangRef                string
-	NaturalLanguageValue   map[LangRef]string
+	ActivityObject         interface{}
+	ObjectOrLink           interface {
+		IsLink() bool
+		IsObject() bool
+	}
+	LinkOrUri            interface{}
+	ImageOrLink          interface{}
+	MimeType             string
+	LangRef              string
+	NaturalLanguageValue map[LangRef]string
 )
 
 func (o *Object) IsLink() bool {
