@@ -6,7 +6,7 @@ import (
 )
 
 type payloadWithContext struct {
-	Context Context `json:"@context"`
+	Context *Context `json:"@context"`
 	Obj     *interface{}
 }
 
@@ -65,7 +65,9 @@ func getMap(v interface{}) map[string]interface{} {
 
 func (p *payloadWithContext) MarshalJSON() ([]byte, error) {
 	a := make(map[string]interface{})
-	a["@context"] = p.Context.Ref()
+	if p.Context != nil {
+		a["@context"] = p.Context.Ref()
+	}
 
 	for k, v := range getMap(*p.Obj) {
 		a[k] = v
@@ -79,9 +81,6 @@ func (p *payloadWithContext) UnmarshalJSON() {}
 type Encoder struct{}
 
 func Marshal(v interface{}, c *Context) ([]byte, error) {
-	if c == nil {
-		return json.Marshal(v)
-	}
-	p := payloadWithContext{*c, &v}
+	p := payloadWithContext{c, &v}
 	return p.MarshalJSON()
 }
