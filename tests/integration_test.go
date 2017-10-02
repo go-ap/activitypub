@@ -1,42 +1,61 @@
 package tests
 
 import (
+	"testing"
+
 	"activitypub"
 	"jsonld"
-	"testing"
+	"strings"
 )
 
 func TestAcceptSerialization(t *testing.T) {
-	o := activitypub.AcceptNew("https://localhost/myactivity")
-	o.Name = make(activitypub.NaturalLanguageValue, 1)
-	o.Name["en"] = "test"
+	obj := activitypub.AcceptNew("https://localhost/myactivity")
+	obj.Name = make(activitypub.NaturalLanguageValue, 1)
+	obj.Name["en"] = "test"
 
 	ctx := jsonld.Context{URL: "https://www.w3.org/ns/activitystreams"}
 
-	bytes, err := jsonld.Marshal(o, &ctx)
+	data, err := jsonld.Marshal(obj, &ctx)
 	if err != nil {
 		t.Errorf("Error: %v", err)
 	}
-	t.Logf("%s", bytes)
+	if !strings.Contains(string(data), string(ctx.URL)) {
+		t.Errorf("Could not find context url %#v in output %s", ctx.URL, data)
+	}
+	if !strings.Contains(string(data), string(obj.Id)) {
+		t.Errorf("Could not find id %#v in output %s", string(obj.Id), data)
+	}
+	if !strings.Contains(string(data), string(obj.Name["en"])) {
+		t.Errorf("Could not find name %#v in output %s", string(obj.Name["en"]), data)
+	}
+	if !strings.Contains(string(data), string(obj.Type)) {
+		t.Errorf("Could not find activity type %#v in output %s", obj.Type, data)
+	}
 }
 
 func TestCreateActivityHTTPSerialization(t *testing.T) {
 	id := activitypub.ObjectId("test_object")
-	o := activitypub.AcceptNew(id)
-	o.Name["en"] = "Accept New"
+	obj := activitypub.AcceptNew(id)
+	obj.Name["en"] = "Accept New"
 
 	baseUri := string(activitypub.ActivityBaseURI)
-	c := jsonld.Context{
-		URL: jsonld.Ref(baseUri + string(o.Type)),
+	ctx := jsonld.Context{
+		URL: jsonld.Ref(baseUri + string(obj.Type)),
 	}
-
-	out, err := jsonld.Marshal(o, &c)
+	data, err := jsonld.Marshal(obj, &ctx)
 	if err != nil {
 		t.Error(err)
 	}
-	outNoC, errNoC := jsonld.Marshal(o, nil)
-	if errNoC != nil {
-		t.Error(errNoC)
+	if !strings.Contains(string(data), string(ctx.URL)) {
+		t.Errorf("Could not find context url %#v in output %s", ctx.URL, data)
 	}
-	t.Logf("%s\n\n%s", out, outNoC)
+	if !strings.Contains(string(data), string(obj.Id)) {
+		t.Errorf("Could not find id %#v in output %s", string(obj.Id), data)
+	}
+	if !strings.Contains(string(data), string(obj.Name["en"])) {
+		t.Errorf("Could not find name %#v in output %s", string(obj.Name["en"]), data)
+	}
+	if !strings.Contains(string(data), string(obj.Type)) {
+		t.Errorf("Could not find activity type %#v in output %s", obj.Type, data)
+	}
 }

@@ -1,11 +1,11 @@
 package jsonld
 
 import (
+	"bytes"
 	"encoding/json"
 	"reflect"
 	"strings"
 	"testing"
-	"bytes"
 )
 
 type mockBase struct {
@@ -61,13 +61,13 @@ func TestMarshalNullContext(t *testing.T) {
 	var a = struct {
 		PropA string
 		PropB float64
-	} {"test", 0.0004}
+	}{"test", 0.0004}
 
-	outL, errL := Marshal(a, nil )
+	outL, errL := Marshal(a, nil)
 	if errL != nil {
 		t.Errorf("%s", errL)
 	}
-	outJ, errJ := Marshal(a, nil )
+	outJ, errJ := Marshal(a, nil)
 	if errJ != nil {
 		t.Errorf("%s", errJ)
 	}
@@ -78,34 +78,42 @@ func TestMarshalNullContext(t *testing.T) {
 
 func TestIsEmpty(t *testing.T) {
 	var a int = 0
-	if !IsEmpty(reflect.ValueOf(a)) {
-		t.Errorf("Invalid empty valid %s", a)
+	if !isEmptyValue(reflect.ValueOf(a)) {
+		t.Errorf("Invalid empty value %s", a)
 	}
-	if !IsEmpty(reflect.ValueOf(uint(a))) {
-		t.Errorf("Invalid empty valid %s", uint(a))
+	if !isEmptyValue(reflect.ValueOf(uint(a))) {
+		t.Errorf("Invalid empty value %s", uint(a))
 	}
 	var b float64 = 0
-	if !IsEmpty(reflect.ValueOf(b)) {
-		t.Errorf("Invalid empty valid %s", b)
+	if !isEmptyValue(reflect.ValueOf(b)) {
+		t.Errorf("Invalid empty value %s", b)
 	}
 	var c string = ""
-	if !IsEmpty(reflect.ValueOf(c)) {
-		t.Errorf("Invalid empty valid %s", c)
+	if !isEmptyValue(reflect.ValueOf(c)) {
+		t.Errorf("Invalid empty value %s", c)
 	}
 	var d []byte = nil
-	if !IsEmpty(reflect.ValueOf(d)) {
-		t.Errorf("Invalid empty valid %v", d)
+	if !isEmptyValue(reflect.ValueOf(d)) {
+		t.Errorf("Invalid empty value %v", d)
 	}
 	var e *interface{} = nil
-	if !IsEmpty(reflect.ValueOf(e)) {
-		t.Errorf("Invalid empty valid %v", e)
+	if !isEmptyValue(reflect.ValueOf(e)) {
+		t.Errorf("Invalid empty value %v", e)
 	}
 	f := struct {
 		a string
 		b int
 	}{}
-	if !IsEmpty(reflect.ValueOf(f)) {
-		t.Errorf("Invalid empty valid %v", f)
+	if !isEmptyValue(reflect.ValueOf(f)) {
+		t.Errorf("Invalid empty value %v", f)
+	}
+	g := false
+	if !isEmptyValue(reflect.ValueOf(g)) {
+		t.Errorf("Invalid empty value %v", g)
+	}
+	h := true
+	if isEmptyValue(reflect.ValueOf(h)) {
+		t.Errorf("Invalid empty value %v", h)
 	}
 }
 
