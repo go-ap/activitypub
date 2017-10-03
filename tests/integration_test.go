@@ -9,7 +9,7 @@ import (
 )
 
 func TestAcceptSerialization(t *testing.T) {
-	obj := activitypub.AcceptNew("https://localhost/myactivity")
+	obj := activitypub.AcceptNew("https://localhost/myactivity", nil)
 	obj.Name = make(activitypub.NaturalLanguageValue, 1)
 	obj.Name["en"] = "test"
 
@@ -35,7 +35,7 @@ func TestAcceptSerialization(t *testing.T) {
 
 func TestCreateActivityHTTPSerialization(t *testing.T) {
 	id := activitypub.ObjectId("test_object")
-	obj := activitypub.AcceptNew(id)
+	obj := activitypub.AcceptNew(id, nil)
 	obj.Name["en"] = "Accept New"
 
 	baseUri := string(activitypub.ActivityBaseURI)

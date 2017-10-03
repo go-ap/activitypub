@@ -6,7 +6,7 @@ func TestActivityNew(t *testing.T) {
 	var testValue = ObjectId("test")
 	var testType ActivityVocabularyType = "Accept"
 
-	a := ActivityNew(testValue, testType)
+	a := ActivityNew(testValue, testType, nil)
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
 	}
@@ -14,7 +14,7 @@ func TestActivityNew(t *testing.T) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, testType)
 	}
 
-	g := ActivityNew(testValue, "")
+	g := ActivityNew(testValue, "", nil)
 
 	if g.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", g.Id, testValue)
@@ -71,7 +71,7 @@ func TestValidActivityType(t *testing.T) {
 func TestAcceptNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := AcceptNew(testValue)
+	a := AcceptNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -84,7 +84,7 @@ func TestAcceptNew(t *testing.T) {
 func TestAddNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := AddNew(testValue)
+	a := AddNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -97,7 +97,7 @@ func TestAddNew(t *testing.T) {
 func TestAnnounceNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := AnnounceNew(testValue)
+	a := AnnounceNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -123,7 +123,7 @@ func TestArriveNew(t *testing.T) {
 func TestBlockNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := BlockNew(testValue)
+	a := BlockNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -136,7 +136,7 @@ func TestBlockNew(t *testing.T) {
 func TestCreateNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := CreateNew(testValue)
+	a := CreateNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -149,7 +149,7 @@ func TestCreateNew(t *testing.T) {
 func TestDeleteNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := DeleteNew(testValue)
+	a := DeleteNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -162,7 +162,7 @@ func TestDeleteNew(t *testing.T) {
 func TestDislikeNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := DislikeNew(testValue)
+	a := DislikeNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -175,7 +175,7 @@ func TestDislikeNew(t *testing.T) {
 func TestFlagNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := FlagNew(testValue)
+	a := FlagNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -188,7 +188,7 @@ func TestFlagNew(t *testing.T) {
 func TestFollowNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := FollowNew(testValue)
+	a := FollowNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -201,7 +201,7 @@ func TestFollowNew(t *testing.T) {
 func TestIgnoreNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := IgnoreNew(testValue)
+	a := IgnoreNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -214,7 +214,7 @@ func TestIgnoreNew(t *testing.T) {
 func TestInviteNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := InviteNew(testValue)
+	a := InviteNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -227,7 +227,7 @@ func TestInviteNew(t *testing.T) {
 func TestJoinNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := JoinNew(testValue)
+	a := JoinNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -240,7 +240,7 @@ func TestJoinNew(t *testing.T) {
 func TestLeaveNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := LeaveNew(testValue)
+	a := LeaveNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -253,7 +253,7 @@ func TestLeaveNew(t *testing.T) {
 func TestLikeNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := LikeNew(testValue)
+	a := LikeNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -266,7 +266,7 @@ func TestLikeNew(t *testing.T) {
 func TestListenNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := ListenNew(testValue)
+	a := ListenNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -279,7 +279,7 @@ func TestListenNew(t *testing.T) {
 func TestMoveNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := MoveNew(testValue)
+	a := MoveNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -292,7 +292,7 @@ func TestMoveNew(t *testing.T) {
 func TestOfferNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := OfferNew(testValue)
+	a := OfferNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -318,7 +318,7 @@ func TestQuestionNew(t *testing.T) {
 func TestRejectNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := RejectNew(testValue)
+	a := RejectNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -331,7 +331,7 @@ func TestRejectNew(t *testing.T) {
 func TestReadNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := ReadNew(testValue)
+	a := ReadNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -344,7 +344,7 @@ func TestReadNew(t *testing.T) {
 func TestRemoveNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := RemoveNew(testValue)
+	a := RemoveNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -357,7 +357,7 @@ func TestRemoveNew(t *testing.T) {
 func TestTentativeRejectNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := TentativeRejectNew(testValue)
+	a := TentativeRejectNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -370,7 +370,7 @@ func TestTentativeRejectNew(t *testing.T) {
 func TestTentativeAcceptNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := TentativeAcceptNew(testValue)
+	a := TentativeAcceptNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -396,7 +396,7 @@ func TestTravelNew(t *testing.T) {
 func TestUndoNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := UndoNew(testValue)
+	a := UndoNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -409,7 +409,7 @@ func TestUndoNew(t *testing.T) {
 func TestUpdateNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := UpdateNew(testValue)
+	a := UpdateNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -422,7 +422,7 @@ func TestUpdateNew(t *testing.T) {
 func TestViewNew(t *testing.T) {
 	var testValue = ObjectId("test")
 
-	a := ViewNew(testValue)
+	a := ViewNew(testValue, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
