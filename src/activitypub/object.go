@@ -79,11 +79,11 @@ type (
 	NaturalLanguageValue map[LangRef]string
 )
 
-func (o *APObject) IsLink() bool {
+func (o APObject) IsLink() bool {
 	return ValidLinkType(o.Type)
 }
 
-func (o *APObject) IsObject() bool {
+func (o APObject) IsObject() bool {
 	return ValidObjectType(o.Type)
 }
 

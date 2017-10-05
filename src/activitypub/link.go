@@ -62,18 +62,18 @@ func MentionNew(id ObjectId) *Mention {
 	return &Mention{Id: id, Type: MentionType}
 }
 
-func (l *Link) IsLink() bool {
+func (l Link) IsLink() bool {
 	return l.Type == LinkType || ValidLinkType(l.Type)
 }
 
-func (l *Link) IsObject() bool {
+func (l Link) IsObject() bool {
 	return l.Type == ObjectType || ValidObjectType(l.Type)
 }
 
-func (l *Mention) IsLink() bool {
+func (l Mention) IsLink() bool {
 	return l.Type == MentionType || ValidLinkType(l.Type)
 }
 
-func (l *Mention) IsObject() bool {
+func (l Mention) IsObject() bool {
 	return l.Type == ObjectType || ValidObjectType(l.Type)
 }

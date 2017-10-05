@@ -100,7 +100,7 @@ type Activity struct {
 	// For instance, in the activity "John added a movie to his wishlist",
 	//  the object of the activity is the movie added.
 	// When used within a Relationship describes the entity to which the subject is related.
-	Object *ObjectOrLink `jsonld:"object,omitempty"`
+	Object ObjectOrLink `jsonld:"object,omitempty"`
 }
 
 type (
@@ -227,17 +227,17 @@ type Question struct {
 	Closed bool `jsonld:"closed,omitempty"`
 }
 
-func AcceptNew(id ObjectId, ob *ObjectOrLink) *Accept {
+func AcceptNew(id ObjectId, ob ObjectOrLink) *Accept {
 	a := ActivityNew(id, AcceptType, ob)
 	o := Accept(*a)
 	return &o
 }
-func AddNew(id ObjectId, ob *ObjectOrLink) *Add {
+func AddNew(id ObjectId, ob ObjectOrLink) *Add {
 	a := ActivityNew(id, AddType, ob)
 	o := Add(*a)
 	return &o
 }
-func AnnounceNew(id ObjectId, ob *ObjectOrLink) *Announce {
+func AnnounceNew(id ObjectId, ob ObjectOrLink) *Announce {
 	a := ActivityNew(id, AnnounceType, ob)
 	o := Announce(*a)
 	return &o
@@ -247,97 +247,97 @@ func ArriveNew(id ObjectId) *Arrive {
 	o := Arrive(*a)
 	return &o
 }
-func BlockNew(id ObjectId, ob *ObjectOrLink) *Block {
+func BlockNew(id ObjectId, ob ObjectOrLink) *Block {
 	a := ActivityNew(id, BlockType, ob)
 	o := Block(*a)
 	return &o
 }
-func CreateNew(id ObjectId, ob *ObjectOrLink) *Create {
+func CreateNew(id ObjectId, ob ObjectOrLink) *Create {
 	a := ActivityNew(id, CreateType, ob)
 	o := Create(*a)
 	return &o
 }
-func DeleteNew(id ObjectId, ob *ObjectOrLink) *Delete {
+func DeleteNew(id ObjectId, ob ObjectOrLink) *Delete {
 	a := ActivityNew(id, DeleteType, ob)
 	o := Delete(*a)
 	return &o
 }
-func DislikeNew(id ObjectId, ob *ObjectOrLink) *Dislike {
+func DislikeNew(id ObjectId, ob ObjectOrLink) *Dislike {
 	a := ActivityNew(id, DislikeType, ob)
 	o := Dislike(*a)
 	return &o
 }
-func FlagNew(id ObjectId, ob *ObjectOrLink) *Flag {
+func FlagNew(id ObjectId, ob ObjectOrLink) *Flag {
 	a := ActivityNew(id, FlagType, ob)
 	o := Flag(*a)
 	return &o
 }
-func FollowNew(id ObjectId, ob *ObjectOrLink) *Follow {
+func FollowNew(id ObjectId, ob ObjectOrLink) *Follow {
 	a := ActivityNew(id, FollowType, ob)
 	o := Follow(*a)
 	return &o
 }
-func IgnoreNew(id ObjectId, ob *ObjectOrLink) *Ignore {
+func IgnoreNew(id ObjectId, ob ObjectOrLink) *Ignore {
 	a := ActivityNew(id, IgnoreType, ob)
 	o := Ignore(*a)
 	return &o
 }
-func InviteNew(id ObjectId, ob *ObjectOrLink) *Invite {
+func InviteNew(id ObjectId, ob ObjectOrLink) *Invite {
 	a := ActivityNew(id, InviteType, ob)
 	o := Invite(*a)
 	return &o
 }
-func JoinNew(id ObjectId, ob *ObjectOrLink) *Join {
+func JoinNew(id ObjectId, ob ObjectOrLink) *Join {
 	a := ActivityNew(id, JoinType, ob)
 	o := Join(*a)
 	return &o
 }
-func LeaveNew(id ObjectId, ob *ObjectOrLink) *Leave {
+func LeaveNew(id ObjectId, ob ObjectOrLink) *Leave {
 	a := ActivityNew(id, LeaveType, ob)
 	o := Leave(*a)
 	return &o
 }
-func LikeNew(id ObjectId, ob *ObjectOrLink) *Like {
+func LikeNew(id ObjectId, ob ObjectOrLink) *Like {
 	a := ActivityNew(id, LikeType, ob)
 	o := Like(*a)
 	return &o
 }
-func ListenNew(id ObjectId, ob *ObjectOrLink) *Listen {
+func ListenNew(id ObjectId, ob ObjectOrLink) *Listen {
 	a := ActivityNew(id, ListenType, ob)
 	o := Listen(*a)
 	return &o
 }
-func MoveNew(id ObjectId, ob *ObjectOrLink) *Move {
+func MoveNew(id ObjectId, ob ObjectOrLink) *Move {
 	a := ActivityNew(id, MoveType, ob)
 	o := Move(*a)
 	return &o
 }
-func OfferNew(id ObjectId, ob *ObjectOrLink) *Offer {
+func OfferNew(id ObjectId, ob ObjectOrLink) *Offer {
 	a := ActivityNew(id, OfferType, ob)
 	o := Offer(*a)
 	return &o
 }
-func RejectNew(id ObjectId, ob *ObjectOrLink) *Reject {
+func RejectNew(id ObjectId, ob ObjectOrLink) *Reject {
 	a := ActivityNew(id, RejectType, ob)
 	o := Reject(*a)
 	return &o
 }
-func ReadNew(id ObjectId, ob *ObjectOrLink) *Read {
+func ReadNew(id ObjectId, ob ObjectOrLink) *Read {
 	a := ActivityNew(id, ReadType, ob)
 	o := Read(*a)
 	return &o
 }
-func RemoveNew(id ObjectId, ob *ObjectOrLink) *Remove {
+func RemoveNew(id ObjectId, ob ObjectOrLink) *Remove {
 	a := ActivityNew(id, RemoveType, ob)
 	o := Remove(*a)
 	return &o
 }
-func TentativeRejectNew(id ObjectId, ob *ObjectOrLink) *TentativeReject {
+func TentativeRejectNew(id ObjectId, ob ObjectOrLink) *TentativeReject {
 	a := ActivityNew(id, TentativeRejectType, ob)
 	o := TentativeReject(*a)
 	return &o
 }
-func TentativeAcceptNew(id ObjectId, ob *ObjectOrLink) *TentativeAccept {
+func TentativeAcceptNew(id ObjectId, ob ObjectOrLink) *TentativeAccept {
 	a := ActivityNew(id, TentativeAcceptType, ob)
 	o := TentativeAccept(*a)
 	return &o
@@ -347,17 +347,17 @@ func TravelNew(id ObjectId) *Travel {
 	o := Travel(*a)
 	return &o
 }
-func UndoNew(id ObjectId, ob *ObjectOrLink) *Undo {
+func UndoNew(id ObjectId, ob ObjectOrLink) *Undo {
 	a := ActivityNew(id, UndoType, ob)
 	o := Undo(*a)
 	return &o
 }
-func UpdateNew(id ObjectId, ob *ObjectOrLink) *Accept {
+func UpdateNew(id ObjectId, ob ObjectOrLink) *Accept {
 	a := ActivityNew(id, UpdateType, ob)
 	o := Accept(*a)
 	return &o
 }
-func ViewNew(id ObjectId, ob *ObjectOrLink) *View {
+func ViewNew(id ObjectId, ob ObjectOrLink) *View {
 	a := ActivityNew(id, ViewType, ob)
 	o := View(*a)
 	return &o
@@ -377,7 +377,7 @@ func ValidActivityType(_type ActivityVocabularyType) bool {
 	return false
 }
 
-func ActivityNew(id ObjectId, _type ActivityVocabularyType, ob *ObjectOrLink) *Activity {
+func ActivityNew(id ObjectId, _type ActivityVocabularyType, ob ObjectOrLink) *Activity {
 	if !ValidActivityType(_type) {
 		_type = ActivityType
 	}
