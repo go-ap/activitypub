@@ -55,7 +55,7 @@ func TestValidActivityType(t *testing.T) {
 	}
 	for _, inValidType := range validObjectTypes {
 		if ValidActivityType(inValidType) {
-			t.Errorf("Object Type '%v' should be invalid", inValidType)
+			t.Errorf("APObject Type '%v' should be invalid", inValidType)
 		}
 	}
 	if ValidActivityType(invalidType) {

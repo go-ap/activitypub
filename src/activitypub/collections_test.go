@@ -8,10 +8,10 @@ func TestCollectionNew(t *testing.T) {
 	c := CollectionNew(testValue)
 
 	if c.Id != testValue {
-		t.Errorf("Object Id '%v' different than expected '%v'", c.Id, testValue)
+		t.Errorf("APObject Id '%v' different than expected '%v'", c.Id, testValue)
 	}
 	if c.Type != CollectionType {
-		t.Errorf("Object Type '%v' different than expected '%v'", c.Type, CollectionType)
+		t.Errorf("APObject Type '%v' different than expected '%v'", c.Type, CollectionType)
 	}
 }
 
@@ -21,10 +21,10 @@ func TestOrderedCollectionNew(t *testing.T) {
 	c := OrderedCollectionNew(testValue)
 
 	if c.Id != testValue {
-		t.Errorf("Object Id '%v' different than expected '%v'", c.Id, testValue)
+		t.Errorf("APObject Id '%v' different than expected '%v'", c.Id, testValue)
 	}
 	if c.Type != OrderedCollectionType {
-		t.Errorf("Object Type '%v' different than expected '%v'", c.Type, OrderedCollectionType)
+		t.Errorf("APObject Type '%v' different than expected '%v'", c.Type, OrderedCollectionType)
 	}
 }
 

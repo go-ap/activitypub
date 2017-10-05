@@ -11,18 +11,18 @@ func TestObjectNew(t *testing.T) {
 	o := ObjectNew(testValue, testType)
 
 	if o.Id != testValue {
-		t.Errorf("Object Id '%v' different than expected '%v'", o.Id, testValue)
+		t.Errorf("APObject Id '%v' different than expected '%v'", o.Id, testValue)
 	}
 	if o.Type != testType {
-		t.Errorf("Object Type '%v' different than expected '%v'", o.Type, testType)
+		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, testType)
 	}
 
 	n := ObjectNew(testValue, "")
 	if n.Id != testValue {
-		t.Errorf("Object Id '%v' different than expected '%v'", n.Id, testValue)
+		t.Errorf("APObject Id '%v' different than expected '%v'", n.Id, testValue)
 	}
 	if n.Type != ObjectType {
-		t.Errorf("Object Type '%v' different than expected '%v'", n.Type, ObjectType)
+		t.Errorf("APObject Type '%v' different than expected '%v'", n.Type, ObjectType)
 	}
 
 }
@@ -39,11 +39,11 @@ func TestValidObjectType(t *testing.T) {
 	var invalidType ActivityVocabularyType = "RandomType"
 
 	if ValidObjectType(invalidType) {
-		t.Errorf("Object Type '%v' should not be valid", invalidType)
+		t.Errorf("APObject Type '%v' should not be valid", invalidType)
 	}
 	for _, validType := range validObjectTypes {
 		if !ValidObjectType(validType) {
-			t.Errorf("Object Type '%v' should be valid", validType)
+			t.Errorf("APObject Type '%v' should be valid", validType)
 		}
 	}
 }

@@ -40,9 +40,9 @@ type Endpoints struct {
 	SharedInbox ObjectOrLink `jsonld:"sharedInbox,omitempty"`
 }
 
-// Actor types are Object types that are capable of performing activities.
+// Actor types are APObject types that are capable of performing activities.
 type Actor struct {
-	*Object
+	*APObject
 	// A reference to an [ActivityStreams] OrderedCollection comprised of all the messages received by the actor;
 	//  see 5.2 Inbox.
 	Inbox InboxStream `jsonld:"inbox,omitempty"`
@@ -100,7 +100,7 @@ func ActorNew(id ObjectId, _type ActivityVocabularyType) *Actor {
 		_type = ActorType
 	}
 	o := ObjectNew(id, _type)
-	a := Actor{Object: o}
+	a := Actor{APObject: o}
 	a.PreferredUsername = make(NaturalLanguageValue, 0)
 	return &a
 }

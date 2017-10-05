@@ -7,9 +7,10 @@ import (
 
 func TestCreateActivityNew(t *testing.T) {
 	var testValue = ObjectId("test")
+	var now time.Time
 
 	c := CreateActivityNew(testValue, nil)
-	now := time.Now()
+	now = time.Now()
 	if c.Activity.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c.Activity.Id, testValue)
 	}

@@ -9,7 +9,7 @@ type ObjectId string
 
 const (
 	ActivityBaseURI          URI                    = URI("https://www.w3.org/ns/activitystreams#")
-	ObjectType               ActivityVocabularyType = "Object"
+	ObjectType               ActivityVocabularyType = "APObject"
 	LinkType                 ActivityVocabularyType = "Link"
 	ActivityType             ActivityVocabularyType = "Activity"
 	IntransitiveActivityType ActivityVocabularyType = "IntransitiveActivity"
@@ -17,7 +17,7 @@ const (
 	CollectionType           ActivityVocabularyType = "Collection"
 	OrderedCollectionType    ActivityVocabularyType = "OrderedCollection"
 
-	// Object Types
+	// APObject Types
 	ArticleType      ActivityVocabularyType = "Article"
 	AudioType        ActivityVocabularyType = "Audio"
 	DocumentType     ActivityVocabularyType = "Document"
@@ -79,11 +79,11 @@ type (
 	NaturalLanguageValue map[LangRef]string
 )
 
-func (o *Object) IsLink() bool {
+func (o *APObject) IsLink() bool {
 	return ValidLinkType(o.Type)
 }
 
-func (o *Object) IsObject() bool {
+func (o *APObject) IsObject() bool {
 	return ValidObjectType(o.Type)
 }
 
@@ -98,20 +98,16 @@ func (n NaturalLanguageValue) MarshalJSON() ([]byte, error) {
 }
 
 // Describes an object of any kind.
-// The Object type serves as the base type for most of the other kinds of objects defined in the Activity Vocabulary,
+// The APObject type serves as the base type for most of the other kinds of objects defined in the Activity Vocabulary,
 //  including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
-type BaseObject struct {
-	// Provides the globally unique identifier for an Object or Link.
+type APObject struct {
+	// Provides the globally unique identifier for an APObject or Link.
 	Id ObjectId `jsonld:"id,omitempty"`
-	//  Identifies the Object or Link type. Multiple values may be specified.
+	//  Identifies the APObject or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValue `jsonld:"name,omitempty,collapsible"`
-}
-
-type Object struct {
-	*BaseObject
 	// Identifies a resource attached or related to an object that potentially requires special handling.
 	// The intent is to provide a model that is at least semantically similar to attachments in email.
 	Attachment ObjectOrLink `jsonld:"attachment,omitempty"`
@@ -121,7 +117,7 @@ type Object struct {
 	// Identifies one or more entities that represent the total population of entities
 	//  for which the object can considered to be relevant.
 	Audience ObjectOrLink `jsonld:"audience,omitempty"`
-	// The content or textual representation of the Object encoded as a JSON string.
+	// The content or textual representation of the APObject encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
@@ -161,7 +157,7 @@ type Object struct {
 	// A natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
-	// One or more "tags" that have been associated with an objects. A tag can be any kind of Object.
+	// One or more "tags" that have been associated with an objects. A tag can be any kind of APObject.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	//  while the latter implies associated by reference.
 	Tag ObjectOrLink `jsonld:"tag,omitempty"`
@@ -169,13 +165,13 @@ type Object struct {
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
 	Url LinkOrUri `jsonld:"url,omitempty"`
-	// Identifies an entity considered to be part of the public primary audience of an Object
+	// Identifies an entity considered to be part of the public primary audience of an APObject
 	To ObjectOrLink `jsonld:"to,omitempty"`
-	// Identifies an Object that is part of the private primary audience of this Object.
+	// Identifies an APObject that is part of the private primary audience of this APObject.
 	Bto ObjectOrLink `jsonld:"bto,omitempty"`
-	// Identifies an Object that is part of the public secondary audience of this Object.
+	// Identifies an APObject that is part of the public secondary audience of this APObject.
 	Cc ObjectOrLink `jsonld:"cc,omitempty"`
-	// Identifies one or more Objects that are part of the private secondary audience of this Object.
+	// Identifies one or more Objects that are part of the private secondary audience of this APObject.
 	Bcc ObjectOrLink `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
@@ -209,14 +205,13 @@ func ValidObjectType(_type ActivityVocabularyType) bool {
 	return ValidActivityType(_type) || ValidActorType(_type) || ValidCollectionType(_type) || ValidGenericType(_type)
 }
 
-func ObjectNew(id ObjectId, _type ActivityVocabularyType) *Object {
+func ObjectNew(id ObjectId, _type ActivityVocabularyType) *APObject {
 	if !(ValidObjectType(_type)) {
 		_type = ObjectType
 	}
-	p := BaseObject{Id: id, Type: _type}
-	p.Name = make(NaturalLanguageValue, 0)
-	o := Object{BaseObject: &p}
-	o.Content = make(NaturalLanguageValue, 0)
-	o.Summary = make(NaturalLanguageValue, 0)
+	o := APObject{Id: id, Type: _type}
+	o.Name = make(NaturalLanguageValue)
+	o.Content = make(NaturalLanguageValue)
+	o.Summary = make(NaturalLanguageValue)
 	return &o
 }
