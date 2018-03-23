@@ -13,13 +13,15 @@ matrix:
   fast_finish: true
 
 install:
+- go get -u github.com/dave/courtney
 - go get github.com/mattn/goveralls
+- GOPATH=$GOPATH:$(pwd) go get -t -v ./...
 
 script:
 - GOPATH=$GOPATH:$(pwd) go test -v ./...
 
 after_success:
-- go test -covermode=count -coverprofile=coverage_activitypub.out activitypub
-- go test -covermode=count -coverprofile=coverage_jsonld.out jsonld
+- GOPATH=$GOPATH:$(pwd) $GOPATH/bin/courtney -o=coverage_activitypub.out activitypub
+- GOPATH=$GOPATH:$(pwd) $GOPATH/bin/courtney -o=coverage_jsonld.out jsonld
 - goveralls -coverprofile=coverage_activitypub.out -service=travis-ci -repotoken $COVERALLS_TOKEN
 - goveralls -coverprofile=coverage_jsonld.out -service=travis-ci -repotoken $COVERALLS_TOKEN
