@@ -77,22 +77,22 @@ func TestMarshalNullContext(t *testing.T) {
 }
 
 func TestIsEmpty(t *testing.T) {
-	var a int = 0
+	var a int
 	if !isEmptyValue(reflect.ValueOf(a)) {
-		t.Errorf("Invalid empty value %s", a)
+		t.Errorf("Invalid empty value %v", a)
 	}
 	if !isEmptyValue(reflect.ValueOf(uint(a))) {
-		t.Errorf("Invalid empty value %s", uint(a))
+		t.Errorf("Invalid empty value %v", uint(a))
 	}
-	var b float64 = 0
+	var b float64
 	if !isEmptyValue(reflect.ValueOf(b)) {
-		t.Errorf("Invalid empty value %s", b)
+		t.Errorf("Invalid empty value %v", b)
 	}
-	var c string = ""
+	var c string
 	if !isEmptyValue(reflect.ValueOf(c)) {
 		t.Errorf("Invalid empty value %s", c)
 	}
-	var d []byte = nil
+	var d []byte
 	if !isEmptyValue(reflect.ValueOf(d)) {
 		t.Errorf("Invalid empty value %v", d)
 	}

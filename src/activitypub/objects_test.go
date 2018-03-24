@@ -58,9 +58,9 @@ func TestMarshalJSON(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed marshaling '%v'", err)
 	}
-	m_res := "{\"de\":\"test\",\"en\":\"test\"}"
-	if string(result) != m_res {
-		t.Errorf("Different results '%v' vs. '%v'", string(result), m_res)
+	mRes := "{\"de\":\"test\",\"en\":\"test\"}"
+	if string(result) != mRes {
+		t.Errorf("Different results '%v' vs. '%v'", string(result), mRes)
 	}
 
 	s := make(map[LangRef]string)
@@ -70,9 +70,9 @@ func TestMarshalJSON(t *testing.T) {
 	if err1 != nil {
 		t.Errorf("Failed marshaling '%v'", err1)
 	}
-	m_res1 := "\"test\""
-	if string(result1) != m_res1 {
-		t.Errorf("Different results '%v' vs. '%v'", string(result1), m_res1)
+	mRes1 := "\"test\""
+	if string(result1) != mRes1 {
+		t.Errorf("Different results '%v' vs. '%v'", string(result1), mRes1)
 	}
 }
 
