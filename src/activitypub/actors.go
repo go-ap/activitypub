@@ -1,7 +1,7 @@
 package activitypub
 
+// Actor Types
 const (
-	// Actor Types
 	ApplicationType  ActivityVocabularyType = "Application"
 	GroupType        ActivityVocabularyType = "Group"
 	OrganizationType ActivityVocabularyType = "Organization"
@@ -17,6 +17,7 @@ var validActorTypes = [...]ActivityVocabularyType{
 	ServiceType,
 }
 
+// Endpoints
 type Endpoints struct {
 	// Upload endpoint URI for this user for binary data.
 	UploadMedia ObjectOrLink `jsonld:"uploadMedia,omitempty"`
@@ -70,19 +71,19 @@ type Actor struct {
 }
 
 type (
-	// Describes a software application.
+	// Application describes a software application.
 	Application Actor
 
-	// Represents a formal or informal collective of Actors.
+	// Group represents a formal or informal collective of Actors.
 	Group Actor
 
-	// Represents an organization.
+	// Organization represents an organization.
 	Organization Actor
 
-	// Represents an individual person.
+	// Person represents an individual person.
 	Person Actor
 
-	// Represents a service of any kind.
+	// Service represents a service of any kind.
 	Service Actor
 )
 
