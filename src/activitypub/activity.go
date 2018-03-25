@@ -227,147 +227,203 @@ type Question struct {
 	Closed bool `jsonld:"closed,omitempty"`
 }
 
+// AcceptNew initializes an Accept activity
 func AcceptNew(id ObjectId, ob ObjectOrLink) *Accept {
 	a := ActivityNew(id, AcceptType, ob)
 	o := Accept(*a)
 	return &o
 }
+
+// AddNew initializes an Add activity
 func AddNew(id ObjectId, ob ObjectOrLink) *Add {
 	a := ActivityNew(id, AddType, ob)
 	o := Add(*a)
 	return &o
 }
+
+// AnnounceNew initializes an Announce activity
 func AnnounceNew(id ObjectId, ob ObjectOrLink) *Announce {
 	a := ActivityNew(id, AnnounceType, ob)
 	o := Announce(*a)
 	return &o
 }
+
+// ArriveNew initializes an Arrive activity
 func ArriveNew(id ObjectId) *Arrive {
 	a := IntransitiveActivityNew(id, ArriveType)
 	o := Arrive(*a)
 	return &o
 }
+
+// BlockNew initializes a Block activity
 func BlockNew(id ObjectId, ob ObjectOrLink) *Block {
 	a := ActivityNew(id, BlockType, ob)
 	o := Block(*a)
 	return &o
 }
+
+// CreateNew initializes a Create activity
 func CreateNew(id ObjectId, ob ObjectOrLink) *Create {
 	a := ActivityNew(id, CreateType, ob)
 	o := Create(*a)
 	return &o
 }
+
+// DeleteNew initializes a Delete activity
 func DeleteNew(id ObjectId, ob ObjectOrLink) *Delete {
 	a := ActivityNew(id, DeleteType, ob)
 	o := Delete(*a)
 	return &o
 }
+
+// DislikeNew initializes a Dislike activity
 func DislikeNew(id ObjectId, ob ObjectOrLink) *Dislike {
 	a := ActivityNew(id, DislikeType, ob)
 	o := Dislike(*a)
 	return &o
 }
+
+// FlagNew initializes a Flag activity
 func FlagNew(id ObjectId, ob ObjectOrLink) *Flag {
 	a := ActivityNew(id, FlagType, ob)
 	o := Flag(*a)
 	return &o
 }
+
+// FollowNew initializes a Follow activity
 func FollowNew(id ObjectId, ob ObjectOrLink) *Follow {
 	a := ActivityNew(id, FollowType, ob)
 	o := Follow(*a)
 	return &o
 }
+
+// IgnoreNew initializes an Ignore activity
 func IgnoreNew(id ObjectId, ob ObjectOrLink) *Ignore {
 	a := ActivityNew(id, IgnoreType, ob)
 	o := Ignore(*a)
 	return &o
 }
+
+// InviteNew initializes an Invite activity
 func InviteNew(id ObjectId, ob ObjectOrLink) *Invite {
 	a := ActivityNew(id, InviteType, ob)
 	o := Invite(*a)
 	return &o
 }
+
+// JoinNew initializes a Join activity
 func JoinNew(id ObjectId, ob ObjectOrLink) *Join {
 	a := ActivityNew(id, JoinType, ob)
 	o := Join(*a)
 	return &o
 }
+
+// LeaveNew initializes a Leave activity
 func LeaveNew(id ObjectId, ob ObjectOrLink) *Leave {
 	a := ActivityNew(id, LeaveType, ob)
 	o := Leave(*a)
 	return &o
 }
+
+// LikeNew initializes a Like activity
 func LikeNew(id ObjectId, ob ObjectOrLink) *Like {
 	a := ActivityNew(id, LikeType, ob)
 	o := Like(*a)
 	return &o
 }
+
+// ListenNew initializes a Listen activity
 func ListenNew(id ObjectId, ob ObjectOrLink) *Listen {
 	a := ActivityNew(id, ListenType, ob)
 	o := Listen(*a)
 	return &o
 }
+
+// MoveNew initializes a Move activity
 func MoveNew(id ObjectId, ob ObjectOrLink) *Move {
 	a := ActivityNew(id, MoveType, ob)
 	o := Move(*a)
 	return &o
 }
+
+// OfferNew initializes an Offer activity
 func OfferNew(id ObjectId, ob ObjectOrLink) *Offer {
 	a := ActivityNew(id, OfferType, ob)
 	o := Offer(*a)
 	return &o
 }
+
+// RejectNew initializes a Reject activity
 func RejectNew(id ObjectId, ob ObjectOrLink) *Reject {
 	a := ActivityNew(id, RejectType, ob)
 	o := Reject(*a)
 	return &o
 }
+
+// ReadNew initializes a Read activity
 func ReadNew(id ObjectId, ob ObjectOrLink) *Read {
 	a := ActivityNew(id, ReadType, ob)
 	o := Read(*a)
 	return &o
 }
+
+// RemoveNew initializes a Remove activity
 func RemoveNew(id ObjectId, ob ObjectOrLink) *Remove {
 	a := ActivityNew(id, RemoveType, ob)
 	o := Remove(*a)
 	return &o
 }
+
+// TentativeRejectNew initializes a TentativeReject activity
 func TentativeRejectNew(id ObjectId, ob ObjectOrLink) *TentativeReject {
 	a := ActivityNew(id, TentativeRejectType, ob)
 	o := TentativeReject(*a)
 	return &o
 }
+
+// TentativeAcceptNew initializes a TentativeAccept activity
 func TentativeAcceptNew(id ObjectId, ob ObjectOrLink) *TentativeAccept {
 	a := ActivityNew(id, TentativeAcceptType, ob)
 	o := TentativeAccept(*a)
 	return &o
 }
+
+// TravelNew initializes a Travel activity
 func TravelNew(id ObjectId) *Travel {
 	a := IntransitiveActivityNew(id, TravelType)
 	o := Travel(*a)
 	return &o
 }
+
+// UndoNew initializes an Undo activity
 func UndoNew(id ObjectId, ob ObjectOrLink) *Undo {
 	a := ActivityNew(id, UndoType, ob)
 	o := Undo(*a)
 	return &o
 }
+
+// UpdateNew initializes an Update activity
 func UpdateNew(id ObjectId, ob ObjectOrLink) *Accept {
 	a := ActivityNew(id, UpdateType, ob)
 	o := Accept(*a)
 	return &o
 }
+
+// ViewNew initializes a View activity
 func ViewNew(id ObjectId, ob ObjectOrLink) *View {
 	a := ActivityNew(id, ViewType, ob)
 	o := View(*a)
 	return &o
 }
+
+// QuestionNew initializes a Question activity
 func QuestionNew(id ObjectId) *Question {
 	a := IntransitiveActivityNew(id, QuestionType)
 	o := Question{IntransitiveActivity: a}
 	return &o
 }
 
+// ValidActivityType is a validation function for Activity objects
 func ValidActivityType(_type ActivityVocabularyType) bool {
 	for _, v := range validActivityTypes {
 		if v == _type {
@@ -377,6 +433,7 @@ func ValidActivityType(_type ActivityVocabularyType) bool {
 	return false
 }
 
+// ActivityNew initializes a basic activity
 func ActivityNew(id ObjectId, _type ActivityVocabularyType, ob ObjectOrLink) *Activity {
 	if !ValidActivityType(_type) {
 		_type = ActivityType
@@ -390,6 +447,7 @@ func ActivityNew(id ObjectId, _type ActivityVocabularyType, ob ObjectOrLink) *Ac
 	return &a
 }
 
+// IntransitiveActivityNew initializes a intransitive activity
 func IntransitiveActivityNew(id ObjectId, _type ActivityVocabularyType) *IntransitiveActivity {
 	if !ValidActivityType(_type) {
 		_type = IntransitiveActivityType

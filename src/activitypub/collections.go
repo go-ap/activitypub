@@ -2,8 +2,10 @@ package activitypub
 
 var validCollectionTypes = [...]ActivityVocabularyType{CollectionType, OrderedCollectionType}
 
+// Page
 type Page ObjectOrLink
 
+// Collection
 type Collection struct {
 	*APObject
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
@@ -13,6 +15,7 @@ type Collection struct {
 	Items ItemCollection `jsonld:"items,omitempty"`
 }
 
+// OrderedCollection
 type OrderedCollection struct {
 	*APObject
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
@@ -22,6 +25,7 @@ type OrderedCollection struct {
 	OrderedItems ItemCollection `jsonld:"orderedItems,omitempty"`
 }
 
+// CollectionPage
 type CollectionPage struct {
 	PartOf *Collection
 	// In a paged Collection, indicates the page that contains the most recently updated member items.
@@ -36,6 +40,7 @@ type CollectionPage struct {
 	Prev Page `jsonld:"prev,omitempty"`
 }
 
+// OrderedCollectionPage
 type OrderedCollectionPage struct {
 	PartOf *OrderedCollection
 	// In a paged Collection, indicates the page that contains the most recently updated member items.
@@ -52,6 +57,7 @@ type OrderedCollectionPage struct {
 	StartIndex uint `jsonld:"startIndex,omitempty"`
 }
 
+// ValidCollectionType validates against the valid collection types
 func ValidCollectionType(_type ActivityVocabularyType) bool {
 	for _, v := range validCollectionTypes {
 		if v == _type {
@@ -61,22 +67,26 @@ func ValidCollectionType(_type ActivityVocabularyType) bool {
 	return false
 }
 
+// CollectionNew initializes a new Collection
 func CollectionNew(id ObjectId) *Collection {
 	o := ObjectNew(id, CollectionType)
 
 	return &Collection{APObject: o}
 }
 
+// CollectionNew initializes a new Collection
 func OrderedCollectionNew(id ObjectId) *OrderedCollection {
 	o := ObjectNew(id, OrderedCollectionType)
 
 	return &OrderedCollection{APObject: o}
 }
 
+// CollectionNew initializes a new Collection
 func CollectionPageNew(parent *Collection) *CollectionPage {
 	return &CollectionPage{PartOf: parent}
 }
 
+// CollectionNew initializes a new Collection
 func OrderedCollectionPageNew(parent *OrderedCollection) *OrderedCollectionPage {
 	return &OrderedCollectionPage{PartOf: parent}
 }

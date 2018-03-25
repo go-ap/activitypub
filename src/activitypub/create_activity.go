@@ -2,6 +2,7 @@ package activitypub
 
 import "time"
 
+// CreateActivity is the type for a create activity message
 type CreateActivity struct {
 	Activity  *Create
 	Published time.Time
@@ -9,6 +10,7 @@ type CreateActivity struct {
 	CC        *Actor
 }
 
+// CreateActivityNew initializes a new CreateActivity message
 func CreateActivityNew(id ObjectId, o ObjectOrLink) *CreateActivity {
 	c := CreateActivity{
 		Activity:  CreateNew(id, o),

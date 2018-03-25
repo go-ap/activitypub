@@ -183,8 +183,6 @@ func (p *payloadWithContext) MarshalJSON() ([]byte, error) {
 	return json.Marshal(a.object)
 }
 
-type Encoder struct{}
-
 type jsonLdTag struct {
 	name        string
 	ignore      bool

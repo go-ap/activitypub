@@ -87,6 +87,7 @@ type (
 	Service Actor
 )
 
+// ValidActorType validates the passed type against the valid actor types
 func ValidActorType(_type ActivityVocabularyType) bool {
 	for _, v := range validActorTypes {
 		if v == _type {
@@ -96,6 +97,7 @@ func ValidActorType(_type ActivityVocabularyType) bool {
 	return false
 }
 
+// ActorNew initializes an Actor type actor
 func ActorNew(id ObjectId, _type ActivityVocabularyType) *Actor {
 	if !ValidActorType(_type) {
 		_type = ActorType
@@ -106,30 +108,35 @@ func ActorNew(id ObjectId, _type ActivityVocabularyType) *Actor {
 	return &a
 }
 
+// ApplicationNew initializes an Application type actor
 func ApplicationNew(id ObjectId) *Application {
 	a := ActorNew(id, ApplicationType)
 	o := Application(*a)
 	return &o
 }
 
+// GroupNew initializes a Group type actor
 func GroupNew(id ObjectId) *Group {
 	a := ActorNew(id, GroupType)
 	o := Group(*a)
 	return &o
 }
 
+// OrganizationNew initializes an Organization type actor
 func OrganizationNew(id ObjectId) *Organization {
 	a := ActorNew(id, OrganizationType)
 	o := Organization(*a)
 	return &o
 }
 
+// PersonNew initializes a Person type actor
 func PersonNew(id ObjectId) *Person {
 	a := ActorNew(id, PersonType)
 	o := Person(*a)
 	return &o
 }
 
+// ServiceNew initializes a Service type actor
 func ServiceNew(id ObjectId) *Service {
 	a := ActorNew(id, ServiceType)
 	o := Service(*a)

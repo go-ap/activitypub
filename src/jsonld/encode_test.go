@@ -96,7 +96,7 @@ func TestIsEmpty(t *testing.T) {
 	if !isEmptyValue(reflect.ValueOf(d)) {
 		t.Errorf("Invalid empty value %v", d)
 	}
-	var e *interface{} = nil
+	var e *interface{}
 	if !isEmptyValue(reflect.ValueOf(e)) {
 		t.Errorf("Invalid empty value %v", e)
 	}

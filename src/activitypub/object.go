@@ -5,9 +5,11 @@ import (
 	"time"
 )
 
+// ObjectId
 type ObjectId string
 
 const (
+	// ActivityBaseURI the basic URI for the activity streams namespaces
 	ActivityBaseURI          URI                    = URI("https://www.w3.org/ns/activitystreams#")
 	ObjectType               ActivityVocabularyType = "APObject"
 	LinkType                 ActivityVocabularyType = "Link"
@@ -66,27 +68,38 @@ var validObjectTypes = [...]ActivityVocabularyType{
 }
 
 type (
+	// ActivityVocabularyType
 	ActivityVocabularyType string
-	ActivityObject         interface{}
-	ObjectOrLink           interface {
+	// ActivityObject
+	ActivityObject interface{}
+	// ObjectOrLink
+	ObjectOrLink interface {
 		IsLink() bool
 		IsObject() bool
 	}
-	LinkOrUri            interface{}
-	ImageOrLink          interface{}
-	MimeType             string
-	LangRef              string
+	// LinkOrUri
+	LinkOrUri interface{}
+	// ImageOrLink
+	ImageOrLink interface{}
+	// MimeType
+	MimeType string
+	// LangRef
+	LangRef string
+	// NaturalLanguageValue
 	NaturalLanguageValue map[LangRef]string
 )
 
+// IsLink validates if current APObject is a Link
 func (o APObject) IsLink() bool {
 	return ValidLinkType(o.Type)
 }
 
+// IsObject validates if current APObject is an Object
 func (o APObject) IsObject() bool {
 	return ValidObjectType(o.Type)
 }
 
+// MarshalJSON serializes the NaturalLanguageValue into JSON
 func (n NaturalLanguageValue) MarshalJSON() ([]byte, error) {
 	if len(n) == 1 {
 		for _, v := range n {
@@ -180,13 +193,16 @@ type APObject struct {
 	Duration time.Duration `jsonld:"duration,omitempty"`
 }
 
+// ContentType
 type ContentType string
 
+// Source
 type Source struct {
 	Content   ContentType
 	MediaType string
 }
 
+// ValidGenericType validates the type against the valid generic object types
 func ValidGenericType(_type ActivityVocabularyType) bool {
 	for _, v := range validGenericObjectTypes {
 		if v == _type {
@@ -196,6 +212,7 @@ func ValidGenericType(_type ActivityVocabularyType) bool {
 	return false
 }
 
+// ValidObjectType validates the type against the valid object types
 func ValidObjectType(_type ActivityVocabularyType) bool {
 	for _, v := range validObjectTypes {
 		if v == _type {
@@ -205,6 +222,7 @@ func ValidObjectType(_type ActivityVocabularyType) bool {
 	return ValidActivityType(_type) || ValidActorType(_type) || ValidCollectionType(_type) || ValidGenericType(_type)
 }
 
+// ObjectNew initializes a new Object
 func ObjectNew(id ObjectId, _type ActivityVocabularyType) *APObject {
 	if !(ValidObjectType(_type)) {
 		_type = ObjectType

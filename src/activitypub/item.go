@@ -1,6 +1,7 @@
 package activitypub
 
+// ItemCollection is an array of items
 type ItemCollection []Item
 
-type Item struct {
-}
+// Item struct
+type Item struct{}

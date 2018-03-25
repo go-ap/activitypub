@@ -40,8 +40,10 @@ type Link struct {
 	HrefLang LangRef `jsonld:"hrefLang,omitempty"`
 }
 
+// Mention
 type Mention Link
 
+// ValidLinkType validates a type against the valid link types
 func ValidLinkType(_type ActivityVocabularyType) bool {
 	for _, v := range validLinkTypes {
 		if v == _type {
@@ -51,6 +53,7 @@ func ValidLinkType(_type ActivityVocabularyType) bool {
 	return false
 }
 
+// LinkNew initializes a new Link
 func LinkNew(id ObjectId, _type ActivityVocabularyType) *Link {
 	if !ValidLinkType(_type) {
 		_type = LinkType
@@ -58,22 +61,27 @@ func LinkNew(id ObjectId, _type ActivityVocabularyType) *Link {
 	return &Link{Id: id, Type: _type}
 }
 
+// MentionNew initializes a new Mention
 func MentionNew(id ObjectId) *Mention {
 	return &Mention{Id: id, Type: MentionType}
 }
 
+// IsLink validates if current Link is a Link
 func (l Link) IsLink() bool {
 	return l.Type == LinkType || ValidLinkType(l.Type)
 }
 
+// IsObject validates if current Link is an Object
 func (l Link) IsObject() bool {
 	return l.Type == ObjectType || ValidObjectType(l.Type)
 }
 
+// IsLink validates if current Mention is a Link
 func (l Mention) IsLink() bool {
 	return l.Type == MentionType || ValidLinkType(l.Type)
 }
 
+// IsObject validates if current Mention is an Object
 func (l Mention) IsObject() bool {
 	return l.Type == ObjectType || ValidObjectType(l.Type)
 }
