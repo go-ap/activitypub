@@ -42,5 +42,4 @@ func TestContext_MarshalJSON(t *testing.T) {
 	if !strings.Contains(string(out), url) {
 		t.Errorf("Json doesn't contain %#v, %#v", url, string(out))
 	}
-	t.Logf("%s", out)
 }

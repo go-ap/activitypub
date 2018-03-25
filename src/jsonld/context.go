@@ -22,7 +22,7 @@ func (r *Ref) MarshalText() ([]byte, error) {
 }
 
 func (c *Context) MarshalJSON() ([]byte, error) {
-	a := reflectToJsonValue(c)
+	a := reflectToJSONValue(c)
 	if a.isScalar {
 		return json.Marshal(a.scalar)
 	} else {

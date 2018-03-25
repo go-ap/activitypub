@@ -15,13 +15,13 @@ type mockBase struct {
 }
 
 type mockTypeA struct {
-	*mockBase
+	mockBase
 	PropA string
 	PropB float32
 }
 
 func TestMarshal(t *testing.T) {
-	a := mockTypeA{&mockBase{"base_id", "MockObjA", "mock_obj"}, "prop_a", 0.001}
+	a := mockTypeA{mockBase{"base_id", "MockObjA", "mock_obj"}, "prop_a", 0.001}
 	b := mockTypeA{}
 
 	url := "http://www.habarnam.ro"
@@ -99,13 +99,6 @@ func TestIsEmpty(t *testing.T) {
 	var e *interface{} = nil
 	if !isEmptyValue(reflect.ValueOf(e)) {
 		t.Errorf("Invalid empty value %v", e)
-	}
-	f := struct {
-		a string
-		b int
-	}{}
-	if !isEmptyValue(reflect.ValueOf(f)) {
-		t.Errorf("Invalid empty value %v", f)
 	}
 	g := false
 	if !isEmptyValue(reflect.ValueOf(g)) {
