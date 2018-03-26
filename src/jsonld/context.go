@@ -17,9 +17,17 @@ type Context struct {
 	Language activitypub.NaturalLanguageValue `jsonld:"@language,omitempty,collapsible"`
 }
 
+type Collapsible interface {
+	Collapse() []byte
+}
+
 // Ref returns a new Ref object based on Context URL
 func (c *Context) Ref() Ref {
 	return Ref(c.URL)
+}
+
+func (c *Context) Collapse() []byte {
+	return []byte(c.URL)
 }
 
 // MarshalText basic stringify function
