@@ -766,6 +766,22 @@ func (se *structEncoder) encode(e *encodeState, v reflect.Value, opts encOpts) {
 		} else {
 			e.WriteByte(',')
 		}
+		// TODO(marius): how bad is this?
+		//opts.collapsible = f.collapsible
+		/*
+			if f.collapsible {
+				collapsingMethod := fv.MethodByName("Collapse")
+				if !collapsingMethod.IsValid() || collapsingMethod.IsNil() {
+					continue
+				}
+				e.string(f.name, opts.escapeHTML)
+				e.WriteByte(':')
+
+				content := collapsingMethod.Call(nil)[0].Bytes()
+				e.Write(content)
+				continue
+			}
+		*/
 		e.string(f.name, opts.escapeHTML)
 		e.WriteByte(':')
 		opts.quoted = f.quoted
@@ -1165,11 +1181,12 @@ type field struct {
 	nameBytes []byte                 // []byte(name)
 	equalFold func(s, t []byte) bool // bytes.EqualFold or equivalent
 
-	tag       bool
-	index     []int
-	typ       reflect.Type
-	omitEmpty bool
-	quoted    bool
+	tag         bool
+	index       []int
+	typ         reflect.Type
+	omitEmpty   bool
+	collapsible bool
+	quoted      bool
 }
 
 func fillField(f field) field {
@@ -1284,12 +1301,13 @@ func typeFields(t reflect.Type) []field {
 						name = sf.Name
 					}
 					fields = append(fields, fillField(field{
-						name:      name,
-						tag:       tagged,
-						index:     index,
-						typ:       ft,
-						omitEmpty: opts.Contains("omitempty"),
-						quoted:    quoted,
+						name:        name,
+						tag:         tagged,
+						index:       index,
+						typ:         ft,
+						omitEmpty:   opts.Contains(tagOmitEmpty),
+						collapsible: opts.Contains(tagCollapsible),
+						quoted:      quoted,
 					}))
 					if count[f.typ] > 1 {
 						// If there were multiple instances, add a second,
