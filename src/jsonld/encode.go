@@ -34,41 +34,10 @@ const (
 	tagCollapsible = "collapsible"
 )
 
-//func Marshal(v interface{}, c *Context) ([]byte, error) {
-//	p := payloadWithContext{c, &v}
-//	return p.MarshalJSON()
-//}
-
 type payloadWithContext struct {
 	Context *Context `jsonld:"@context,omitempty,collapsible"`
 	Obj     *interface{}
 }
-
-//func isEmptyValue(v reflect.Value) bool {
-//	switch v.Kind() {
-//	case reflect.Array, reflect.Map, reflect.Slice, reflect.String:
-//		return v.Len() == 0
-//	case reflect.Bool:
-//		return !v.Bool()
-//	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-//		return v.Int() == 0
-//	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-//		return v.Uint() == 0
-//	case reflect.Float32, reflect.Float64:
-//		return v.Float() == 0
-//	case reflect.Interface, reflect.Ptr:
-//		return v.IsNil()
-//	case reflect.Struct:
-//		return func(reflect.Value) bool {
-//			var ret bool = true
-//			for i := 0; i < v.NumField(); i++ {
-//				ret = ret && isEmptyValue(v.Field(i))
-//			}
-//			return ret
-//		}(v)
-//	}
-//	return false
-//}
 
 type jsonCapableValue struct {
 	isScalar bool
@@ -471,6 +440,16 @@ func isEmptyValue(v reflect.Value) bool {
 		return v.Float() == 0
 	case reflect.Interface, reflect.Ptr:
 		return v.IsNil()
+	case reflect.Struct:
+		// this is important as it removes structs containing only empty elements
+		// to ensure that the jsonld message is not extra verbose with valueless properties
+		return func(reflect.Value) bool {
+			var ret bool = true
+			for i := 0; i < v.NumField(); i++ {
+				ret = ret && isEmptyValue(v.Field(i))
+			}
+			return ret
+		}(v)
 	}
 	return false
 }
