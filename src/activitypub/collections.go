@@ -7,7 +7,7 @@ type Page ObjectOrLink
 
 // Collection
 type Collection struct {
-	*APObject
+	*apObject
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
 	TotalItems uint `jsonld:"totalItems,omitempty"`
@@ -17,7 +17,7 @@ type Collection struct {
 
 // OrderedCollection
 type OrderedCollection struct {
-	*APObject
+	*apObject
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
 	TotalItems uint `jsonld:"totalItems,omitempty"`
@@ -71,14 +71,14 @@ func ValidCollectionType(_type ActivityVocabularyType) bool {
 func CollectionNew(id ObjectId) *Collection {
 	o := ObjectNew(id, CollectionType)
 
-	return &Collection{APObject: o}
+	return &Collection{apObject: o}
 }
 
 // CollectionNew initializes a new Collection
 func OrderedCollectionNew(id ObjectId) *OrderedCollection {
 	o := ObjectNew(id, OrderedCollectionType)
 
-	return &OrderedCollection{APObject: o}
+	return &OrderedCollection{apObject: o}
 }
 
 // CollectionNew initializes a new Collection

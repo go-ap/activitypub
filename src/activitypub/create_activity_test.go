@@ -35,7 +35,7 @@ func TestCreateActivityNew(t *testing.T) {
 	if now.Sub(c.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
 	}
-	if !reflect.DeepEqual(c1.Activity.Object.(*APObject), n) {
+	if !reflect.DeepEqual(c1.Activity.Object.(*apObject), n) {
 		t.Errorf("Object \n'%#v' different than expected \n'%#v'", c1.Activity.Object, n)
 	}
 }
