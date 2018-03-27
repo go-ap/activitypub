@@ -68,14 +68,14 @@ func ValidCollectionType(_type ActivityVocabularyType) bool {
 }
 
 // CollectionNew initializes a new Collection
-func CollectionNew(id ObjectId) *Collection {
+func CollectionNew(id ObjectID) *Collection {
 	o := ObjectNew(id, CollectionType)
 
 	return &Collection{apObject: o}
 }
 
 // CollectionNew initializes a new Collection
-func OrderedCollectionNew(id ObjectId) *OrderedCollection {
+func OrderedCollectionNew(id ObjectID) *OrderedCollection {
 	o := ObjectNew(id, OrderedCollectionType)
 
 	return &OrderedCollection{apObject: o}

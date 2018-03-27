@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// ObjectId
-type ObjectId string
+// ObjectID
+type ObjectID string
 
 const (
 	// ActivityBaseURI the basic URI for the activity streams namespaces
@@ -115,7 +115,7 @@ func (n NaturalLanguageValue) MarshalJSON() ([]byte, error) {
 //  including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
 type apObject struct {
 	// Provides the globally unique identifier for an apObject or Link.
-	Id ObjectId `jsonld:"id,omitempty"`
+	Id ObjectID `jsonld:"id,omitempty"`
 	//  Identifies the apObject or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
@@ -223,7 +223,7 @@ func ValidObjectType(_type ActivityVocabularyType) bool {
 }
 
 // ObjectNew initializes a new Object
-func ObjectNew(id ObjectId, _type ActivityVocabularyType) *apObject {
+func ObjectNew(id ObjectID, _type ActivityVocabularyType) *apObject {
 	if !(ValidObjectType(_type)) {
 		_type = ObjectType
 	}

@@ -98,7 +98,7 @@ func ValidActorType(_type ActivityVocabularyType) bool {
 }
 
 // ActorNew initializes an Actor type actor
-func ActorNew(id ObjectId, _type ActivityVocabularyType) *Actor {
+func ActorNew(id ObjectID, _type ActivityVocabularyType) *Actor {
 	if !ValidActorType(_type) {
 		_type = ActorType
 	}
@@ -109,35 +109,35 @@ func ActorNew(id ObjectId, _type ActivityVocabularyType) *Actor {
 }
 
 // ApplicationNew initializes an Application type actor
-func ApplicationNew(id ObjectId) *Application {
+func ApplicationNew(id ObjectID) *Application {
 	a := ActorNew(id, ApplicationType)
 	o := Application(*a)
 	return &o
 }
 
 // GroupNew initializes a Group type actor
-func GroupNew(id ObjectId) *Group {
+func GroupNew(id ObjectID) *Group {
 	a := ActorNew(id, GroupType)
 	o := Group(*a)
 	return &o
 }
 
 // OrganizationNew initializes an Organization type actor
-func OrganizationNew(id ObjectId) *Organization {
+func OrganizationNew(id ObjectID) *Organization {
 	a := ActorNew(id, OrganizationType)
 	o := Organization(*a)
 	return &o
 }
 
 // PersonNew initializes a Person type actor
-func PersonNew(id ObjectId) *Person {
+func PersonNew(id ObjectID) *Person {
 	a := ActorNew(id, PersonType)
 	o := Person(*a)
 	return &o
 }
 
 // ServiceNew initializes a Service type actor
-func ServiceNew(id ObjectId) *Service {
+func ServiceNew(id ObjectID) *Service {
 	a := ActorNew(id, ServiceType)
 	o := Service(*a)
 	return &o

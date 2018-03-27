@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateActivityNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 	var now time.Time
 
 	c := CreateActivityNew(testValue, nil)
@@ -22,7 +22,7 @@ func TestCreateActivityNew(t *testing.T) {
 		t.Errorf("Published time '%v' different than expected '%v'", c.Published, now)
 	}
 
-	testValue = ObjectId("my:note")
+	testValue = ObjectID("my:note")
 	n := ObjectNew("my:note", NoteType)
 	c1 := CreateActivityNew(testValue, n)
 	now = time.Now()

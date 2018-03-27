@@ -38,7 +38,7 @@ func TestAcceptSerialization(t *testing.T) {
 }
 
 func TestCreateActivityHTTPSerialization(t *testing.T) {
-	id := activitypub.ObjectId("test_object")
+	id := activitypub.ObjectID("test_object")
 	obj := activitypub.AcceptNew(id, nil)
 	obj.Name["en"] = "Accept New"
 

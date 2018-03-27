@@ -3,7 +3,7 @@ package activitypub
 import "testing"
 
 func TestLinkNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 	var testType ActivityVocabularyType
 
 	l := LinkNew(testValue, testType)

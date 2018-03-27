@@ -3,7 +3,7 @@ package activitypub
 import "testing"
 
 func TestActivityNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 	var testType ActivityVocabularyType = "Accept"
 
 	a := ActivityNew(testValue, testType, nil)
@@ -25,7 +25,7 @@ func TestActivityNew(t *testing.T) {
 }
 
 func TestIntransitiveActivityNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 	var testType ActivityVocabularyType = "Accept"
 
 	a := IntransitiveActivityNew(testValue, testType)
@@ -69,7 +69,7 @@ func TestValidActivityType(t *testing.T) {
 }
 
 func TestAcceptNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := AcceptNew(testValue, nil)
 
@@ -82,7 +82,7 @@ func TestAcceptNew(t *testing.T) {
 }
 
 func TestAddNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := AddNew(testValue, nil)
 
@@ -95,7 +95,7 @@ func TestAddNew(t *testing.T) {
 }
 
 func TestAnnounceNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := AnnounceNew(testValue, nil)
 
@@ -108,7 +108,7 @@ func TestAnnounceNew(t *testing.T) {
 }
 
 func TestArriveNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := ArriveNew(testValue)
 
@@ -121,7 +121,7 @@ func TestArriveNew(t *testing.T) {
 }
 
 func TestBlockNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := BlockNew(testValue, nil)
 
@@ -134,7 +134,7 @@ func TestBlockNew(t *testing.T) {
 }
 
 func TestCreateNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := CreateNew(testValue, nil)
 
@@ -147,7 +147,7 @@ func TestCreateNew(t *testing.T) {
 }
 
 func TestDeleteNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := DeleteNew(testValue, nil)
 
@@ -160,7 +160,7 @@ func TestDeleteNew(t *testing.T) {
 }
 
 func TestDislikeNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := DislikeNew(testValue, nil)
 
@@ -173,7 +173,7 @@ func TestDislikeNew(t *testing.T) {
 }
 
 func TestFlagNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := FlagNew(testValue, nil)
 
@@ -186,7 +186,7 @@ func TestFlagNew(t *testing.T) {
 }
 
 func TestFollowNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := FollowNew(testValue, nil)
 
@@ -199,7 +199,7 @@ func TestFollowNew(t *testing.T) {
 }
 
 func TestIgnoreNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := IgnoreNew(testValue, nil)
 
@@ -212,7 +212,7 @@ func TestIgnoreNew(t *testing.T) {
 }
 
 func TestInviteNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := InviteNew(testValue, nil)
 
@@ -225,7 +225,7 @@ func TestInviteNew(t *testing.T) {
 }
 
 func TestJoinNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := JoinNew(testValue, nil)
 
@@ -238,7 +238,7 @@ func TestJoinNew(t *testing.T) {
 }
 
 func TestLeaveNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := LeaveNew(testValue, nil)
 
@@ -251,7 +251,7 @@ func TestLeaveNew(t *testing.T) {
 }
 
 func TestLikeNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := LikeNew(testValue, nil)
 
@@ -264,7 +264,7 @@ func TestLikeNew(t *testing.T) {
 }
 
 func TestListenNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := ListenNew(testValue, nil)
 
@@ -277,7 +277,7 @@ func TestListenNew(t *testing.T) {
 }
 
 func TestMoveNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := MoveNew(testValue, nil)
 
@@ -290,7 +290,7 @@ func TestMoveNew(t *testing.T) {
 }
 
 func TestOfferNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := OfferNew(testValue, nil)
 
@@ -303,7 +303,7 @@ func TestOfferNew(t *testing.T) {
 }
 
 func TestQuestionNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := QuestionNew(testValue)
 
@@ -316,7 +316,7 @@ func TestQuestionNew(t *testing.T) {
 }
 
 func TestRejectNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := RejectNew(testValue, nil)
 
@@ -329,7 +329,7 @@ func TestRejectNew(t *testing.T) {
 }
 
 func TestReadNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := ReadNew(testValue, nil)
 
@@ -342,7 +342,7 @@ func TestReadNew(t *testing.T) {
 }
 
 func TestRemoveNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := RemoveNew(testValue, nil)
 
@@ -355,7 +355,7 @@ func TestRemoveNew(t *testing.T) {
 }
 
 func TestTentativeRejectNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := TentativeRejectNew(testValue, nil)
 
@@ -368,7 +368,7 @@ func TestTentativeRejectNew(t *testing.T) {
 }
 
 func TestTentativeAcceptNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := TentativeAcceptNew(testValue, nil)
 
@@ -381,7 +381,7 @@ func TestTentativeAcceptNew(t *testing.T) {
 }
 
 func TestTravelNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := TravelNew(testValue)
 
@@ -394,7 +394,7 @@ func TestTravelNew(t *testing.T) {
 }
 
 func TestUndoNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := UndoNew(testValue, nil)
 
@@ -407,7 +407,7 @@ func TestUndoNew(t *testing.T) {
 }
 
 func TestUpdateNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := UpdateNew(testValue, nil)
 
@@ -420,7 +420,7 @@ func TestUpdateNew(t *testing.T) {
 }
 
 func TestViewNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	a := ViewNew(testValue, nil)
 

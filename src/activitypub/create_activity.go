@@ -11,7 +11,7 @@ type CreateActivity struct {
 }
 
 // CreateActivityNew initializes a new CreateActivity message
-func CreateActivityNew(id ObjectId, o ObjectOrLink) *CreateActivity {
+func CreateActivityNew(id ObjectID, o ObjectOrLink) *CreateActivity {
 	c := CreateActivity{
 		Activity:  CreateNew(id, o),
 		Published: time.Now(),

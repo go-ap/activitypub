@@ -3,7 +3,7 @@ package activitypub
 import "testing"
 
 func TestCollectionNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	c := CollectionNew(testValue)
 
@@ -16,7 +16,7 @@ func TestCollectionNew(t *testing.T) {
 }
 
 func TestOrderedCollectionNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	c := OrderedCollectionNew(testValue)
 
@@ -29,7 +29,7 @@ func TestOrderedCollectionNew(t *testing.T) {
 }
 
 func TestCollectionPageNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	c := CollectionNew(testValue)
 	p := CollectionPageNew(c)
@@ -39,7 +39,7 @@ func TestCollectionPageNew(t *testing.T) {
 }
 
 func TestOrderedCollectionPageNew(t *testing.T) {
-	var testValue = ObjectId("test")
+	var testValue = ObjectID("test")
 
 	c := OrderedCollectionNew(testValue)
 	p := OrderedCollectionPageNew(c)

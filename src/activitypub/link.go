@@ -12,7 +12,7 @@ var validLinkTypes = [...]ActivityVocabularyType{
 // Properties of the Link are properties of the reference as opposed to properties of the resource.
 type Link struct {
 	// Provides the globally unique identifier for an APObject or Link.
-	Id ObjectId `jsonld:"id,omitempty"`
+	Id ObjectID `jsonld:"id,omitempty"`
 	//  Identifies the APObject or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
@@ -54,7 +54,7 @@ func ValidLinkType(_type ActivityVocabularyType) bool {
 }
 
 // LinkNew initializes a new Link
-func LinkNew(id ObjectId, _type ActivityVocabularyType) *Link {
+func LinkNew(id ObjectID, _type ActivityVocabularyType) *Link {
 	if !ValidLinkType(_type) {
 		_type = LinkType
 	}
@@ -62,7 +62,7 @@ func LinkNew(id ObjectId, _type ActivityVocabularyType) *Link {
 }
 
 // MentionNew initializes a new Mention
-func MentionNew(id ObjectId) *Mention {
+func MentionNew(id ObjectID) *Mention {
 	return &Mention{Id: id, Type: MentionType}
 }
 
