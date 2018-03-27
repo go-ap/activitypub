@@ -40,7 +40,7 @@ type Link struct {
 	HrefLang LangRef `jsonld:"hrefLang,omitempty"`
 }
 
-// Mention
+// Mention is a specialized Link that represents an @mention.
 type Mention Link
 
 // ValidLinkType validates a type against the valid link types

@@ -17,6 +17,7 @@ type Context struct {
 	Language activitypub.NaturalLanguageValue `jsonld:"@language,omitempty,collapsible"`
 }
 
+// Collapsible is an interface used by the JSON-LD marshaller to collapse a struct to one single value
 type Collapsible interface {
 	Collapse() []byte
 }
@@ -26,6 +27,7 @@ func (c *Context) Ref() Ref {
 	return Ref(c.URL)
 }
 
+// Collapse returns the plain text collapsed value of the current Context object
 func (c *Context) Collapse() []byte {
 	return []byte(c.URL)
 }

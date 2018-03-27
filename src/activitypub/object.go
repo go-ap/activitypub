@@ -5,13 +5,24 @@ import (
 	"time"
 )
 
-// ObjectID
+// ObjectID designates an unique global identifier.
+// All Objects in [ActivityStreams] should have unique global identifiers.
+// ActivityPub extends this requirement; all objects distributed by the ActivityPub protocol MUST
+// have unique global identifiers, unless they are intentionally transient
+// (short lived activities that are not intended to be able to be looked up,
+// such as some kinds of chat messages or game notifications).
+// These identifiers must fall into one of the following groups:
+//
+// 1. Publicly dereferencable URIs, such as HTTPS URIs, with their authority belonging
+// to that of their originating server. (Publicly facing content SHOULD use HTTPS URIs).
+// 2. An ID explicitly specified as the JSON null object, which implies an anonymous object
+// (a part of its parent context)
 type ObjectID string
 
 const (
 	// ActivityBaseURI the basic URI for the activity streams namespaces
 	ActivityBaseURI          URI                    = URI("https://www.w3.org/ns/activitystreams#")
-	ObjectType               ActivityVocabularyType = "apObject"
+	ObjectType               ActivityVocabularyType = "ActivityPubObject"
 	LinkType                 ActivityVocabularyType = "Link"
 	ActivityType             ActivityVocabularyType = "Activity"
 	IntransitiveActivityType ActivityVocabularyType = "IntransitiveActivity"
@@ -19,7 +30,7 @@ const (
 	CollectionType           ActivityVocabularyType = "Collection"
 	OrderedCollectionType    ActivityVocabularyType = "OrderedCollection"
 
-	// apObject Types
+	// Activity Pub Object Types
 	ArticleType      ActivityVocabularyType = "Article"
 	AudioType        ActivityVocabularyType = "Audio"
 	DocumentType     ActivityVocabularyType = "Document"
@@ -33,7 +44,7 @@ const (
 	TombstoneType    ActivityVocabularyType = "Tombstone"
 	VideoType        ActivityVocabularyType = "Video"
 
-	// Link Types
+	// MentionType is a link type for @mentions
 	MentionType ActivityVocabularyType = "Mention"
 )
 
@@ -68,33 +79,35 @@ var validObjectTypes = [...]ActivityVocabularyType{
 }
 
 type (
-	// ActivityVocabularyType
+	// ActivityVocabularyType is the data type for an Activity type object
 	ActivityVocabularyType string
-	// ActivityObject
+	// ActivityObject is a subtype of Object that describes some form of action that may happen,
+	//  is currently happening, or has already happened
 	ActivityObject interface{}
-	// ObjectOrLink
+	// ObjectOrLink describes an object of any kind.
 	ObjectOrLink interface {
 		IsLink() bool
 		IsObject() bool
 	}
-	// LinkOrUri
+	// LinkOrUri is an interface that Object and Link structs implement, and at the same time
+	// they are kept disjointed
 	LinkOrUri interface{}
-	// ImageOrLink
+	// ImageOrLink is an interface that Image and Link structs implement
 	ImageOrLink interface{}
-	// MimeType
+	// MimeType is the type for MIME types
 	MimeType string
-	// LangRef
+	// LangRef is the type for a language reference, should be ISO 639-1 language specifier.
 	LangRef string
-	// NaturalLanguageValue
+	// NaturalLanguageValue is a mapping for multiple language values
 	NaturalLanguageValue map[LangRef]string
 )
 
-// IsLink validates if current apObject is a Link
+// IsLink validates if current Activity Pub Object is a Link
 func (o apObject) IsLink() bool {
 	return ValidLinkType(o.Type)
 }
 
-// IsObject validates if current apObject is an Object
+// IsObject validates if current Activity Pub Object is an Object
 func (o apObject) IsObject() bool {
 	return ValidObjectType(o.Type)
 }
@@ -193,10 +206,11 @@ type apObject struct {
 	Duration time.Duration `jsonld:"duration,omitempty"`
 }
 
-// ContentType
+// ContentType represents the content type for a Source object
 type ContentType string
 
-// Source
+// Source is intended to convey some sort of source from which the content markup was derived,
+// as a form of provenance, or to support future editing by clients.
 type Source struct {
 	Content   ContentType
 	MediaType string

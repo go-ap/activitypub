@@ -42,9 +42,9 @@ func TestCreateActivityHTTPSerialization(t *testing.T) {
 	obj := activitypub.AcceptNew(id, nil)
 	obj.Name["en"] = "Accept New"
 
-	baseUri := string(activitypub.ActivityBaseURI)
+	baseURI := string(activitypub.ActivityBaseURI)
 	ctx := jsonld.Context{
-		URL: jsonld.Ref(baseUri + string(obj.Type)),
+		URL: jsonld.Ref(baseURI + string(obj.Type)),
 	}
 	data, err := jsonld.Marshal(obj, &ctx)
 	if err != nil {

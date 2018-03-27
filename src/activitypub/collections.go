@@ -2,10 +2,10 @@ package activitypub
 
 var validCollectionTypes = [...]ActivityVocabularyType{CollectionType, OrderedCollectionType}
 
-// Page
+// Page represents a Web Page.
 type Page ObjectOrLink
 
-// Collection
+// Collection is a subtype of Object that represents ordered or unordered sets of Object or Link instances.
 type Collection struct {
 	*apObject
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
@@ -15,7 +15,8 @@ type Collection struct {
 	Items ItemCollection `jsonld:"items,omitempty"`
 }
 
-// OrderedCollection
+// OrderedCollection is a subtype of Collection in which members of the logical
+// collection are assumed to always be strictly ordered.
 type OrderedCollection struct {
 	*apObject
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
@@ -25,7 +26,9 @@ type OrderedCollection struct {
 	OrderedItems ItemCollection `jsonld:"orderedItems,omitempty"`
 }
 
-// CollectionPage
+// CollectionPage is a Collection that contains a large number of items and when it becomes impractical
+// for an implementation to serialize every item contained by a Collection using the items (or orderedItems)
+// property alone. In such cases, the items within a Collection can be divided into distinct subsets or "pages".
 type CollectionPage struct {
 	PartOf *Collection
 	// In a paged Collection, indicates the page that contains the most recently updated member items.
@@ -40,7 +43,10 @@ type CollectionPage struct {
 	Prev Page `jsonld:"prev,omitempty"`
 }
 
-// OrderedCollectionPage
+// OrderedCollectionPage type extends from both CollectionPage and OrderedCollection.
+// In addition to the properties inherited from each of those, the OrderedCollectionPage
+// may contain an additional startIndex property whose value indicates the relative index position
+// of the first item contained by the page within the OrderedCollection to which the page belongs.
 type OrderedCollectionPage struct {
 	PartOf *OrderedCollection
 	// In a paged Collection, indicates the page that contains the most recently updated member items.

@@ -17,7 +17,10 @@ var validActorTypes = [...]ActivityVocabularyType{
 	ServiceType,
 }
 
-// Endpoints
+// Endpoints a json object which maps additional (typically server/domain-wide)
+// endpoints which may be useful either for this actor or someone referencing this actor.
+// This mapping may be nested inside the actor document as the value or may be a link to
+// a JSON-LD document with these properties.
 type Endpoints struct {
 	// Upload endpoint URI for this user for binary data.
 	UploadMedia ObjectOrLink `jsonld:"uploadMedia,omitempty"`
@@ -41,7 +44,10 @@ type Endpoints struct {
 	SharedInbox ObjectOrLink `jsonld:"sharedInbox,omitempty"`
 }
 
-// Actor types are apObject types that are capable of performing activities.
+// Actor is generally one of the ActivityStreams Actor Types, but they don't have to be.
+// For example, a Profile object might be used as an actor, or a type from an ActivityStreams extension.
+// Actors are retrieved like any other Object in ActivityPub.
+// Like other ActivityStreams objects, actors have an id, which is a URI.
 type Actor struct {
 	*apObject
 	// A reference to an [ActivityStreams] OrderedCollection comprised of all the messages received by the actor;
