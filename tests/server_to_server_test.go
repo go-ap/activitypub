@@ -1,8 +1,6 @@
 package tests
 
-// The distribution of the following activities require that they contain the object property:
-// Create, Update, Delete, Follow, Add, Remove, Like, Block, Undo.
-//	Implementation always includes object property for each of the above supported activities
+// S2S tests from: https://test.activitypub.rocks/
 
 import (
 	"activitypub"
@@ -24,9 +22,21 @@ func testActivityHasObject(activity interface{}, obj LinkOrObject) error {
 }
 */
 
+func TestMain(m *testing.M) {
+	// call flag.Parse() here if TestMain uses flags
+	fmt.Println("starting")
+	status := m.Run()
+	fmt.Println("ending")
+	os.Exit(status)
+}
+
+// S2S Server: Activities requiring the object property
+// The distribution of the following activities require that they contain the object property:
+// Create, Update, Delete, Follow, Add, Remove, Like, Block, Undo.
+//	Implementation always includes object property for each of the above supported activities
 func TestObjectPropertyExistsForAdd(t *testing.T) {
 	obj := activitypub.MentionNew("gigel")
-	add := activitypub.AddNew("https://localhost/myactivity", obj)
+	add := activitypub.AddNew("https://localhost/myactivity", obj, nil)
 
 	if add.Object == nil {
 		t.Errorf("Missing Object in Add activity %#v", add.Object)
@@ -120,10 +130,30 @@ func TestObjectPropertyExistsForUndo(t *testing.T) {
 	}
 }
 
-func TestMain(m *testing.M) {
-	// call flag.Parse() here if TestMain uses flags
-	fmt.Println("starting")
-	status := m.Run()
-	fmt.Println("ending")
-	os.Exit(status)
+// S2S Server: Activities requiring the target property
+// The distribution of the following activities require that they contain the target property: Add, Remove.
+func TestTargetPropertyExistsForAdd(t *testing.T) {
+	obj := activitypub.MentionNew("foo")
+	target := activitypub.MentionNew("bar")
+	add := activitypub.AddNew("https://localhost/myactivity", obj, target)
+
+	if add.Target == nil {
+		t.Errorf("Missing Target in Add activity %#v", add.Target)
+	}
+	if add.Target != target {
+		t.Errorf("Add.Target different than what we initialized %#v %#v", add.Target, target)
+	}
+}
+
+func TestTargetPropertyExistsForRemove(t *testing.T) {
+	obj := activitypub.MentionNew("foo")
+	target := activitypub.MentionNew("bar")
+	remove := activitypub.RemoveNew("https://localhost/myactivity", obj, target)
+
+	if remove.Target == nil {
+		t.Errorf("Missing Target in Remove activity %#v", remove.Target)
+	}
+	if remove.Target != target {
+		t.Errorf("Remove.Target different than what we initialized %#v %#v", remove.Target, target)
+	}
 }

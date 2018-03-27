@@ -235,9 +235,10 @@ func AcceptNew(id ObjectID, ob ObjectOrLink) *Accept {
 }
 
 // AddNew initializes an Add activity
-func AddNew(id ObjectID, ob ObjectOrLink) *Add {
+func AddNew(id ObjectID, ob ObjectOrLink, trgt ObjectOrLink) *Add {
 	a := ActivityNew(id, AddType, ob)
 	o := Add(*a)
+	o.Target = trgt
 	return &o
 }
 
@@ -368,9 +369,10 @@ func ReadNew(id ObjectID, ob ObjectOrLink) *Read {
 }
 
 // RemoveNew initializes a Remove activity
-func RemoveNew(id ObjectID, ob ObjectOrLink) *Remove {
+func RemoveNew(id ObjectID, ob ObjectOrLink, trgt ObjectOrLink) *Remove {
 	a := ActivityNew(id, RemoveType, ob)
 	o := Remove(*a)
+	o.Target = trgt
 	return &o
 }
 

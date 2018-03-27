@@ -84,7 +84,7 @@ func TestAcceptNew(t *testing.T) {
 func TestAddNew(t *testing.T) {
 	var testValue = ObjectID("test")
 
-	a := AddNew(testValue, nil)
+	a := AddNew(testValue, nil, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
@@ -344,7 +344,7 @@ func TestReadNew(t *testing.T) {
 func TestRemoveNew(t *testing.T) {
 	var testValue = ObjectID("test")
 
-	a := RemoveNew(testValue, nil)
+	a := RemoveNew(testValue, nil, nil)
 
 	if a.Id != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.Id, testValue)
