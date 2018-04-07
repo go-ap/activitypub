@@ -157,3 +157,13 @@ func TestTargetPropertyExistsForRemove(t *testing.T) {
 		t.Errorf("Remove.Target different than what we initialized %#v %#v", remove.Target, target)
 	}
 }
+
+// S2S Server: Deduplication of recipient list
+// Attempt to submit for delivery an activity that addresses the same actor (ie an actor with the same id) twice.
+// (For example, the same actor could appear on both the to and cc fields, or the actor could be explicitly addressed
+// in to but could also be a member of the addressed followers collection of the sending actor.)
+// The server should deduplicate the list of inboxes to deliver to before delivering.
+//func TestDeduplication(t *testing.T) {
+//	to := activitypub.PersonNew("bob")
+//	cc := []*activitypub.Person{activitypub.PersonNew("alice")}
+//}
