@@ -14,13 +14,11 @@ matrix:
 install:
 - go get -u github.com/dave/courtney
 - go get github.com/mattn/goveralls
-- go get github.com/modocache/gover
 - GOPATH=$GOPATH:$(pwd) go get -t -v ./...
 
 script:
 - GOPATH=$GOPATH:$(pwd) go test -v ./...
 
 after_success:
-- GOPATH=$GOPATH:$(pwd) go test -cover ./...
-- GOPATH=$GOPATH:$(pwd) $GOPATH/bin/gover
-- GOPATH=$GOPATH:$(pwd) $GOPATH/bin/goveralls -coverprofile gover.coverprofile -service=travis-ci -repotoken $COVERALLS_TOKEN
+- GOPATH=$GOPATH:$(pwd) go test -cover -coverprofile cover.out -coverpkg activitypub,jsonld ./...
+- GOPATH=$GOPATH:$(pwd) $GOPATH/bin/goveralls -coverprofile=cover.out -service=travis-ci -repotoken $COVERALLS_TOKEN
