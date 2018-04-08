@@ -21,5 +21,7 @@ script:
 - GOPATH=$GOPATH:$(pwd) go test -v ./...
 
 after_success:
-- GOPATH=$GOPATH:$(pwd) courtney -o=coverage.out ./...
-- GOPATH=$GOPATH:$(pwd) $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+- GOPATH=$GOPATH:$(pwd) $GOPATH/bin/courtney -o=coverage_activitypub.out activitypub
+- GOPATH=$GOPATH:$(pwd) $GOPATH/bin/courtney -o=coverage_jsonld.out jsonld
+- GOPATH=$GOPATH:$(pwd) $GOPATH/bin/goveralls -coverprofile=coverage_activitypub.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+- GOPATH=$GOPATH:$(pwd) $GOPATH/bin/goveralls -coverprofile=coverage_jsonld.out -service=travis-ci -repotoken $COVERALLS_TOKEN
