@@ -1,6 +1,9 @@
 package activitypub
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestLinkNew(t *testing.T) {
 	var testValue = ObjectID("test")
@@ -54,7 +57,7 @@ func TestLink_IsObject(t *testing.T) {
 	}
 }
 
-func TestMention_IsMention(t *testing.T) {
+func TestMention_IsLink(t *testing.T) {
 	m := MentionNew("test")
 	if !m.IsLink() {
 		t.Errorf("%#v should be a valid Mention", m.Type)
@@ -65,5 +68,19 @@ func TestMention_IsObject(t *testing.T) {
 	m := MentionNew("test")
 	if m.IsObject() {
 		t.Errorf("%#v should not be a valid object", m.Type)
+	}
+}
+
+func TestMention_Object(t *testing.T) {
+	m := MentionNew("test")
+	if !reflect.DeepEqual(apObject{}, m.Object()) {
+		t.Errorf("%#v should be an empty object", m.Object())
+	}
+}
+
+func TestMention_Link(t *testing.T) {
+	m := MentionNew("test")
+	if !reflect.DeepEqual(Link(*m), m.Link()) {
+		t.Errorf("%#v should be a Link object", m.Link())
 	}
 }
