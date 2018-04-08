@@ -2,7 +2,6 @@ package jsonld
 
 import (
 	"bytes"
-	"encoding/json"
 	"reflect"
 	"strings"
 	"testing"
@@ -36,7 +35,7 @@ func TestMarshal(t *testing.T) {
 	if !strings.Contains(string(out), url) {
 		t.Errorf("Context url not found '%s' in %s", url, out)
 	}
-	err = json.Unmarshal(out, &b)
+	err = Unmarshal(out, &b)
 	if err != nil {
 		t.Errorf("%s", err)
 	}
@@ -117,7 +116,7 @@ func TestPayloadWithContext_MarshalJSON(t *testing.T) {
 	if eErr != nil {
 		t.Errorf("Error: %s", eErr)
 	}
-	n, _ := json.Marshal(nil)
+	n, _ := Marshal(nil, nil)
 	if bytes.Compare(eData, n) != 0 {
 		t.Errorf("Empty payload should resolve to null json value '%s', received '%s'", n, eData)
 	}
@@ -130,7 +129,7 @@ func TestPayloadWithContext_MarshalJSON(t *testing.T) {
 	if pErr != nil {
 		t.Errorf("Error: %s", pErr)
 	}
-	av, _ := json.Marshal(a)
+	av, _ := Marshal(a, nil)
 	if bytes.Compare(pData, av) != 0 {
 		t.Errorf("Empty payload should resolve to value '%#v', received '%s'", av, pData)
 	}

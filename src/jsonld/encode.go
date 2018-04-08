@@ -326,17 +326,21 @@ func JSONLdName(n string, tag jsonLdTag) string {
 //
 func Marshal(v interface{}, ctx *Context) ([]byte, error) {
 	e := &encodeState{}
-	errC := e.marshal(ctx, encOpts{escapeHTML: true})
-	if errC != nil {
-		return nil, errC
-	}
 	err := e.marshal(v, encOpts{escapeHTML: true})
 	if err != nil {
 		return nil, err
 	}
-	output := e.Bytes()
+	if ctx == nil {
+		return e.Bytes(), nil
+	}
+	errC := e.marshal(ctx, encOpts{escapeHTML: true})
+	if errC != nil {
+		return nil, errC
+	}
 
+	output := e.Bytes()
 	return bytes.Replace(output, []byte("}{"), []byte(", "), 1), nil
+
 }
 
 // Marshaler is the interface implemented by types that
