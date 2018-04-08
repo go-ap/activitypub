@@ -12,7 +12,6 @@ matrix:
   fast_finish: true
 
 install:
-- go get -u github.com/dave/courtney
 - go get github.com/mattn/goveralls
 - go get github.com/modocache/gover
 - GOPATH=$GOPATH:$(pwd) go get -t -v ./...
