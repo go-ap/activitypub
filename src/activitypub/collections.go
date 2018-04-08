@@ -7,7 +7,7 @@ type Page ObjectOrLink
 
 // Collection is a subtype of Object that represents ordered or unordered sets of Object or Link instances.
 type Collection struct {
-	*apObject
+	apObject
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
 	TotalItems uint `jsonld:"totalItems,omitempty"`
@@ -18,7 +18,7 @@ type Collection struct {
 // OrderedCollection is a subtype of Collection in which members of the logical
 // collection are assumed to always be strictly ordered.
 type OrderedCollection struct {
-	*apObject
+	apObject
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
 	TotalItems uint `jsonld:"totalItems,omitempty"`

@@ -2,8 +2,6 @@ package activitypub
 
 import "time"
 
-//import "fmt"
-
 // CreateActivity is the type for a create activity message
 type CreateActivity struct {
 	Activity  *Create
@@ -13,7 +11,7 @@ type CreateActivity struct {
 }
 
 // CreateActivityNew initializes a new CreateActivity message
-func CreateActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) *CreateActivity {
+func CreateActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) CreateActivity {
 	act := CreateNew(id, o)
 
 	ok := false
@@ -34,7 +32,6 @@ func CreateActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) *CreateActiv
 		if typ == ServiceType {
 			act.Actor, ok = a.(Service)
 		}
-		//fmt.Printf("type %v\nok is %t", act.Actor.Object(), ok)
 		if !ok {
 			act.Actor, ok = a.(Actor)
 		}
@@ -45,5 +42,5 @@ func CreateActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) *CreateActiv
 		Published: time.Now(),
 	}
 
-	return &c
+	return c
 }

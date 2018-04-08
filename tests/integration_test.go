@@ -23,8 +23,8 @@ func TestAcceptSerialization(t *testing.T) {
 	if !strings.Contains(string(data), string(ctx.URL)) {
 		t.Errorf("Could not find context url %#v in output %s", ctx.URL, data)
 	}
-	if !strings.Contains(string(data), string(obj.Id)) {
-		t.Errorf("Could not find id %#v in output %s", string(obj.Id), data)
+	if !strings.Contains(string(data), string(obj.ID)) {
+		t.Errorf("Could not find id %#v in output %s", string(obj.ID), data)
 	}
 	if !strings.Contains(string(data), string(obj.Name["en"])) {
 		t.Errorf("Could not find name %#v in output %s", string(obj.Name["en"]), data)
@@ -53,8 +53,8 @@ func TestCreateActivityHTTPSerialization(t *testing.T) {
 	if !strings.Contains(string(data), string(ctx.URL)) {
 		t.Errorf("Could not find context url %#v in output %s", ctx.URL, data)
 	}
-	if !strings.Contains(string(data), string(obj.Id)) {
-		t.Errorf("Could not find id %#v in output %s", string(obj.Id), data)
+	if !strings.Contains(string(data), string(obj.ID)) {
+		t.Errorf("Could not find id %#v in output %s", string(obj.ID), data)
 	}
 	if !strings.Contains(string(data), string(obj.Name["en"])) {
 		t.Errorf("Could not find name %#v in output %s", string(obj.Name["en"]), data)

@@ -49,7 +49,7 @@ type Endpoints struct {
 // Actors are retrieved like any other Object in ActivityPub.
 // Like other ActivityStreams objects, actors have an id, which is a URI.
 type Actor struct {
-	*apObject
+	apObject
 	// A reference to an [ActivityStreams] OrderedCollection comprised of all the messages received by the actor;
 	//  see 5.2 Inbox.
 	Inbox InboxStream `jsonld:"inbox,omitempty"`
@@ -161,7 +161,7 @@ func (a Actor) IsObject() bool {
 
 // Object returns the apObject corresponding to the Actor object
 func (a Actor) Object() apObject {
-	return *(a.apObject)
+	return a.apObject
 }
 
 // Link returns the Link corresponding to the Actor object
@@ -181,7 +181,7 @@ func (p Person) IsObject() bool {
 
 // Object returns the apObject corresponding to the Person object
 func (p Person) Object() apObject {
-	return *p.apObject
+	return p.apObject
 }
 
 // Link returns the Link corresponding to the Person object

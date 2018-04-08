@@ -130,7 +130,7 @@ func (n NaturalLanguageValue) MarshalJSON() ([]byte, error) {
 //  including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
 type apObject struct {
 	// Provides the globally unique identifier for an Activity Pub Object or Link.
-	Id ObjectID `jsonld:"id,omitempty"`
+	ID ObjectID `jsonld:"id,omitempty"`
 	//  Identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
@@ -177,7 +177,7 @@ type apObject struct {
 	// The date and time at which the object was published
 	Published time.Time `jsonld:"published,omitempty"`
 	// Identifies a Collection containing objects considered to be responses to this object.
-	Replies Collection `jsonld:"replies,omitempty"`
+	Replies ObjectOrLink `jsonld:"replies,omitempty"`
 	// The date and time describing the actual or expected starting time of the object.
 	// When used with an Activity object, for instance, the startTime property specifies
 	//  the moment the activity began or is scheduled to begin.
@@ -185,22 +185,22 @@ type apObject struct {
 	// A natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
-	// One or more "tags" that have been associated with an objects. A tag can be any kind of apObject.
+	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	//  while the latter implies associated by reference.
 	Tag ObjectOrLink `jsonld:"tag,omitempty"`
 	// The date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
-	Url LinkOrUri `jsonld:"url,omitempty"`
+	URL LinkOrUri `jsonld:"url,omitempty"`
 	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ObjectOrLink `jsonld:"to,omitempty"`
 	// Identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
 	Bto ObjectOrLink `jsonld:"bto,omitempty"`
 	// Identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
-	Cc []ObjectOrLink `jsonld:"cc,omitempty"`
+	Cc ObjectOrLink `jsonld:"cc,omitempty"`
 	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
-	Bcc []ObjectOrLink `jsonld:"bcc,omitempty"`
+	Bcc ObjectOrLink `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
@@ -239,15 +239,15 @@ func ValidObjectType(_type ActivityVocabularyType) bool {
 }
 
 // ObjectNew initializes a new Object
-func ObjectNew(id ObjectID, _type ActivityVocabularyType) *apObject {
+func ObjectNew(id ObjectID, _type ActivityVocabularyType) apObject {
 	if !(ValidObjectType(_type)) {
 		_type = ObjectType
 	}
-	o := apObject{Id: id, Type: _type}
+	o := apObject{ID: id, Type: _type}
 	o.Name = make(NaturalLanguageValue)
 	o.Content = make(NaturalLanguageValue)
 	o.Summary = make(NaturalLanguageValue)
-	return &o
+	return o
 }
 
 // Object returns the apObject corresponding to the apObject object

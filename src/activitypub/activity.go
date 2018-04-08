@@ -67,7 +67,7 @@ var validActivityTypes = [...]ActivityVocabularyType{
 // IntransitiveActivity Instances of IntransitiveActivity are a subtype of Activity representing intransitive actions.
 // The object property is therefore inappropriate for these activities.
 type IntransitiveActivity struct {
-	*apObject
+	apObject
 	// Describes one or more entities that either performed or are expected to perform the activity.
 	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
 	Actor ObjectOrLink `jsonld:"actor,omitempty"`
