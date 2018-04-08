@@ -37,10 +37,22 @@ func TestCreateActivityNew(t *testing.T) {
 	if now.Sub(c.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
 	}
-	if !reflect.DeepEqual(c1.Activity.Actor.Object().ID, b.Object().ID) {
-		t.Errorf("Actor \n'%#v'\n\n different than expected \n\n'%#v'", c1.Activity.Actor.Object().ID, b.Object().ID)
+	if c1.Activity.Actor.Object().ID != b.ID {
+		t.Errorf("Actor ID %q different than expected %q", c1.Activity.Actor.Object().ID, b.ID)
 	}
-	if !reflect.DeepEqual(c1.Activity.Object.(apObject), n) {
-		t.Errorf("Object \n'%#v'\n\n different than expected \n\n'%#v'\n", c1.Activity.Object, n)
+	if !reflect.DeepEqual(c1.Activity.Actor.Object(), b.Object()) {
+		t.Errorf("Actor %#v different than expected %#v", c1.Activity.Actor.Object(), b.Object())
+	}
+	if !reflect.DeepEqual(c1.Activity.Actor, *b) {
+		t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, *b)
+	}
+	if c1.Activity.Object.Object().ID != n.ID {
+		t.Errorf("Object %q different than expected %q", c1.Activity.Object.Object().ID, n.ID)
+	}
+	if !reflect.DeepEqual(c1.Activity.Object.Object(), n.Object()) {
+		t.Errorf("Object %#v different than expected %#v", c1.Activity.Object.Object(), n.Object())
+	}
+	if !reflect.DeepEqual(c1.Activity.Object, n) {
+		t.Errorf("Object %#v different than expected %#v", c1.Activity.Object, n)
 	}
 }
