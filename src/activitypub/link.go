@@ -77,11 +77,21 @@ func (l Link) IsObject() bool {
 }
 
 // IsLink validates if current Mention is a Link
-func (l Mention) IsLink() bool {
-	return l.Type == MentionType || ValidLinkType(l.Type)
+func (m Mention) IsLink() bool {
+	return m.Type == MentionType || ValidLinkType(m.Type)
 }
 
 // IsObject validates if current Mention is an Object
-func (l Mention) IsObject() bool {
-	return l.Type == ObjectType || ValidObjectType(l.Type)
+func (m Mention) IsObject() bool {
+	return m.Type == ObjectType || ValidObjectType(m.Type)
+}
+
+// Object returns the apObject corresponding to the Mention object
+func (m Mention) Object() apObject {
+	return apObject{}
+}
+
+// Link returns the Link corresponding to the Mention object
+func (m Mention) Link() Link {
+	return Link(m)
 }

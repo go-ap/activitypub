@@ -70,7 +70,7 @@ type IntransitiveActivity struct {
 	*apObject
 	// Describes one or more entities that either performed or are expected to perform the activity.
 	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
-	Actor Actor `jsonld:"actor,omitempty"`
+	Actor ObjectOrLink `jsonld:"actor,omitempty"`
 	// Describes the indirect object, or target, of the activity.
 	// The precise meaning of the target is largely dependent on the type of action being described
 	//  but will often be the object of the English preposition "to".

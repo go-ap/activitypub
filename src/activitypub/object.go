@@ -249,3 +249,13 @@ func ObjectNew(id ObjectID, _type ActivityVocabularyType) *apObject {
 	o.Summary = make(NaturalLanguageValue)
 	return &o
 }
+
+// Object returns the apObject corresponding to the apObject object
+func (o apObject) Object() apObject {
+	return o
+}
+
+// Link returns the Link corresponding to the apObject object
+func (o apObject) Link() Link {
+	return Link{}
+}

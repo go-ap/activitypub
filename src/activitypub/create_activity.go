@@ -2,20 +2,42 @@ package activitypub
 
 import "time"
 
+//import "fmt"
+
 // CreateActivity is the type for a create activity message
 type CreateActivity struct {
 	Activity  *Create
 	Published time.Time
-	To        *Actor
-	CC        *Actor
+	To        *ObjectOrLink
+	CC        *ObjectOrLink
 }
 
 // CreateActivityNew initializes a new CreateActivity message
 func CreateActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) *CreateActivity {
 	act := CreateNew(id, o)
 
+	ok := false
 	if a != nil {
-		act.Actor = Actor(a.(Person))
+		typ := a.Object().Type
+		if typ == ApplicationType {
+			act.Actor, ok = a.(Application)
+		}
+		if typ == GroupType {
+			act.Actor, ok = a.(Group)
+		}
+		if typ == OrganizationType {
+			act.Actor, ok = a.(Organization)
+		}
+		if typ == PersonType {
+			act.Actor, ok = a.(Person)
+		}
+		if typ == ServiceType {
+			act.Actor, ok = a.(Service)
+		}
+		//fmt.Printf("type %v\nok is %t", act.Actor.Object(), ok)
+		if !ok {
+			act.Actor, ok = a.(Actor)
+		}
 	}
 
 	c := CreateActivity{

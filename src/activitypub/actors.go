@@ -148,3 +148,43 @@ func ServiceNew(id ObjectID) *Service {
 	o := Service(*a)
 	return &o
 }
+
+// IsLink validates if current Actor is a Link
+func (a Actor) IsLink() bool {
+	return a.Type == LinkType || ValidLinkType(a.Type)
+}
+
+// IsObject validates if current Actor is an Object
+func (a Actor) IsObject() bool {
+	return a.Type == ObjectType || ValidObjectType(a.Type)
+}
+
+// Object returns the apObject corresponding to the Actor object
+func (a Actor) Object() apObject {
+	return *(a.apObject)
+}
+
+// Link returns the Link corresponding to the Actor object
+func (a Actor) Link() Link {
+	return Link{}
+}
+
+// IsLink validates if current Person is a Link
+func (p Person) IsLink() bool {
+	return p.Type == LinkType || ValidLinkType(p.Type)
+}
+
+// IsObject validates if current Person is an Object
+func (p Person) IsObject() bool {
+	return p.Type == ObjectType || ValidObjectType(p.Type)
+}
+
+// Object returns the apObject corresponding to the Person object
+func (p Person) Object() apObject {
+	return *p.apObject
+}
+
+// Link returns the Link corresponding to the Person object
+func (p Person) Link() Link {
+	return p.Link()
+}
