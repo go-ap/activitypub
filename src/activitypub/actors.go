@@ -186,5 +186,5 @@ func (p Person) Object() apObject {
 
 // Link returns the Link corresponding to the Person object
 func (p Person) Link() Link {
-	return p.Link()
+	return Link{}
 }

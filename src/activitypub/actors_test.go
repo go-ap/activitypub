@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -96,5 +97,61 @@ func TestValidActorType(t *testing.T) {
 		if !ValidActorType(validType) {
 			t.Errorf("APObject Type '%v' should be valid", validType)
 		}
+	}
+}
+
+func TestActor_IsLink(t *testing.T) {
+	m := ActorNew("test", ActorType)
+	if m.IsLink() {
+		t.Errorf("%#v should not be a valid Link", m.Type)
+	}
+}
+
+func TestActor_IsObject(t *testing.T) {
+	m := ActorNew("test", ActorType)
+	if !m.IsObject() {
+		t.Errorf("%#v should be a valid object", m.Type)
+	}
+}
+
+func TestActor_Object(t *testing.T) {
+	m := ActorNew("test", ActorType)
+	if reflect.DeepEqual(apObject{}, m.Object()) {
+		t.Errorf("%#v should not be an empty activity pub object", m.Object())
+	}
+}
+
+func TestActor_Link(t *testing.T) {
+	m := ActorNew("test", ActorType)
+	if !reflect.DeepEqual(Link{}, m.Link()) {
+		t.Errorf("%#v should be an empty Link object", m.Link())
+	}
+}
+
+func TestPerson_IsLink(t *testing.T) {
+	m := PersonNew("test")
+	if m.IsLink() {
+		t.Errorf("%#v should not be a valid Link", m.Type)
+	}
+}
+
+func TestPerson_IsObject(t *testing.T) {
+	m := PersonNew("test")
+	if !m.IsObject() {
+		t.Errorf("%#v should be a valid object", m.Type)
+	}
+}
+
+func TestPerson_Object(t *testing.T) {
+	m := PersonNew("test")
+	if reflect.DeepEqual(apObject{}, m.Object()) {
+		t.Errorf("%#v should not be an empty activity pub object", m.Object())
+	}
+}
+
+func TestPerson_Link(t *testing.T) {
+	m := PersonNew("test")
+	if !reflect.DeepEqual(Link{}, m.Link()) {
+		t.Errorf("%#v should be an empty Link object", m.Link())
 	}
 }
