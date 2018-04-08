@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -123,5 +124,12 @@ func TestObject_IsObject(t *testing.T) {
 	m := ObjectNew("test", AcceptType)
 	if !m.IsObject() {
 		t.Errorf("%#v should be a valid object", m.Type)
+	}
+}
+
+func TestObject_Link(t *testing.T) {
+	o := ObjectNew("test", ObjectType)
+	if !reflect.DeepEqual(Link{}, o.Link()) {
+		t.Errorf("%#v should be an empty Link object", o.Link())
 	}
 }
