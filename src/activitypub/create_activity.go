@@ -47,6 +47,8 @@ func CreateActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) CreateActivi
 		}
 	}
 
+	act.Actor.Inbox.Append(o)
+
 	c := CreateActivity{
 		Activity:  act,
 		Published: time.Now(),

@@ -76,6 +76,8 @@ type Actor struct {
 	Streams []Collection `jsonld:"streams,omitempty"`
 }
 
+type ActorInterface interface{}
+
 type (
 	// Application describes a software application.
 	Application Actor
@@ -110,7 +112,12 @@ func ActorNew(id ObjectID, _type ActivityVocabularyType) *Actor {
 	}
 	o := ObjectNew(id, _type)
 	a := Actor{apObject: o}
+
+	in := InboxNew()
+
+	a.Inbox = InboxStream(*in)
 	a.PreferredUsername = make(NaturalLanguageValue, 0)
+
 	return &a
 }
 
