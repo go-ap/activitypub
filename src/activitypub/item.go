@@ -4,4 +4,4 @@ package activitypub
 type ItemCollection []Item
 
 // Item struct
-type Item struct{}
+type Item ObjectOrLink

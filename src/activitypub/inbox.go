@@ -11,3 +11,21 @@ type (
 	// Inbox is a type alias for an Ordered Collection
 	Inbox OrderedCollection
 )
+
+// InboxNew initializes a new Inbox
+func InboxNew() *Inbox {
+	id := ObjectID("inbox")
+	o := ObjectNew(id, OrderedCollectionType)
+
+	i := Inbox{apObject: o}
+	i.TotalItems = 0
+
+	return &i
+}
+
+// Append adds an element to an InboxStream
+func (i *InboxStream) Append(o ObjectOrLink) error {
+	i.OrderedItems = append(i.OrderedItems, o)
+	i.TotalItems++
+	return nil
+}

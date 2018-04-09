@@ -5,6 +5,10 @@ var validCollectionTypes = [...]ActivityVocabularyType{CollectionType, OrderedCo
 // Page represents a Web Page.
 type Page ObjectOrLink
 
+type CollectionInterface interface {
+	Append(o ObjectOrLink) error
+}
+
 // Collection is a subtype of Object that represents ordered or unordered sets of Object or Link instances.
 type Collection struct {
 	apObject
@@ -95,4 +99,18 @@ func CollectionPageNew(parent *Collection) *CollectionPage {
 // CollectionNew initializes a new Collection
 func OrderedCollectionPageNew(parent *OrderedCollection) *OrderedCollectionPage {
 	return &OrderedCollectionPage{PartOf: parent}
+}
+
+// Append adds an element to an OrderedCollection
+func (c *OrderedCollection) Append(o ObjectOrLink) error {
+	c.OrderedItems = append(c.OrderedItems, o)
+	c.TotalItems++
+	return nil
+}
+
+// Append adds an element to an Collection
+func (c *Collection) Append(o ObjectOrLink) error {
+	c.Items = append(c.Items, o)
+	c.TotalItems++
+	return nil
 }

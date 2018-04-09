@@ -1,6 +1,9 @@
 package activitypub
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestCollectionNew(t *testing.T) {
 	var testValue = ObjectID("test")
@@ -53,5 +56,37 @@ func TestValidCollectionType(t *testing.T) {
 		if !ValidCollectionType(validType) {
 			t.Errorf("Generic Type '%#v' should be valid", validType)
 		}
+	}
+}
+
+func Test_OrderedCollection_Append(t *testing.T) {
+	id := ObjectID("test")
+
+	val := apObject{ID: ObjectID("grrr")}
+
+	c := OrderedCollectionNew(id)
+	c.Append(val)
+
+	if c.TotalItems != 1 {
+		t.Errorf("Inbox collection of %q should have exactly an Object", c.Object().ID)
+	}
+	if !reflect.DeepEqual(c.OrderedItems[0].Object(), val) {
+		t.Errorf("First item in Inbox is does not match %q", val.ID)
+	}
+}
+
+func Test_Collection_Append(t *testing.T) {
+	id := ObjectID("test")
+
+	val := apObject{ID: ObjectID("grrr")}
+
+	c := CollectionNew(id)
+	c.Append(val)
+
+	if c.TotalItems != 1 {
+		t.Errorf("Inbox collection of %q should have exactly an Object", c.Object().ID)
+	}
+	if !reflect.DeepEqual(c.Items[0].Object(), val) {
+		t.Errorf("First item in Inbox is does not match %q", val.ID)
 	}
 }
