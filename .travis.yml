@@ -5,7 +5,6 @@ go:
 - 'tip'
 
 env:
-  secure: ZWPheXMN8k1Bpb4VnRDo/1ZZ5o3c3jmGUJRIaR2eBnVjSHoilNBdiZCTDbGbyFA9VP7OLEPUxKDewB1ELU556MIXKCjjFzm3ewyXNG0M4AwC++hfXuCD4qvlmH4LWleKD5dILCA5W5iwHCO2P1E/XXXp61KXxn9K16I4dJiJliSqN2/qQV3XjUrd3NlxOw6E6RNM3JSeYLU/MsrAXfXNG5L6uowtRKjVGZd00aivPNeb6CnUhRoGFmEqiOeX9SVDnKhaGbFe8aOiGFjRMWRHlFk1UDjmBAiKOB77jU8gCsLZKZgkDZ0LYAIElrTvk5WPwUGKcai4o7zS3heBPLjHpyniEfM4Ym4MkA8X8a/avd4Kc8fM0WC3BIaoRpeMQNu8uh0RGUt7cCF6YWFgejSHCf7heMqIjZcTS9t92CWKH5EOf2TVQp02YhHICkPO9J7pSQ0dvYF61tBp+yCmtgeraxZ4PSqSf6oCKbjiKGjWe1UCAn+L1GkAepioRmXyOGTQLR7vFk/EC35n8XTM4i3/3U3tZ6e4OCXzMT+qNFrmtSyuJbv4OkK5wPbP4JcMLw4hTGhULncD4fI7COqmlNkaCdT1gSOPugjgLXjon4YzpzBsntA/ivzwNUSCPWrj/NfCVKDH9m6GN2Y7Qtz8CwDP/hpDJrKiyu6CwuWHdpDEObI=
   secure: "B7PKS+9jFFJ4puyReHouWyKHqUrGMiBkSmpVWzM4E1gOMwzQmzY7achtba/BVmE8V5rzjj9OnqmiIJQCuDSTuguL5bH8cCk3n9M+KHBVCwSF2vJYRKMhcClmjmzQJpLpy/Gsp3PtaosMaPc3WKlYx/N76hjqg/gq2CrJU+dfIsiYUSV2CKUVXuqOLO4Sh+84nMBGFbR0aWRUGYdRr0qRlCbg+0l5l/nyHy4wluQt1LAm7SRZYqZJLnWoE1oIMG5D4rPzTtqT2hKpCHbxYIUmtY7kNLulikLdseIDF0ii1SdHRjGAQOS++FwMX0i5fqSTXNvmyVSenTJh+g3aVf5prJOjS+5GKd/rYoSHNf+zWPCiehyeE2klY7mEXQJEWnSHtIzQ7G7TrxSTl4z99TvzcvXM+vDG1b829TbGERaUqkr2p+nW2IEV6rJQO2o8SyWqB/QwisY6ombVcR33zOzFkHozLW1yjed+VdRF/N647MC2r5hKMn/dx0nP2x6ihRO9AJnqqd1KFd1p9SWJ+hzGiwO/P5iTRgdhXsR3YfrEvM315fadM2997aQZ53FabD+NgMY41MHGggLoDI3XcrW8Rs90hG3mx3eI1OK+XXi0vYl7Mw887zdgZ3n+KGqNhcXWmwnB1PV17hCQXV2gJkKi1gacclxErO3svFddY76mj1Y="
 matrix:
   allow_failures:
@@ -13,7 +12,6 @@ matrix:
   fast_finish: true
 
 install:
-- go get github.com/mattn/goveralls
 - go get github.com/modocache/gover
 - GOPATH=$GOPATH:$(pwd) go get -t -v ./...
 
@@ -24,5 +22,4 @@ after_success:
 - GOPATH=$GOPATH:$(pwd) go test -cover -coverprofile activitypub.coverprofile activitypub
 - GOPATH=$GOPATH:$(pwd) go test -cover -coverprofile jsonld.coverprofile jsonld
 - GOPATH=$GOPATH:$(pwd) $GOPATH/bin/gover
-- GOPATH=$GOPATH:$(pwd) $GOPATH/bin/goveralls -coverprofile gover.coverprofile -service=travis-ci -repotoken $COVERALLS_TOKEN
 - bash <(curl -s https://codecov.io/bash) -f gover.coverprofile

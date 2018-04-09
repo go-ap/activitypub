@@ -2,7 +2,7 @@
 
 [![MIT Licensed](https://img.shields.io/github/license/mariusor/activitypub.go.svg)](https://raw.githubusercontent.com/mariusor/activitypub.go/master/LICENSE)
 [![Build status](https://img.shields.io/travis/mariusor/activitypub.go.svg)](https://travis-ci.org/mariusor/activitypub.go)
-[![Test Coverage](https://img.shields.io/coveralls/mariusor/activitypub.go/master.svg)](https://coveralls.io/r/mariusor/activitypub.go?branch=master)
+[![Test Coverage](https://img.shields.io/codecov/c/github/mariusor/activitypub.go.svg)](https://codecov.io/gh/mariusor/activitypub.go)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mariusor/activitypub.go)](https://goreportcard.com/report/github.com/mariusor/activitypub.go)
 
 Basic lib for using [activity pub](https://www.w3.org/TR/activitypub/#Overview) API in Go.
