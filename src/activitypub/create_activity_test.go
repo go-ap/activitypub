@@ -45,8 +45,8 @@ func TestCreateActivityNewWithApplication(t *testing.T) {
 	if !reflect.DeepEqual(c1.Activity.Actor.Object(), a.Object()) {
 		t.Errorf("Actor %#v different than expected %#v", c1.Activity.Actor.Object(), a.Object())
 	}
-	if !reflect.DeepEqual(c1.Activity.Actor, *a) {
-		t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, *a)
+	if !reflect.DeepEqual(c1.Activity.Actor, Actor(*a)) {
+		t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, Actor(*a))
 	}
 	if c1.Activity.Object.Object().ID != n.ID {
 		t.Errorf("Object %q different than expected %q", c1.Activity.Object.Object().ID, n.ID)
@@ -81,8 +81,8 @@ func TestCreateActivityNewWithGroup(t *testing.T) {
 	if !reflect.DeepEqual(c1.Activity.Actor.Object(), g.Object()) {
 		t.Errorf("Actor %#v different than expected %#v", c1.Activity.Actor.Object(), g.Object())
 	}
-	if !reflect.DeepEqual(c1.Activity.Actor, *g) {
-		t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, *g)
+	if !reflect.DeepEqual(c1.Activity.Actor, Actor(*g)) {
+		t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, Actor(*g))
 	}
 	if c1.Activity.Object.Object().ID != n.ID {
 		t.Errorf("Object %q different than expected %q", c1.Activity.Object.Object().ID, n.ID)
@@ -117,8 +117,8 @@ func TestCreateActivityNewWithOrganization(t *testing.T) {
 	if !reflect.DeepEqual(c1.Activity.Actor.Object(), o.Object()) {
 		t.Errorf("Actor %#v different than expected %#v", c1.Activity.Actor.Object(), o.Object())
 	}
-	if !reflect.DeepEqual(c1.Activity.Actor, *o) {
-		t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, *o)
+	if !reflect.DeepEqual(c1.Activity.Actor, Actor(*o)) {
+		t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, Actor(*o))
 	}
 	if c1.Activity.Object.Object().ID != n.ID {
 		t.Errorf("Object %q different than expected %q", c1.Activity.Object.Object().ID, n.ID)
@@ -153,8 +153,8 @@ func TestCreateActivityNewWithPerson(t *testing.T) {
 	if !reflect.DeepEqual(c1.Activity.Actor.Object(), b.Object()) {
 		t.Errorf("Actor %#v different than expected %#v", c1.Activity.Actor.Object(), b.Object())
 	}
-	if !reflect.DeepEqual(c1.Activity.Actor, *b) {
-		t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, *b)
+	if !reflect.DeepEqual(c1.Activity.Actor, Actor(*b)) {
+		t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, Actor(*b))
 	}
 	if c1.Activity.Object.Object().ID != n.ID {
 		t.Errorf("Object %q different than expected %q", c1.Activity.Object.Object().ID, n.ID)
@@ -189,8 +189,8 @@ func TestCreateActivityNewWithService(t *testing.T) {
 	if !reflect.DeepEqual(c1.Activity.Actor.Object(), s.Object()) {
 		t.Errorf("Actor %#v different than expected %#v", c1.Activity.Actor.Object(), s.Object())
 	}
-	if !reflect.DeepEqual(c1.Activity.Actor, *s) {
-		t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, *s)
+	if !reflect.DeepEqual(c1.Activity.Actor, Actor(*s)) {
+		t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, Actor(*s))
 	}
 	if c1.Activity.Object.Object().ID != n.ID {
 		t.Errorf("Object %q different than expected %q", c1.Activity.Object.Object().ID, n.ID)

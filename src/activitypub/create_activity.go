@@ -18,19 +18,29 @@ func CreateActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) CreateActivi
 	if a != nil {
 		typ := a.Object().Type
 		if typ == ApplicationType {
-			act.Actor, ok = a.(Application)
+			var app Application
+			app, ok = a.(Application)
+			act.Actor = Actor(app)
 		}
 		if typ == GroupType {
-			act.Actor, ok = a.(Group)
+			var grp Group
+			grp, ok = a.(Group)
+			act.Actor = Actor(grp)
 		}
 		if typ == OrganizationType {
-			act.Actor, ok = a.(Organization)
+			var org Organization
+			org, ok = a.(Organization)
+			act.Actor = Actor(org)
 		}
 		if typ == PersonType {
-			act.Actor, ok = a.(Person)
+			var pers Person
+			pers, ok = a.(Person)
+			act.Actor = Actor(pers)
 		}
 		if typ == ServiceType {
-			act.Actor, ok = a.(Service)
+			var serv Service
+			serv, ok = a.(Service)
+			act.Actor = Actor(serv)
 		}
 		if !ok {
 			act.Actor, ok = a.(Actor)
