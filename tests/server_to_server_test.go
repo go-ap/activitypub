@@ -1,6 +1,6 @@
 package tests
 
-// S2S tests from: https://test.activitypub.rocks/
+// Server to Server tests from: https://test.activitypub.rocks/
 
 import (
 	"activitypub"
@@ -23,7 +23,6 @@ func testActivityHasObject(activity interface{}, obj LinkOrObject) error {
 */
 
 func TestMain(m *testing.M) {
-	// call flag.Parse() here if TestMain uses flags
 	fmt.Println("starting")
 	status := m.Run()
 	fmt.Println("ending")
@@ -163,7 +162,46 @@ func TestTargetPropertyExistsForRemove(t *testing.T) {
 // (For example, the same actor could appear on both the to and cc fields, or the actor could be explicitly addressed
 // in to but could also be a member of the addressed followers collection of the sending actor.)
 // The server should deduplicate the list of inboxes to deliver to before delivering.
-//func TestDeduplication(t *testing.T) {
-//	to := activitypub.PersonNew("bob")
-//	cc := []*activitypub.Person{activitypub.PersonNew("alice")}
-//}
+func TestDeduplication(t *testing.T) {
+	to := activitypub.PersonNew("bob")
+	o := activitypub.ObjectNew("something", activitypub.ArticleType)
+	cc := activitypub.PersonNew("alice")
+
+	c := activitypub.CreateNew("create", o)
+	c.To.Append(to)
+	c.CC.Append(cc)
+	c.BCC.Append(cc)
+
+	activitypub.RecipientsDeduplication(&c.To, &c.Bto, &c.CC, &c.BCC)
+
+	iter := func(list activitypub.ObjectsArr, recIds *[]activitypub.ObjectID) error {
+		for _, rec := range list {
+			for _, id := range *recIds {
+				if rec.Object().ID == id {
+					return fmt.Errorf("%T[%s] already stored in recipients list, Deduplication faild", rec, id)
+				}
+			}
+			*recIds = append(*recIds, rec.Object().ID)
+		}
+		return nil
+	}
+
+	var err error
+	recIds := make([]activitypub.ObjectID, 0)
+	err = iter(c.To, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = iter(c.Bto, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = iter(c.CC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = iter(c.BCC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+}

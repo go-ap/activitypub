@@ -6,8 +6,8 @@ import "time"
 type CreateActivity struct {
 	Activity  *Create
 	Published time.Time
-	To        *ObjectOrLink
-	CC        *ObjectOrLink
+	To        ObjectsArr
+	CC        ObjectsArr
 }
 
 // CreateActivityNew initializes a new CreateActivity message

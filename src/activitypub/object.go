@@ -91,9 +91,11 @@ type (
 		Object() apObject
 		Link() Link
 	}
-	// LinkOrUri is an interface that Object and Link structs implement, and at the same time
+	// ObjectsArr is a named type for matching an ObjectOrLink slice type to Collection interface
+	ObjectsArr []ObjectOrLink
+	// LinkOrURI is an interface that Object and Link structs implement, and at the same time
 	// they are kept disjointed
-	LinkOrUri interface{}
+	LinkOrURI interface{}
 	// ImageOrLink is an interface that Image and Link structs implement
 	ImageOrLink interface{}
 	// MimeType is the type for MIME types
@@ -192,15 +194,15 @@ type apObject struct {
 	// The date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
-	URL LinkOrUri `jsonld:"url,omitempty"`
+	URL LinkOrURI `jsonld:"url,omitempty"`
 	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
-	To ObjectOrLink `jsonld:"to,omitempty"`
+	To ObjectsArr `jsonld:"to,omitempty"`
 	// Identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
-	Bto ObjectOrLink `jsonld:"bto,omitempty"`
+	Bto ObjectsArr `jsonld:"bto,omitempty"`
 	// Identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
-	Cc ObjectOrLink `jsonld:"cc,omitempty"`
+	CC ObjectsArr `jsonld:"cc,omitempty"`
 	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
-	Bcc ObjectOrLink `jsonld:"bcc,omitempty"`
+	BCC ObjectsArr `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
@@ -258,4 +260,41 @@ func (o apObject) Object() apObject {
 // Link returns the Link corresponding to the apObject object
 func (o apObject) Link() Link {
 	return Link{}
+}
+
+func (c *ObjectsArr) Append(o ObjectOrLink) error {
+	old_len := len(*c)
+	d := make(ObjectsArr, old_len+1)
+	for k, it := range *c {
+		d[k] = it
+	}
+	d[old_len] = o
+	*c = d
+	return nil
+}
+
+// RecipientsDeduplication normalizes the received recipient lists
+func RecipientsDeduplication(others ...*ObjectsArr) error {
+	recIds := make([]ObjectID, 0)
+
+	for _, list := range others {
+		if list == nil {
+			continue
+		}
+		for i, rec := range *list {
+			save := true
+			for _, id := range recIds {
+				if rec.Object().ID == id {
+					// remove the element
+					*list = append((*list)[:i], (*list)[i+1:]...)
+					save = false
+					continue
+				}
+			}
+			if save {
+				recIds = append(recIds, rec.Object().ID)
+			}
+		}
+	}
+	return nil
 }
