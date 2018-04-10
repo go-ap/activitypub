@@ -284,6 +284,7 @@ func RecipientsDeduplication(recArgs ...*ObjectsArr) error {
 		if recList == nil {
 			continue
 		}
+
 		toRemove := make([]int, 0)
 		for i, rec := range *recList {
 			save := true
@@ -301,11 +302,7 @@ func RecipientsDeduplication(recArgs ...*ObjectsArr) error {
 
 		sort.Sort(sort.Reverse(sort.IntSlice(toRemove)))
 		for _, idx := range toRemove {
-			if idx == len(*recList) {
-				*recList = (*recList)[:idx]
-			} else {
-				*recList = append((*recList)[:idx], (*recList)[idx+1:]...)
-			}
+			*recList = append((*recList)[:idx], (*recList)[idx+1:]...)
 		}
 	}
 	return nil
