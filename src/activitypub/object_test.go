@@ -192,4 +192,9 @@ func TestRecipientsDeduplication(t *testing.T) {
 	if len(second) != 0 {
 		t.Errorf("Second Objects array should have exactly 0(zero) elements, not %d", len(second))
 	}
+
+	err := RecipientsDeduplication(&first, &second, nil)
+	if err != nil {
+		t.Errorf("Deduplication with empty array failed")
+	}
 }
