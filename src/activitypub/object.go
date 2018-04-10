@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"encoding/json"
+	"sort"
 	"time"
 )
 
@@ -262,37 +263,48 @@ func (o apObject) Link() Link {
 	return Link{}
 }
 
+// Append facilitates adding elements to ObjectOrLink arrays
+// and ensures ObjectsArr implements the Collection interface
 func (c *ObjectsArr) Append(o ObjectOrLink) error {
-	old_len := len(*c)
-	d := make(ObjectsArr, old_len+1)
+	oldLen := len(*c)
+	d := make(ObjectsArr, oldLen+1)
 	for k, it := range *c {
 		d[k] = it
 	}
-	d[old_len] = o
+	d[oldLen] = o
 	*c = d
 	return nil
 }
 
 // RecipientsDeduplication normalizes the received recipient lists
-func RecipientsDeduplication(others ...*ObjectsArr) error {
+func RecipientsDeduplication(recArgs ...*ObjectsArr) error {
 	recIds := make([]ObjectID, 0)
 
-	for _, list := range others {
-		if list == nil {
+	for _, recList := range recArgs {
+		if recList == nil {
 			continue
 		}
-		for i, rec := range *list {
+		toRemove := make([]int, 0)
+		for i, rec := range *recList {
 			save := true
 			for _, id := range recIds {
 				if rec.Object().ID == id {
-					// remove the element
-					*list = append((*list)[:i], (*list)[i+1:]...)
+					// mark the element for removal
+					toRemove = append(toRemove, i)
 					save = false
-					continue
 				}
 			}
 			if save {
 				recIds = append(recIds, rec.Object().ID)
+			}
+		}
+
+		sort.Sort(sort.Reverse(sort.IntSlice(toRemove)))
+		for _, idx := range toRemove {
+			if idx == len(*recList) {
+				*recList = (*recList)[:idx]
+			} else {
+				*recList = append((*recList)[:idx], (*recList)[idx+1:]...)
 			}
 		}
 	}

@@ -133,3 +133,52 @@ func TestObject_Link(t *testing.T) {
 		t.Errorf("%#v should be an empty Link object", o.Link())
 	}
 }
+
+func TestObjectsArr_Append(t *testing.T) {
+	d := make(ObjectsArr, 0)
+
+	val := apObject{ID: ObjectID("grrr")}
+
+	d.Append(val)
+
+	if len(d) != 1 {
+		t.Errorf("Objects array should have exactly an element")
+	}
+	if !reflect.DeepEqual(d[0], val) {
+		t.Errorf("First item in object array does not match %q", val.ID)
+	}
+}
+
+func TestRecipientsDeduplication(t *testing.T) {
+	bob := PersonNew("bob")
+	alice := PersonNew("alice")
+	foo := OrganizationNew("foo")
+	bar := GroupNew("bar")
+
+	first := make(ObjectsArr, 0)
+	if len(first) != 0 {
+		t.Errorf("Objects array should have exactly an element")
+	}
+
+	first.Append(bob)
+	first.Append(alice)
+	first.Append(foo)
+	first.Append(bar)
+	if len(first) != 4 {
+		t.Errorf("Objects array should have exactly 4(four) elements, not %d", len(first))
+	}
+
+	first.Append(bar)
+	first.Append(alice)
+	first.Append(foo)
+	first.Append(bob)
+	if len(first) != 8 {
+		t.Errorf("Objects array should have exactly 8(eight) elements, not %d", len(first))
+	}
+
+	RecipientsDeduplication(&first)
+	if len(first) != 4 {
+		t.Errorf("Objects array should have exactly 8(eight) elements, not %d", len(first))
+	}
+
+}
