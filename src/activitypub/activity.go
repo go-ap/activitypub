@@ -458,3 +458,15 @@ func IntransitiveActivityNew(id ObjectID, _type ActivityVocabularyType) *Intrans
 
 	return &IntransitiveActivity{apObject: o}
 }
+
+func (a *Activity) RecipientsDeduplication() {
+	var actor ObjectsArr
+	actor.Append(a.Actor)
+	recipientsDeduplication(&actor, &a.To, &a.CC, &a.BCC)
+}
+
+func (i *IntransitiveActivity) RecipientsDeduplication() {
+	var actor ObjectsArr
+	actor.Append(i.Actor)
+	recipientsDeduplication(&actor, &i.To, &i.CC, &i.BCC)
+}

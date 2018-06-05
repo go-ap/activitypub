@@ -150,7 +150,7 @@ S2S Server: Deduplication of recipient list
 	c.CC.Append(cc)
 	c.BCC.Append(cc)
 
-	activitypub.RecipientsDeduplication(&c.To, &c.Bto, &c.CC, &c.BCC)
+	c.RecipientsDeduplication()
 
 	checkDedup := func(list activitypub.ObjectsArr, recIds *[]activitypub.ObjectID) error {
 		for _, rec := range list {
@@ -194,7 +194,52 @@ S2S Server: Do-not-deliver considerations
   Server does not deliver to recipients which are the same as the actor of the
 Activity being notified about
 `
-	t.Skip(desc)
+	t.Log(desc)
+
+	p := activitypub.PersonNew("main actor")
+
+	to := activitypub.PersonNew("bob")
+	o := activitypub.ObjectNew("something", activitypub.ArticleType)
+	cc := activitypub.PersonNew("alice")
+
+	c := activitypub.CreateNew("create", o)
+	c.Actor = activitypub.Actor(*p)
+
+	c.To.Append(p)
+	c.To.Append(to)
+	c.CC.Append(cc)
+	c.CC.Append(p)
+	c.BCC.Append(cc)
+	c.BCC.Append(p)
+
+	c.RecipientsDeduplication()
+
+	checkActor := func(list activitypub.ObjectsArr, actor activitypub.Actor) error {
+		for _, rec := range list {
+			if rec.Object().ID == actor.Object().ID {
+				return fmt.Errorf("%T[%s] Actor of activity should not be in the recipients list", rec, actor.Object().ID)
+			}
+		}
+		return nil
+	}
+
+	var err error
+	err = checkActor(c.To, c.Actor)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkActor(c.Bto, c.Actor)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkActor(c.CC, c.Actor)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkActor(c.BCC, c.Actor)
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 // S2S Server: Do-not-deliver considerations

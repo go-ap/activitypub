@@ -276,8 +276,8 @@ func (c *ObjectsArr) Append(o ObjectOrLink) error {
 	return nil
 }
 
-// RecipientsDeduplication normalizes the received recipient lists
-func RecipientsDeduplication(recArgs ...*ObjectsArr) error {
+// recipientsDeduplication normalizes the received recipient lists
+func recipientsDeduplication(recArgs ...*ObjectsArr) error {
 	recIds := make([]ObjectID, 0)
 
 	for _, recList := range recArgs {

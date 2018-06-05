@@ -176,7 +176,7 @@ func TestRecipientsDeduplication(t *testing.T) {
 		t.Errorf("Objects array should have exactly 8(eight) elements, not %d", len(first))
 	}
 
-	RecipientsDeduplication(&first)
+	recipientsDeduplication(&first)
 	if len(first) != 4 {
 		t.Errorf("Objects array should have exactly 4(four) elements, not %d", len(first))
 	}
@@ -185,7 +185,7 @@ func TestRecipientsDeduplication(t *testing.T) {
 	second.Append(bar)
 	second.Append(foo)
 
-	RecipientsDeduplication(&first, &second)
+	recipientsDeduplication(&first, &second)
 	if len(first) != 4 {
 		t.Errorf("First Objects array should have exactly 8(eight) elements, not %d", len(first))
 	}
@@ -193,7 +193,7 @@ func TestRecipientsDeduplication(t *testing.T) {
 		t.Errorf("Second Objects array should have exactly 0(zero) elements, not %d", len(second))
 	}
 
-	err := RecipientsDeduplication(&first, &second, nil)
+	err := recipientsDeduplication(&first, &second, nil)
 	if err != nil {
 		t.Errorf("Deduplication with empty array failed")
 	}
