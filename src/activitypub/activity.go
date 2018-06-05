@@ -462,18 +462,18 @@ func IntransitiveActivityNew(id ObjectID, _type ActivityVocabularyType) *Intrans
 func (a *Activity) RecipientsDeduplication() {
 	var actor ObjectsArr
 	actor.Append(a.Actor)
-	recipientsDeduplication(&actor, &a.To, &a.CC, &a.BCC)
+	recipientsDeduplication(&actor, &a.To, &a.Bto, &a.CC, &a.BCC)
 }
 
 func (i *IntransitiveActivity) RecipientsDeduplication() {
 	var actor ObjectsArr
 	actor.Append(i.Actor)
-	recipientsDeduplication(&actor, &i.To, &i.CC, &i.BCC)
+	recipientsDeduplication(&actor, &i.To, &i.Bto, &i.CC, &i.BCC)
 }
 
 func (b *Block) RecipientsDeduplication() {
 	var dedupObjects ObjectsArr
 	dedupObjects.Append(b.Actor)
 	dedupObjects.Append(b.Object)
-	recipientsDeduplication(&dedupObjects, &b.To, &b.CC, &b.BCC)
+	recipientsDeduplication(&dedupObjects, &b.To, &b.Bto, &b.CC, &b.BCC)
 }

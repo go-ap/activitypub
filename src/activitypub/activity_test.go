@@ -431,3 +431,192 @@ func TestViewNew(t *testing.T) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, ViewType)
 	}
 }
+
+func TestActivityRecipientsDeduplication(t *testing.T) {
+	bob := PersonNew("bob")
+	alice := PersonNew("alice")
+	foo := OrganizationNew("foo")
+	bar := GroupNew("bar")
+
+	a := ActivityNew("t", "test", nil)
+
+	a.To.Append(bob)
+	a.To.Append(alice)
+	a.To.Append(foo)
+	a.To.Append(bar)
+	if len(a.To) != 4 {
+		t.Errorf("%T.To should have exactly 4(four) elements, not %d", a, len(a.To))
+	}
+
+	a.To.Append(bar)
+	a.To.Append(alice)
+	a.To.Append(foo)
+	a.To.Append(bob)
+	if len(a.To) != 8 {
+		t.Errorf("%T.To should have exactly 8(eight) elements, not %d", a, len(a.To))
+	}
+
+	a.RecipientsDeduplication()
+	if len(a.To) != 4 {
+		t.Errorf("%T.To should have exactly 4(four) elements, not %d", a, len(a.To))
+	}
+
+	b := ActivityNew("t", "test", nil)
+
+	b.To.Append(bar)
+	b.To.Append(alice)
+	b.To.Append(foo)
+	b.To.Append(bob)
+	b.Bto.Append(bar)
+	b.Bto.Append(alice)
+	b.Bto.Append(foo)
+	b.Bto.Append(bob)
+	b.CC.Append(bar)
+	b.CC.Append(alice)
+	b.CC.Append(foo)
+	b.CC.Append(bob)
+	b.BCC.Append(bar)
+	b.BCC.Append(alice)
+	b.BCC.Append(foo)
+	b.BCC.Append(bob)
+
+	b.RecipientsDeduplication()
+	if len(b.To) != 4 {
+		t.Errorf("%T.To should have exactly 4(four) elements, not %d", b, len(b.To))
+	}
+	if len(b.Bto) != 0 {
+		t.Errorf("%T.Bto should have exactly 0(zero) elements, not %d", b, len(b.Bto))
+	}
+	if len(b.CC) != 0 {
+		t.Errorf("%T.CC should have exactly 0(zero) elements, not %d", b, len(b.CC))
+	}
+	if len(b.BCC) != 0 {
+		t.Errorf("%T.BCC should have exactly 0(zero) elements, not %d", b, len(b.BCC))
+	}
+}
+
+func TestBlockRecipientsDeduplication(t *testing.T) {
+	bob := PersonNew("bob")
+	alice := PersonNew("alice")
+	foo := OrganizationNew("foo")
+	bar := GroupNew("bar")
+
+	a := BlockNew("bbb", bob)
+
+	a.To.Append(bob)
+	a.To.Append(alice)
+	a.To.Append(foo)
+	a.To.Append(bar)
+	if len(a.To) != 4 {
+		t.Errorf("%T.To should have exactly 4(four) elements, not %d", a, len(a.To))
+	}
+
+	a.To.Append(bar)
+	a.To.Append(alice)
+	a.To.Append(foo)
+	a.To.Append(bob)
+	if len(a.To) != 8 {
+		t.Errorf("%T.To should have exactly 8(eight) elements, not %d", a, len(a.To))
+	}
+
+	a.RecipientsDeduplication()
+	if len(a.To) != 3 {
+		t.Errorf("%T.To should have exactly 3(four) elements, not %d", a, len(a.To))
+	}
+
+	b := BlockNew("t", bob)
+
+	b.To.Append(bar)
+	b.To.Append(alice)
+	b.To.Append(foo)
+	b.To.Append(bob)
+	b.Bto.Append(bar)
+	b.Bto.Append(alice)
+	b.Bto.Append(foo)
+	b.Bto.Append(bob)
+	b.CC.Append(bar)
+	b.CC.Append(alice)
+	b.CC.Append(foo)
+	b.CC.Append(bob)
+	b.BCC.Append(bar)
+	b.BCC.Append(alice)
+	b.BCC.Append(foo)
+	b.BCC.Append(bob)
+
+	b.RecipientsDeduplication()
+	if len(b.To) != 3 {
+		t.Errorf("%T.To should have exactly 4(four) elements, not %d", b, len(b.To))
+	}
+	if len(b.Bto) != 0 {
+		t.Errorf("%T.Bto should have exactly 0(zero) elements, not %d", b, len(b.Bto))
+	}
+	if len(b.CC) != 0 {
+		t.Errorf("%T.CC should have exactly 0(zero) elements, not %d", b, len(b.CC))
+	}
+	if len(b.BCC) != 0 {
+		t.Errorf("%T.BCC should have exactly 0(zero) elements, not %d", b, len(b.BCC))
+	}
+}
+
+func TestIntransitiveActivityRecipientsDeduplication(t *testing.T) {
+	bob := PersonNew("bob")
+	alice := PersonNew("alice")
+	foo := OrganizationNew("foo")
+	bar := GroupNew("bar")
+
+	a := IntransitiveActivityNew("test", "t")
+
+	a.To.Append(bob)
+	a.To.Append(alice)
+	a.To.Append(foo)
+	a.To.Append(bar)
+	if len(a.To) != 4 {
+		t.Errorf("%T.To should have exactly 4(four) elements, not %d", a, len(a.To))
+	}
+
+	a.To.Append(bar)
+	a.To.Append(alice)
+	a.To.Append(foo)
+	a.To.Append(bob)
+	if len(a.To) != 8 {
+		t.Errorf("%T.To should have exactly 8(eight) elements, not %d", a, len(a.To))
+	}
+
+	a.RecipientsDeduplication()
+	if len(a.To) != 4 {
+		t.Errorf("%T.To should have exactly 4(four) elements, not %d", a, len(a.To))
+	}
+
+	b := ActivityNew("t", "test", nil)
+
+	b.To.Append(bar)
+	b.To.Append(alice)
+	b.To.Append(foo)
+	b.To.Append(bob)
+	b.Bto.Append(bar)
+	b.Bto.Append(alice)
+	b.Bto.Append(foo)
+	b.Bto.Append(bob)
+	b.CC.Append(bar)
+	b.CC.Append(alice)
+	b.CC.Append(foo)
+	b.CC.Append(bob)
+	b.BCC.Append(bar)
+	b.BCC.Append(alice)
+	b.BCC.Append(foo)
+	b.BCC.Append(bob)
+
+	b.RecipientsDeduplication()
+	if len(b.To) != 4 {
+		t.Errorf("%T.To should have exactly 4(four) elements, not %d", b, len(b.To))
+	}
+	if len(b.Bto) != 0 {
+		t.Errorf("%T.Bto should have exactly 0(zero) elements, not %d", b, len(b.Bto))
+	}
+	if len(b.CC) != 0 {
+		t.Errorf("%T.CC should have exactly 0(zero) elements, not %d", b, len(b.CC))
+	}
+	if len(b.BCC) != 0 {
+		t.Errorf("%T.BCC should have exactly 0(zero) elements, not %d", b, len(b.BCC))
+	}
+}
