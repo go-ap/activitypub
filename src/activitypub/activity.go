@@ -470,3 +470,10 @@ func (i *IntransitiveActivity) RecipientsDeduplication() {
 	actor.Append(i.Actor)
 	recipientsDeduplication(&actor, &i.To, &i.CC, &i.BCC)
 }
+
+func (b *Block) RecipientsDeduplication() {
+	var dedupObjects ObjectsArr
+	dedupObjects.Append(b.Actor)
+	dedupObjects.Append(b.Object)
+	recipientsDeduplication(&dedupObjects, &b.To, &b.CC, &b.BCC)
+}

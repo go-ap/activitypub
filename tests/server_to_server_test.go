@@ -250,7 +250,40 @@ S2S Server: Do-not-deliver considerations
 
   Server does not deliver Block activities to their object.
 `
-	t.Skip(desc)
+	t.Log(desc)
+
+	p := activitypub.PersonNew("blocked")
+
+	bob := activitypub.PersonNew("bob")
+	jane := activitypub.PersonNew("jane doe")
+
+	b := activitypub.BlockNew("block actor", p)
+	b.Actor = activitypub.Actor(*bob)
+
+	b.To.Append(jane)
+	b.To.Append(p)
+	b.To.Append(bob)
+
+	b.RecipientsDeduplication()
+
+	checkActor := func(list activitypub.ObjectsArr, ob activitypub.ObjectOrLink) error {
+		for _, rec := range list {
+			if rec.Object().ID == ob.Object().ID {
+				return fmt.Errorf("%T[%s] of activity should not be in the recipients list", rec, ob.Object().ID)
+			}
+		}
+		return nil
+	}
+
+	var err error
+	err = checkActor(b.To, b.Object)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkActor(b.To, b.Actor)
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 // S2S Sever: Support for sharedInbox
