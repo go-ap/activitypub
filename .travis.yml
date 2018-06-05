@@ -16,10 +16,12 @@ install:
 - GOPATH=$GOPATH:$(pwd) go get -t -v ./...
 
 script:
-- GOPATH=$GOPATH:$(pwd) go test -v ./...
+- export GOPATH="$GOPATH:$(pwd)"
+- go test -v ./...
 
 after_success:
-- GOPATH=$GOPATH:$(pwd) go test -cover -coverprofile activitypub.coverprofile activitypub
-- GOPATH=$GOPATH:$(pwd) go test -cover -coverprofile jsonld.coverprofile jsonld
-- GOPATH=$GOPATH:$(pwd) $GOPATH/bin/gover
+- export GOPATH="$GOPATH:$(pwd)"
+- go test -cover -coverprofile activitypub.coverprofile activitypub
+- go test -cover -coverprofile jsonld.coverprofile jsonld
+- gover
 - bash <(curl -s https://codecov.io/bash) -f gover.coverprofile
