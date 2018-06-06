@@ -23,14 +23,14 @@ func TestValidLinkType(t *testing.T) {
 	var invalidType ActivityVocabularyType = "RandomType"
 
 	if ValidLinkType(LinkType) {
-		t.Errorf("Generic Link Type '%v' should not be valid", LinkType)
+		t.Errorf("Generic GetLink Type '%v' should not be valid", LinkType)
 	}
 	if ValidLinkType(invalidType) {
-		t.Errorf("Link Type '%v' should not be valid", invalidType)
+		t.Errorf("GetLink Type '%v' should not be valid", invalidType)
 	}
 	for _, validType := range validLinkTypes {
 		if !ValidLinkType(validType) {
-			t.Errorf("Link Type '%v' should be valid", validType)
+			t.Errorf("GetLink Type '%v' should be valid", validType)
 		}
 	}
 }
@@ -73,14 +73,14 @@ func TestMention_IsObject(t *testing.T) {
 
 func TestMention_Object(t *testing.T) {
 	m := MentionNew("test")
-	if !reflect.DeepEqual(apObject{}, m.Object()) {
-		t.Errorf("%#v should be an empty object", m.Object())
+	if !reflect.DeepEqual(Object{}, m.GetObject()) {
+		t.Errorf("%#v should be an empty object", m.GetObject())
 	}
 }
 
 func TestMention_Link(t *testing.T) {
 	m := MentionNew("test")
-	if !reflect.DeepEqual(Link(*m), m.Link()) {
-		t.Errorf("%#v should be a Link object", m.Link())
+	if !reflect.DeepEqual(Link(*m), m.GetLink()) {
+		t.Errorf("%#v should be a GetLink object", m.GetLink())
 	}
 }

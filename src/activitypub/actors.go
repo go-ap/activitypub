@@ -46,10 +46,10 @@ type Endpoints struct {
 
 // Actor is generally one of the ActivityStreams Actor Types, but they don't have to be.
 // For example, a Profile object might be used as an actor, or a type from an ActivityStreams extension.
-// Actors are retrieved like any other Object in ActivityPub.
+// Actors are retrieved like any other GetObject in ActivityPub.
 // Like other ActivityStreams objects, actors have an id, which is a URI.
 type Actor struct {
-	apObject
+	Object
 	// A reference to an [ActivityStreams] OrderedCollection comprised of all the messages received by the actor;
 	//  see 5.2 Inbox.
 	Inbox InboxStream `jsonld:"inbox,omitempty"`
@@ -111,7 +111,7 @@ func ActorNew(id ObjectID, _type ActivityVocabularyType) *Actor {
 		_type = ActorType
 	}
 	o := ObjectNew(id, _type)
-	a := Actor{apObject: o}
+	a := Actor{Object: o}
 
 	in := InboxNew()
 
@@ -156,42 +156,42 @@ func ServiceNew(id ObjectID) *Service {
 	return &o
 }
 
-// IsLink validates if current Actor is a Link
+// IsLink validates if current Actor is a GetLink
 func (a Actor) IsLink() bool {
 	return a.Type == LinkType || ValidLinkType(a.Type)
 }
 
-// IsObject validates if current Actor is an Object
+// IsObject validates if current Actor is an GetObject
 func (a Actor) IsObject() bool {
 	return a.Type == ObjectType || ValidObjectType(a.Type)
 }
 
-// Object returns the apObject corresponding to the Actor object
-func (a Actor) Object() apObject {
-	return a.apObject
+// GetObject returns the GetObject corresponding to the Actor object
+func (a Actor) GetObject() Object {
+	return a.Object
 }
 
-// Link returns the Link corresponding to the Actor object
+// GetLink returns the GetLink corresponding to the Actor object
 func (a Actor) Link() Link {
 	return Link{}
 }
 
-// IsLink validates if current Person is a Link
+// IsLink validates if current Person is a GetLink
 func (p Person) IsLink() bool {
 	return p.Type == LinkType || ValidLinkType(p.Type)
 }
 
-// IsObject validates if current Person is an Object
+// IsObject validates if current Person is an GetObject
 func (p Person) IsObject() bool {
 	return p.Type == ObjectType || ValidObjectType(p.Type)
 }
 
-// Object returns the apObject corresponding to the Person object
-func (p Person) Object() apObject {
-	return p.apObject
+// GetObject returns the GetObject corresponding to the Person object
+func (p Person) GetObject() Object {
+	return p.Object
 }
 
-// Link returns the Link corresponding to the Person object
+// GetLink returns the GetLink corresponding to the Person object
 func (p Person) Link() Link {
 	return Link{}
 }

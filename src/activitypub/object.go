@@ -24,14 +24,14 @@ const (
 	// ActivityBaseURI the basic URI for the activity streams namespaces
 	ActivityBaseURI          URI                    = URI("https://www.w3.org/ns/activitystreams#")
 	ObjectType               ActivityVocabularyType = "ActivityPubObject"
-	LinkType                 ActivityVocabularyType = "Link"
+	LinkType                 ActivityVocabularyType = "GetLink"
 	ActivityType             ActivityVocabularyType = "Activity"
 	IntransitiveActivityType ActivityVocabularyType = "IntransitiveActivity"
 	ActorType                ActivityVocabularyType = "Actor"
 	CollectionType           ActivityVocabularyType = "Collection"
 	OrderedCollectionType    ActivityVocabularyType = "OrderedCollection"
 
-	// Activity Pub Object Types
+	// Activity Pub GetObject Types
 	ArticleType      ActivityVocabularyType = "Article"
 	AudioType        ActivityVocabularyType = "Audio"
 	DocumentType     ActivityVocabularyType = "Document"
@@ -82,22 +82,22 @@ var validObjectTypes = [...]ActivityVocabularyType{
 type (
 	// ActivityVocabularyType is the data type for an Activity type object
 	ActivityVocabularyType string
-	// ActivityObject is a subtype of Object that describes some form of action that may happen,
+	// ActivityObject is a subtype of GetObject that describes some form of action that may happen,
 	//  is currently happening, or has already happened
 	ActivityObject interface{}
 	// ObjectOrLink describes an object of any kind.
 	ObjectOrLink interface {
 		IsLink() bool
 		IsObject() bool
-		Object() apObject
-		Link() Link
+		GetObject() Object
+		GetLink() Link
 	}
 	// ObjectsArr is a named type for matching an ObjectOrLink slice type to Collection interface
 	ObjectsArr []ObjectOrLink
-	// LinkOrURI is an interface that Object and Link structs implement, and at the same time
+	// LinkOrURI is an interface that GetObject and GetLink structs implement, and at the same time
 	// they are kept disjointed
 	LinkOrURI interface{}
-	// ImageOrLink is an interface that Image and Link structs implement
+	// ImageOrLink is an interface that Image and GetLink structs implement
 	ImageOrLink interface{}
 	// MimeType is the type for MIME types
 	MimeType string
@@ -107,13 +107,13 @@ type (
 	NaturalLanguageValue map[LangRef]string
 )
 
-// IsLink validates if current Activity Pub Object is a Link
-func (o apObject) IsLink() bool {
+// IsLink validates if current Activity Pub GetObject is a GetLink
+func (o Object) IsLink() bool {
 	return ValidLinkType(o.Type)
 }
 
-// IsObject validates if current Activity Pub Object is an Object
-func (o apObject) IsObject() bool {
+// IsObject validates if current Activity Pub GetObject is an GetObject
+func (o Object) IsObject() bool {
 	return ValidObjectType(o.Type)
 }
 
@@ -129,12 +129,12 @@ func (n NaturalLanguageValue) MarshalJSON() ([]byte, error) {
 }
 
 // Describes an object of any kind.
-// The Activity Pub Object type serves as the base type for most of the other kinds of objects defined in the Activity Vocabulary,
+// The Activity Pub GetObject type serves as the base type for most of the other kinds of objects defined in the Activity Vocabulary,
 //  including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
-type apObject struct {
-	// Provides the globally unique identifier for an Activity Pub Object or Link.
+type Object struct {
+	// Provides the globally unique identifier for an Activity Pub GetObject or GetLink.
 	ID ObjectID `jsonld:"id,omitempty"`
-	//  Identifies the Activity Pub Object or Link type. Multiple values may be specified.
+	//  Identifies the Activity Pub GetObject or GetLink type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
@@ -148,7 +148,7 @@ type apObject struct {
 	// Identifies one or more entities that represent the total population of entities
 	//  for which the object can considered to be relevant.
 	Audience ObjectOrLink `jsonld:"audience,omitempty"`
-	// The content or textual representation of the Activity Pub Object encoded as a JSON string.
+	// The content or textual representation of the Activity Pub GetObject encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
@@ -188,7 +188,7 @@ type apObject struct {
 	// A natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
-	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
+	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub GetObject.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	//  while the latter implies associated by reference.
 	Tag ObjectOrLink `jsonld:"tag,omitempty"`
@@ -196,13 +196,13 @@ type apObject struct {
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
-	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
+	// Identifies an entity considered to be part of the public primary audience of an Activity Pub GetObject
 	To ObjectsArr `jsonld:"to,omitempty"`
-	// Identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
+	// Identifies an Activity Pub GetObject that is part of the private primary audience of this Activity Pub GetObject.
 	Bto ObjectsArr `jsonld:"bto,omitempty"`
-	// Identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
+	// Identifies an Activity Pub GetObject that is part of the public secondary audience of this Activity Pub GetObject.
 	CC ObjectsArr `jsonld:"cc,omitempty"`
-	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
+	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub GetObject.
 	BCC ObjectsArr `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
@@ -241,25 +241,25 @@ func ValidObjectType(_type ActivityVocabularyType) bool {
 	return ValidActivityType(_type) || ValidActorType(_type) || ValidCollectionType(_type) || ValidGenericType(_type)
 }
 
-// ObjectNew initializes a new Object
-func ObjectNew(id ObjectID, _type ActivityVocabularyType) apObject {
+// ObjectNew initializes a new GetObject
+func ObjectNew(id ObjectID, _type ActivityVocabularyType) Object {
 	if !(ValidObjectType(_type)) {
 		_type = ObjectType
 	}
-	o := apObject{ID: id, Type: _type}
+	o := Object{ID: id, Type: _type}
 	o.Name = make(NaturalLanguageValue)
 	o.Content = make(NaturalLanguageValue)
 	o.Summary = make(NaturalLanguageValue)
 	return o
 }
 
-// Object returns the apObject corresponding to the apObject object
-func (o apObject) Object() apObject {
+// GetObject returns the GetObject corresponding to the GetObject object
+func (o Object) GetObject() Object {
 	return o
 }
 
-// Link returns the Link corresponding to the apObject object
-func (o apObject) Link() Link {
+// GetLink returns the GetLink corresponding to the GetObject object
+func (o Object) GetLink() Link {
 	return Link{}
 }
 
@@ -289,14 +289,14 @@ func recipientsDeduplication(recArgs ...*ObjectsArr) error {
 		for i, rec := range *recList {
 			save := true
 			for _, id := range recIds {
-				if rec.Object().ID == id {
+				if rec.GetObject().ID == id {
 					// mark the element for removal
 					toRemove = append(toRemove, i)
 					save = false
 				}
 			}
 			if save {
-				recIds = append(recIds, rec.Object().ID)
+				recIds = append(recIds, rec.GetObject().ID)
 			}
 		}
 

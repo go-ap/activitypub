@@ -67,9 +67,9 @@ var validActivityTypes = [...]ActivityVocabularyType{
 // IntransitiveActivity Instances of IntransitiveActivity are a subtype of Activity representing intransitive actions.
 // The object property is therefore inappropriate for these activities.
 type IntransitiveActivity struct {
-	apObject
+	Object
 	// Describes one or more entities that either performed or are expected to perform the activity.
-	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
+	// Any single activity can have multiple actors. The actor may be specified using an indirect GetLink.
 	Actor Actor `jsonld:"actor,omitempty"`
 	// Describes the indirect object, or target, of the activity.
 	// The precise meaning of the target is largely dependent on the type of action being described
@@ -89,7 +89,7 @@ type IntransitiveActivity struct {
 	Source     Source       `jsonld:"source,omitempty"`
 }
 
-// Activity is a subtype of apObject that describes some form of action that may happen,
+// Activity is a subtype of GetObject that describes some form of action that may happen,
 //  is currently happening, or has already happened.
 // The Activity type itself serves as an abstract base type for all types of activities.
 // It is important to note that the Activity type itself does not carry any specific semantics
@@ -441,7 +441,7 @@ func ActivityNew(id ObjectID, _type ActivityVocabularyType, ob ObjectOrLink) *Ac
 		_type = ActivityType
 	}
 	o := ObjectNew(id, _type)
-	i := IntransitiveActivity{apObject: o}
+	i := IntransitiveActivity{Object: o}
 
 	a := Activity{IntransitiveActivity: &i}
 	a.Object = ob
@@ -456,7 +456,7 @@ func IntransitiveActivityNew(id ObjectID, _type ActivityVocabularyType) *Intrans
 	}
 	o := ObjectNew(id, _type)
 
-	return &IntransitiveActivity{apObject: o}
+	return &IntransitiveActivity{Object: o}
 }
 
 func (a *Activity) RecipientsDeduplication() {
