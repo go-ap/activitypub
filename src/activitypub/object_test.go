@@ -198,3 +198,77 @@ func TestRecipientsDeduplication(t *testing.T) {
 		t.Errorf("Deduplication with empty array failed")
 	}
 }
+
+func TestNaturalLanguageValue_Append(t *testing.T) {
+	var a NaturalLanguageValue
+
+	if len(a) != 0 {
+		t.Errorf("Invalid initialization of %T. Size %d > 0 ", a, len(a))
+	}
+	langEn := LangRef("en")
+	valEn := "random value"
+
+	a.Append(langEn, valEn)
+	if len(a) != 1 {
+		t.Errorf("Invalid append of one element to %T. Size %d != 1", a, len(a))
+	}
+	if a[langEn] != valEn {
+		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langEn, valEn, a[langEn])
+	}
+	langDe := LangRef("de")
+	valDe := "randomisch"
+	a.Append(langDe, valDe)
+
+	if len(a) != 2 {
+		t.Errorf("Invalid append of one element to %T. Size %d != 2", a, len(a))
+	}
+	if a[langEn] != valEn {
+		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langEn, valEn, a[langEn])
+	}
+	if a[langDe] != valDe {
+		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langDe, valDe, a[langDe])
+	}
+}
+
+func TestLangRef_UnmarshalJSON(t *testing.T) {
+	lang := "en-US"
+	json := `"` + lang + `"`
+
+	var a LangRef
+	a.UnmarshalJSON([]byte(json))
+
+	if string(a) != lang {
+		t.Errorf("Invalid json unmarshal for %T. Expected %q, found %q", lang, lang, string(a))
+	}
+}
+
+func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
+	langEn := "en-US"
+	valEn := "random"
+	langDe := "de-DE"
+	valDe := "randomisch"
+	json := `{
+		"` + langEn + `": "` + valEn + `",
+		"` + langDe + `": "` + valDe + `"
+	}`
+
+	var a NaturalLanguageValue
+	a.Append(LangRef(langEn), valEn)
+	a.Append(LangRef(langDe), valDe)
+	err := a.UnmarshalJSON([]byte(json))
+	if err != nil {
+		t.Error(err)
+	}
+	for lang, val := range a {
+		if lang != LangRef(langEn) && lang != LangRef(langDe) {
+			t.Errorf("Invalid json unmarshal for %T. Expected lang %q or %q, found %q", a, langEn, langDe, lang)
+		}
+
+		if lang == LangRef(langEn) && val != valEn {
+			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valEn, val)
+		}
+		if lang == LangRef(langDe) && val != valDe {
+			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valDe, val)
+		}
+	}
+}

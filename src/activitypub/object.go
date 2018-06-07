@@ -128,6 +128,32 @@ func (n NaturalLanguageValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[LangRef]string(n))
 }
 
+// Append is syntactic sugar for resizing the NaturalLanguageValue map
+//  and appending an element
+func (n *NaturalLanguageValue) Append(lang LangRef, value string) error {
+	var t NaturalLanguageValue
+	if len(*n) == 0 {
+		t = make(NaturalLanguageValue, 1)
+	} else {
+		t = *n
+	}
+	t[lang] = value
+	*n = t
+
+	return nil
+}
+
+// UnmarshalJSON tries to load the NaturalLanguage array from the incoming json value
+func (l *LangRef) UnmarshalJSON(data []byte) error {
+	*l = LangRef(data[1 : len(data)-1])
+	return nil
+}
+
+// UnmarshalJSON tries to load the NaturalLanguage array from the incoming json value
+func (n *NaturalLanguageValue) UnmarshalJSON(data []byte) error {
+	return nil
+}
+
 // Describes an object of any kind.
 // The Activity Pub GetObject type serves as the base type for most of the other kinds of objects defined in the Activity Vocabulary,
 //  including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
