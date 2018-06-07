@@ -14,10 +14,6 @@ import (
 	"unicode/utf8"
 )
 
-func (p *payloadWithContext) UnmarshalJSON([]byte) error {
-	return fmt.Errorf("not implemented")
-}
-
 // Unmarshal parses the JSON-encoded data and stores the result
 // in the value pointed to by v. If v is nil or not a pointer,
 // Unmarshal returns an InvalidUnmarshalError.
@@ -91,17 +87,15 @@ func (p *payloadWithContext) UnmarshalJSON([]byte) error {
 // character U+FFFD.
 //
 func Unmarshal(data []byte, v interface{}) error {
-	// Check for well-formedness.
-	// Avoids filling out half a data structure
-	// before discovering a JSON syntax error.
 	var d decodeState
+
 	err := checkValid(data, &d.scan)
 	if err != nil {
 		return err
 	}
 
 	d.init(data)
-	return d.unmarshal(v)
+	return d.unmarshal(&v)
 }
 
 // Unmarshaler is the interface implemented by types

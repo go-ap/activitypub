@@ -2,8 +2,10 @@ package jsonld
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
 
-	"activitypub"
+	ap "activitypub"
 )
 
 // Ref basic type
@@ -13,8 +15,8 @@ type Ref string
 // Terms are case sensitive and any valid string that is not a reserved JSON-LD
 // keyword can be used as a term.
 type Context struct {
-	URL      Ref                              `jsonld:"@url"`
-	Language activitypub.NaturalLanguageValue `jsonld:"@language,omitempty,collapsible"`
+	URL      Ref        `jsonld:"@url"`
+	Language ap.LangRef `jsonld:"@language,omitempty,collapsible"`
 }
 
 // Collapsible is an interface used by the JSON-LD marshaller to collapse a struct to one single value
@@ -44,4 +46,47 @@ func (c *Context) MarshalJSON() ([]byte, error) {
 		return json.Marshal(a.scalar)
 	}
 	return json.Marshal(a.object)
+}
+
+// UnmarshalJSON tries to load the Context from the incoming json value
+func (c *Context) UnmarshalJSON(data []byte) error {
+	if data[0] == '"' {
+		// a quoted string - loading it to c.URL
+		if data[len(data)-1] != '"' {
+			return fmt.Errorf("invalid string value when unmarshalling Context value")
+		}
+		c.URL = Ref(data[1 : len(data)-1])
+	}
+	if data[0] == '{' {
+		// an object - trying to load it to the struct
+		if data[len(data)-1] != '}' {
+			return fmt.Errorf("invalid object value when unmarshalling Context value")
+		}
+
+		var s scanner
+		s.reset()
+		var d decodeState
+		d.scan = s
+		d.init(data)
+
+		d.scan.reset()
+
+		t := d.valueInterface()
+
+		for key, value := range t.(map[string]interface{}) {
+			switch strings.ToLower(key) {
+			case "@url":
+				fallthrough
+			case "url":
+				c.URL = Ref(value.(string))
+			case "@language":
+				fallthrough
+			case "language":
+				c.Language = ap.LangRef(value.(string))
+			default:
+				return fmt.Errorf("unkown Context field %q", key)
+			}
+		}
+	}
+	return nil
 }
