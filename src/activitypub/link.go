@@ -12,7 +12,7 @@ var validLinkTypes = [...]ActivityVocabularyType{
 // Properties of the GetLink are properties of the reference as opposed to properties of the resource.
 type Link struct {
 	// Provides the globally unique identifier for an APObject or GetLink.
-	Id ObjectID `jsonld:"id,omitempty"`
+	ID ObjectID `jsonld:"id,omitempty"`
 	//  Identifies the APObject or GetLink type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
@@ -58,12 +58,12 @@ func LinkNew(id ObjectID, _type ActivityVocabularyType) *Link {
 	if !ValidLinkType(_type) {
 		_type = LinkType
 	}
-	return &Link{Id: id, Type: _type}
+	return &Link{ID: id, Type: _type}
 }
 
 // MentionNew initializes a new Mention
 func MentionNew(id ObjectID) *Mention {
-	return &Mention{Id: id, Type: MentionType}
+	return &Mention{ID: id, Type: MentionType}
 }
 
 // IsLink validates if current GetLink is a GetLink
@@ -74,6 +74,16 @@ func (l Link) IsLink() bool {
 // IsObject validates if current GetLink is an GetObject
 func (l Link) IsObject() bool {
 	return l.Type == ObjectType || ValidObjectType(l.Type)
+}
+
+// GetObject returns the GetObject corresponding to the Mention object
+func (l Link) GetObject() Object {
+	return Object{}
+}
+
+// GetLink returns the GetLink corresponding to the Mention object
+func (l Link) GetLink() Link {
+	return l
 }
 
 // IsLink validates if current Mention is a GetLink
