@@ -24,7 +24,7 @@ const (
 	// ActivityBaseURI the basic URI for the activity streams namespaces
 	ActivityBaseURI          URI                    = URI("https://www.w3.org/ns/activitystreams#")
 	ObjectType               ActivityVocabularyType = "ActivityPubObject"
-	LinkType                 ActivityVocabularyType = "GetLink"
+	LinkType                 ActivityVocabularyType = "Link"
 	ActivityType             ActivityVocabularyType = "Activity"
 	IntransitiveActivityType ActivityVocabularyType = "IntransitiveActivity"
 	ActorType                ActivityVocabularyType = "Actor"
