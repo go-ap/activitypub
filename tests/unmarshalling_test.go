@@ -25,12 +25,51 @@ type testPair struct {
 
 type tests map[string]testPair
 
-var allTests tests = tests{
-	"nil": testPair{
+var allTests = tests{
+	"empty": testPair{
 		path:     "./mocks/empty.json",
 		expected: true,
-		blank:    a.Object{},
-		result:   a.Object{},
+		blank:    &a.BaseObject{},
+		result:   &a.BaseObject{},
+	},
+	"link_simple": testPair{
+		path:     "./mocks/link_simple.json",
+		expected: true,
+		blank:    &a.Link{},
+		result: &a.Link{
+			Type:      a.LinkType,
+			Href:      a.URI("http://example.org/abc"),
+			HrefLang:  a.LangRef("en"),
+			MediaType: a.MimeType("text/html"),
+			Name: a.NaturalLanguageValue{
+				a.LangRef("-"): "An example link",
+			},
+		},
+	},
+	"object_simple": testPair{
+		path:     "./mocks/object_simple.json",
+		expected: true,
+		blank:    &a.BaseObject{},
+		result: &a.BaseObject{
+			Type: a.ObjectType,
+			ID:   a.ObjectID("http://www.test.example/object/1"),
+			Name: a.NaturalLanguageValue{
+				a.LangRef("-"): "A Simple, non-specific object",
+			},
+		},
+	},
+	"activity_simple": testPair{
+		path:     "./mocks/activity_simple.json",
+		expected: true,
+		blank:    &a.Activity{},
+		result: &a.Activity{
+			IntransitiveActivity: a.IntransitiveActivity{
+				BaseObject: a.BaseObject{
+					Type:    a.ActivityType,
+					Summary: a.NaturalLanguageValue{a.LangRef("-"): "Sally did something to a note"},
+				},
+			},
+		},
 	},
 }
 
@@ -56,9 +95,7 @@ func Test_ActivityPubUnmarshall(t *testing.T) {
 		t.Skip("No tests found")
 	}
 
-	for _, pair := range allTests {
-		fmt.Printf("===          %s\n", pair.path)
-
+	for k, pair := range allTests {
 		data := getFileContents(pair.path)
 
 		object := pair.blank
@@ -77,7 +114,7 @@ func Test_ActivityPubUnmarshall(t *testing.T) {
 			continue
 		}
 		if err == nil {
-			fmt.Print("---          PASS\n")
+			fmt.Printf(" --- %s: %s\n          %s\n", "PASS", k, pair.path)
 		}
 	}
 }
