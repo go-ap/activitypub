@@ -26,66 +26,66 @@ S2S Server: Activities requiring the object property
 
 	add := activitypub.AddNew("https://localhost/myactivity", obj, nil)
 	if add.Object == nil {
-		t.Errorf("Missing GetObject in Add activity %#v", add.Object)
+		t.Errorf("Missing GetID in Add activity %#v", add.Object)
 	}
 	if add.Object != obj {
-		t.Errorf("Add.GetObject different than what we initialized %#v %#v", add.Object, obj)
+		t.Errorf("Add.GetID different than what we initialized %#v %#v", add.Object, obj)
 	}
 
 	block := activitypub.BlockNew("https://localhost/myactivity", obj)
 	if block.Object == nil {
-		t.Errorf("Missing GetObject in Add activity %#v", block.Object)
+		t.Errorf("Missing GetID in Add activity %#v", block.Object)
 	}
 	if block.Object != obj {
-		t.Errorf("Block.GetObject different than what we initialized %#v %#v", block.Object, obj)
+		t.Errorf("Block.GetID different than what we initialized %#v %#v", block.Object, obj)
 	}
 
 	create := activitypub.CreateNew("https://localhost/myactivity", obj)
 	if create.Object == nil {
-		t.Errorf("Missing GetObject in Add activity %#v", create.Object)
+		t.Errorf("Missing GetID in Add activity %#v", create.Object)
 	}
 	if create.Object != obj {
-		t.Errorf("Create.GetObject different than what we initialized %#v %#v", create.Object, obj)
+		t.Errorf("Create.GetID different than what we initialized %#v %#v", create.Object, obj)
 	}
 
 	delete := activitypub.DeleteNew("https://localhost/myactivity", obj)
 	if delete.Object == nil {
-		t.Errorf("Missing GetObject in Delete activity %#v", delete.Object)
+		t.Errorf("Missing GetID in Delete activity %#v", delete.Object)
 	}
 	if delete.Object != obj {
-		t.Errorf("Delete.GetObject different than what we initialized %#v %#v", delete.Object, obj)
+		t.Errorf("Delete.GetID different than what we initialized %#v %#v", delete.Object, obj)
 	}
 
 	follow := activitypub.FollowNew("https://localhost/myactivity", obj)
 	if follow.Object == nil {
-		t.Errorf("Missing GetObject in Follow activity %#v", follow.Object)
+		t.Errorf("Missing GetID in Follow activity %#v", follow.Object)
 	}
 	if follow.Object != obj {
-		t.Errorf("Follow.GetObject different than what we initialized %#v %#v", follow.Object, obj)
+		t.Errorf("Follow.GetID different than what we initialized %#v %#v", follow.Object, obj)
 	}
 
 	like := activitypub.LikeNew("https://localhost/myactivity", obj)
 	if like.Object == nil {
-		t.Errorf("Missing GetObject in Like activity %#v", like.Object)
+		t.Errorf("Missing GetID in Like activity %#v", like.Object)
 	}
 	if like.Object != obj {
-		t.Errorf("Like.GetObject different than what we initialized %#v %#v", add.Object, obj)
+		t.Errorf("Like.GetID different than what we initialized %#v %#v", add.Object, obj)
 	}
 
 	update := activitypub.UpdateNew("https://localhost/myactivity", obj)
 	if update.Object == nil {
-		t.Errorf("Missing GetObject in Update activity %#v", update.Object)
+		t.Errorf("Missing GetID in Update activity %#v", update.Object)
 	}
 	if update.Object != obj {
-		t.Errorf("Update.GetObject different than what we initialized %#v %#v", update.Object, obj)
+		t.Errorf("Update.GetID different than what we initialized %#v %#v", update.Object, obj)
 	}
 
 	undo := activitypub.UndoNew("https://localhost/myactivity", obj)
 	if undo.Object == nil {
-		t.Errorf("Missing GetObject in Undo activity %#v", undo.Object)
+		t.Errorf("Missing GetID in Undo activity %#v", undo.Object)
 	}
 	if undo.Object != obj {
-		t.Errorf("Undo.GetObject different than what we initialized %#v %#v", undo.Object, obj)
+		t.Errorf("Undo.GetID different than what we initialized %#v %#v", undo.Object, obj)
 	}
 }
 
@@ -155,11 +155,11 @@ S2S Server: Deduplication of recipient list
 	checkDedup := func(list activitypub.ObjectsArr, recIds *[]activitypub.ObjectID) error {
 		for _, rec := range list {
 			for _, id := range *recIds {
-				if rec.GetObject().ID == id {
+				if rec.GetID() == id {
 					return fmt.Errorf("%T[%s] already stored in recipients list, Deduplication faild", rec, id)
 				}
 			}
-			*recIds = append(*recIds, rec.GetObject().ID)
+			*recIds = append(*recIds, rec.GetID())
 		}
 		return nil
 	}
@@ -216,8 +216,8 @@ Activity being notified about
 
 	checkActor := func(list activitypub.ObjectsArr, actor activitypub.Actor) error {
 		for _, rec := range list {
-			if rec.GetObject().ID == actor.GetObject().ID {
-				return fmt.Errorf("%T[%s] Actor of activity should not be in the recipients list", rec, actor.GetObject().ID)
+			if rec.GetID() == actor.GetID() {
+				return fmt.Errorf("%T[%s] Actor of activity should not be in the recipients list", rec, actor.GetID())
 			}
 		}
 		return nil
@@ -268,8 +268,8 @@ S2S Server: Do-not-deliver considerations
 
 	checkActor := func(list activitypub.ObjectsArr, ob activitypub.ObjectOrLink) error {
 		for _, rec := range list {
-			if rec.GetObject().ID == ob.GetObject().ID {
-				return fmt.Errorf("%T[%s] of activity should not be in the recipients list", rec, ob.GetObject().ID)
+			if rec.GetID() == ob.GetID() {
+				return fmt.Errorf("%T[%s] of activity should not be in the recipients list", rec, ob.GetID())
 			}
 		}
 		return nil

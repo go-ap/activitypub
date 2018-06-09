@@ -73,14 +73,7 @@ func TestMention_IsObject(t *testing.T) {
 
 func TestMention_Object(t *testing.T) {
 	m := MentionNew("test")
-	if !reflect.DeepEqual(BaseObject{}, m.GetObject()) {
-		t.Errorf("%#v should be an empty object", m.GetObject())
-	}
-}
-
-func TestMention_Link(t *testing.T) {
-	m := MentionNew("test")
-	if !reflect.DeepEqual(Link(*m), m.GetLink()) {
-		t.Errorf("%#v should be a GetLink object", m.GetLink())
+	if !reflect.DeepEqual(ObjectID("test"), m.GetID()) {
+		t.Errorf("%#v should be an empty object", m.GetID())
 	}
 }

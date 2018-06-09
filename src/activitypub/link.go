@@ -44,9 +44,9 @@ type Link struct {
 type Mention Link
 
 // ValidLinkType validates a type against the valid link types
-func ValidLinkType(_type ActivityVocabularyType) bool {
+func ValidLinkType(typ ActivityVocabularyType) bool {
 	for _, v := range validLinkTypes {
-		if v == _type {
+		if v == typ {
 			return true
 		}
 	}
@@ -54,11 +54,11 @@ func ValidLinkType(_type ActivityVocabularyType) bool {
 }
 
 // LinkNew initializes a new GetLink
-func LinkNew(id ObjectID, _type ActivityVocabularyType) *Link {
-	if !ValidLinkType(_type) {
-		_type = LinkType
+func LinkNew(id ObjectID, typ ActivityVocabularyType) *Link {
+	if !ValidLinkType(typ) {
+		typ = LinkType
 	}
-	return &Link{ID: id, Type: _type}
+	return &Link{ID: id, Type: typ}
 }
 
 // MentionNew initializes a new Mention
@@ -71,19 +71,19 @@ func (l Link) IsLink() bool {
 	return l.Type == LinkType || ValidLinkType(l.Type)
 }
 
-// IsObject validates if current GetLink is an GetObject
+// IsObject validates if current GetLink is an GetID
 func (l Link) IsObject() bool {
 	return l.Type == ObjectType || ValidObjectType(l.Type)
 }
 
-// GetObject returns the GetObject corresponding to the Mention object
-func (l Link) GetObject() BaseObject {
-	return BaseObject{}
+// GetID returns the GetID corresponding to the Mention object
+func (l Link) GetID() ObjectID {
+	return l.ID
 }
 
 // GetLink returns the GetLink corresponding to the Mention object
-func (l Link) GetLink() Link {
-	return l
+func (l Link) GetType() ActivityVocabularyType {
+	return l.Type
 }
 
 // IsLink validates if current Mention is a GetLink
@@ -91,17 +91,17 @@ func (m Mention) IsLink() bool {
 	return m.Type == MentionType || ValidLinkType(m.Type)
 }
 
-// IsObject validates if current Mention is an GetObject
+// IsObject validates if current Mention is an GetID
 func (m Mention) IsObject() bool {
 	return m.Type == ObjectType || ValidObjectType(m.Type)
 }
 
-// GetObject returns the GetObject corresponding to the Mention object
-func (m Mention) GetObject() BaseObject {
-	return BaseObject{}
+// GetID returns the GetID corresponding to the Mention object
+func (m Mention) GetID() ObjectID {
+	return m.ID
 }
 
 // GetLink returns the GetLink corresponding to the Mention object
-func (m Mention) GetLink() Link {
-	return Link(m)
+func (m Mention) GetType() ActivityVocabularyType {
+	return m.Type
 }

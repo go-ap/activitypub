@@ -29,8 +29,8 @@ var allTests = tests{
 	"empty": testPair{
 		path:     "./mocks/empty.json",
 		expected: true,
-		blank:    &a.BaseObject{},
-		result:   &a.BaseObject{},
+		blank:    &a.Object{},
+		result:   &a.Object{},
 	},
 	"link_simple": testPair{
 		path:     "./mocks/link_simple.json",
@@ -49,8 +49,8 @@ var allTests = tests{
 	"object_simple": testPair{
 		path:     "./mocks/object_simple.json",
 		expected: true,
-		blank:    &a.BaseObject{},
-		result: &a.BaseObject{
+		blank:    &a.Object{},
+		result: &a.Object{
 			Type: a.ObjectType,
 			ID:   a.ObjectID("http://www.test.example/object/1"),
 			Name: a.NaturalLanguageValue{
@@ -63,12 +63,8 @@ var allTests = tests{
 		expected: true,
 		blank:    &a.Activity{},
 		result: &a.Activity{
-			IntransitiveActivity: a.IntransitiveActivity{
-				BaseObject: a.BaseObject{
-					Type:    a.ActivityType,
-					Summary: a.NaturalLanguageValue{a.LangRef("-"): "Sally did something to a note"},
-				},
-			},
+			Type:    a.ActivityType,
+			Summary: a.NaturalLanguageValue{a.LangRef("-"): "Sally did something to a note"},
 		},
 	},
 }

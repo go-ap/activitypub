@@ -127,17 +127,11 @@ func TestObject_IsObject(t *testing.T) {
 	}
 }
 
-func TestObject_Link(t *testing.T) {
-	o := ObjectNew("test", ObjectType)
-	if !reflect.DeepEqual(Link{}, o.GetLink()) {
-		t.Errorf("%#v should be an empty GetLink object", o.GetLink())
-	}
-}
 
 func TestObjectsArr_Append(t *testing.T) {
 	d := make(ObjectsArr, 0)
 
-	val := BaseObject{ID: ObjectID("grrr")}
+	val := Object{ID: ObjectID("grrr")}
 
 	d.Append(val)
 

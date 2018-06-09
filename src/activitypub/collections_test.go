@@ -62,15 +62,15 @@ func TestValidCollectionType(t *testing.T) {
 func Test_OrderedCollection_Append(t *testing.T) {
 	id := ObjectID("test")
 
-	val := BaseObject{ID: ObjectID("grrr")}
+	val := Object{ID: ObjectID("grrr")}
 
 	c := OrderedCollectionNew(id)
 	c.Append(val)
 
 	if c.TotalItems != 1 {
-		t.Errorf("Inbox collection of %q should have exactly an GetObject", c.GetObject().ID)
+		t.Errorf("Inbox collection of %q should have exactly an GetID", c.GetID())
 	}
-	if !reflect.DeepEqual(c.OrderedItems[0].GetObject(), val) {
+	if !reflect.DeepEqual(c.OrderedItems[0], val) {
 		t.Errorf("First item in Inbox is does not match %q", val.ID)
 	}
 }
@@ -78,15 +78,15 @@ func Test_OrderedCollection_Append(t *testing.T) {
 func Test_Collection_Append(t *testing.T) {
 	id := ObjectID("test")
 
-	val := BaseObject{ID: ObjectID("grrr")}
+	val := Object{ID: ObjectID("grrr")}
 
 	c := CollectionNew(id)
 	c.Append(val)
 
 	if c.TotalItems != 1 {
-		t.Errorf("Inbox collection of %q should have exactly an GetObject", c.GetObject().ID)
+		t.Errorf("Inbox collection of %q should have exactly an GetID", c.GetID())
 	}
-	if !reflect.DeepEqual(c.Items[0].GetObject(), val) {
+	if !reflect.DeepEqual(c.Items[0], val) {
 		t.Errorf("First item in Inbox is does not match %q", val.ID)
 	}
 }

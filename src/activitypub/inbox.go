@@ -15,9 +15,12 @@ type (
 // InboxNew initializes a new Inbox
 func InboxNew() *Inbox {
 	id := ObjectID("inbox")
-	o := ObjectNew(id, OrderedCollectionType)
 
-	i := Inbox{BaseObject: o}
+	i := Inbox{ID: id, Type: OrderedCollectionType}
+	i.Name = make(NaturalLanguageValue)
+	i.Content = make(NaturalLanguageValue)
+	i.Summary = make(NaturalLanguageValue)
+
 	i.TotalItems = 0
 
 	return &i

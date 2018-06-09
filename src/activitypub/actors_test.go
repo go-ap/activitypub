@@ -116,42 +116,29 @@ func TestActor_IsObject(t *testing.T) {
 
 func TestActor_Object(t *testing.T) {
 	m := ActorNew("test", ActorType)
-	if reflect.DeepEqual(BaseObject{}, m.GetObject()) {
-		t.Errorf("%#v should not be an empty activity pub object", m.GetObject())
+	if reflect.DeepEqual(ObjectID(""), m.GetID()) {
+		t.Errorf("%#v should not be an empty activity pub object", m.GetID())
 	}
 }
 
-func TestActor_Link(t *testing.T) {
+func TestActor_Type(t *testing.T) {
 	m := ActorNew("test", ActorType)
-	if !reflect.DeepEqual(Link{}, m.Link()) {
-		t.Errorf("%#v should be an empty GetLink object", m.Link())
+	if m.GetType() != ActorType {
+		t.Errorf("%#v should be an empty GetLink object", m.GetType())
 	}
 }
 
 func TestPerson_IsLink(t *testing.T) {
 	m := PersonNew("test")
 	if m.IsLink() {
-		t.Errorf("%#v should not be a valid GetLink", m.Type)
+		t.Errorf("%T should not be a valid GetLink", m)
 	}
 }
 
 func TestPerson_IsObject(t *testing.T) {
 	m := PersonNew("test")
 	if !m.IsObject() {
-		t.Errorf("%#v should be a valid object", m.Type)
+		t.Errorf("%T should be a valid object", m)
 	}
 }
 
-func TestPerson_Object(t *testing.T) {
-	m := PersonNew("test")
-	if reflect.DeepEqual(BaseObject{}, m.GetObject()) {
-		t.Errorf("%#v should not be an empty activity pub object", m.GetObject())
-	}
-}
-
-func TestPerson_Link(t *testing.T) {
-	m := PersonNew("test")
-	if !reflect.DeepEqual(Link{}, m.Link()) {
-		t.Errorf("%#v should be an empty GetLink object", m.Link())
-	}
-}

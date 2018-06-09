@@ -620,18 +620,18 @@ func TestIntransitiveActivityRecipientsDeduplication(t *testing.T) {
 		t.Errorf("%T.BCC should have exactly 0(zero) elements, not %d", b, len(b.BCC))
 	}
 }
-func TestActivity_GetLink(t *testing.T) {
+func TestActivity_GetID(t *testing.T) {
 	a := ActivityNew("test", ActivityType, Person{})
 
-	if a.GetLink().ID != "" {
-		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetLink(), a.GetLink())
+	if a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a, a)
 	}
 }
-func TestActivity_GetObject(t *testing.T) {
+func TestActivity_GetIDGetType(t *testing.T) {
 	a := ActivityNew("test", ActivityType, Person{})
 
-	if a.GetObject().ID != "test" || a.GetObject().Type != ActivityType {
-		t.Errorf("%T should not return an empty %T object. Received %#v", a, a.GetObject(), a.GetObject())
+	if a.GetID() != "test" || a.GetType() != ActivityType {
+		t.Errorf("%T should not return an empty %T object. Received %#v", a, a, a)
 	}
 }
 func TestActivity_IsLink(t *testing.T) {
@@ -651,15 +651,15 @@ func TestActivity_IsObject(t *testing.T) {
 func TestIntransitiveActivity_GetLink(t *testing.T) {
 	i := IntransitiveActivityNew("test", QuestionType)
 
-	if i.GetLink().ID != "" {
-		t.Errorf("%T should return an empty %T object. Received %#v", i, i.GetLink(), i.GetLink())
+	if i.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", i, i, i)
 	}
 }
 func TestIntransitiveActivity_GetObject(t *testing.T) {
 	i := IntransitiveActivityNew("test", QuestionType)
 
-	if i.GetObject().ID != "test" || i.GetObject().Type != QuestionType {
-		t.Errorf("%T should not return an empty %T object. Received %#v", i, i.GetObject(), i.GetObject())
+	if i.GetID() != "test" || i.GetType() != QuestionType {
+		t.Errorf("%T should not return an empty %T object. Received %#v", i, i, i)
 	}
 }
 func TestIntransitiveActivity_IsLink(t *testing.T) {

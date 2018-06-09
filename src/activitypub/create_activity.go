@@ -16,7 +16,7 @@ func CreateActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) CreateActivi
 
 	ok := false
 	if a != nil {
-		typ := a.GetObject().Type
+		typ := a.GetType()
 		if typ == ApplicationType {
 			var app Application
 			app, ok = a.(Application)
