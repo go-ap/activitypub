@@ -137,7 +137,7 @@ func TestObject_Link(t *testing.T) {
 func TestObjectsArr_Append(t *testing.T) {
 	d := make(ObjectsArr, 0)
 
-	val := Object{ID: ObjectID("grrr")}
+	val := BaseObject{ID: ObjectID("grrr")}
 
 	d.Append(val)
 

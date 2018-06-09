@@ -17,7 +17,7 @@ func InboxNew() *Inbox {
 	id := ObjectID("inbox")
 	o := ObjectNew(id, OrderedCollectionType)
 
-	i := Inbox{Object: o}
+	i := Inbox{BaseObject: o}
 	i.TotalItems = 0
 
 	return &i

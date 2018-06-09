@@ -620,3 +620,68 @@ func TestIntransitiveActivityRecipientsDeduplication(t *testing.T) {
 		t.Errorf("%T.BCC should have exactly 0(zero) elements, not %d", b, len(b.BCC))
 	}
 }
+func TestActivity_GetLink(t *testing.T) {
+	a := ActivityNew("test", ActivityType, Person{})
+
+	if a.GetLink().ID != "" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetLink(), a.GetLink())
+	}
+}
+func TestActivity_GetObject(t *testing.T) {
+	a := ActivityNew("test", ActivityType, Person{})
+
+	if a.GetObject().ID != "test" || a.GetObject().Type != ActivityType {
+		t.Errorf("%T should not return an empty %T object. Received %#v", a, a.GetObject(), a.GetObject())
+	}
+}
+func TestActivity_IsLink(t *testing.T) {
+	a := ActivityNew("test", ActivityType, Person{})
+
+	if a.IsLink() {
+		t.Errorf("%T should not respond true to IsLink", a)
+	}
+}
+func TestActivity_IsObject(t *testing.T) {
+	a := ActivityNew("test", ActivityType, Person{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestIntransitiveActivity_GetLink(t *testing.T) {
+	i := IntransitiveActivityNew("test", QuestionType)
+
+	if i.GetLink().ID != "" {
+		t.Errorf("%T should return an empty %T object. Received %#v", i, i.GetLink(), i.GetLink())
+	}
+}
+func TestIntransitiveActivity_GetObject(t *testing.T) {
+	i := IntransitiveActivityNew("test", QuestionType)
+
+	if i.GetObject().ID != "test" || i.GetObject().Type != QuestionType {
+		t.Errorf("%T should not return an empty %T object. Received %#v", i, i.GetObject(), i.GetObject())
+	}
+}
+func TestIntransitiveActivity_IsLink(t *testing.T) {
+	i := IntransitiveActivityNew("test", QuestionType)
+
+	if i.IsLink() {
+		t.Errorf("%T should not respond true to IsLink", i)
+	}
+}
+func TestIntransitiveActivity_IsObject(t *testing.T) {
+	i := IntransitiveActivityNew("test", ActivityType)
+
+	if !i.IsObject() {
+		t.Errorf("%T should respond true to IsObject", i)
+	}
+}
+func TestActivity_RecipientsDeduplication(t *testing.T) {
+	t.Skip("See TestDeduplication")
+}
+func TestIntransitiveActivity_RecipientsDeduplication(t *testing.T) {
+	t.Skip("See TestDeduplication")
+}
+func TestBlock_RecipientsDeduplication(t *testing.T) {
+	t.Skip("See TestDeduplication")
+}

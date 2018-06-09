@@ -11,7 +11,7 @@ type CollectionInterface interface {
 
 // Collection is a subtype of GetObject that represents ordered or unordered sets of GetObject or GetLink instances.
 type Collection struct {
-	Object
+	BaseObject
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
 	TotalItems uint `jsonld:"totalItems,omitempty"`
@@ -22,7 +22,7 @@ type Collection struct {
 // OrderedCollection is a subtype of Collection in which members of the logical
 // collection are assumed to always be strictly ordered.
 type OrderedCollection struct {
-	Object
+	BaseObject
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
 	TotalItems uint `jsonld:"totalItems,omitempty"`
@@ -81,14 +81,14 @@ func ValidCollectionType(_type ActivityVocabularyType) bool {
 func CollectionNew(id ObjectID) *Collection {
 	o := ObjectNew(id, CollectionType)
 
-	return &Collection{Object: o}
+	return &Collection{BaseObject: o}
 }
 
 // CollectionNew initializes a new Collection
 func OrderedCollectionNew(id ObjectID) *OrderedCollection {
 	o := ObjectNew(id, OrderedCollectionType)
 
-	return &OrderedCollection{Object: o}
+	return &OrderedCollection{BaseObject: o}
 }
 
 // CollectionNew initializes a new Collection

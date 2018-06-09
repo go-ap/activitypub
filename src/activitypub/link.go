@@ -77,8 +77,8 @@ func (l Link) IsObject() bool {
 }
 
 // GetObject returns the GetObject corresponding to the Mention object
-func (l Link) GetObject() Object {
-	return Object{}
+func (l Link) GetObject() BaseObject {
+	return BaseObject{}
 }
 
 // GetLink returns the GetLink corresponding to the Mention object
@@ -97,8 +97,8 @@ func (m Mention) IsObject() bool {
 }
 
 // GetObject returns the GetObject corresponding to the Mention object
-func (m Mention) GetObject() Object {
-	return Object{}
+func (m Mention) GetObject() BaseObject {
+	return BaseObject{}
 }
 
 // GetLink returns the GetLink corresponding to the Mention object

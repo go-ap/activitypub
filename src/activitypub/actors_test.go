@@ -116,7 +116,7 @@ func TestActor_IsObject(t *testing.T) {
 
 func TestActor_Object(t *testing.T) {
 	m := ActorNew("test", ActorType)
-	if reflect.DeepEqual(Object{}, m.GetObject()) {
+	if reflect.DeepEqual(BaseObject{}, m.GetObject()) {
 		t.Errorf("%#v should not be an empty activity pub object", m.GetObject())
 	}
 }
@@ -144,7 +144,7 @@ func TestPerson_IsObject(t *testing.T) {
 
 func TestPerson_Object(t *testing.T) {
 	m := PersonNew("test")
-	if reflect.DeepEqual(Object{}, m.GetObject()) {
+	if reflect.DeepEqual(BaseObject{}, m.GetObject()) {
 		t.Errorf("%#v should not be an empty activity pub object", m.GetObject())
 	}
 }

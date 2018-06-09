@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"encoding/json"
+	"fmt"
 	"sort"
 	"time"
 )
@@ -22,8 +23,8 @@ type ObjectID string
 
 const (
 	// ActivityBaseURI the basic URI for the activity streams namespaces
-	ActivityBaseURI          URI                    = URI("https://www.w3.org/ns/activitystreams#")
-	ObjectType               ActivityVocabularyType = "ActivityPubObject"
+	ActivityBaseURI                                 = URI("https://www.w3.org/ns/activitystreams#")
+	ObjectType               ActivityVocabularyType = "Object"
 	LinkType                 ActivityVocabularyType = "Link"
 	ActivityType             ActivityVocabularyType = "Activity"
 	IntransitiveActivityType ActivityVocabularyType = "IntransitiveActivity"
@@ -89,7 +90,7 @@ type (
 	ObjectOrLink interface {
 		IsLink() bool
 		IsObject() bool
-		GetObject() Object
+		GetObject() BaseObject
 		GetLink() Link
 	}
 	// ObjectsArr is a named type for matching an ObjectOrLink slice type to Collection interface
@@ -108,12 +109,12 @@ type (
 )
 
 // IsLink validates if current Activity Pub GetObject is a GetLink
-func (o Object) IsLink() bool {
+func (o BaseObject) IsLink() bool {
 	return ValidLinkType(o.Type)
 }
 
 // IsObject validates if current Activity Pub GetObject is an GetObject
-func (o Object) IsObject() bool {
+func (o BaseObject) IsObject() bool {
 	return ValidObjectType(o.Type)
 }
 
@@ -151,13 +152,32 @@ func (l *LangRef) UnmarshalJSON(data []byte) error {
 
 // UnmarshalJSON tries to load the NaturalLanguage array from the incoming json value
 func (n *NaturalLanguageValue) UnmarshalJSON(data []byte) error {
+	if data[0] == '"' {
+		// a quoted string - loading it to c.URL
+		if data[len(data)-1] != '"' {
+			return fmt.Errorf("invalid string value when unmarshalling %T value", n)
+		}
+		n.Append(LangRef("-"), string(data[1:len(data)-1]))
+	}
+	if data[0] == '{' {
+		// an object - trying to load it to the struct
+		if data[len(data)-1] != '}' {
+			return fmt.Errorf("invalid object value when unmarshalling %T value", n)
+		}
+	}
+	if data[0] == '[' {
+		// an object - trying to load it to the struct
+		if data[len(data)-1] != ']' {
+			return fmt.Errorf("invalid object value when unmarshalling %T value", n)
+		}
+	}
 	return nil
 }
 
 // Describes an object of any kind.
 // The Activity Pub GetObject type serves as the base type for most of the other kinds of objects defined in the Activity Vocabulary,
 //  including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
-type Object struct {
+type BaseObject struct {
 	// Provides the globally unique identifier for an Activity Pub GetObject or GetLink.
 	ID ObjectID `jsonld:"id,omitempty"`
 	//  Identifies the Activity Pub GetObject or GetLink type. Multiple values may be specified.
@@ -268,11 +288,11 @@ func ValidObjectType(_type ActivityVocabularyType) bool {
 }
 
 // ObjectNew initializes a new GetObject
-func ObjectNew(id ObjectID, _type ActivityVocabularyType) Object {
+func ObjectNew(id ObjectID, _type ActivityVocabularyType) BaseObject {
 	if !(ValidObjectType(_type)) {
 		_type = ObjectType
 	}
-	o := Object{ID: id, Type: _type}
+	o := BaseObject{ID: id, Type: _type}
 	o.Name = make(NaturalLanguageValue)
 	o.Content = make(NaturalLanguageValue)
 	o.Summary = make(NaturalLanguageValue)
@@ -280,12 +300,12 @@ func ObjectNew(id ObjectID, _type ActivityVocabularyType) Object {
 }
 
 // GetObject returns the GetObject corresponding to the GetObject object
-func (o Object) GetObject() Object {
+func (o BaseObject) GetObject() BaseObject {
 	return o
 }
 
 // GetLink returns the GetLink corresponding to the GetObject object
-func (o Object) GetLink() Link {
+func (o BaseObject) GetLink() Link {
 	return Link{}
 }
 

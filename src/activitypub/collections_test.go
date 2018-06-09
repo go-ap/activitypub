@@ -62,7 +62,7 @@ func TestValidCollectionType(t *testing.T) {
 func Test_OrderedCollection_Append(t *testing.T) {
 	id := ObjectID("test")
 
-	val := Object{ID: ObjectID("grrr")}
+	val := BaseObject{ID: ObjectID("grrr")}
 
 	c := OrderedCollectionNew(id)
 	c.Append(val)
@@ -78,7 +78,7 @@ func Test_OrderedCollection_Append(t *testing.T) {
 func Test_Collection_Append(t *testing.T) {
 	id := ObjectID("test")
 
-	val := Object{ID: ObjectID("grrr")}
+	val := BaseObject{ID: ObjectID("grrr")}
 
 	c := CollectionNew(id)
 	c.Append(val)

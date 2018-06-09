@@ -1,5 +1,9 @@
 package activitypub
 
+import (
+	"encoding/json"
+)
+
 // Activity Types
 const (
 	AcceptType          ActivityVocabularyType = "Accept"
@@ -67,7 +71,7 @@ var validActivityTypes = [...]ActivityVocabularyType{
 // IntransitiveActivity Instances of IntransitiveActivity are a subtype of Activity representing intransitive actions.
 // The object property is therefore inappropriate for these activities.
 type IntransitiveActivity struct {
-	Object
+	BaseObject
 	// Describes one or more entities that either performed or are expected to perform the activity.
 	// Any single activity can have multiple actors. The actor may be specified using an indirect GetLink.
 	Actor Actor `jsonld:"actor,omitempty"`
@@ -95,7 +99,7 @@ type IntransitiveActivity struct {
 // It is important to note that the Activity type itself does not carry any specific semantics
 //  about the kind of action being taken.
 type Activity struct {
-	*IntransitiveActivity
+	IntransitiveActivity
 	// When used within an Activity, describes the direct object of the activity.
 	// For instance, in the activity "John added a movie to his wishlist",
 	//  the object of the activity is the movie added.
@@ -216,7 +220,7 @@ type (
 // Either of the anyOf and oneOf properties may be used to express possible answers,
 //  but a Question object must not have both properties.
 type Question struct {
-	*IntransitiveActivity
+	IntransitiveActivity
 	// Identifies an exclusive option for a Question. Use of oneOf implies that the Question
 	//  can have only a single answer. To indicate that a Question can have multiple answers, use anyOf.
 	OneOf ObjectOrLink `jsonld:"oneOf,omitempty"`
@@ -421,7 +425,7 @@ func ViewNew(id ObjectID, ob ObjectOrLink) *View {
 // QuestionNew initializes a Question activity
 func QuestionNew(id ObjectID) *Question {
 	a := IntransitiveActivityNew(id, QuestionType)
-	o := Question{IntransitiveActivity: a}
+	o := Question{IntransitiveActivity: *a}
 	return &o
 }
 
@@ -441,9 +445,10 @@ func ActivityNew(id ObjectID, _type ActivityVocabularyType, ob ObjectOrLink) *Ac
 		_type = ActivityType
 	}
 	o := ObjectNew(id, _type)
-	i := IntransitiveActivity{Object: o}
+	i := IntransitiveActivity{BaseObject: o}
 
-	a := Activity{IntransitiveActivity: &i}
+	a := Activity{IntransitiveActivity: i}
+
 	a.Object = ob
 
 	return &a
@@ -456,7 +461,7 @@ func IntransitiveActivityNew(id ObjectID, _type ActivityVocabularyType) *Intrans
 	}
 	o := ObjectNew(id, _type)
 
-	return &IntransitiveActivity{Object: o}
+	return &IntransitiveActivity{BaseObject: o}
 }
 
 func (a *Activity) RecipientsDeduplication() {
@@ -476,4 +481,39 @@ func (b *Block) RecipientsDeduplication() {
 	dedupObjects.Append(b.Actor)
 	dedupObjects.Append(b.Object)
 	recipientsDeduplication(&dedupObjects, &b.To, &b.Bto, &b.CC, &b.BCC)
+}
+func (i *IntransitiveActivity) GetLink() Link {
+	return Link{}
+}
+func (i *IntransitiveActivity) IsLink() bool {
+	return false
+}
+func (i *IntransitiveActivity) GetObject() BaseObject {
+	return i.BaseObject
+}
+func (i *IntransitiveActivity) IsObject() bool {
+	return true
+}
+func (a *Activity) GetLink() Link {
+	return Link{}
+}
+func (a *Activity) IsLink() bool {
+	return false
+}
+func (a *Activity) GetObject() BaseObject {
+	return a.IntransitiveActivity.GetObject()
+}
+func (a *Activity) IsObject() bool {
+	return true
+}
+
+func (a *Activity) UnmarshalJSON(data []byte) error {
+	var temp map[string]json.RawMessage
+
+	err := json.Unmarshal(data, &temp)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
