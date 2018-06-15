@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"sort"
 	"time"
+
+	"github.com/buger/jsonparser"
 )
 
 // ObjectID designates an unique global identifier.
@@ -298,7 +300,7 @@ func ObjectNew(id ObjectID, typ ActivityVocabularyType) *Object {
 }
 
 // GetID returns the GetID corresponding to the GetID object
-func (o Object) GetID() ObjectID{
+func (o Object) GetID() ObjectID {
 	return o.ID
 }
 
@@ -349,5 +351,21 @@ func recipientsDeduplication(recArgs ...*ObjectsArr) error {
 			*recList = append((*recList)[:idx], (*recList)[idx+1:]...)
 		}
 	}
+	return nil
+}
+
+func (i *ObjectID) MarshalJSON(data []byte) error {
+	*i = ObjectID(data)
+	return nil
+}
+
+func (c *ContentType) MarshalJSON(data []byte) error {
+	*c = ContentType(data)
+	return nil
+}
+
+func (o *Object) MarshalJSON(data []byte) error {
+	val, _, _, _ := jsonparser.Get(data, "ID")
+	o.ID.MarshalJSON(val)
 	return nil
 }
