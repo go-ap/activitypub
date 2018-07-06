@@ -24,11 +24,11 @@ func TestMarshal(t *testing.T) {
 	b := mockTypeA{}
 
 	url := "http://www.habarnam.ro"
-	c := Context{URL: Ref(url)}
+	Ctx = &Context{URL: Ref(url)}
 	var err error
 	var out []byte
 
-	out, err = Marshal(a, &c)
+	out, err = Marshal(a)
 	if err != nil {
 		t.Errorf("%s", err)
 	}
@@ -62,11 +62,11 @@ func TestMarshalNullContext(t *testing.T) {
 		PropB float64
 	}{"test", 0.0004}
 
-	outL, errL := Marshal(a, nil)
+	outL, errL := Marshal(a)
 	if errL != nil {
 		t.Errorf("%s", errL)
 	}
-	outJ, errJ := Marshal(a, nil)
+	outJ, errJ := Marshal(a)
 	if errJ != nil {
 		t.Errorf("%s", errJ)
 	}
@@ -116,7 +116,8 @@ func TestPayloadWithContext_MarshalJSON(t *testing.T) {
 	if eErr != nil {
 		t.Errorf("Error: %s", eErr)
 	}
-	n, _ := Marshal(nil, nil)
+	Ctx = nil
+	n, _ := Marshal(nil)
 	if bytes.Compare(eData, n) != 0 {
 		t.Errorf("Empty payload should resolve to null json value '%s', received '%s'", n, eData)
 	}
@@ -129,7 +130,7 @@ func TestPayloadWithContext_MarshalJSON(t *testing.T) {
 	if pErr != nil {
 		t.Errorf("Error: %s", pErr)
 	}
-	av, _ := Marshal(a, nil)
+	av, _ := Marshal(a)
 	if bytes.Compare(pData, av) != 0 {
 		t.Errorf("Empty payload should resolve to value '%#v', received '%s'", av, pData)
 	}

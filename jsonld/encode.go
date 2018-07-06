@@ -324,8 +324,9 @@ func JSONLdName(n string, tag jsonLdTag) string {
 // handle them. Passing cyclic structures to Marshal will result in
 // an infinite recursion.
 //
-func Marshal(v interface{}, ctx *Context) ([]byte, error) {
+func Marshal(v interface{}) ([]byte, error) {
 	e := &encodeState{}
+	ctx := Ctx
 	err := e.marshal(v, encOpts{escapeHTML: true})
 	if err != nil {
 		return nil, err
@@ -341,12 +342,6 @@ func Marshal(v interface{}, ctx *Context) ([]byte, error) {
 	output := e.Bytes()
 	return bytes.Replace(output, []byte("}{"), []byte(", "), 1), nil
 
-}
-
-// Marshaler is the interface implemented by types that
-// can marshal themselves into valid JSON.
-type Marshaler interface {
-	MarshalJSON() ([]byte, error)
 }
 
 // An UnsupportedTypeError is returned by Marshal when attempting
@@ -510,7 +505,7 @@ func typeEncoder(t reflect.Type) encoderFunc {
 }
 
 var (
-	marshalerType     = reflect.TypeOf(new(Marshaler)).Elem()
+	marshalerType     = reflect.TypeOf(new(json.Marshaler)).Elem()
 	textMarshalerType = reflect.TypeOf(new(encoding.TextMarshaler)).Elem()
 )
 
@@ -574,7 +569,7 @@ func marshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 		e.WriteString("null")
 		return
 	}
-	m, ok := v.Interface().(Marshaler)
+	m, ok := v.Interface().(json.Marshaler)
 	if !ok {
 		e.WriteString("null")
 		return
@@ -595,7 +590,7 @@ func addrMarshalerEncoder(e *encodeState, v reflect.Value, _ encOpts) {
 		e.WriteString("null")
 		return
 	}
-	m := va.Interface().(Marshaler)
+	m := va.Interface().(json.Marshaler)
 	b, err := m.MarshalJSON()
 	if err == nil {
 		// copy JSON into buffer, checking validity.
@@ -730,7 +725,7 @@ func stringEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 		return
 	}
 	if opts.quoted {
-		sb, err := Marshal(v.String(), nil)
+		sb, err := Marshal(v.String())
 		if err != nil {
 			e.error(err)
 		}
