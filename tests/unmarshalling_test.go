@@ -8,8 +8,8 @@ import (
 	"reflect"
 	"testing"
 
-	a "activitypub"
-	j "jsonld"
+	a "github.com/mariusor/activitypub.go/activitypub"
+	j "github.com/mariusor/activitypub.go/jsonld"
 )
 
 const dir = "./mocks"
@@ -58,15 +58,15 @@ var allTests = tests{
 			},
 		},
 	},
-	"activity_simple": testPair{
-		path:     "./mocks/activity_simple.json",
-		expected: true,
-		blank:    &a.Activity{},
-		result: &a.Activity{
-			Type:    a.ActivityType,
-			Summary: a.NaturalLanguageValue{a.LangRef("-"): "Sally did something to a note"},
-		},
-	},
+	//"activity_simple": testPair{
+	//	path:     "./mocks/activity_simple.json",
+	//	expected: true,
+	//	blank:    &a.Activity{},
+	//	result: &a.Activity{
+	//		Type:    a.ActivityType,
+	//		Summary: a.NaturalLanguageValue{a.LangRef("-"): "Sally did something to a note"},
+	//	},
+	//},
 }
 
 func getFileContents(path string) []byte {

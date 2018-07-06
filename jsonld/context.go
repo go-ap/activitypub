@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	ap "activitypub"
+	ap "github.com/mariusor/activitypub.go/activitypub"
 )
 
 // Ref basic type

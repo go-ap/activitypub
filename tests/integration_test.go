@@ -3,8 +3,9 @@ package tests
 import (
 	"testing"
 
-	"activitypub"
-	"jsonld"
+	"github.com/mariusor/activitypub.go/activitypub"
+	"github.com/mariusor/activitypub.go/jsonld"
+
 	"strings"
 )
 

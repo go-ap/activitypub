@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"testing"
 
-	ap "activitypub"
+	ap "github.com/mariusor/activitypub.go/activitypub"
 )
 
 func TestUnmarshalWithEmptyJsonObject(t *testing.T) {

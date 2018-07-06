@@ -3,8 +3,8 @@ package tests
 // Server to Server tests from: https://test.activitypub.rocks/
 
 import (
-	"activitypub"
 	"fmt"
+	"github.com/mariusor/activitypub.go/activitypub"
 	"testing"
 )
 
