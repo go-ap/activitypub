@@ -8,7 +8,7 @@ var validCollectionTypes = [...]ActivityVocabularyType{CollectionType, OrderedCo
 type Page ObjectOrLink
 
 type CollectionInterface interface {
-	Append(o ObjectOrLink) error
+	Append(ob ObjectOrLink) error
 }
 
 // Collection is a subtype of GetID that represents ordered or unordered sets of GetID or GetLink instances.
@@ -261,15 +261,15 @@ func OrderedCollectionPageNew(parent *OrderedCollection) *OrderedCollectionPage 
 }
 
 // Append adds an element to an OrderedCollection
-func (c *OrderedCollection) Append(o ObjectOrLink) error {
-	c.OrderedItems = append(c.OrderedItems, o)
-	c.TotalItems++
+func (o *OrderedCollection) Append(ob ObjectOrLink) error {
+	o.OrderedItems = append(o.OrderedItems, ob)
+	o.TotalItems++
 	return nil
 }
 
 // Append adds an element to an Collection
-func (c *Collection) Append(o ObjectOrLink) error {
-	c.Items = append(c.Items, o)
+func (c *Collection) Append(ob ObjectOrLink) error {
+	c.Items = append(c.Items, ob)
 	c.TotalItems++
 	return nil
 }
@@ -285,15 +285,38 @@ func (c *Collection) GetID() ObjectID {
 func (c *Collection) IsObject() bool {
 	return true
 }
-func (c *OrderedCollection) GetType() ActivityVocabularyType {
-	return c.Type
+func (o *OrderedCollection) GetType() ActivityVocabularyType {
+	return o.Type
 }
-func (c *OrderedCollection) IsLink() bool {
+func (o *OrderedCollection) IsLink() bool {
 	return false
 }
-func (c *OrderedCollection) GetID() ObjectID {
-	return c.ID
+func (o *OrderedCollection) GetID() ObjectID {
+	return o.ID
 }
-func (c *OrderedCollection) IsObject() bool {
+func (o *OrderedCollection) IsObject() bool {
 	return true
+}
+
+/*
+func (c *Collection) MarshalJSON() ([]byte, error) {
+	return nil, nil
+}
+
+func (o *OrderedCollection) MarshalJSON() ([]byte, error) {
+	return nil, nil
+}
+*/
+// Append adds an element to an OutboxStream
+func (o *OutboxStream) Append(ob ObjectOrLink) error {
+	o.OrderedItems = append(o.OrderedItems, ob)
+	o.TotalItems++
+	return nil
+}
+
+// Append adds an element to an Outbox
+func (o *Outbox) Append(ob ObjectOrLink) error {
+	o.OrderedItems = append(o.OrderedItems, ob)
+	o.TotalItems++
+	return nil
 }
