@@ -35,7 +35,7 @@ const (
 )
 
 type payloadWithContext struct {
-	Context *Context `jsonld:"@context,omitempty,collapsible"`
+	Context *Context `jsonld:"@context,collapsible"`
 	Obj     *interface{}
 }
 
@@ -195,6 +195,12 @@ func JSONLdName(n string, tag jsonLdTag) string {
 	return n
 }
 
+// An UnsupportedTypeError is returned by Marshal when attempting
+// to encode an unsupported value type.
+type UnsupportedTypeError struct {
+	Type reflect.Type
+}
+
 // Marshal returns the JSON encoding of v.
 //
 // Marshal traverses the value v recursively.
@@ -326,28 +332,29 @@ func JSONLdName(n string, tag jsonLdTag) string {
 //
 func Marshal(v interface{}) ([]byte, error) {
 	e := &encodeState{}
-	ctx := Ctx
+
+	if Ctx != nil {
+		a := payloadWithContext{
+			Context: Ctx,
+			Obj:     nil,
+		}
+		//errC := e.marshal(ctx, encOpts{escapeHTML: true})
+		//if errC != nil {
+		//	return nil, errC
+		//}
+		err := e.marshal(a, encOpts{escapeHTML: true})
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	err := e.marshal(v, encOpts{escapeHTML: true})
 	if err != nil {
 		return nil, err
 	}
-	if ctx == nil {
-		return e.Bytes(), nil
-	}
-	errC := e.marshal(ctx, encOpts{escapeHTML: true})
-	if errC != nil {
-		return nil, errC
-	}
 
 	output := e.Bytes()
-	return bytes.Replace(output, []byte("}{"), []byte(", "), 1), nil
-
-}
-
-// An UnsupportedTypeError is returned by Marshal when attempting
-// to encode an unsupported value type.
-type UnsupportedTypeError struct {
-	Type reflect.Type
+	return bytes.Replace(output, []byte(`,"Obj":null}{`), []byte(","), 1), nil
 }
 
 func (e *UnsupportedTypeError) Error() string {

@@ -17,7 +17,7 @@ type Ref string
 // Terms are case sensitive and any valid string that is not a reserved JSON-LD
 // keyword can be used as a term.
 type Context struct {
-	URL      Ref        `jsonld:"@url"`
+	URL      Ref        `jsonld:"@url,omitempty,collapsible"`
 	Language ap.LangRef `jsonld:"@language,omitempty,collapsible"`
 }
 

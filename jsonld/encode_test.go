@@ -32,6 +32,9 @@ func TestMarshal(t *testing.T) {
 	if err != nil {
 		t.Errorf("%s", err)
 	}
+	if !strings.Contains(string(out), "@context") {
+		t.Errorf("Context name not found '%s' in %s", "@context", out)
+	}
 	if !strings.Contains(string(out), url) {
 		t.Errorf("Context url not found '%s' in %s", url, out)
 	}
