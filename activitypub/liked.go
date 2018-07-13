@@ -10,3 +10,31 @@ type (
 	// Liked is a type alias for an Ordered Collection
 	Liked OrderedCollection
 )
+
+
+// LikedCollection initializes a new Outbox
+func LikedNew() *Liked {
+	id := ObjectID("liked")
+
+	l := Liked{ID: id, Type: OrderedCollectionType}
+	l.Name = make(NaturalLanguageValue)
+	l.Content = make(NaturalLanguageValue)
+	l.Summary = make(NaturalLanguageValue)
+
+	l.TotalItems = 0
+
+	return &l
+}
+// Append adds an element to an LikedCollection
+func (l *LikedCollection) Append(o ObjectOrLink) error {
+	l.OrderedItems = append(l.OrderedItems, o)
+	l.TotalItems++
+	return nil
+}
+
+func (l LikedCollection) GetID() ObjectID {
+	return l.ID
+}
+func (l LikedCollection)GetType() ActivityVocabularyType {
+	return l.Type
+}
