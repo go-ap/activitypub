@@ -194,8 +194,12 @@ func ActorNew(id ObjectID, typ ActivityVocabularyType) *Actor {
 	a.Content = make(NaturalLanguageValue)
 	a.Summary = make(NaturalLanguageValue)
 	in := InboxNew()
+	out := OutboxNew()
+	liked := LikedNew()
 
 	a.Inbox = InboxStream(*in)
+	a.Outbox = OutboxStream(*out)
+	a.Liked = LikedCollection(*liked)
 	a.PreferredUsername = make(NaturalLanguageValue, 0)
 
 	return &a
@@ -353,4 +357,8 @@ func (p Person) GetID() ObjectID {
 // GetLink returns the GetLink corresponding to the Person object
 func (p Person) GetType() ActivityVocabularyType {
 	return p.Type
+}
+
+func (p Person) GetLink() URI {
+	return p.URL.(URI)
 }
