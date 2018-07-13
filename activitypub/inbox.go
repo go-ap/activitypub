@@ -32,3 +32,10 @@ func (i *InboxStream) Append(o ObjectOrLink) error {
 	i.TotalItems++
 	return nil
 }
+
+func (i InboxStream) GetID() ObjectID {
+	return i.ID
+}
+func (i InboxStream)GetType() ActivityVocabularyType {
+	return i.Type
+}

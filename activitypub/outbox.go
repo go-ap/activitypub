@@ -9,3 +9,23 @@ type (
 	// Outbox is a type alias for an Ordered Collection
 	Outbox OrderedCollection
 )
+
+// OutboxNew initializes a new Outbox
+func OutboxNew() *Outbox {
+	id := ObjectID("outbox")
+
+	i := Outbox{ID: id, Type: OrderedCollectionType}
+	i.Name = make(NaturalLanguageValue)
+	i.Content = make(NaturalLanguageValue)
+	i.Summary = make(NaturalLanguageValue)
+
+	i.TotalItems = 0
+
+	return &i
+}
+func (o OutboxStream) GetID() ObjectID {
+	return o.ID
+}
+func (o OutboxStream)GetType() ActivityVocabularyType {
+	return o.Type
+}
