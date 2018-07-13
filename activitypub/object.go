@@ -25,7 +25,7 @@ type ObjectID string
 
 const (
 	// ActivityBaseURI the basic URI for the activity streams namespaces
-	ActivityBaseURI                                 = URI("https://www.w3.org/ns/activitystreams#")
+	ActivityBaseURI                                 = URI("https://www.w3.org/ns/activitystreams")
 	ObjectType               ActivityVocabularyType = "Object"
 	LinkType                 ActivityVocabularyType = "Link"
 	ActivityType             ActivityVocabularyType = "Activity"
@@ -90,6 +90,7 @@ type (
 	ActivityObject interface{}
 	// ObjectOrLink describes an object of any kind.
 	ObjectOrLink interface {
+		ActivityObject
 		GetID() ObjectID
 		GetType() ActivityVocabularyType
 	}
@@ -97,7 +98,9 @@ type (
 	ObjectsArr []ObjectOrLink
 	// LinkOrURI is an interface that GetID and GetLink structs implement, and at the same time
 	// they are kept disjointed
-	LinkOrURI interface{}
+	LinkOrURI interface{
+		GetLink() URI
+	}
 	// ImageOrLink is an interface that Image and GetLink structs implement
 	ImageOrLink interface{}
 	// MimeType is the type for MIME types
