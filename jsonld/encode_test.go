@@ -127,7 +127,7 @@ func TestPayloadWithContext_MarshalJSON(t *testing.T) {
 
 	var a interface{}
 	a = 1
-	p := payloadWithContext{Obj: &a}
+	p := payloadWithContext{Obj: a}
 	pData, pErr := p.MarshalJSON()
 
 	if pErr != nil {
@@ -135,6 +135,6 @@ func TestPayloadWithContext_MarshalJSON(t *testing.T) {
 	}
 	av, _ := Marshal(a)
 	if bytes.Compare(pData, av) != 0 {
-		t.Errorf("Empty payload should resolve to value '%#v', received '%s'", av, pData)
+		t.Errorf("Empty payload should resolve to value '%s', received '%s'", av, pData)
 	}
 }

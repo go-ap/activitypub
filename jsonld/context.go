@@ -8,7 +8,7 @@ import (
 	ap "github.com/mariusor/activitypub.go/activitypub"
 )
 
-var Ctx *Context
+var Ctx interface{}
 
 // Ref basic type
 type Ref string

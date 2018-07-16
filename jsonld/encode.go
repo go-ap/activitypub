@@ -35,8 +35,8 @@ const (
 )
 
 type payloadWithContext struct {
-	Context *Context `jsonld:"@context,collapsible"`
-	Obj     *interface{}
+	Context interface{} `jsonld:"@context,collapsible"`
+	Obj     interface{}
 }
 
 type jsonCapableValue struct {
@@ -131,7 +131,7 @@ func (p *payloadWithContext) MarshalJSON() ([]byte, error) {
 		}
 	}
 	if p.Obj != nil {
-		oMap := reflectToJSONValue(*p.Obj)
+		oMap := reflectToJSONValue(p.Obj)
 		if oMap.isScalar && a.isScalar {
 			a.isScalar = true
 			a.scalar = oMap.scalar

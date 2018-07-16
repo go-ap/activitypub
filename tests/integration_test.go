@@ -15,14 +15,16 @@ func TestAcceptSerialization(t *testing.T) {
 	obj.Name["en"] = "test"
 	obj.Name["fr"] = "teste"
 
-	jsonld.Ctx = &jsonld.Context{URL: "https://www.w3.org/ns/activitystreams"}
+	jsonld.Ctx = jsonld.Context{URL: "https://www.w3.org/ns/activitystreams"}
 
 	data, err := jsonld.Marshal(obj)
 	if err != nil {
 		t.Errorf("Error: %v", err)
 	}
-	if !strings.Contains(string(data), string(jsonld.Ctx.URL)) {
-		t.Errorf("Could not find context url %#v in output %s", jsonld.Ctx.URL, data)
+
+	ctxt := jsonld.Ctx.(jsonld.Context)
+	if !strings.Contains(string(data), string(ctxt.URL)) {
+		t.Errorf("Could not find context url %#v in output %s", ctxt.URL, data)
 	}
 	if !strings.Contains(string(data), string(obj.ID)) {
 		t.Errorf("Could not find id %#v in output %s", string(obj.ID), data)
@@ -44,15 +46,16 @@ func TestCreateActivityHTTPSerialization(t *testing.T) {
 	obj.Name["en"] = "Accept New"
 
 	baseURI := string(activitypub.ActivityBaseURI)
-	jsonld.Ctx = &jsonld.Context{
+	jsonld.Ctx = jsonld.Context{
 		URL: jsonld.Ref(baseURI + string(obj.Type)),
 	}
 	data, err := jsonld.Marshal(obj)
 	if err != nil {
 		t.Error(err)
 	}
-	if !strings.Contains(string(data), string(jsonld.Ctx.URL)) {
-		t.Errorf("Could not find context url %#v in output %s", jsonld.Ctx.URL, data)
+	ctxt := jsonld.Ctx.(jsonld.Context)
+	if !strings.Contains(string(data), string(ctxt.URL)) {
+		t.Errorf("Could not find context url %#v in output %s", ctxt.URL, data)
 	}
 	if !strings.Contains(string(data), string(obj.ID)) {
 		t.Errorf("Could not find id %#v in output %s", string(obj.ID), data)
