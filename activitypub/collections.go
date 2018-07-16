@@ -273,27 +273,43 @@ func (c *Collection) Append(ob ObjectOrLink) error {
 	c.TotalItems++
 	return nil
 }
+
+// GetType returns the Collection's type
 func (c *Collection) GetType() ActivityVocabularyType {
 	return c.Type
 }
+
+// IsLink returns false for a Collection object
 func (c *Collection) IsLink() bool {
 	return false
 }
+
+// GetID returns the Collection's object ID
 func (c *Collection) GetID() ObjectID {
 	return c.ID
 }
+
+// IsObject returns true for a Collection object
 func (c *Collection) IsObject() bool {
 	return true
 }
+
+// GetType returns the OrderedCollection's type
 func (o *OrderedCollection) GetType() ActivityVocabularyType {
 	return o.Type
 }
+
+// IsLink returns false for an OrderedCollection object
 func (o *OrderedCollection) IsLink() bool {
 	return false
 }
+
+// GetID returns the OrderedCollection's object ID
 func (o *OrderedCollection) GetID() ObjectID {
 	return o.ID
 }
+
+// IsObject returns true for am OrderedCollection object
 func (o *OrderedCollection) IsObject() bool {
 	return true
 }

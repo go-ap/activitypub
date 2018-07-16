@@ -38,10 +38,12 @@ func (o *Outbox) Append(ob ObjectOrLink) error {
 	return nil
 }
 
+// GetID returns the OutboxStream's object ID
 func (o OutboxStream) GetID() ObjectID {
 	return o.ID
 }
 
+// GetType returns the OutboxStream's type
 func (o OutboxStream) GetType() ActivityVocabularyType {
 	return o.Type
 }

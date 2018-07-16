@@ -40,9 +40,12 @@ func (o *Inbox) Append(ob ObjectOrLink) error {
 	return nil
 }
 
+// GetID returns the InboxStream's object ID
 func (i InboxStream) GetID() ObjectID {
 	return i.ID
 }
+
+// GetType returns the InboxStream's type
 func (i InboxStream) GetType() ActivityVocabularyType {
 	return i.Type
 }

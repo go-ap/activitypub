@@ -154,6 +154,7 @@ type Actor struct {
 	Streams []Collection `jsonld:"streams,omitempty"`
 }
 
+// ActorInterface
 type ActorInterface interface{}
 
 type (
@@ -240,12 +241,12 @@ func ServiceNew(id ObjectID) *Service {
 	return &o
 }
 
-// IsLink validates if current Actor is a GetLink
+// IsLink validates if current Actor is a Link
 func (a Actor) IsLink() bool {
 	return a.Type == LinkType || ValidLinkType(a.Type)
 }
 
-// IsObject validates if current Actor is an GetID
+// IsObject validates if current Actor is an Object
 func (a Actor) IsObject() bool {
 	return a.Type == ObjectType || ValidObjectType(a.Type)
 }
@@ -255,17 +256,17 @@ func (a Actor) GetID() ObjectID {
 	return a.ID
 }
 
-// GetLink returns the GetLink corresponding to the Actor object
+// GetType returns the type corresponding to the Actor object
 func (a Actor) GetType() ActivityVocabularyType {
 	return a.Type
 }
 
-// IsLink validates if current Application is a GetLink
+// IsLink validates if current Application is a Link
 func (a Application) IsLink() bool {
 	return a.Type == LinkType || ValidLinkType(a.Type)
 }
 
-// IsObject validates if current Application is an GetID
+// IsObject validates if current Application is an Object
 func (a Application) IsObject() bool {
 	return a.Type == ObjectType || ValidObjectType(a.Type)
 }
@@ -275,17 +276,17 @@ func (a Application) GetID() ObjectID {
 	return a.ID
 }
 
-// GetLink returns the GetLink corresponding to the Application object
+// GetType returns the type corresponding to the Application object
 func (a Application) GetType() ActivityVocabularyType {
 	return a.Type
 }
 
-// IsLink validates if current Group is a GetLink
+// IsLink validates if current Group is a Link
 func (a Group) IsLink() bool {
 	return a.Type == LinkType || ValidLinkType(a.Type)
 }
 
-// IsObject validates if current Group is an GetID
+// IsObject validates if current Group is an Object
 func (a Group) IsObject() bool {
 	return a.Type == ObjectType || ValidObjectType(a.Type)
 }
@@ -295,17 +296,17 @@ func (a Group) GetID() ObjectID {
 	return a.ID
 }
 
-// GetLink returns the GetLink corresponding to the Group object
+// GetType returns the type corresponding to the Group object
 func (a Group) GetType() ActivityVocabularyType {
 	return a.Type
 }
 
-// IsLink validates if current Organization is a GetLink
+// IsLink validates if current Organization is a Link
 func (a Organization) IsLink() bool {
 	return a.Type == LinkType || ValidLinkType(a.Type)
 }
 
-// IsObject validates if current Organization is an GetID
+// IsObject validates if current Organization is an Object
 func (a Organization) IsObject() bool {
 	return a.Type == ObjectType || ValidObjectType(a.Type)
 }
@@ -315,17 +316,17 @@ func (a Organization) GetID() ObjectID {
 	return a.ID
 }
 
-// GetLink returns the GetLink corresponding to the Organization object
+// GetType returns the type corresponding to the Organization object
 func (a Organization) GetType() ActivityVocabularyType {
 	return a.Type
 }
 
-// IsLink validates if current Service is a GetLink
+// IsLink validates if current Service is a Link
 func (a Service) IsLink() bool {
 	return a.Type == LinkType || ValidLinkType(a.Type)
 }
 
-// IsObject validates if current Service is an GetID
+// IsObject validates if current Service is an Object
 func (a Service) IsObject() bool {
 	return a.Type == ObjectType || ValidObjectType(a.Type)
 }
@@ -335,16 +336,17 @@ func (a Service) GetID() ObjectID {
 	return a.ID
 }
 
-// GetLink returns the GetLink corresponding to the Service object
+// GetType returns the type corresponding to the Service object
 func (a Service) GetType() ActivityVocabularyType {
 	return a.Type
 }
-// IsLink validates if current Person is a GetLink
+
+// IsLink validates if current Person is a Link
 func (p Person) IsLink() bool {
 	return p.Type == LinkType || ValidLinkType(p.Type)
 }
 
-// IsObject validates if current Person is an GetID
+// IsObject validates if current Person is an Object
 func (p Person) IsObject() bool {
 	return p.Type == ObjectType || ValidObjectType(p.Type)
 }
@@ -354,11 +356,12 @@ func (p Person) GetID() ObjectID {
 	return p.ID
 }
 
-// GetLink returns the GetLink corresponding to the Person object
+// GetType returns the object type for the current Person object
 func (p Person) GetType() ActivityVocabularyType {
 	return p.Type
 }
 
+// GetLink returns the URI for the current Person object
 func (p Person) GetLink() URI {
 	return p.URL.(URI)
 }

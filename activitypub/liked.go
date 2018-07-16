@@ -39,9 +39,12 @@ func (l *Liked) Append(ob ObjectOrLink) error {
 	return nil
 }
 
+// GetID returns the LikedCollection's object ID
 func (l LikedCollection) GetID() ObjectID {
 	return l.ID
 }
+
+// GetType returns the LikedCollection's type
 func (l LikedCollection) GetType() ActivityVocabularyType {
 	return l.Type
 }
