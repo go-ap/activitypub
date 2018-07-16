@@ -23,9 +23,25 @@ func OutboxNew() *Outbox {
 
 	return &i
 }
+
+// Append adds an element to an OutboxStream
+func (o *OutboxStream) Append(ob ObjectOrLink) error {
+	o.OrderedItems = append(o.OrderedItems, ob)
+	o.TotalItems++
+	return nil
+}
+
+// Append adds an element to an Outbox
+func (o *Outbox) Append(ob ObjectOrLink) error {
+	o.OrderedItems = append(o.OrderedItems, ob)
+	o.TotalItems++
+	return nil
+}
+
 func (o OutboxStream) GetID() ObjectID {
 	return o.ID
 }
-func (o OutboxStream)GetType() ActivityVocabularyType {
+
+func (o OutboxStream) GetType() ActivityVocabularyType {
 	return o.Type
 }

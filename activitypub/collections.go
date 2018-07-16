@@ -307,16 +307,3 @@ func (o *OrderedCollection) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 */
-// Append adds an element to an OutboxStream
-func (o *OutboxStream) Append(ob ObjectOrLink) error {
-	o.OrderedItems = append(o.OrderedItems, ob)
-	o.TotalItems++
-	return nil
-}
-
-// Append adds an element to an Outbox
-func (o *Outbox) Append(ob ObjectOrLink) error {
-	o.OrderedItems = append(o.OrderedItems, ob)
-	o.TotalItems++
-	return nil
-}

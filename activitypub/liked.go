@@ -11,7 +11,6 @@ type (
 	Liked OrderedCollection
 )
 
-
 // LikedCollection initializes a new Outbox
 func LikedNew() *Liked {
 	id := ObjectID("liked")
@@ -25,6 +24,7 @@ func LikedNew() *Liked {
 
 	return &l
 }
+
 // Append adds an element to an LikedCollection
 func (l *LikedCollection) Append(o ObjectOrLink) error {
 	l.OrderedItems = append(l.OrderedItems, o)
@@ -32,9 +32,16 @@ func (l *LikedCollection) Append(o ObjectOrLink) error {
 	return nil
 }
 
+// Append adds an element to an Outbox
+func (l *Liked) Append(ob ObjectOrLink) error {
+	l.OrderedItems = append(l.OrderedItems, ob)
+	l.TotalItems++
+	return nil
+}
+
 func (l LikedCollection) GetID() ObjectID {
 	return l.ID
 }
-func (l LikedCollection)GetType() ActivityVocabularyType {
+func (l LikedCollection) GetType() ActivityVocabularyType {
 	return l.Type
 }

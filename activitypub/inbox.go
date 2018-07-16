@@ -33,9 +33,16 @@ func (i *InboxStream) Append(o ObjectOrLink) error {
 	return nil
 }
 
+// Append adds an element to an Inbox
+func (o *Inbox) Append(ob ObjectOrLink) error {
+	o.OrderedItems = append(o.OrderedItems, ob)
+	o.TotalItems++
+	return nil
+}
+
 func (i InboxStream) GetID() ObjectID {
 	return i.ID
 }
-func (i InboxStream)GetType() ActivityVocabularyType {
+func (i InboxStream) GetType() ActivityVocabularyType {
 	return i.Type
 }
