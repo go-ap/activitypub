@@ -3,8 +3,6 @@ package tests
 // Common server tests...
 
 import (
-	//	"activitypub"
-	//	"fmt"
 	"testing"
 )
 

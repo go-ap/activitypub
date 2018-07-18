@@ -3,26 +3,26 @@ package tests
 import (
 	"testing"
 
-	"github.com/mariusor/activitypub.go/activitypub"
-	"github.com/mariusor/activitypub.go/jsonld"
+	a "github.com/mariusor/activitypub.go/activitypub"
+	j "github.com/mariusor/activitypub.go/jsonld"
 
 	"strings"
 )
 
 func TestAcceptSerialization(t *testing.T) {
-	obj := activitypub.AcceptNew("https://localhost/myactivity", nil)
-	obj.Name = make(activitypub.NaturalLanguageValue, 1)
+	obj := a.AcceptNew("https://localhost/myactivity", nil)
+	obj.Name = make(a.NaturalLanguageValue, 1)
 	obj.Name["en"] = "test"
 	obj.Name["fr"] = "teste"
 
-	jsonld.Ctx = jsonld.Context{URL: "https://www.w3.org/ns/activitystreams"}
+	j.Ctx = j.Context{URL: "https://www.w3.org/ns/activitystreams"}
 
-	data, err := jsonld.Marshal(obj)
+	data, err := j.Marshal(obj)
 	if err != nil {
 		t.Errorf("Error: %v", err)
 	}
 
-	ctxt := jsonld.Ctx.(jsonld.Context)
+	ctxt := j.Ctx.(j.Context)
 	if !strings.Contains(string(data), string(ctxt.URL)) {
 		t.Errorf("Could not find context url %#v in output %s", ctxt.URL, data)
 	}
@@ -41,19 +41,19 @@ func TestAcceptSerialization(t *testing.T) {
 }
 
 func TestCreateActivityHTTPSerialization(t *testing.T) {
-	id := activitypub.ObjectID("test_object")
-	obj := activitypub.AcceptNew(id, nil)
+	id := a.ObjectID("test_object")
+	obj := a.AcceptNew(id, nil)
 	obj.Name["en"] = "Accept New"
 
-	baseURI := string(activitypub.ActivityBaseURI)
-	jsonld.Ctx = jsonld.Context{
-		URL: jsonld.Ref(baseURI + string(obj.Type)),
+	baseURI := string(a.ActivityBaseURI)
+	j.Ctx = j.Context{
+		URL: j.Ref(baseURI + string(obj.Type)),
 	}
-	data, err := jsonld.Marshal(obj)
+	data, err := j.Marshal(obj)
 	if err != nil {
 		t.Error(err)
 	}
-	ctxt := jsonld.Ctx.(jsonld.Context)
+	ctxt := j.Ctx.(j.Context)
 	if !strings.Contains(string(data), string(ctxt.URL)) {
 		t.Errorf("Could not find context url %#v in output %s", ctxt.URL, data)
 	}
