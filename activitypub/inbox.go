@@ -34,9 +34,9 @@ func (i *InboxStream) Append(o ObjectOrLink) error {
 }
 
 // Append adds an element to an Inbox
-func (o *Inbox) Append(ob ObjectOrLink) error {
-	o.OrderedItems = append(o.OrderedItems, ob)
-	o.TotalItems++
+func (i *Inbox) Append(ob ObjectOrLink) error {
+	i.OrderedItems = append(i.OrderedItems, ob)
+	i.TotalItems++
 	return nil
 }
 
@@ -48,4 +48,24 @@ func (i InboxStream) GetID() ObjectID {
 // GetType returns the InboxStream's type
 func (i InboxStream) GetType() ActivityVocabularyType {
 	return i.Type
+}
+
+// IsLink returns false for an InboxStream object
+func (i InboxStream) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to Inbox
+func (i Inbox) GetID() ObjectID {
+	return i.ID
+}
+
+// GetType returns the Inbox's type
+func (i Inbox) GetType() ActivityVocabularyType {
+	return i.Type
+}
+
+// IsLink returns false for an Inbox object
+func (i Inbox) IsLink() bool {
+	return false
 }

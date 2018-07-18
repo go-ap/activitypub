@@ -47,3 +47,23 @@ func (o OutboxStream) GetID() ObjectID {
 func (o OutboxStream) GetType() ActivityVocabularyType {
 	return o.Type
 }
+
+// IsLink returns false for an OutboxStream object
+func (o OutboxStream) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to Outbox
+func (o Outbox) GetID() ObjectID {
+	return o.ID
+}
+
+// GetType returns the Outbox's type
+func (o Outbox) GetType() ActivityVocabularyType {
+	return o.Type
+}
+
+// IsLink returns false for an Outbox object
+func (o Outbox) IsLink() bool {
+	return false
+}

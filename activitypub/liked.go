@@ -48,3 +48,23 @@ func (l LikedCollection) GetID() ObjectID {
 func (l LikedCollection) GetType() ActivityVocabularyType {
 	return l.Type
 }
+
+// IsLink returns false for an LikedCollection object
+func (l LikedCollection) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Liked
+func (l Liked) GetID() ObjectID {
+	return l.ID
+}
+
+// GetType returns the Liked's type
+func (l Liked) GetType() ActivityVocabularyType {
+	return l.Type
+}
+
+// IsLink returns false for an Liked object
+func (l Liked) IsLink() bool {
+	return false
+}
