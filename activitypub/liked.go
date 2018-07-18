@@ -54,6 +54,11 @@ func (l LikedCollection) IsLink() bool {
 	return false
 }
 
+// IsObject returns true for a LikedCollection object
+func (l LikedCollection) IsObject() bool {
+	return true
+}
+
 // GetID returns the ObjectID corresponding to the Liked
 func (l Liked) GetID() ObjectID {
 	return l.ID
@@ -67,4 +72,9 @@ func (l Liked) GetType() ActivityVocabularyType {
 // IsLink returns false for an Liked object
 func (l Liked) IsLink() bool {
 	return false
+}
+
+// IsObject returns true for a Liked object
+func (l Liked) IsObject() bool {
+	return true
 }

@@ -86,14 +86,15 @@ type (
 	ActivityVocabularyType string
 	// ActivityObject is a subtype of Object that describes some form of action that may happen,
 	//  is currently happening, or has already happened
-	ActivityObject interface{}
+	ActivityObject interface{
+		GetID() ObjectID
+	}
 	// ObjectOrLink describes an object of any kind.
 	ObjectOrLink interface {
 		ActivityObject
-		GetID() ObjectID
 		GetType() ActivityVocabularyType
-		//IsLink() bool
-		//IsObject() bool
+		IsLink() bool
+		IsObject() bool
 		//UnmarshalJSON([]byte) error
 	}
 	// ObjectsArr is a named type for matching an ObjectOrLink slice type to Collection interface

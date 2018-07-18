@@ -55,6 +55,11 @@ func (i InboxStream) IsLink() bool {
 	return false
 }
 
+// IsObject returns true for a InboxStream object
+func (i InboxStream) IsObject() bool {
+	return true
+}
+
 // GetID returns the ObjectID corresponding to Inbox
 func (i Inbox) GetID() ObjectID {
 	return i.ID
@@ -68,4 +73,9 @@ func (i Inbox) GetType() ActivityVocabularyType {
 // IsLink returns false for an Inbox object
 func (i Inbox) IsLink() bool {
 	return false
+}
+
+// IsObject returns true for a Inbox object
+func (i Inbox) IsObject() bool {
+	return true
 }
