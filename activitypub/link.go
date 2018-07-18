@@ -22,7 +22,7 @@ type Link struct {
 	//  [RFC5988](https://tools.ietf.org/html/rfc5988) "link relation" definitions.
 	// In the [HTML5], any string not containing the "space" U+0020, "tab" (U+0009), "LF" (U+000A),
 	//  "FF" (U+000C), "CR" (U+000D) or "," (U+002C) characters can be used as a valid link relation.
-	Rel *Link `jsonld:"rel"`
+	Rel *Link `jsonld:"rel,omitempty"`
 	// When used on a Link, identifies the MIME media type of the referenced resource.
 	MediaType MimeType `jsonld:"mediaType,omitempty"`
 	// On a GetLink, specifies a hint as to the rendering height in device-independent pixels of the linked resource.
