@@ -23,9 +23,7 @@ type Link struct {
 	// In the [HTML5], any string not containing the "space" U+0020, "tab" (U+0009), "LF" (U+000A),
 	//  "FF" (U+000C), "CR" (U+000D) or "," (U+002C) characters can be used as a valid link relation.
 	Rel *Link `jsonld:"rel"`
-	// When used on a GetLink, identifies the MIME media type of the referenced resource.
-	// When used on an APObject, identifies the MIME media type of the value of the content property.
-	// If not specified, the content property is assumed to contain text/html content.
+	// When used on a Link, identifies the MIME media type of the referenced resource.
 	MediaType MimeType `jsonld:"mediaType,omitempty"`
 	// On a GetLink, specifies a hint as to the rendering height in device-independent pixels of the linked resource.
 	Height uint `jsonld:"height,omitempty"`

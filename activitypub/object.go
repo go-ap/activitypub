@@ -206,7 +206,10 @@ type Object struct {
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
 	//  common originating context or purpose. An example could be all activities relating to a common project or event.
-	//Context ObjectOrLink `jsonld:"_"`
+	Context ObjectOrLink `jsonld:"context,omitempty"`
+	// When used on an Object, identifies the MIME media type of the value of the content property.
+	// If not specified, the content property is assumed to contain text/html content.
+	MediaType MimeType `jsonld:"mediaType,omitempty"`
 	// The date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
 	//  the activity concluded or is expected to conclude.
