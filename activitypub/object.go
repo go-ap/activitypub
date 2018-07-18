@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strings"
 	"time"
-
-	"github.com/buger/jsonparser"
 )
 
 // ObjectID designates an unique global identifier.
@@ -93,12 +92,13 @@ type (
 		ActivityObject
 		GetID() ObjectID
 		GetType() ActivityVocabularyType
+		//UnmarshalJSON([]byte) error
 	}
 	// ObjectsArr is a named type for matching an ObjectOrLink slice type to Collection interface
 	ObjectsArr []ObjectOrLink
 	// LinkOrURI is an interface that GetID and GetLink structs implement, and at the same time
 	// they are kept disjointed
-	LinkOrURI interface{
+	LinkOrURI interface {
 		GetLink() URI
 	}
 	// ImageOrLink is an interface that Image and GetLink structs implement
@@ -360,18 +360,21 @@ func recipientsDeduplication(recArgs ...*ObjectsArr) error {
 	return nil
 }
 
-func (i *ObjectID) MarshalJSON(data []byte) error {
-	*i = ObjectID(data)
+// UnmarshalJSON
+func (i *ObjectID) UnmarshalJSON(data []byte) error {
+	*i = ObjectID(strings.Trim(string(data), "\""))
 	return nil
 }
 
-func (c *ContentType) MarshalJSON(data []byte) error {
-	*c = ContentType(data)
+// UnmarshalJSON
+func (c *ContentType) UnmarshalJSON(data []byte) error {
+	*c = ContentType(strings.Trim(string(data), "\""))
 	return nil
 }
 
-func (o *Object) MarshalJSON(data []byte) error {
-	val, _, _, _ := jsonparser.Get(data, "ID")
-	o.ID.MarshalJSON(val)
-	return nil
-}
+//func (o *Object) UnmarshalJSON(data []byte) error {
+//	//_o, err := unmarshalJSONFromType(data, ObjectType)
+//
+//	//*o = _o.(Object)
+//	return nil
+//}

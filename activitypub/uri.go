@@ -1,5 +1,9 @@
 package activitypub
 
+import (
+	"strings"
+)
+
 type (
 	// IRI is a Internationalized Resource Identifiers (IRIs) RFC3987
 	IRI URI
@@ -26,4 +30,16 @@ func (u URI) GetLink() URI {
 // GetLink returns a URI type coercion of the IRI object
 func (i IRI) GetLink() URI {
 	return URI(i)
+}
+
+// UnmarshalJSON
+func (u *URI) UnmarshalJSON(s []byte) error {
+	*u = URI(strings.Trim(string(s), "\""))
+	return nil
+}
+
+// UnmarshalJSON
+func (i *IRI) UnmarshalJSON(s []byte) error {
+	*i = IRI(strings.Trim(string(s), "\""))
+	return nil
 }
