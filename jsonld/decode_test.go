@@ -3,8 +3,6 @@ package jsonld
 import (
 	"strconv"
 	"testing"
-
-	ap "github.com/mariusor/activitypub.go/activitypub"
 )
 
 func TestUnmarshalWithEmptyJsonObject(t *testing.T) {
@@ -104,7 +102,7 @@ func TestUnmarshalWithEmptyJsonObjectWithOneLanguageContext(t *testing.T) {
 	if obj.Context.Ref() != Ref(url) {
 		t.Errorf("@context should have been %q, found %q", url, obj.Context.Collapse())
 	}
-	if obj.Context.Language != ap.LangRef(langEn) {
+	if obj.Context.Language != LangRef(langEn) {
 		t.Errorf("@context should have been %q, found %q", url, obj.Context.Collapse())
 	}
 	if obj.Id != "" {
@@ -148,7 +146,7 @@ func TestUnmarshalWithEmptyJsonObjectWithFullObject(t *testing.T) {
 	if obj.Context.Ref() != Ref(url) {
 		t.Errorf("@context should have been %q, found %q", url, obj.Context.Collapse())
 	}
-	if obj.Context.Language != ap.LangRef(langEn) {
+	if obj.Context.Language != LangRef(langEn) {
 		t.Errorf("@context should have been %q, found %q", url, obj.Context.Collapse())
 	}
 	if obj.Id != id {
