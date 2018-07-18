@@ -48,12 +48,12 @@ type Endpoints struct {
 
 // Actor is generally one of the ActivityStreams Actor Types, but they don't have to be.
 // For example, a Profile object might be used as an actor, or a type from an ActivityStreams extension.
-// Actors are retrieved like any other GetID in ActivityPub.
+// Actors are retrieved like any other Object in ActivityPub.
 // Like other ActivityStreams objects, actors have an id, which is a URI.
 type Actor struct {
-	// Provides the globally unique identifier for an Activity Pub GetID or GetLink.
+	// Provides the globally unique identifier for an Activity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
-	//  Identifies the Activity Pub GetID or GetLink type. Multiple values may be specified.
+	//  Identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
@@ -67,7 +67,7 @@ type Actor struct {
 	// Identifies one or more entities that represent the total population of entities
 	//  for which the object can considered to be relevant.
 	Audience ObjectOrLink `jsonld:"audience,omitempty"`
-	// The content or textual representation of the Activity Pub GetID encoded as a JSON string.
+	// The content or textual representation of the Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
@@ -107,7 +107,7 @@ type Actor struct {
 	// A natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
-	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub GetID.
+	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	//  while the latter implies associated by reference.
 	Tag ObjectOrLink `jsonld:"tag,omitempty"`
@@ -115,13 +115,13 @@ type Actor struct {
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
-	// Identifies an entity considered to be part of the public primary audience of an Activity Pub GetID
+	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ObjectsArr `jsonld:"to,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the private primary audience of this Activity Pub GetID.
+	// Identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
 	Bto ObjectsArr `jsonld:"bto,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the public secondary audience of this Activity Pub GetID.
+	// Identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
 	CC ObjectsArr `jsonld:"cc,omitempty"`
-	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub GetID.
+	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
 	BCC ObjectsArr `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
@@ -251,7 +251,7 @@ func (a Actor) IsObject() bool {
 	return a.Type == ObjectType || ValidObjectType(a.Type)
 }
 
-// GetID returns the GetID corresponding to the Actor object
+// GetID returns the ObjectID corresponding to the Actor object
 func (a Actor) GetID() ObjectID {
 	return a.ID
 }
@@ -271,7 +271,7 @@ func (a Application) IsObject() bool {
 	return a.Type == ObjectType || ValidObjectType(a.Type)
 }
 
-// GetID returns the GetID corresponding to the Application object
+// GetID returns the ObjectID corresponding to the  Application object
 func (a Application) GetID() ObjectID {
 	return a.ID
 }
@@ -291,7 +291,7 @@ func (a Group) IsObject() bool {
 	return a.Type == ObjectType || ValidObjectType(a.Type)
 }
 
-// GetID returns the GetID corresponding to the Group object
+// GetID returns the ObjectID corresponding to the  Group object
 func (a Group) GetID() ObjectID {
 	return a.ID
 }
@@ -311,7 +311,7 @@ func (a Organization) IsObject() bool {
 	return a.Type == ObjectType || ValidObjectType(a.Type)
 }
 
-// GetID returns the GetID corresponding to the Organization object
+// GetID returns the ObjectID corresponding to the  Organization object
 func (a Organization) GetID() ObjectID {
 	return a.ID
 }
@@ -331,7 +331,7 @@ func (a Service) IsObject() bool {
 	return a.Type == ObjectType || ValidObjectType(a.Type)
 }
 
-// GetID returns the GetID corresponding to the Service object
+// GetID returns the ObjectID corresponding to the  Service object
 func (a Service) GetID() ObjectID {
 	return a.ID
 }
@@ -351,7 +351,7 @@ func (p Person) IsObject() bool {
 	return p.Type == ObjectType || ValidObjectType(p.Type)
 }
 
-// GetID returns the GetID corresponding to the Person object
+// GetID returns the ObjectID corresponding to the Person object
 func (p Person) GetID() ObjectID {
 	return p.ID
 }
@@ -361,7 +361,7 @@ func (p Person) GetType() ActivityVocabularyType {
 	return p.Type
 }
 
-// GetLink returns the URI for the current Person object
+// Link returns the URI for the current Person object
 func (p Person) GetLink() URI {
 	return p.URL.(URI)
 }

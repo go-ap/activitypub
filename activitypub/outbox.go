@@ -38,7 +38,7 @@ func (o *Outbox) Append(ob ObjectOrLink) error {
 	return nil
 }
 
-// GetID returns the OutboxStream's object ID
+// GetID returns the ObjectID corresponding to the OutboxStream
 func (o OutboxStream) GetID() ObjectID {
 	return o.ID
 }

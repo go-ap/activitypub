@@ -11,11 +11,11 @@ type CollectionInterface interface {
 	Append(ob ObjectOrLink) error
 }
 
-// Collection is a subtype of GetID that represents ordered or unordered sets of GetID or GetLink instances.
+// Collection is a subtype of Activity Pub Object that represents ordered or unordered sets of Activity Pub Object or Link instances.
 type Collection struct {
-	// Provides the globally unique identifier for an Activity Pub GetID or GetLink.
+	// Provides the globally unique identifier for an Activity Pub Activity Pub Object or Link. 
 	ID ObjectID `jsonld:"id,omitempty"`
-	//  Identifies the Activity Pub GetID or GetLink type. Multiple values may be specified.
+	//  Identifies the Activity Pub Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
@@ -29,7 +29,7 @@ type Collection struct {
 	// Identifies one or more entities that represent the total population of entities
 	//  for which the object can considered to be relevant.
 	Audience ObjectOrLink `jsonld:"audience,omitempty"`
-	// The content or textual representation of the Activity Pub GetID encoded as a JSON string.
+	// The content or textual representation of the Activity Pub Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
@@ -69,7 +69,7 @@ type Collection struct {
 	// A natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
-	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub GetID.
+	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	//  while the latter implies associated by reference.
 	Tag ObjectOrLink `jsonld:"tag,omitempty"`
@@ -77,13 +77,13 @@ type Collection struct {
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
-	// Identifies an entity considered to be part of the public primary audience of an Activity Pub GetID
+	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ObjectsArr `jsonld:"to,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the private primary audience of this Activity Pub GetID.
+	// Identifies an Activity Pub Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
 	Bto ObjectsArr `jsonld:"bto,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the public secondary audience of this Activity Pub GetID.
+	// Identifies an Activity Pub Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
 	CC ObjectsArr `jsonld:"cc,omitempty"`
-	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub GetID.
+	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
 	BCC ObjectsArr `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
@@ -100,9 +100,9 @@ type Collection struct {
 // OrderedCollection is a subtype of Collection in which members of the logical
 // collection are assumed to always be strictly ordered.
 type OrderedCollection struct {
-	// Provides the globally unique identifier for an Activity Pub GetID or GetLink.
+	// Provides the globally unique identifier for an Activity Pub Activity Pub Object or Link. 
 	ID ObjectID `jsonld:"id,omitempty"`
-	//  Identifies the Activity Pub GetID or GetLink type. Multiple values may be specified.
+	//  Identifies the Activity Pub Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
@@ -116,7 +116,7 @@ type OrderedCollection struct {
 	// Identifies one or more entities that represent the total population of entities
 	//  for which the object can considered to be relevant.
 	Audience ObjectOrLink `jsonld:"audience,omitempty"`
-	// The content or textual representation of the Activity Pub GetID encoded as a JSON string.
+	// The content or textual representation of the Activity Pub Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
@@ -156,7 +156,7 @@ type OrderedCollection struct {
 	// A natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
-	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub GetID.
+	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	//  while the latter implies associated by reference.
 	Tag ObjectOrLink `jsonld:"tag,omitempty"`
@@ -164,13 +164,13 @@ type OrderedCollection struct {
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
-	// Identifies an entity considered to be part of the public primary audience of an Activity Pub GetID
+	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ObjectsArr `jsonld:"to,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the private primary audience of this Activity Pub GetID.
+	// Identifies an Activity Pub Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
 	Bto ObjectsArr `jsonld:"bto,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the public secondary audience of this Activity Pub GetID.
+	// Identifies an Activity Pub Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
 	CC ObjectsArr `jsonld:"cc,omitempty"`
-	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub GetID.
+	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
 	BCC ObjectsArr `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
@@ -284,7 +284,7 @@ func (c *Collection) IsLink() bool {
 	return false
 }
 
-// GetID returns the Collection's object ID
+// GetID returns the ObjectID corresponding to the Collection object
 func (c *Collection) GetID() ObjectID {
 	return c.ID
 }
@@ -304,7 +304,7 @@ func (o *OrderedCollection) IsLink() bool {
 	return false
 }
 
-// GetID returns the OrderedCollection's object ID
+// GetID returns the ObjectID corresponding to the OrderedCollection
 func (o *OrderedCollection) GetID() ObjectID {
 	return o.ID
 }

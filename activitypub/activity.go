@@ -68,15 +68,15 @@ var validActivityTypes = [...]ActivityVocabularyType{
 	// Actor Types
 }
 
-// Activity is a subtype of GetID that describes some form of action that may happen,
+// Activity is a subtype of Object that describes some form of action that may happen,
 //  is currently happening, or has already happened.
 // The Activity type itself serves as an abstract base type for all types of activities.
 // It is important to note that the Activity type itself does not carry any specific semantics
 //  about the kind of action being taken.
 type Activity struct {
-	// Provides the globally unique identifier for an Activity Pub GetID or GetLink.
+	// Provides the globally unique identifier for an Activity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
-	//  Identifies the Activity Pub GetID or GetLink type. Multiple values may be specified.
+	//  Identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
@@ -90,7 +90,7 @@ type Activity struct {
 	// Identifies one or more entities that represent the total population of entities
 	//  for which the object can considered to be relevant.
 	Audience ObjectOrLink `jsonld:"audience,omitempty"`
-	// The content or textual representation of the Activity Pub GetID encoded as a JSON string.
+	// The content or textual representation of the Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
@@ -130,7 +130,7 @@ type Activity struct {
 	// A natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
-	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub GetID.
+	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	//  while the latter implies associated by reference.
 	Tag ObjectOrLink `jsonld:"tag,omitempty"`
@@ -138,13 +138,13 @@ type Activity struct {
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
-	// Identifies an entity considered to be part of the public primary audience of an Activity Pub GetID
+	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ObjectsArr `jsonld:"to,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the private primary audience of this Activity Pub GetID.
+	// Identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
 	Bto ObjectsArr `jsonld:"bto,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the public secondary audience of this Activity Pub GetID.
+	// Identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
 	CC ObjectsArr `jsonld:"cc,omitempty"`
-	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub GetID.
+	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
 	BCC ObjectsArr `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
@@ -152,7 +152,7 @@ type Activity struct {
 	//  section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
 	Duration time.Duration `jsonld:"duration,omitempty"`
 	// Describes one or more entities that either performed or are expected to perform the activity.
-	// Any single activity can have multiple actors. The actor may be specified using an indirect GetLink.
+	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
 	Actor Actor `jsonld:"actor,omitempty"`
 	// Describes the indirect object, or target, of the activity.
 	// The precise meaning of the target is largely dependent on the type of action being described
@@ -180,9 +180,9 @@ type Activity struct {
 // IntransitiveActivity Instances of IntransitiveActivity are a subtype of Activity representing intransitive actions.
 // The object property is therefore inappropriate for these activities.
 type IntransitiveActivity struct {
-	// Provides the globally unique identifier for an Activity Pub GetID or GetLink.
+	// Provides the globally unique identifier for an Activity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
-	//  Identifies the Activity Pub GetID or GetLink type. Multiple values may be specified.
+	//  Identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
@@ -196,7 +196,7 @@ type IntransitiveActivity struct {
 	// Identifies one or more entities that represent the total population of entities
 	//  for which the object can considered to be relevant.
 	Audience ObjectOrLink `jsonld:"audience,omitempty"`
-	// The content or textual representation of the Activity Pub GetID encoded as a JSON string.
+	// The content or textual representation of the Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
@@ -236,7 +236,7 @@ type IntransitiveActivity struct {
 	// A natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
-	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub GetID.
+	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	//  while the latter implies associated by reference.
 	Tag ObjectOrLink `jsonld:"tag,omitempty"`
@@ -244,13 +244,13 @@ type IntransitiveActivity struct {
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
-	// Identifies an entity considered to be part of the public primary audience of an Activity Pub GetID
+	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ObjectsArr `jsonld:"to,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the private primary audience of this Activity Pub GetID.
+	// Identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
 	Bto ObjectsArr `jsonld:"bto,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the public secondary audience of this Activity Pub GetID.
+	// Identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
 	CC ObjectsArr `jsonld:"cc,omitempty"`
-	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub GetID.
+	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
 	BCC ObjectsArr `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
@@ -258,7 +258,7 @@ type IntransitiveActivity struct {
 	//  section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
 	Duration time.Duration `jsonld:"duration,omitempty"`
 	// Describes one or more entities that either performed or are expected to perform the activity.
-	// Any single activity can have multiple actors. The actor may be specified using an indirect GetLink.
+	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
 	Actor Actor `jsonld:"actor,omitempty"`
 	// Describes the indirect object, or target, of the activity.
 	// The precise meaning of the target is largely dependent on the type of action being described
@@ -391,9 +391,9 @@ type (
 // Either of the anyOf and oneOf properties may be used to express possible answers,
 //  but a Question object must not have both properties.
 type Question struct {
-	// Provides the globally unique identifier for an Activity Pub GetID or GetLink.
+	// Provides the globally unique identifier for an Activity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
-	//  Identifies the Activity Pub GetID or GetLink type. Multiple values may be specified.
+	//  Identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
@@ -407,7 +407,7 @@ type Question struct {
 	// Identifies one or more entities that represent the total population of entities
 	//  for which the object can considered to be relevant.
 	Audience ObjectOrLink `jsonld:"audience,omitempty"`
-	// The content or textual representation of the Activity Pub GetID encoded as a JSON string.
+	// The content or textual representation of the Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
@@ -447,7 +447,7 @@ type Question struct {
 	// A natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
-	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub GetID.
+	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	//  while the latter implies associated by reference.
 	Tag ObjectOrLink `jsonld:"tag,omitempty"`
@@ -455,13 +455,13 @@ type Question struct {
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
-	// Identifies an entity considered to be part of the public primary audience of an Activity Pub GetID
+	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ObjectsArr `jsonld:"to,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the private primary audience of this Activity Pub GetID.
+	// Identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
 	Bto ObjectsArr `jsonld:"bto,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the public secondary audience of this Activity Pub GetID.
+	// Identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
 	CC ObjectsArr `jsonld:"cc,omitempty"`
-	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub GetID.
+	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
 	BCC ObjectsArr `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
@@ -469,7 +469,7 @@ type Question struct {
 	//  section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
 	Duration time.Duration `jsonld:"duration,omitempty"`
 	// Describes one or more entities that either performed or are expected to perform the activity.
-	// Any single activity can have multiple actors. The actor may be specified using an indirect GetLink.
+	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
 	Actor Actor `jsonld:"actor,omitempty"`
 	// Describes the indirect object, or target, of the activity.
 	// The precise meaning of the target is largely dependent on the type of action being described
@@ -763,6 +763,7 @@ func (i *IntransitiveActivity) GetType() ActivityVocabularyType {
 func (i *IntransitiveActivity) IsLink() bool {
 	return false
 }
+// GetID returns the ObjectID corresponding to the IntransitiveActivity object
 func (i *IntransitiveActivity) GetID() ObjectID {
 	return i.ID
 }

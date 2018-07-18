@@ -103,7 +103,7 @@ func TestValidActorType(t *testing.T) {
 func TestActor_IsLink(t *testing.T) {
 	m := ActorNew("test", ActorType)
 	if m.IsLink() {
-		t.Errorf("%#v should not be a valid GetLink", m.Type)
+		t.Errorf("%#v should not be a valid Link", m.Type)
 	}
 }
 
@@ -124,14 +124,14 @@ func TestActor_Object(t *testing.T) {
 func TestActor_Type(t *testing.T) {
 	m := ActorNew("test", ActorType)
 	if m.GetType() != ActorType {
-		t.Errorf("%#v should be an empty GetLink object", m.GetType())
+		t.Errorf("%#v should be an empty Link object", m.GetType())
 	}
 }
 
 func TestPerson_IsLink(t *testing.T) {
 	m := PersonNew("test")
 	if m.IsLink() {
-		t.Errorf("%T should not be a valid GetLink", m)
+		t.Errorf("%T should not be a valid Link", m)
 	}
 }
 

@@ -33,7 +33,7 @@ const (
 	CollectionType           ActivityVocabularyType = "Collection"
 	OrderedCollectionType    ActivityVocabularyType = "OrderedCollection"
 
-	// Activity Pub GetID Types
+	// Activity Pub Object Types
 	ArticleType      ActivityVocabularyType = "Article"
 	AudioType        ActivityVocabularyType = "Audio"
 	DocumentType     ActivityVocabularyType = "Document"
@@ -84,7 +84,7 @@ var validObjectTypes = [...]ActivityVocabularyType{
 type (
 	// ActivityVocabularyType is the data type for an Activity type object
 	ActivityVocabularyType string
-	// ActivityObject is a subtype of GetID that describes some form of action that may happen,
+	// ActivityObject is a subtype of Object that describes some form of action that may happen,
 	//  is currently happening, or has already happened
 	ActivityObject interface{}
 	// ObjectOrLink describes an object of any kind.
@@ -92,16 +92,18 @@ type (
 		ActivityObject
 		GetID() ObjectID
 		GetType() ActivityVocabularyType
+		//IsLink() bool
+		//IsObject() bool
 		//UnmarshalJSON([]byte) error
 	}
 	// ObjectsArr is a named type for matching an ObjectOrLink slice type to Collection interface
 	ObjectsArr []ObjectOrLink
-	// LinkOrURI is an interface that GetID and GetLink structs implement, and at the same time
+	// LinkOrURI is an interface that Object and Link structs implement, and at the same time
 	// they are kept disjointed
 	LinkOrURI interface {
 		GetLink() URI
 	}
-	// ImageOrLink is an interface that Image and GetLink structs implement
+	// ImageOrLink is an interface that Image and Link structs implement
 	ImageOrLink interface{}
 	// MimeType is the type for MIME types
 	MimeType string
@@ -111,12 +113,12 @@ type (
 	NaturalLanguageValue map[LangRef]string
 )
 
-// IsLink validates if current Activity Pub GetID is a GetLink
+// IsLink validates if currentActivity Pub Object is a Link
 func (o Object) IsLink() bool {
 	return false
 }
 
-// IsObject validates if current Activity Pub GetID is an GetID
+// IsObject validates if currentActivity Pub Object is an Object
 func (o Object) IsObject() bool {
 	return true
 }
@@ -178,12 +180,12 @@ func (n *NaturalLanguageValue) UnmarshalJSON(data []byte) error {
 }
 
 // Describes an object of any kind.
-// The Activity Pub GetID type serves as the base type for most of the other kinds of objects defined in the Activity Vocabulary,
+// The Activity Pub Object type serves as the base type for most of the other kinds of objects defined in the Activity Vocabulary,
 //  including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
 type Object struct {
-	// Provides the globally unique identifier for an Activity Pub GetID or GetLink.
+	// Provides the globally unique identifier for anActivity Pub Object or Link. 
 	ID ObjectID `jsonld:"id,omitempty"`
-	//  Identifies the Activity Pub GetID or GetLink type. Multiple values may be specified.
+	//  Identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
@@ -197,7 +199,7 @@ type Object struct {
 	// Identifies one or more entities that represent the total population of entities
 	//  for which the object can considered to be relevant.
 	Audience ObjectOrLink `jsonld:"audience,omitempty"`
-	// The content or textual representation of the Activity Pub GetID encoded as a JSON string.
+	// The content or textual representation of the Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
@@ -240,7 +242,7 @@ type Object struct {
 	// A natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
-	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub GetID.
+	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	//  while the latter implies associated by reference.
 	Tag ObjectOrLink `jsonld:"tag,omitempty"`
@@ -248,13 +250,13 @@ type Object struct {
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
-	// Identifies an entity considered to be part of the public primary audience of an Activity Pub GetID
+	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ObjectsArr `jsonld:"to,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the private primary audience of this Activity Pub GetID.
+	// Identifies anActivity Pub Object that is part of the private primary audience of this Activity Pub Object.
 	Bto ObjectsArr `jsonld:"bto,omitempty"`
-	// Identifies an Activity Pub GetID that is part of the public secondary audience of this Activity Pub GetID.
+	// Identifies anActivity Pub Object that is part of the public secondary audience of this Activity Pub Object.
 	CC ObjectsArr `jsonld:"cc,omitempty"`
-	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub GetID.
+	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
 	BCC ObjectsArr `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
@@ -293,7 +295,7 @@ func ValidObjectType(typ ActivityVocabularyType) bool {
 	return ValidActivityType(typ) || ValidActorType(typ) || ValidCollectionType(typ) || ValidGenericType(typ)
 }
 
-// ObjectNew initializes a new GetID
+// ObjectNew initializes a new Object
 func ObjectNew(id ObjectID, typ ActivityVocabularyType) *Object {
 	if !(ValidObjectType(typ)) {
 		typ = ObjectType
@@ -305,12 +307,12 @@ func ObjectNew(id ObjectID, typ ActivityVocabularyType) *Object {
 	return &o
 }
 
-// GetID returns the GetID corresponding to the GetID object
+// GetID returns the ObjectID corresponding to the current object
 func (o Object) GetID() ObjectID {
 	return o.ID
 }
 
-// GetLink returns the GetLink corresponding to the GetID object
+// Link returns the Link corresponding to the current object
 func (o Object) GetType() ActivityVocabularyType {
 	return o.Type
 }

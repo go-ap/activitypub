@@ -40,7 +40,7 @@ func (o *Inbox) Append(ob ObjectOrLink) error {
 	return nil
 }
 
-// GetID returns the InboxStream's object ID
+// GetID returns the ObjectID corresponding to InboxStream
 func (i InboxStream) GetID() ObjectID {
 	return i.ID
 }

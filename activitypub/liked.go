@@ -39,7 +39,7 @@ func (l *Liked) Append(ob ObjectOrLink) error {
 	return nil
 }
 
-// GetID returns the LikedCollection's object ID
+// GetID returns the ObjectID corresponding to the LikedCollection
 func (l LikedCollection) GetID() ObjectID {
 	return l.ID
 }
