@@ -4,21 +4,22 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-
-	ap "github.com/mariusor/activitypub.go/activitypub"
 )
 
 var Ctx interface{}
 
 // Ref basic type
-type Ref string
+type (
+	Ref     string
+	LangRef string
+)
 
 // Context is the basic JSON-LD element. It is used to map terms to IRIs.
 // Terms are case sensitive and any valid string that is not a reserved JSON-LD
 // keyword can be used as a term.
 type Context struct {
-	URL      Ref        `jsonld:"@url,omitempty,collapsible"`
-	Language ap.LangRef `jsonld:"@language,omitempty,collapsible"`
+	URL      Ref     `jsonld:"@url,omitempty,collapsible"`
+	Language LangRef `jsonld:"@language,omitempty,collapsible"`
 }
 
 // Collapsible is an interface used by the JSON-LD marshaller to collapse a struct to one single value
@@ -84,7 +85,7 @@ func (c *Context) UnmarshalJSON(data []byte) error {
 			case "@language":
 				fallthrough
 			case "language":
-				c.Language = ap.LangRef(value.(string))
+				c.Language = LangRef(value.(string))
 			default:
 				return fmt.Errorf("unkown Context field %q", key)
 			}
