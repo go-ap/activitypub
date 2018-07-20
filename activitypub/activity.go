@@ -803,9 +803,9 @@ func (l Like) GetID() ObjectID {
 	return Activity(l).GetID()
 }
 
-// GetID returns the ObjectID corresponding to the Like object
-func (d Dislike) GetID() ObjectID {
-	return Activity(d).GetID()
+// GetType
+func (l Like) GetType() ActivityVocabularyType {
+	return l.Type
 }
 
 // IsObject returns true for Like objects
@@ -813,7 +813,27 @@ func (l Like) IsObject() bool {
 	return true
 }
 
+// IsLink returns false for Like objects
+func (l Like) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Like object
+func (d Dislike) GetID() ObjectID {
+	return Activity(d).GetID()
+}
+
+// GetType
+func (d Dislike) GetType() ActivityVocabularyType {
+	return d.Type
+}
+
 // IsObject returns true for Dislike objects
 func (d Dislike) IsObject() bool {
 	return true
+}
+
+// IsLink returns false for Dislike objects
+func (d Dislike) IsLink() bool {
+	return false
 }
