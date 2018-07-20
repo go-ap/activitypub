@@ -8,12 +8,13 @@ var validCollectionTypes = [...]ActivityVocabularyType{CollectionType, OrderedCo
 type Page ObjectOrLink
 
 type CollectionInterface interface {
+	ObjectOrLink
 	Append(ob ObjectOrLink) error
 }
 
 // Collection is a subtype of Activity Pub Object that represents ordered or unordered sets of Activity Pub Object or Link instances.
 type Collection struct {
-	// Provides the globally unique identifier for an Activity Pub Activity Pub Object or Link. 
+	// Provides the globally unique identifier for an Activity Pub Activity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
 	//  Identifies the Activity Pub Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
@@ -100,7 +101,7 @@ type Collection struct {
 // OrderedCollection is a subtype of Collection in which members of the logical
 // collection are assumed to always be strictly ordered.
 type OrderedCollection struct {
-	// Provides the globally unique identifier for an Activity Pub Activity Pub Object or Link. 
+	// Provides the globally unique identifier for an Activity Pub Activity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
 	//  Identifies the Activity Pub Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
