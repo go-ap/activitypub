@@ -757,40 +757,63 @@ func (c *Create) RecipientsDeduplication() {
 	dedupObjects.Append(c.Object)
 	recipientsDeduplication(&dedupObjects, &c.To, &c.Bto, &c.CC, &c.BCC)
 }
-func (i *IntransitiveActivity) GetType() ActivityVocabularyType {
+
+// GetType
+func (i IntransitiveActivity) GetType() ActivityVocabularyType {
 	return i.Type
 }
-func (i *IntransitiveActivity) IsLink() bool {
+
+// IsLink
+func (i IntransitiveActivity) IsLink() bool {
 	return false
 }
+
 // GetID returns the ObjectID corresponding to the IntransitiveActivity object
-func (i *IntransitiveActivity) GetID() ObjectID {
+func (i IntransitiveActivity) GetID() ObjectID {
 	return i.ID
 }
-func (i *IntransitiveActivity) IsObject() bool {
+
+// IsObject
+func (i IntransitiveActivity) IsObject() bool {
 	return true
 }
-func (a *Activity) GetType() ActivityVocabularyType {
+
+// GetType
+func (a Activity) GetType() ActivityVocabularyType {
 	return a.Type
 }
-func (a *Activity) IsLink() bool {
+
+// IsLink returns false for Activity objects
+func (a Activity) IsLink() bool {
 	return false
 }
-func (a *Activity) GetID() ObjectID {
+
+// GetID returns the ObjectID corresponding to the Activity object
+func (a Activity) GetID() ObjectID {
 	return a.ID
 }
-func (a *Activity) IsObject() bool {
+
+// IsObject returns true for Activity objects
+func (a Activity) IsObject() bool {
 	return true
 }
-/*
-func (a *Activity) UnmarshalJSON(data []byte) error {
-	var temp map[string]json.RawMessage
 
-	err := json.Unmarshal(data, &temp)
-	if err != nil {
-		return err
-	}
-
-	return nil
+// GetID returns the ObjectID corresponding to the Like object
+func (l Like) GetID() ObjectID {
+	return Activity(l).GetID()
 }
-*/
+
+// GetID returns the ObjectID corresponding to the Like object
+func (d Dislike) GetID() ObjectID {
+	return Activity(d).GetID()
+}
+
+// IsObject returns true for Like objects
+func (l Like) IsObject() bool {
+	return true
+}
+
+// IsObject returns true for Dislike objects
+func (d Dislike) IsObject() bool {
+	return true
+}
