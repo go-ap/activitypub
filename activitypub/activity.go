@@ -837,3 +837,11 @@ func (d Dislike) IsObject() bool {
 func (d Dislike) IsLink() bool {
 	return false
 }
+
+//// UnmarshalJSON
+//func (a *Activity) UnmarshalJSON(data []byte) error {
+//	ob, err := unmarshal(data, *a)
+//	*a = ob.(Activity)
+//
+//	return err
+//}

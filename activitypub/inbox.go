@@ -79,3 +79,23 @@ func (i Inbox) IsLink() bool {
 func (i Inbox) IsObject() bool {
 	return true
 }
+
+// UnmarshalJSON
+func (i *InboxStream) UnmarshalJSON(data []byte) error {
+	c := OrderedCollection(*i)
+	err := c.UnmarshalJSON(data)
+
+	*i = InboxStream(c)
+
+	return err
+}
+
+// UnmarshalJSON
+func (i *Inbox) UnmarshalJSON(data []byte) error {
+	c := OrderedCollection(*i)
+	err := c.UnmarshalJSON(data)
+
+	*i = Inbox(c)
+
+	return err
+}

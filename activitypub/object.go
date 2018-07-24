@@ -86,7 +86,7 @@ type (
 	ActivityVocabularyType string
 	// ActivityObject is a subtype of Object that describes some form of action that may happen,
 	//  is currently happening, or has already happened
-	ActivityObject interface{
+	ActivityObject interface {
 		GetID() ObjectID
 	}
 	// ObjectOrLink describes an object of any kind.
@@ -105,7 +105,10 @@ type (
 		GetLink() URI
 	}
 	// ImageOrLink is an interface that Image and Link structs implement
-	ImageOrLink interface{}
+	ImageOrLink interface {
+		ObjectOrLink
+		LinkOrURI
+	}
 	// MimeType is the type for MIME types
 	MimeType string
 	// LangRef is the type for a language reference, should be ISO 639-1 language specifier.
@@ -135,6 +138,14 @@ func (n NaturalLanguageValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[LangRef]string(n))
 }
 
+// MarshalText serializes the NaturalLanguageValue into Text
+func (n NaturalLanguageValue) MarshalText() ([]byte, error) {
+	for _, v := range n {
+		return []byte(fmt.Sprintf("%q", v)), nil
+	}
+	return nil, nil
+}
+
 // Append is syntactic sugar for resizing the NaturalLanguageValue map
 //  and appending an element
 func (n *NaturalLanguageValue) Append(lang LangRef, value string) error {
@@ -156,8 +167,17 @@ func (l *LangRef) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// UnmarshalText tries to load the NaturalLanguage array from the incoming Text value
+func (l *LangRef) UnmarshalText(data []byte) error {
+	*l = LangRef(data[1 : len(data)-1])
+	return nil
+}
+
 // UnmarshalJSON tries to load the NaturalLanguage array from the incoming json value
 func (n *NaturalLanguageValue) UnmarshalJSON(data []byte) error {
+	if data == nil || len(data) == 0 {
+		return fmt.Errorf("invalid incoming bytes")
+	}
 	if data[0] == '"' {
 		// a quoted string - loading it to c.URL
 		if data[len(data)-1] != '"' {
@@ -180,11 +200,23 @@ func (n *NaturalLanguageValue) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// UnmarshalText tries to load the NaturalLanguage array from the incoming Text value
+func (n *NaturalLanguageValue) UnmarshalText(data []byte) error {
+	if data[0] == '"' {
+		// a quoted string - loading it to c.URL
+		if data[len(data)-1] != '"' {
+			return fmt.Errorf("invalid string value when unmarshalling %T value", n)
+		}
+		n.Append(LangRef("-"), string(data[1:len(data)-1]))
+	}
+	return nil
+}
+
 // Describes an object of any kind.
 // The Activity Pub Object type serves as the base type for most of the other kinds of objects defined in the Activity Vocabulary,
 //  including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
 type Object struct {
-	// Provides the globally unique identifier for anActivity Pub Object or Link. 
+	// Provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
 	//  Identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
@@ -375,9 +407,18 @@ func (c *ContentType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-//func (o *Object) UnmarshalJSON(data []byte) error {
-//	//_o, err := unmarshalJSONFromType(data, ObjectType)
-//
-//	//*o = _o.(Object)
-//	return nil
-//}
+// UnmarshalJSON
+func (o *Object) UnmarshalJSON(data []byte) error {
+	o.ID = getAPObjectID(data)
+	o.Type = getAPType(data)
+	o.Name = getAPNaturalLanguageField(data, "name")
+	o.Content = getAPNaturalLanguageField(data, "content")
+	u := getURIField(data, "url")
+	if len(u) > 0 {
+		o.URL = u
+	}
+
+	//fmt.Printf("%s\n %#v", data, o)
+
+	return nil
+}

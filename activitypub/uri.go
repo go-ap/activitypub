@@ -43,3 +43,15 @@ func (i *IRI) UnmarshalJSON(s []byte) error {
 	*i = IRI(strings.Trim(string(s), "\""))
 	return nil
 }
+
+// UnmarshalText
+func (u URI) UnmarshalText(s []byte) error {
+	u = URI(strings.Trim(string(s), "\""))
+	return nil
+}
+
+// UnmarshalText
+func (i IRI) UnmarshalText(s []byte) error {
+	i = IRI(strings.Trim(string(s), "\""))
+	return nil
+}

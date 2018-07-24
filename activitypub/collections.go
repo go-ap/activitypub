@@ -1,6 +1,8 @@
 package activitypub
 
-import "time"
+import (
+	"time"
+)
 
 var validCollectionTypes = [...]ActivityVocabularyType{CollectionType, OrderedCollectionType}
 
@@ -313,6 +315,34 @@ func (o *OrderedCollection) GetID() ObjectID {
 // IsObject returns true for am OrderedCollection object
 func (o *OrderedCollection) IsObject() bool {
 	return true
+}
+
+// UnmarshalJSON
+func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
+	o.ID = getAPObjectID(data)
+	o.Type = getAPType(data)
+	o.Name = getAPNaturalLanguageField(data, "name")
+	o.Content = getAPNaturalLanguageField(data, "content")
+	u := getURIField(data, "url")
+	if len(u) > 0 {
+		o.URL = u
+	}
+
+	return nil
+}
+
+// UnmarshalJSON
+func (c *Collection) UnmarshalJSON(data []byte) error {
+	c.ID = getAPObjectID(data)
+	c.Type = getAPType(data)
+	c.Name = getAPNaturalLanguageField(data, "name")
+	c.Content = getAPNaturalLanguageField(data, "content")
+	u := getURIField(data, "url")
+	if len(u) > 0 {
+		c.URL = u
+	}
+
+	return nil
 }
 
 /*

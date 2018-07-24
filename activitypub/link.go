@@ -103,3 +103,20 @@ func (m Mention) GetID() ObjectID {
 func (m Mention) GetType() ActivityVocabularyType {
 	return m.Type
 }
+
+// UnmarshalJSON
+func (l *Link) UnmarshalJSON(data []byte) error {
+	l.ID = getAPObjectID(data)
+	l.Type = getAPType(data)
+	l.MediaType = getAPMimeType(data)
+	l.Name = getAPNaturalLanguageField(data, "name")
+	l.HrefLang = getAPLangRefField(data, "hrefLang")
+	u := getURIField(data, "href")
+	if len(u) > 0 {
+		l.Href = u
+	}
+
+	//fmt.Printf("%s\n %#v", data, l)
+
+	return nil
+}

@@ -46,6 +46,14 @@ var allTests = tests{
 			},
 		},
 	},
+	"object_with_url": testPair{
+		path:     "./mocks/object_with_url.json",
+		expected: true,
+		blank:    &a.Object{},
+		result: &a.Object{
+			URL: a.URI("http://littr.git/api/accounts/system"),
+		},
+	},
 	"object_simple": testPair{
 		path:     "./mocks/object_simple.json",
 		expected: true,
@@ -60,23 +68,59 @@ var allTests = tests{
 	},
 	//"activity_simple": testPair{
 	//	path:     "./mocks/activity_simple.json",
-	//	expected: true,
+	//	expected: false,
 	//	blank:    &a.Activity{},
 	//	result: &a.Activity{
 	//		Type:    a.ActivityType,
 	//		Summary: a.NaturalLanguageValue{a.LangRef("-"): "Sally did something to a note"},
+	//		Actor: a.Actor(a.Person{
+	//			Type: a.PersonType,
+	//			Name: a.NaturalLanguageValue{
+	//				a.LangRef("-"): "Sally",
+	//			},
+	//		}),
+	//		Object: a.Object{
+	//			Type: a.NoteType,
+	//			Name: a.NaturalLanguageValue{
+	//				a.LangRef("-"): "A Note",
+	//			},
+	//		},
 	//	},
 	//},
+	"person_with_outbox": testPair{
+		path:     "./mocks/person_with_outbox.json",
+		expected: true,
+		blank:    &a.Person{},
+		result: &a.Person{
+			ID:   a.ObjectID("http://example.com/accounts/ana"),
+			Type: a.PersonType,
+			Name: a.NaturalLanguageValue{
+				a.LangRef("-"): "ana",
+			},
+			PreferredUsername: a.NaturalLanguageValue{
+				a.LangRef("-"): "Ana",
+			},
+			URL: a.URI("http://example.com/accounts/ana"),
+			Outbox: a.OutboxStream{
+				ID:   a.ObjectID("http://example.com/accounts/ana/outbox"),
+				Type: a.OrderedCollectionType,
+				URL:  a.URI("http://example.com/outbox"),
+			},
+		},
+	},
 }
 
-func getFileContents(path string) []byte {
-	f, _ := os.Open(path)
+func getFileContents(path string) ([]byte, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
 
 	data := make([]byte, 512)
 	io.ReadFull(f, data)
 	data = bytes.Trim(data, "\x00")
 
-	return data
+	return data, nil
 }
 
 func Test_ActivityPubUnmarshall(t *testing.T) {
@@ -92,13 +136,17 @@ func Test_ActivityPubUnmarshall(t *testing.T) {
 	}
 
 	for k, pair := range allTests {
-		data := getFileContents(pair.path)
-
+		var data []byte
+		data, err = getFileContents(pair.path)
+		if err != nil {
+			f("Error: %s for %s", err, pair.path)
+			continue
+		}
 		object := pair.blank
 
 		err = j.Unmarshal(data, object)
 		if err != nil {
-			f("Error: %s", err)
+			f("Error: %s for %s", err, data)
 			continue
 		}
 		expLbl := ""
@@ -107,8 +155,19 @@ func Test_ActivityPubUnmarshall(t *testing.T) {
 		}
 		if pair.expected != reflect.DeepEqual(object, pair.result) {
 			f("\n%#v\n should %sequal to\n%#v", object, expLbl, pair.result)
+			oj, e1 := j.Marshal(object)
+			if e1 != nil {
+				f(e1.Error())
+			}
+			tj, e2 := j.Marshal(pair.result)
+			if e2 != nil {
+				f(e2.Error())
+			}
+
+			f("\n%s\n should %sequal to\n%s", oj, expLbl, tj)
 			continue
 		}
+		//fmt.Printf("%#v", object)
 		if err == nil {
 			fmt.Printf(" --- %s: %s\n          %s\n", "PASS", k, pair.path)
 		}

@@ -52,6 +52,7 @@ func (o OutboxStream) GetType() ActivityVocabularyType {
 func (o OutboxStream) IsLink() bool {
 	return false
 }
+
 // IsObject returns true for a OutboxStream object
 func (o OutboxStream) IsObject() bool {
 	return true
@@ -75,4 +76,24 @@ func (o Outbox) IsLink() bool {
 // IsObject returns true for a Outbox object
 func (o Outbox) IsObject() bool {
 	return true
+}
+
+// UnmarshalJSON
+func (o *OutboxStream) UnmarshalJSON(data []byte) error {
+	c := OrderedCollection(*o)
+	err := c.UnmarshalJSON(data)
+
+	*o = OutboxStream(c)
+
+	return err
+}
+
+// UnmarshalJSON
+func (o *Outbox) UnmarshalJSON(data []byte) error {
+	c := OrderedCollection(*o)
+	err := c.UnmarshalJSON(data)
+
+	*o = Outbox(c)
+
+	return err
 }

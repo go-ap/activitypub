@@ -1,6 +1,11 @@
 package activitypub
 
-import "time"
+import (
+	"fmt"
+	"time"
+
+	"github.com/buger/jsonparser"
+)
 
 // Actor Types
 const (
@@ -76,7 +81,7 @@ type Actor struct {
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
 	//  common originating context or purpose. An example could be all activities relating to a common project or event.
-	//Context ObjectOrLink `jsonld:"_"`
+	Context ObjectOrLink `jsonld:"_"`
 	// The date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
 	//  the activity concluded or is expected to conclude.
@@ -364,4 +369,36 @@ func (p Person) GetType() ActivityVocabularyType {
 // Link returns the URI for the current Person object
 func (p Person) GetLink() URI {
 	return p.URL.(URI)
+}
+
+// UnmarshalJSON
+func (a *Actor) UnmarshalJSON(data []byte) error {
+	a.ID = getAPObjectID(data)
+	a.Type = getAPType(data)
+	a.Name = getAPNaturalLanguageField(data, "name")
+	a.PreferredUsername = getAPNaturalLanguageField(data, "preferredUsername")
+	a.Content = getAPNaturalLanguageField(data, "content")
+	u := getURIField(data, "url")
+	if len(u) > 0 {
+		a.URL = u
+	}
+
+	o := OutboxStream{}
+	v, _, _, err := jsonparser.Get(data, "outbox")
+	if err != nil {
+		fmt.Print(err)
+	}
+	o.UnmarshalJSON(v)
+	a.Outbox = o
+
+	return nil
+}
+
+func (p *Person) UnmarshalJSON(data []byte) error {
+	a := Actor(*p)
+	err := a.UnmarshalJSON(data)
+
+	*p = Person(a)
+
+	return err
 }
