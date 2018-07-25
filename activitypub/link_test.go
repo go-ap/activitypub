@@ -73,7 +73,7 @@ func TestMention_IsObject(t *testing.T) {
 
 func TestMention_Object(t *testing.T) {
 	m := MentionNew("test")
-	if !reflect.DeepEqual(ObjectID("test"), m.GetID()) {
+	if !reflect.DeepEqual(ObjectID("test"), *m.GetID()) {
 		t.Errorf("%#v should be an empty object", m.GetID())
 	}
 }

@@ -41,8 +41,8 @@ func (i *Inbox) Append(ob ObjectOrLink) error {
 }
 
 // GetID returns the ObjectID corresponding to InboxStream
-func (i InboxStream) GetID() ObjectID {
-	return i.ID
+func (i InboxStream) GetID() *ObjectID {
+	return OrderedCollection(i).GetID()
 }
 
 // GetType returns the InboxStream's type
@@ -61,8 +61,8 @@ func (i InboxStream) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to Inbox
-func (i Inbox) GetID() ObjectID {
-	return i.ID
+func (i Inbox) GetID() *ObjectID {
+	return OrderedCollection(i).GetID()
 }
 
 // GetType returns the Inbox's type

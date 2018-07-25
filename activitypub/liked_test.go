@@ -28,12 +28,12 @@ func TestLikedNew(t *testing.T) {
 
 func TestLikedCollection_GetID(t *testing.T) {
 	l := LikedCollection{}
-	if l.GetID() != "" {
+	if *l.GetID() != "" {
 		t.Errorf("%T should be initialized with empty %T", l, l.GetID())
 	}
 	id := ObjectID("test_out_stream")
 	l.ID = id
-	if l.GetID() != id {
+	if *l.GetID() != id {
 		t.Errorf("%T should have %T as %q", l, id, id)
 	}
 }

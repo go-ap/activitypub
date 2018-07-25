@@ -28,12 +28,12 @@ func TestOutboxNew(t *testing.T) {
 
 func TestOutboxStream_GetID(t *testing.T) {
 	o := OutboxStream{}
-	if o.GetID() != "" {
+	if *o.GetID() != "" {
 		t.Errorf("%T should be initialized with empty %T", o, o.GetID())
 	}
 	id := ObjectID("test_out_stream")
 	o.ID = id
-	if o.GetID() != id {
+	if *o.GetID() != id {
 		t.Errorf("%T should have %T as %q", o, id, id)
 	}
 }

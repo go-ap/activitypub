@@ -39,7 +39,7 @@ func TestCreateActivityNewWithApplication(t *testing.T) {
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
 	}
-	if c1.Activity.Actor.GetID() != a.ID {
+	if *c1.Activity.Actor.GetID() != a.ID {
 		t.Errorf("Actor ID %q different than expected %q", c1.Activity.Actor.GetID(), a.ID)
 	}
 	if !reflect.DeepEqual(c1.Activity.Actor.GetID(), a.GetID()) {
@@ -50,7 +50,7 @@ func TestCreateActivityNewWithApplication(t *testing.T) {
 			t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, Actor(*a))
 		}
 	*/
-	if c1.Activity.Object.GetID() != n.ID {
+	if *c1.Activity.Object.GetID() != n.ID {
 		t.Errorf("GetID %q different than expected %q", c1.Activity.Object.GetID(), n.ID)
 	}
 	if !reflect.DeepEqual(c1.Activity.Object.GetID(), n.GetID()) {
@@ -83,7 +83,7 @@ func TestCreateActivityNewWithGroup(t *testing.T) {
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
 	}
-	if c1.Activity.Actor.GetID() != g.ID {
+	if *c1.Activity.Actor.GetID() != g.ID {
 		t.Errorf("Actor ID %q different than expected %q", c1.Activity.Actor.GetID(), g.ID)
 	}
 	if !reflect.DeepEqual(c1.Activity.Actor.GetID(), g.GetID()) {
@@ -94,7 +94,7 @@ func TestCreateActivityNewWithGroup(t *testing.T) {
 			t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, Actor(*g))
 		}
 	*/
-	if c1.Activity.Object.GetID() != n.ID {
+	if *c1.Activity.Object.GetID() != n.ID {
 		t.Errorf("GetID %q different than expected %q", c1.Activity.Object.GetID(), n.ID)
 	}
 	if !reflect.DeepEqual(c1.Activity.Object.GetID(), n.GetID()) {
@@ -121,7 +121,7 @@ func TestCreateActivityNewWithOrganization(t *testing.T) {
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
 	}
-	if c1.Activity.Actor.GetID() != o.ID {
+	if *c1.Activity.Actor.GetID() != o.ID {
 		t.Errorf("Actor ID %q different than expected %q", c1.Activity.Actor.GetID(), o.ID)
 	}
 	if !reflect.DeepEqual(c1.Activity.Actor.GetID(), o.GetID()) {
@@ -132,7 +132,7 @@ func TestCreateActivityNewWithOrganization(t *testing.T) {
 			t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, Actor(*o))
 		}
 	*/
-	if c1.Activity.Object.GetID() != n.ID {
+	if *c1.Activity.Object.GetID() != n.ID {
 		t.Errorf("GetID %q different than expected %q", c1.Activity.Object.GetID(), n.ID)
 	}
 	if !reflect.DeepEqual(c1.Activity.Object.GetID(), n.GetID()) {
@@ -159,7 +159,7 @@ func TestCreateActivityNewWithPerson(t *testing.T) {
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
 	}
-	if c1.Activity.Actor.GetID() != b.ID {
+	if *c1.Activity.Actor.GetID() != b.ID {
 		t.Errorf("Actor ID %q different than expected %q", c1.Activity.Actor.GetID(), b.ID)
 	}
 	if !reflect.DeepEqual(c1.Activity.Actor.GetID(), b.GetID()) {
@@ -170,7 +170,7 @@ func TestCreateActivityNewWithPerson(t *testing.T) {
 			t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, Actor(*b))
 		}
 	*/
-	if c1.Activity.Object.GetID() != n.ID {
+	if *c1.Activity.Object.GetID() != n.ID {
 		t.Errorf("GetID %q different than expected %q", c1.Activity.Object.GetID(), n.ID)
 	}
 	if !reflect.DeepEqual(c1.Activity.Object.GetID(), n.GetID()) {
@@ -197,7 +197,7 @@ func TestCreateActivityNewWithService(t *testing.T) {
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
 	}
-	if c1.Activity.Actor.GetID() != s.ID {
+	if *c1.Activity.Actor.GetID() != s.ID {
 		t.Errorf("Actor ID %q different than expected %q", c1.Activity.Actor.GetID(), s.ID)
 	}
 	if !reflect.DeepEqual(c1.Activity.Actor.GetID(), s.GetID()) {
@@ -208,7 +208,7 @@ func TestCreateActivityNewWithService(t *testing.T) {
 			t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, Actor(*s))
 		}
 	*/
-	if c1.Activity.Object.GetID() != n.ID {
+	if *c1.Activity.Object.GetID() != n.ID {
 		t.Errorf("GetID %q different than expected %q", c1.Activity.Object.GetID(), n.ID)
 	}
 	if !reflect.DeepEqual(c1.Activity.Object.GetID(), n.GetID()) {
@@ -235,7 +235,7 @@ func TestCreateActivityNewWithActor(t *testing.T) {
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
 	}
-	if c1.Activity.Actor.GetID() != a.ID {
+	if *c1.Activity.Actor.GetID() != a.ID {
 		t.Errorf("Actor ID %q different than expected %q", c1.Activity.Actor.GetID(), a.ID)
 	}
 	if !reflect.DeepEqual(c1.Activity.Actor.GetID(), a.GetID()) {
@@ -246,7 +246,7 @@ func TestCreateActivityNewWithActor(t *testing.T) {
 			t.Errorf("Actor %#v\n\n different than expected\n\n %#v", c1.Activity.Actor, *a)
 		}
 	*/
-	if c1.Activity.Object.GetID() != n.ID {
+	if *c1.Activity.Object.GetID() != n.ID {
 		t.Errorf("GetID %q different than expected %q", c1.Activity.Object.GetID(), n.ID)
 	}
 	if !reflect.DeepEqual(c1.Activity.Object.GetID(), n.GetID()) {

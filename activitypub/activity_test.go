@@ -623,14 +623,14 @@ func TestIntransitiveActivityRecipientsDeduplication(t *testing.T) {
 func TestActivity_GetID(t *testing.T) {
 	a := ActivityNew("test", ActivityType, Person{})
 
-	if a.GetID() != "test" {
+	if *a.GetID() != "test" {
 		t.Errorf("%T should return an empty %T object. Received %#v", a, a, a)
 	}
 }
 func TestActivity_GetIDGetType(t *testing.T) {
 	a := ActivityNew("test", ActivityType, Person{})
 
-	if a.GetID() != "test" || a.GetType() != ActivityType {
+	if *a.GetID() != "test" || a.GetType() != ActivityType {
 		t.Errorf("%T should not return an empty %T object. Received %#v", a, a, a)
 	}
 }
@@ -651,14 +651,14 @@ func TestActivity_IsObject(t *testing.T) {
 func TestIntransitiveActivity_GetLink(t *testing.T) {
 	i := IntransitiveActivityNew("test", QuestionType)
 
-	if i.GetID() != "test" {
+	if *i.GetID() != "test" {
 		t.Errorf("%T should return an empty %T object. Received %#v", i, i, i)
 	}
 }
 func TestIntransitiveActivity_GetObject(t *testing.T) {
 	i := IntransitiveActivityNew("test", QuestionType)
 
-	if i.GetID() != "test" || i.GetType() != QuestionType {
+	if *i.GetID() != "test" || i.GetType() != QuestionType {
 		t.Errorf("%T should not return an empty %T object. Received %#v", i, i, i)
 	}
 }

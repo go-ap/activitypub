@@ -39,8 +39,8 @@ func (o *Outbox) Append(ob ObjectOrLink) error {
 }
 
 // GetID returns the ObjectID corresponding to the OutboxStream
-func (o OutboxStream) GetID() ObjectID {
-	return o.ID
+func (o OutboxStream) GetID() *ObjectID {
+	return OrderedCollection(o).GetID()
 }
 
 // GetType returns the OutboxStream's type
@@ -59,8 +59,8 @@ func (o OutboxStream) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to Outbox
-func (o Outbox) GetID() ObjectID {
-	return o.ID
+func (o Outbox) GetID() *ObjectID {
+	return OrderedCollection(o).GetID()
 }
 
 // GetType returns the Outbox's type

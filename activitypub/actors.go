@@ -257,8 +257,8 @@ func (a Actor) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Actor object
-func (a Actor) GetID() ObjectID {
-	return a.ID
+func (a Actor) GetID() *ObjectID {
+	return &a.ID
 }
 
 // GetType returns the type corresponding to the Actor object
@@ -277,8 +277,8 @@ func (a Application) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to the  Application object
-func (a Application) GetID() ObjectID {
-	return a.ID
+func (a Application) GetID() *ObjectID {
+	return Actor(a).GetID()
 }
 
 // GetType returns the type corresponding to the Application object
@@ -287,63 +287,63 @@ func (a Application) GetType() ActivityVocabularyType {
 }
 
 // IsLink validates if current Group is a Link
-func (a Group) IsLink() bool {
-	return a.Type == LinkType || ValidLinkType(a.Type)
+func (g Group) IsLink() bool {
+	return g.Type == LinkType || ValidLinkType(g.Type)
 }
 
 // IsObject validates if current Group is an Object
-func (a Group) IsObject() bool {
-	return a.Type == ObjectType || ValidObjectType(a.Type)
+func (g Group) IsObject() bool {
+	return g.Type == ObjectType || ValidObjectType(g.Type)
 }
 
 // GetID returns the ObjectID corresponding to the  Group object
-func (a Group) GetID() ObjectID {
-	return a.ID
+func (g Group) GetID() *ObjectID {
+	return Actor(g).GetID()
 }
 
 // GetType returns the type corresponding to the Group object
-func (a Group) GetType() ActivityVocabularyType {
-	return a.Type
+func (g Group) GetType() ActivityVocabularyType {
+	return g.Type
 }
 
 // IsLink validates if current Organization is a Link
-func (a Organization) IsLink() bool {
-	return a.Type == LinkType || ValidLinkType(a.Type)
+func (o Organization) IsLink() bool {
+	return o.Type == LinkType || ValidLinkType(o.Type)
 }
 
 // IsObject validates if current Organization is an Object
-func (a Organization) IsObject() bool {
-	return a.Type == ObjectType || ValidObjectType(a.Type)
+func (o Organization) IsObject() bool {
+	return o.Type == ObjectType || ValidObjectType(o.Type)
 }
 
 // GetID returns the ObjectID corresponding to the  Organization object
-func (a Organization) GetID() ObjectID {
-	return a.ID
+func (o Organization) GetID() *ObjectID {
+	return Actor(o).GetID()
 }
 
 // GetType returns the type corresponding to the Organization object
-func (a Organization) GetType() ActivityVocabularyType {
-	return a.Type
+func (o Organization) GetType() ActivityVocabularyType {
+	return o.Type
 }
 
 // IsLink validates if current Service is a Link
-func (a Service) IsLink() bool {
-	return a.Type == LinkType || ValidLinkType(a.Type)
+func (s Service) IsLink() bool {
+	return s.Type == LinkType || ValidLinkType(s.Type)
 }
 
 // IsObject validates if current Service is an Object
-func (a Service) IsObject() bool {
-	return a.Type == ObjectType || ValidObjectType(a.Type)
+func (s Service) IsObject() bool {
+	return s.Type == ObjectType || ValidObjectType(s.Type)
 }
 
 // GetID returns the ObjectID corresponding to the  Service object
-func (a Service) GetID() ObjectID {
-	return a.ID
+func (s Service) GetID() *ObjectID {
+	return Actor(s).GetID()
 }
 
 // GetType returns the type corresponding to the Service object
-func (a Service) GetType() ActivityVocabularyType {
-	return a.Type
+func (s Service) GetType() ActivityVocabularyType {
+	return s.Type
 }
 
 // IsLink validates if current Person is a Link
@@ -357,8 +357,8 @@ func (p Person) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Person object
-func (p Person) GetID() ObjectID {
-	return p.ID
+func (p Person) GetID() *ObjectID {
+	return Actor(p).GetID()
 }
 
 // GetType returns the object type for the current Person object

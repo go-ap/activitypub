@@ -40,8 +40,8 @@ func (l *Liked) Append(ob ObjectOrLink) error {
 }
 
 // GetID returns the ObjectID corresponding to the LikedCollection
-func (l LikedCollection) GetID() ObjectID {
-	return l.ID
+func (l LikedCollection) GetID() *ObjectID {
+	return OrderedCollection(l).GetID()
 }
 
 // GetType returns the LikedCollection's type
@@ -60,8 +60,8 @@ func (l LikedCollection) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Liked
-func (l Liked) GetID() ObjectID {
-	return l.ID
+func (l Liked) GetID() *ObjectID {
+	return OrderedCollection(l).GetID()
 }
 
 // GetType returns the Liked's type

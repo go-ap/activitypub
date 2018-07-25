@@ -75,8 +75,8 @@ func (l Link) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Mention object
-func (l Link) GetID() ObjectID {
-	return l.ID
+func (l Link) GetID() *ObjectID {
+	return &l.ID
 }
 
 // GetType returns the Type corresponding to the Mention object
@@ -95,8 +95,8 @@ func (m Mention) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Mention object
-func (m Mention) GetID() ObjectID {
-	return m.ID
+func (m Mention) GetID() *ObjectID {
+	return Link(m).GetID()
 }
 
 // GetType returns the Type corresponding to the Mention object

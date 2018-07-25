@@ -87,7 +87,7 @@ type (
 	// ActivityObject is a subtype of Object that describes some form of action that may happen,
 	//  is currently happening, or has already happened
 	ActivityObject interface {
-		GetID() ObjectID
+		GetID() *ObjectID
 	}
 	// ObjectOrLink describes an object of any kind.
 	ObjectOrLink interface {
@@ -341,8 +341,8 @@ func ObjectNew(id ObjectID, typ ActivityVocabularyType) *Object {
 }
 
 // GetID returns the ObjectID corresponding to the current object
-func (o Object) GetID() ObjectID {
-	return o.ID
+func (o Object) GetID() *ObjectID {
+	return &o.ID
 }
 
 // Link returns the Link corresponding to the current object
@@ -376,14 +376,14 @@ func recipientsDeduplication(recArgs ...*ObjectsArr) error {
 		for i, rec := range *recList {
 			save := true
 			for _, id := range recIds {
-				if rec.GetID() == id {
+				if *rec.GetID() == id {
 					// mark the element for removal
 					toRemove = append(toRemove, i)
 					save = false
 				}
 			}
 			if save {
-				recIds = append(recIds, rec.GetID())
+				recIds = append(recIds, *rec.GetID())
 			}
 		}
 

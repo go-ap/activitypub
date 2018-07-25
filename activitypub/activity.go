@@ -769,8 +769,8 @@ func (i IntransitiveActivity) IsLink() bool {
 }
 
 // GetID returns the ObjectID corresponding to the IntransitiveActivity object
-func (i IntransitiveActivity) GetID() ObjectID {
-	return i.ID
+func (i IntransitiveActivity) GetID() *ObjectID {
+	return &i.ID
 }
 
 // IsObject
@@ -789,8 +789,8 @@ func (a Activity) IsLink() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Activity object
-func (a Activity) GetID() ObjectID {
-	return a.ID
+func (a Activity) GetID() *ObjectID {
+	return &a.ID
 }
 
 // IsObject returns true for Activity objects
@@ -799,7 +799,7 @@ func (a Activity) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Like object
-func (l Like) GetID() ObjectID {
+func (l Like) GetID() *ObjectID {
 	return Activity(l).GetID()
 }
 
@@ -819,7 +819,7 @@ func (l Like) IsLink() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Like object
-func (d Dislike) GetID() ObjectID {
+func (d Dislike) GetID() *ObjectID {
 	return Activity(d).GetID()
 }
 

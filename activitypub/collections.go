@@ -288,8 +288,8 @@ func (c *Collection) IsLink() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Collection object
-func (c *Collection) GetID() ObjectID {
-	return c.ID
+func (c *Collection) GetID() *ObjectID {
+	return &c.ID
 }
 
 // IsObject returns true for a Collection object
@@ -308,8 +308,8 @@ func (o *OrderedCollection) IsLink() bool {
 }
 
 // GetID returns the ObjectID corresponding to the OrderedCollection
-func (o *OrderedCollection) GetID() ObjectID {
-	return o.ID
+func (o OrderedCollection) GetID() *ObjectID {
+	return &o.ID
 }
 
 // IsObject returns true for am OrderedCollection object
