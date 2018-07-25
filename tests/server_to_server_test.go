@@ -217,7 +217,7 @@ Activity being notified about
 	checkActor := func(list a.ObjectsArr, actor a.Actor) error {
 		for _, rec := range list {
 			if rec.GetID() == actor.GetID() {
-				return fmt.Errorf("%T[%s] Actor of activity should not be in the recipients list", rec, actor.GetID())
+				return fmt.Errorf("%T[%s] Actor of activity should not be in the recipients list", rec, *actor.GetID())
 			}
 		}
 		return nil
@@ -269,7 +269,7 @@ S2S Server: Do-not-deliver considerations
 	checkActor := func(list a.ObjectsArr, ob a.ObjectOrLink) error {
 		for _, rec := range list {
 			if rec.GetID() == ob.GetID() {
-				return fmt.Errorf("%T[%s] of activity should not be in the recipients list", rec, ob.GetID())
+				return fmt.Errorf("%T[%s] of activity should not be in the recipients list", rec, *ob.GetID())
 			}
 		}
 		return nil

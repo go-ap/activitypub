@@ -68,7 +68,7 @@ func Test_OrderedCollection_Append(t *testing.T) {
 	c.Append(val)
 
 	if c.TotalItems != 1 {
-		t.Errorf("Inbox collection of %q should have exactly an GetID", c.GetID())
+		t.Errorf("Inbox collection of %q should have exactly an GetID", *c.GetID())
 	}
 	if !reflect.DeepEqual(c.OrderedItems[0], val) {
 		t.Errorf("First item in Inbox is does not match %q", val.ID)
@@ -84,7 +84,7 @@ func Test_Collection_Append(t *testing.T) {
 	c.Append(val)
 
 	if c.TotalItems != 1 {
-		t.Errorf("Inbox collection of %q should have exactly an GetID", c.GetID())
+		t.Errorf("Inbox collection of %q should have exactly an GetID", *c.GetID())
 	}
 	if !reflect.DeepEqual(c.Items[0], val) {
 		t.Errorf("First item in Inbox is does not match %q", val.ID)
