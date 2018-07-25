@@ -101,7 +101,7 @@ var allTests = tests{
 				a.LangRef("-"): "Ana",
 			},
 			URL: a.URI("http://example.com/accounts/ana"),
-			Outbox: a.OutboxStream{
+			Outbox: &a.OutboxStream{
 				ID:   a.ObjectID("http://example.com/accounts/ana/outbox"),
 				Type: a.OrderedCollectionType,
 				URL:  a.URI("http://example.com/outbox"),
