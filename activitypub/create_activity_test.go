@@ -59,10 +59,11 @@ func TestCreateActivityNewWithApplication(t *testing.T) {
 	if !reflect.DeepEqual(c1.Activity.Object, n) {
 		t.Errorf("GetID %#v different than expected %#v", c1.Activity.Object, n)
 	}
-	if c1.Activity.Actor.Inbox.TotalItems != 1 {
+	in := *c1.Activity.Actor.Inbox.(*Inbox)
+	if in.TotalItems != 1 {
 		t.Errorf("Inbox collection of %q should have exactly an GetID", c1.Activity.Actor.GetID())
 	}
-	if !reflect.DeepEqual(c1.Activity.Actor.Inbox.OrderedItems[0].GetID(), n.GetID()) {
+	if !reflect.DeepEqual(in.OrderedItems[0].GetID(), n.GetID()) {
 		t.Errorf("First item in Inbox is does not match %q", n.GetID())
 	}
 }

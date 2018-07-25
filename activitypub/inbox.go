@@ -1,5 +1,7 @@
 package activitypub
 
+import "fmt"
+
 type (
 	// InboxStream contains all activities received by the actor.
 	// The server SHOULD filter content according to the requester's permission.
@@ -28,6 +30,9 @@ func InboxNew() *Inbox {
 
 // Append adds an element to an InboxStream
 func (i *InboxStream) Append(o ObjectOrLink) error {
+	if i == nil {
+		return fmt.Errorf("nil ")
+	}
 	i.OrderedItems = append(i.OrderedItems, o)
 	i.TotalItems++
 	return nil

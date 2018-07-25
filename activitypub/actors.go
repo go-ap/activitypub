@@ -135,19 +135,19 @@ type Actor struct {
 	Duration time.Duration `jsonld:"duration,omitempty"`
 	// A reference to an [ActivityStreams] OrderedCollection comprised of all the messages received by the actor;
 	//  see 5.2 Inbox.
-	Inbox InboxStream `jsonld:"inbox,omitempty"`
+	Inbox CollectionInterface `jsonld:"inbox,omitempty"`
 	// An [ActivityStreams] OrderedCollection comprised of all the messages produced by the actor;
 	//  see 5.1 Outbox.
-	Outbox OutboxStream `jsonld:"outbox,omitempty"`
+	Outbox CollectionInterface `jsonld:"outbox,omitempty"`
 	// A link to an [ActivityStreams] collection of the actors that this actor is following;
 	//  see 5.4 Following Collection
-	Following FollowingCollection `jsonld:"following,omitempty"`
+	Following CollectionInterface `jsonld:"following,omitempty"`
 	// A link to an [ActivityStreams] collection of the actors that follow this actor;
 	//  see 5.3 Followers Collection.
-	Followers FollowersCollection `jsonld:"followers,omitempty"`
+	Followers CollectionInterface `jsonld:"followers,omitempty"`
 	// A link to an [ActivityStreams] collection of the actors that follow this actor;
 	//  see 5.3 Followers Collection.
-	Liked LikedCollection `jsonld:"liked,omitempty"`
+	Liked CollectionInterface `jsonld:"liked,omitempty"`
 	// A short username which may be used to refer to the actor, with no uniqueness guarantees.
 	PreferredUsername NaturalLanguageValue `jsonld:"preferredUsername,omitempty,collapsible"`
 	// A json object which maps additional (typically server/domain-wide) endpoints which may be useful either
@@ -156,7 +156,7 @@ type Actor struct {
 	//  to a JSON-LD document with these properties.
 	Endpoints Endpoints `jsonld:"endpoints,omitempty"`
 	// A list of supplementary Collections which may be of interest.
-	Streams []Collection `jsonld:"streams,omitempty"`
+	Streams []CollectionInterface `jsonld:"streams,omitempty"`
 }
 
 // ActorInterface
@@ -203,9 +203,9 @@ func ActorNew(id ObjectID, typ ActivityVocabularyType) *Actor {
 	out := OutboxNew()
 	liked := LikedNew()
 
-	a.Inbox = InboxStream(*in)
-	a.Outbox = OutboxStream(*out)
-	a.Liked = LikedCollection(*liked)
+	a.Inbox = in
+	a.Outbox = out
+	a.Liked = liked
 	a.PreferredUsername = make(NaturalLanguageValue, 0)
 
 	return &a
@@ -389,7 +389,7 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 		fmt.Print(err)
 	}
 	o.UnmarshalJSON(v)
-	a.Outbox = o
+	a.Outbox = &o
 
 	return nil
 }
