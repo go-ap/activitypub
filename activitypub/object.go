@@ -138,6 +138,14 @@ func (n NaturalLanguageValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[LangRef]string(n))
 }
 
+// First returns the first element in the map
+func (n NaturalLanguageValue) First() string {
+	for _, v := range n {
+		return v
+	}
+	return ""
+}
+
 // MarshalText serializes the NaturalLanguageValue into Text
 func (n NaturalLanguageValue) MarshalText() ([]byte, error) {
 	for _, v := range n {
