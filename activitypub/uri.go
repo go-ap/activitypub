@@ -55,3 +55,43 @@ func (i IRI) UnmarshalText(s []byte) error {
 	i = IRI(strings.Trim(string(s), "\""))
 	return nil
 }
+
+// IsObject
+func (u URI) GetID() *ObjectID {
+	return nil
+}
+
+// IsObject
+func (i IRI) GetID() *ObjectID {
+	return nil
+}
+
+// GetType
+func (u URI) GetType() ActivityVocabularyType {
+	return LinkType
+}
+
+// GetType
+func (i IRI) GetType() ActivityVocabularyType {
+	return LinkType
+}
+
+// IsLink
+func (u URI) IsLink() bool {
+	return true
+}
+
+// IsLink
+func (i IRI) IsLink() bool {
+	return true
+}
+
+// IsObject
+func (u URI) IsObject() bool {
+	return false
+}
+
+// IsObject
+func (i IRI) IsObject() bool {
+	return false
+}

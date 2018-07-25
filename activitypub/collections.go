@@ -341,6 +341,10 @@ func (c *Collection) UnmarshalJSON(data []byte) error {
 	if len(u) > 0 {
 		c.URL = u
 	}
+	it := getAPItems(data, "items")
+	if it != nil {
+		c.Items = *it.(*ItemCollection)
+	}
 
 	return nil
 }

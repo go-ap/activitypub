@@ -73,6 +73,36 @@ func getAPNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
 
 	return n
 }
+func getAPItems(data []byte, prop string) CollectionInterface {
+	val, typ, _, err := jsonparser.Get(data, prop)
+	if err != nil {
+		return nil
+	}
+
+	aTyp := getAPType(val)
+	var it CollectionInterface
+	switch aTyp {
+	case CollectionType:
+		it = &Collection{}
+	case OrderedCollectionType:
+		it = &OrderedCollection{}
+	}
+
+	switch typ {
+	case jsonparser.Object:
+		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
+			i := Object{}
+			err := i.UnmarshalJSON(val)
+			it.Append(i)
+			return err
+		}, prop)
+	case jsonparser.String:
+		s, _ := jsonparser.GetString(data)
+		it.Append(URI(s))
+	}
+	return it
+}
+
 func getURIField(data []byte, prop string) URI {
 	val, err := jsonparser.GetString(data, prop)
 	if err != nil {
