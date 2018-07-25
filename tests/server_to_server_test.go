@@ -155,11 +155,11 @@ S2S Server: Deduplication of recipient list
 	checkDedup := func(list a.ObjectsArr, recIds *[]a.ObjectID) error {
 		for _, rec := range list {
 			for _, id := range *recIds {
-				if rec.GetID() == id {
+				if *rec.GetID() == id {
 					return fmt.Errorf("%T[%s] already stored in recipients list, Deduplication faild", rec, id)
 				}
 			}
-			*recIds = append(*recIds, rec.GetID())
+			*recIds = append(*recIds, *rec.GetID())
 		}
 		return nil
 	}
