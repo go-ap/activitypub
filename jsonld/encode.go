@@ -85,9 +85,9 @@ func reflectToJSONValue(v interface{}) jsonCapableValue {
 		cValue := val.Field(i)
 		cTag := cField.Tag
 
-		jsonLdTag, ok := loadJSONLdTag(cTag)
-		omitEmpty := ok && jsonLdTag.omitEmpty
-		if jsonLdTag.ignore {
+		jsonLdTag, ok := LoadJSONLdTag(cTag)
+		omitEmpty := ok && jsonLdTag.OmitEmpty
+		if jsonLdTag.Ignore {
 			continue
 		}
 		if cField.Anonymous {
@@ -116,9 +116,9 @@ func (p *payloadWithContext) MarshalJSON() ([]byte, error) {
 		a.isScalar = false
 		typ := reflect.TypeOf(*p)
 		cMirror, _ := typ.FieldByName("Context")
-		jsonLdTag, ok := loadJSONLdTag(cMirror.Tag)
-		omitEmpty := ok && jsonLdTag.omitEmpty
-		collapsible := ok && jsonLdTag.collapsible
+		jsonLdTag, ok := LoadJSONLdTag(cMirror.Tag)
+		omitEmpty := ok && jsonLdTag.OmitEmpty
+		collapsible := ok && jsonLdTag.Collapsible
 
 		con := reflectToJSONValue(p.Context)
 		if len(con.object) > 0 || !omitEmpty {
@@ -152,17 +152,17 @@ func (p *payloadWithContext) MarshalJSON() ([]byte, error) {
 	return json.Marshal(a.object)
 }
 
-type jsonLdTag struct {
-	name        string
-	ignore      bool
-	omitEmpty   bool
-	collapsible bool
+type Tag struct {
+	Name        string
+	Ignore      bool
+	OmitEmpty   bool
+	Collapsible bool
 }
 
-func loadJSONLdTag(tag reflect.StructTag) (jsonLdTag, bool) {
+func LoadJSONLdTag(tag reflect.StructTag) (Tag, bool) {
 	jlTag, ok := tag.Lookup(tagLabel)
 	if !ok {
-		return jsonLdTag{}, false
+		return Tag{}, false
 	}
 	val := strings.Split(jlTag, ",")
 	cont := func(arr []string, s string) bool {
@@ -173,11 +173,11 @@ func loadJSONLdTag(tag reflect.StructTag) (jsonLdTag, bool) {
 		}
 		return false
 	}
-	t := jsonLdTag{
-		omitEmpty:   cont(val, tagOmitEmpty),
-		collapsible: cont(val, tagCollapsible),
+	t := Tag{
+		OmitEmpty:   cont(val, tagOmitEmpty),
+		Collapsible: cont(val, tagCollapsible),
 	}
-	t.name, t.ignore = func(v string) (string, bool) {
+	t.Name, t.Ignore = func(v string) (string, bool) {
 		if len(v) > 0 && v != "_" {
 			return v, false
 		} else {
@@ -188,9 +188,9 @@ func loadJSONLdTag(tag reflect.StructTag) (jsonLdTag, bool) {
 	return t, true
 }
 
-func JSONLdName(n string, tag jsonLdTag) string {
-	if len(tag.name) > 0 {
-		return tag.name
+func JSONLdName(n string, tag Tag) string {
+	if len(tag.Name) > 0 {
+		return tag.Name
 	}
 	return n
 }
@@ -773,14 +773,14 @@ func (se *structEncoder) encode(e *encodeState, v reflect.Value, opts encOpts) {
 			e.WriteByte(',')
 		}
 		// TODO(marius): how bad is this?
-		//opts.collapsible = f.collapsible
+		//opts.Collapsible = f.Collapsible
 		/*
-			if f.collapsible {
+			if f.Collapsible {
 				collapsingMethod := fv.MethodByName("Collapse")
 				if !collapsingMethod.IsValid() || collapsingMethod.IsNil() {
 					continue
 				}
-				e.string(f.name, opts.escapeHTML)
+				e.string(f.Name, opts.escapeHTML)
 				e.WriteByte(':')
 
 				content := collapsingMethod.Call(nil)[0].Bytes()
@@ -1184,7 +1184,7 @@ func (e *encodeState) stringBytes(s []byte, escapeHTML bool) int {
 // A field represents a single field found in a struct.
 type field struct {
 	name      string
-	nameBytes []byte                 // []byte(name)
+	nameBytes []byte                 // []byte(Name)
 	equalFold func(s, t []byte) bool // bytes.EqualFold or equivalent
 
 	tag         bool
