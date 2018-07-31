@@ -8,7 +8,7 @@ import (
 
 func TestRef_MarshalText(t *testing.T) {
 	test := "test"
-	a := Ref(test)
+	a := IRI(test)
 
 	out, err := a.MarshalText()
 	if err != nil {
@@ -19,19 +19,10 @@ func TestRef_MarshalText(t *testing.T) {
 	}
 }
 
-func TestContext_Ref(t *testing.T) {
-	url := "test"
-	c := Context{URL: Ref(url)}
-
-	if c.Ref() != Ref(url) {
-		t.Errorf("Invalid result %#v, expected %#v", c.Ref(), Ref(url))
-	}
-}
-
 func TestContext_MarshalJSON(t *testing.T) {
 	url := "test"
-	c := Context{URL: Ref(url)}
-	c.Language = "en-GB"
+	c := Context{"_": IRI(url)}
+	//c.Language = "en-GB"
 
 	out, err := c.MarshalJSON()
 	if err != nil {

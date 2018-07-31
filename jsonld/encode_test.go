@@ -24,35 +24,36 @@ func TestMarshal(t *testing.T) {
 	b := mockTypeA{}
 
 	url := "http://www.habarnam.ro"
-	Ctx = &Context{URL: Ref(url)}
+	p := WithContext(IRI(url))
+
 	var err error
 	var out []byte
 
-	out, err = Marshal(a)
+	out, err = p.Marshal(a)
 	if err != nil {
 		t.Errorf("%s", err)
 	}
-	if !strings.Contains(string(out), "@context") {
-		t.Errorf("Context name not found '%s' in %s", "@context", out)
+	if !strings.Contains(string(out), string(ContextKw)) {
+		t.Errorf("Context name not found %q in %s", ContextKw, out)
 	}
 	if !strings.Contains(string(out), url) {
-		t.Errorf("Context url not found '%s' in %s", url, out)
+		t.Errorf("Context url not found %q in %s", url, out)
 	}
 	err = Unmarshal(out, &b)
 	if err != nil {
 		t.Errorf("%s", err)
 	}
 	if a.Id != b.Id {
-		t.Errorf("Id isn't equal '%s' expected '%s'", a.Id, b.Id)
+		t.Errorf("Id isn't equal %q expected %q in %s", a.Id, b.Id, out)
 	}
 	if a.Name != b.Name {
-		t.Errorf("Name isn't equal '%s' expected '%s'", a.Name, b.Name)
+		t.Errorf("Name isn't equal %q expected %q", a.Name, b.Name)
 	}
 	if a.Type != b.Type {
-		t.Errorf("Type isn't equal '%s' expected '%s'", a.Type, b.Type)
+		t.Errorf("Type isn't equal %q expected %q", a.Type, b.Type)
 	}
 	if a.PropA != b.PropA {
-		t.Errorf("PropA isn't equal '%s' expected '%s'", a.PropA, b.PropA)
+		t.Errorf("PropA isn't equal %q expected %q", a.PropA, b.PropA)
 	}
 	if a.PropB != b.PropB {
 		t.Errorf("PropB isn't equal %f expected %f", a.PropB, b.PropB)
@@ -74,7 +75,7 @@ func TestMarshalNullContext(t *testing.T) {
 		t.Errorf("%s", errJ)
 	}
 	if !bytes.Equal(outL, outJ) {
-		t.Errorf("Json output should be euqlal '%s', received '%s'", outL, outJ)
+		t.Errorf("Json output should be euqlal %q, received %q", outL, outJ)
 	}
 }
 
@@ -112,29 +113,28 @@ func TestIsEmpty(t *testing.T) {
 	}
 }
 
-func TestPayloadWithContext_MarshalJSON(t *testing.T) {
-	empty := payloadWithContext{}
-	eData, eErr := empty.MarshalJSON()
+func TestWithContext_MarshalJSON(t *testing.T) {
+	tv := "value_test"
+	v := struct{ Test string }{Test: tv}
 
-	if eErr != nil {
-		t.Errorf("Error: %s", eErr)
+	data, err := WithContext(IRI("http://example.com")).Marshal(v)
+	if err != nil {
+		t.Error(err)
 	}
-	Ctx = nil
-	n, _ := Marshal(nil)
-	if bytes.Compare(eData, n) != 0 {
-		t.Errorf("Empty payload should resolve to null json value '%s', received '%s'", n, eData)
+	if !bytes.Contains(data, []byte(ContextKw)) {
+		t.Errorf("%q not found in %s", ContextKw, data)
+	}
+	m := reflect.TypeOf(v)
+	mv := reflect.ValueOf(v)
+	for i := 0; i < m.NumField(); i++ {
+		f := m.Field(i)
+		v := mv.Field(i)
+		if !bytes.Contains(data, []byte(f.Name)) {
+			t.Errorf("%q not found in %s", f.Name, data)
+		}
+		if !bytes.Contains(data, []byte(v.String())) {
+			t.Errorf("%q not found in %s", v.String(), data)
+		}
 	}
 
-	var a interface{}
-	a = 1
-	p := payloadWithContext{Obj: a}
-	pData, pErr := p.MarshalJSON()
-
-	if pErr != nil {
-		t.Errorf("Error: %s", pErr)
-	}
-	av, _ := Marshal(a)
-	if bytes.Compare(pData, av) != 0 {
-		t.Errorf("Empty payload should resolve to value '%s', received '%s'", av, pData)
-	}
 }

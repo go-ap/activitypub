@@ -28,6 +28,8 @@ import (
 	"unicode/utf8"
 )
 
+var Ctxt Context
+
 const (
 	tagLabel       = "jsonld"
 	tagOmitEmpty   = "omitempty"
@@ -35,7 +37,9 @@ const (
 )
 
 type payloadWithContext struct {
-	Context interface{} `jsonld:"@context,collapsible"`
+	Context Collapsible `jsonld:"@context,omitempty,collapsible"`
+	ID      interface{} `jsonld:"@id,omitempty,collapsible"`
+	Type    interface{} `jsonld:"@type,omitempty,collapsible"`
 	Obj     interface{}
 }
 
@@ -108,48 +112,21 @@ func reflectToJSONValue(v interface{}) jsonCapableValue {
 	return a
 }
 
-func (p *payloadWithContext) MarshalJSON() ([]byte, error) {
-	a := jsonCapableValue{}
-	a.isScalar = true
-	a.object = make(map[string]interface{})
-	if p.Context != nil {
-		a.isScalar = false
-		typ := reflect.TypeOf(*p)
-		cMirror, _ := typ.FieldByName("Context")
-		jsonLdTag, ok := LoadJSONLdTag(cMirror.Tag)
-		omitEmpty := ok && jsonLdTag.OmitEmpty
-		collapsible := ok && jsonLdTag.Collapsible
+func (p payloadWithContext) Collapse() interface{} {
+	return p
+}
 
-		con := reflectToJSONValue(p.Context)
-		if len(con.object) > 0 || !omitEmpty {
-			for _, v := range con.object {
-				a.object[JSONLdName(cMirror.Name, jsonLdTag)] = v
-				if len(con.object) == 1 && collapsible {
-					break
-				}
-			}
-		}
+// WithContext
+func WithContext(c Collapsible) payloadWithContext {
+	return payloadWithContext{
+		Context: c,
 	}
-	if p.Obj != nil {
-		oMap := reflectToJSONValue(p.Obj)
-		if oMap.isScalar && a.isScalar {
-			a.isScalar = true
-			a.scalar = oMap.scalar
-		} else {
-			if len(oMap.object) == 0 {
-				return nil, fmt.Errorf("invalid object to marshall")
-			}
-			a.isScalar = false
+}
 
-			for k, v := range oMap.object {
-				a.object[k] = v
-			}
-		}
-	}
-	if a.isScalar {
-		return json.Marshal(a.scalar)
-	}
-	return json.Marshal(a.object)
+// Marshal
+func (p payloadWithContext) Marshal(v interface{}) ([]byte, error) {
+	p.Obj = v
+	return Marshal(p)
 }
 
 type Tag struct {
@@ -333,28 +310,14 @@ type UnsupportedTypeError struct {
 func Marshal(v interface{}) ([]byte, error) {
 	e := &encodeState{}
 
-	if Ctx != nil {
-		a := payloadWithContext{
-			Context: Ctx,
-			Obj:     nil,
-		}
-		//errC := e.marshal(ctx, encOpts{escapeHTML: true})
-		//if errC != nil {
-		//	return nil, errC
-		//}
-		err := e.marshal(a, encOpts{escapeHTML: true})
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	err := e.marshal(v, encOpts{escapeHTML: true})
 	if err != nil {
 		return nil, err
 	}
 
-	output := e.Bytes()
-	return bytes.Replace(output, []byte(`,"Obj":null}{`), []byte(","), 1), nil
+	// @todo(marius): fix this ugly hack
+	output := bytes.Replace(e.Bytes(), []byte(`,"Obj":{`), []byte(","), 1)
+	return output[:len(output)-1], nil
 }
 
 func (e *UnsupportedTypeError) Error() string {

@@ -13,7 +13,9 @@ package jsonld
 // This file starts with two simple examples using the scanner
 // before diving into the scanner itself.
 
-import "strconv"
+import (
+	"strconv"
+)
 
 // Valid reports whether data is a valid JSON encoding.
 func Valid(data []byte) bool {
@@ -114,7 +116,7 @@ type scanner struct {
 // assigned to scanner.state and the method scanner.eof.
 // They give details about the current state of the scan that
 // callers might be interested to know about.
-// It is okay to ignore the return value of any particular
+// It is okay to Ignore the return value of any particular
 // call to scanner.state: if one call returns scanError,
 // every subsequent call will return scanError too.
 const (
@@ -133,6 +135,8 @@ const (
 	// Stop.
 	scanEnd   // top-level value ended *before* this byte; known to be first "stop" result
 	scanError // hit an error, scanner.err.
+
+	scanFindType // need to find the "jsonld:type" element of the object.
 )
 
 // These values are stored in the parseState stack.
