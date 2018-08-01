@@ -108,6 +108,10 @@ type ContextObject struct {
 // keyword can be used as a term.
 type Context map[Term]IRI
 
+func GetContext() Context {
+	return Context{}
+}
+
 //type Context Collapsible
 
 // Collapsible is an interface used by the JSON-LD marshaller to collapse a struct to one single value
@@ -116,9 +120,9 @@ type Collapsible interface {
 }
 
 // Collapse returns the plain text collapsed value of the current Context object
-func (c *Context) Collapse() interface{} {
-	if len(*c) == 1 {
-		for _, iri := range *c {
+func (c Context) Collapse() interface{} {
+	if len(c) == 1 {
+		for _, iri := range c {
 			return iri
 		}
 	}

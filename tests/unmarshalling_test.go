@@ -79,7 +79,7 @@ var allTests = tests{
 	//				a.LangRef("-"): "Sally",
 	//			},
 	//		}),
-	//		Object: a.Object{
+	//		payloadWithContext: a.payloadWithContext{
 	//			Type: a.NoteType,
 	//			Name: a.NaturalLanguageValue{
 	//				a.LangRef("-"): "A Note",

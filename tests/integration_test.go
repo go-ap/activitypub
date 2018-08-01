@@ -15,16 +15,16 @@ func TestAcceptSerialization(t *testing.T) {
 	obj.Name["en"] = "test"
 	obj.Name["fr"] = "teste"
 
-	j.Ctx = j.Context{URL: "https://www.w3.org/ns/activitystreams"}
+	uri := "https://www.w3.org/ns/activitystreams"
+	p := j.WithContext(j.IRI(uri))
 
-	data, err := j.Marshal(obj)
+	data, err := p.Marshal(obj)
 	if err != nil {
 		t.Errorf("Error: %v", err)
 	}
 
-	ctxt := j.Ctx.(j.Context)
-	if !strings.Contains(string(data), string(ctxt.URL)) {
-		t.Errorf("Could not find context url %#v in output %s", ctxt.URL, data)
+	if !strings.Contains(string(data), uri) {
+		t.Errorf("Could not find context url %#v in output %s", p.Context, data)
 	}
 	if !strings.Contains(string(data), string(obj.ID)) {
 		t.Errorf("Could not find id %#v in output %s", string(obj.ID), data)
@@ -45,17 +45,15 @@ func TestCreateActivityHTTPSerialization(t *testing.T) {
 	obj := a.AcceptNew(id, nil)
 	obj.Name["en"] = "Accept New"
 
-	baseURI := string(a.ActivityBaseURI)
-	j.Ctx = j.Context{
-		URL: j.Ref(baseURI + string(obj.Type)),
-	}
-	data, err := j.Marshal(obj)
+	uri := string(a.ActivityBaseURI)
+
+	data, err := j.WithContext(j.IRI(uri)).Marshal(obj)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("Error: %v", err)
 	}
-	ctxt := j.Ctx.(j.Context)
-	if !strings.Contains(string(data), string(ctxt.URL)) {
-		t.Errorf("Could not find context url %#v in output %s", ctxt.URL, data)
+
+	if !strings.Contains(string(data), uri) {
+		t.Errorf("Could not find context url %#v in output %s", j.GetContext(), data)
 	}
 	if !strings.Contains(string(data), string(obj.ID)) {
 		t.Errorf("Could not find id %#v in output %s", string(obj.ID), data)

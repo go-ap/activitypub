@@ -28,7 +28,7 @@ import (
 	"unicode/utf8"
 )
 
-var Ctxt Context
+var Ctxt Collapsible
 
 const (
 	tagLabel       = "jsonld"
@@ -118,6 +118,7 @@ func (p payloadWithContext) Collapse() interface{} {
 
 // WithContext
 func WithContext(c Collapsible) payloadWithContext {
+	Ctxt = c
 	return payloadWithContext{
 		Context: c,
 	}
