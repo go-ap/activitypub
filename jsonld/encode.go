@@ -124,6 +124,8 @@ func WithContext(c Collapsible) payloadWithContext {
 	}
 }
 
+var payloadType = reflect.TypeOf(new(payloadWithContext)).Elem()
+
 // Marshal
 func (p payloadWithContext) Marshal(v interface{}) ([]byte, error) {
 	p.Obj = v
@@ -308,6 +310,7 @@ type UnsupportedTypeError struct {
 // handle them. Passing cyclic structures to Marshal will result in
 // an infinite recursion.
 //
+
 func Marshal(v interface{}) ([]byte, error) {
 	e := &encodeState{}
 
@@ -315,10 +318,18 @@ func Marshal(v interface{}) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	output := e.Bytes()
+	typ := reflect.TypeOf(v)
+	if typ.Kind() == reflect.Ptr {
+		typ = typ.Elem()
+	}
+	if typ == payloadType {
+		// @todo(marius): fix this ugly hack
+		output = bytes.Replace(output, []byte(`,"Obj":{`), []byte(","), 1)
+		output = output[:len(output)-1]
+	}
 
-	// @todo(marius): fix this ugly hack
-	output := bytes.Replace(e.Bytes(), []byte(`,"Obj":{`), []byte(","), 1)
-	return output[:len(output)-1], nil
+	return output, nil
 }
 
 func (e *UnsupportedTypeError) Error() string {
