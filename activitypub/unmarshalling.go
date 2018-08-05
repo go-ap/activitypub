@@ -60,6 +60,13 @@ func getAPInt(data []byte, prop string) int64 {
 	return val
 }
 
+func getAPString(data []byte, prop string) string {
+	val, err := jsonparser.GetString(data, prop)
+	if err != nil {
+	}
+	return val
+}
+
 func getAPNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
 	n := NaturalLanguageValue{}
 	val, typ, _, err := jsonparser.Get(data, prop)

@@ -426,7 +426,7 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	if len(u) > 0 {
 		o.URL = u
 	}
-
+	o.MediaType = MimeType(getAPString(data, "mediaType"))
 	//fmt.Printf("%s\n %#v", data, o)
 
 	return nil
