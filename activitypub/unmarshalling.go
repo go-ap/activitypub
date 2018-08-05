@@ -79,6 +79,21 @@ func getAPNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
 
 	return n
 }
+
+func unmarshallToAPObject(data []byte) Item {
+	i, _ := getAPObjectByType(getAPType(data))
+	_ = i.(json.Unmarshaler).UnmarshalJSON(data)
+	return i
+}
+
+func getAPItem(data []byte, prop string) Item {
+	val, _, _, err := jsonparser.Get(data, prop)
+	if err != nil {
+		return nil
+	}
+	return unmarshallToAPObject(val)
+}
+
 func getAPItems(data []byte, prop string) ItemCollection {
 	val, typ, _, err := jsonparser.Get(data, prop)
 	if err != nil {
@@ -88,20 +103,16 @@ func getAPItems(data []byte, prop string) ItemCollection {
 	var it ItemCollection
 	switch typ {
 	case jsonparser.Array:
-		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			i, _ := getAPObjectByType(getAPType(value))
-			err = i.(json.Unmarshaler).UnmarshalJSON(value)
-			it.Append(i)
+		jsonparser.ArrayEach(val, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			it.Append(unmarshallToAPObject(value))
 		}, prop)
 	case jsonparser.Object:
-		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
-			i := Object{}
-			err := i.UnmarshalJSON(val)
-			it.Append(i)
+		jsonparser.ObjectEach(val, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
+			it.Append(unmarshallToAPObject(value))
 			return err
 		}, prop)
 	case jsonparser.String:
-		s, _ := jsonparser.GetString(data)
+		s, _ := jsonparser.GetString(val)
 		it.Append(URI(s))
 	}
 	return it

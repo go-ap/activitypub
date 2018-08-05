@@ -421,6 +421,7 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	o.Type = getAPType(data)
 	o.Name = getAPNaturalLanguageField(data, "name")
 	o.Content = getAPNaturalLanguageField(data, "content")
+	o.Generator = getAPItem(data, "generator")
 	u := getURIField(data, "url")
 	if len(u) > 0 {
 		o.URL = u
