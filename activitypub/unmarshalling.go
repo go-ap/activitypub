@@ -81,8 +81,20 @@ func getAPNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
 }
 
 func unmarshallToAPObject(data []byte) Item {
-	i, _ := getAPObjectByType(getAPType(data))
-	_ = i.(json.Unmarshaler).UnmarshalJSON(data)
+	i, err := getAPObjectByType(getAPType(data))
+	if err != nil {
+		return nil
+	}
+	p := reflect.PtrTo(reflect.TypeOf(i))
+	if p.Implements(unmarshalerType) {
+		err = i.(json.Unmarshaler).UnmarshalJSON(data)
+	}
+	if p.Implements(textUnmarshalerType) {
+		err = i.(encoding.TextUnmarshaler).UnmarshalText(data)
+	}
+	if err != nil {
+		return nil
+	}
 	return i
 }
 
@@ -104,8 +116,14 @@ func getAPItems(data []byte, prop string) ItemCollection {
 	switch typ {
 	case jsonparser.Array:
 		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			i, _ := getAPObjectByType(getAPType(value))
+			i, err := getAPObjectByType(getAPType(value))
+			if err != nil {
+				return
+			}
 			err = i.(json.Unmarshaler).UnmarshalJSON(value)
+			if err != nil {
+				return
+			}
 			it.Append(i)
 		}, prop)
 	case jsonparser.Object:
