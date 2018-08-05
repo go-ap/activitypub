@@ -53,6 +53,12 @@ func getAPMimeType(data []byte) MimeType {
 	}
 	return MimeType(t)
 }
+func getAPInt(data []byte, prop string) int64 {
+	val, err := jsonparser.GetInt(data, prop)
+	if err != nil {
+	}
+	return val
+}
 
 func getAPNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
 	n := NaturalLanguageValue{}
@@ -73,22 +79,20 @@ func getAPNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
 
 	return n
 }
-func getAPItems(data []byte, prop string) CollectionInterface {
+func getAPItems(data []byte, prop string) ItemCollection {
 	val, typ, _, err := jsonparser.Get(data, prop)
 	if err != nil {
 		return nil
 	}
 
-	aTyp := getAPType(val)
-	var it CollectionInterface
-	switch aTyp {
-	case CollectionType:
-		it = &Collection{}
-	case OrderedCollectionType:
-		it = &OrderedCollection{}
-	}
-
+	var it ItemCollection
 	switch typ {
+	case jsonparser.Array:
+		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			i, _ := getAPObjectByType(getAPType(value))
+			err = i.(json.Unmarshaler).UnmarshalJSON(value)
+			it.Append(i)
+		}, prop)
 	case jsonparser.Object:
 		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
 			i := Object{}

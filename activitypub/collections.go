@@ -327,6 +327,11 @@ func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
 	if len(u) > 0 {
 		o.URL = u
 	}
+	o.TotalItems = uint(getAPInt(data, "totalItems"))
+	it := getAPItems(data, "orderedItems")
+	if it != nil {
+		o.OrderedItems = it
+	}
 
 	return nil
 }
@@ -337,13 +342,14 @@ func (c *Collection) UnmarshalJSON(data []byte) error {
 	c.Type = getAPType(data)
 	c.Name = getAPNaturalLanguageField(data, "name")
 	c.Content = getAPNaturalLanguageField(data, "content")
+	c.TotalItems = uint(getAPInt(data, "totalItems"))
 	u := getURIField(data, "url")
 	if len(u) > 0 {
 		c.URL = u
 	}
 	it := getAPItems(data, "items")
 	if it != nil {
-		c.Items = *it.(*ItemCollection)
+		c.Items = it
 	}
 
 	return nil
