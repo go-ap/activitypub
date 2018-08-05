@@ -818,7 +818,7 @@ func (l Like) IsLink() bool {
 	return false
 }
 
-// GetID returns the ObjectID corresponding to the Like object
+// GetID returns the ObjectID corresponding to the Dislike object
 func (d Dislike) GetID() *ObjectID {
 	return Activity(d).GetID()
 }
@@ -835,6 +835,526 @@ func (d Dislike) IsObject() bool {
 
 // IsLink returns false for Dislike objects
 func (d Dislike) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Accept object
+func (a Accept) GetID() *ObjectID {
+	return Activity(a).GetID()
+}
+
+// GetType
+func (a Accept) GetType() ActivityVocabularyType {
+	return a.Type
+}
+
+// IsObject returns true for Accept objects
+func (a Accept) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Accept objects
+func (a Accept) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Add object
+func (a Add) GetID() *ObjectID {
+	return Activity(a).GetID()
+}
+
+// GetType
+func (a Add) GetType() ActivityVocabularyType {
+	return a.Type
+}
+
+// IsObject returns true for Add objects
+func (a Add) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Add objects
+func (a Add) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Announce object
+func (a Announce) GetID() *ObjectID {
+	return Activity(a).GetID()
+}
+
+// GetType
+func (a Announce) GetType() ActivityVocabularyType {
+	return a.Type
+}
+
+// IsObject returns true for Announce objects
+func (a Announce) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Announce objects
+func (a Announce) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Arrive object
+func (a Arrive) GetID() *ObjectID {
+	return IntransitiveActivity(a).GetID()
+}
+
+// GetType
+func (a Arrive) GetType() ActivityVocabularyType {
+	return a.Type
+}
+
+// IsObject returns true for Arrive objects
+func (a Arrive) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Arrive objects
+func (a Arrive) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Block object
+func (b Block) GetID() *ObjectID {
+	return Activity(b).GetID()
+}
+
+// GetType
+func (b Block) GetType() ActivityVocabularyType {
+	return b.Type
+}
+
+// IsObject returns true for Block objects
+func (b Block) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Block objects
+func (b Block) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Create object
+func (c Create) GetID() *ObjectID {
+	return Activity(c).GetID()
+}
+
+// GetType
+func (c Create) GetType() ActivityVocabularyType {
+	return c.Type
+}
+
+// IsObject returns true for Create objects
+func (c Create) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Create objects
+func (c Create) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Delete object
+func (d Delete) GetID() *ObjectID {
+	return Activity(d).GetID()
+}
+
+// GetType
+func (d Delete) GetType() ActivityVocabularyType {
+	return d.Type
+}
+
+// IsObject returns true for Delete objects
+func (d Delete) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Delete objects
+func (d Delete) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Flag object
+func (f Flag) GetID() *ObjectID {
+	return Activity(f).GetID()
+}
+
+// GetType
+func (f Flag) GetType() ActivityVocabularyType {
+	return f.Type
+}
+
+// IsObject returns true for Flag objects
+func (f Flag) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Flag objects
+func (f Flag) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Follow object
+func (f Follow) GetID() *ObjectID {
+	return Activity(f).GetID()
+}
+
+// GetType
+func (f Follow) GetType() ActivityVocabularyType {
+	return f.Type
+}
+
+// IsObject returns true for Follow objects
+func (f Follow) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Follow objects
+func (f Follow) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Ignore object
+func (i Ignore) GetID() *ObjectID {
+	return Activity(i).GetID()
+}
+
+// GetType
+func (i Ignore) GetType() ActivityVocabularyType {
+	return i.Type
+}
+
+// IsObject returns true for Ignore objects
+func (i Ignore) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Ignore objects
+func (i Ignore) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Invite object
+func (i Invite) GetID() *ObjectID {
+	return Activity(i).GetID()
+}
+
+// GetType
+func (i Invite) GetType() ActivityVocabularyType {
+	return i.Type
+}
+
+// IsObject returns true for Invite objects
+func (i Invite) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Invite objects
+func (i Invite) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Join object
+func (j Join) GetID() *ObjectID {
+	return Activity(j).GetID()
+}
+
+// GetType
+func (j Join) GetType() ActivityVocabularyType {
+	return j.Type
+}
+
+// IsObject returns true for Join objects
+func (j Join) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Join objects
+func (j Join) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Leave object
+func (l Leave) GetID() *ObjectID {
+	return Activity(l).GetID()
+}
+
+// GetType
+func (l Leave) GetType() ActivityVocabularyType {
+	return l.Type
+}
+
+// IsObject returns true for Leave objects
+func (l Leave) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Leave objects
+func (l Leave) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Listen object
+func (l Listen) GetID() *ObjectID {
+	return Activity(l).GetID()
+}
+
+// GetType
+func (l Listen) GetType() ActivityVocabularyType {
+	return l.Type
+}
+
+// IsObject returns true for Listen objects
+func (l Listen) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Listen objects
+func (l Listen) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Move object
+func (m Move) GetID() *ObjectID {
+	return Activity(m).GetID()
+}
+
+// GetType
+func (m Move) GetType() ActivityVocabularyType {
+	return m.Type
+}
+
+// IsObject returns true for Move objects
+func (m Move) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Move objects
+func (m Move) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Offer object
+func (o Offer) GetID() *ObjectID {
+	return Activity(o).GetID()
+}
+
+// GetType
+func (o Offer) GetType() ActivityVocabularyType {
+	return o.Type
+}
+
+// IsObject returns true for Offer objects
+func (o Offer) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Offer objects
+func (o Offer) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Question object
+func (q Question) GetID() *ObjectID {
+	return &q.ID
+}
+
+// GetType
+func (q Question) GetType() ActivityVocabularyType {
+	return q.Type
+}
+
+// IsObject returns true for Question objects
+func (q Question) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Question objects
+func (q Question) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Reject object
+func (r Reject) GetID() *ObjectID {
+	return Activity(r).GetID()
+}
+
+// GetType
+func (r Reject) GetType() ActivityVocabularyType {
+	return r.Type
+}
+
+// IsObject returns true for Reject objects
+func (r Reject) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Reject objects
+func (r Reject) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Remove object
+func (r Remove) GetID() *ObjectID {
+	return Activity(r).GetID()
+}
+
+// GetType
+func (r Remove) GetType() ActivityVocabularyType {
+	return r.Type
+}
+
+// IsObject returns true for Remove objects
+func (r Remove) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Remove objects
+func (r Remove) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Read object
+func (r Read) GetID() *ObjectID {
+	return Activity(r).GetID()
+}
+
+// GetType
+func (r Read) GetType() ActivityVocabularyType {
+	return r.Type
+}
+
+// IsObject returns true for Read objects
+func (r Read) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Read objects
+func (r Read) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the TentativeAccept object
+func (t TentativeAccept) GetID() *ObjectID {
+	return Activity(t).GetID()
+}
+
+// GetType
+func (t TentativeAccept) GetType() ActivityVocabularyType {
+	return t.Type
+}
+
+// IsObject returns true for TentativeAccept objects
+func (t TentativeAccept) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for TentativeAccept objects
+func (t TentativeAccept) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the TentativeReject object
+func (t TentativeReject) GetID() *ObjectID {
+	return Activity(t).GetID()
+}
+
+// GetType
+func (t TentativeReject) GetType() ActivityVocabularyType {
+	return t.Type
+}
+
+// IsObject returns true for TentativeReject objects
+func (t TentativeReject) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for TentativeReject objects
+func (t TentativeReject) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Travel object
+func (t Travel) GetID() *ObjectID {
+	return IntransitiveActivity(t).GetID()
+}
+
+// GetType
+func (t Travel) GetType() ActivityVocabularyType {
+	return t.Type
+}
+
+// IsObject returns true for Travel objects
+func (t Travel) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Travel objects
+func (t Travel) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Undo object
+func (u Undo) GetID() *ObjectID {
+	return Activity(u).GetID()
+}
+
+// GetType
+func (u Undo) GetType() ActivityVocabularyType {
+	return u.Type
+}
+
+// IsObject returns true for Undo objects
+func (u Undo) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Undo objects
+func (u Undo) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Update object
+func (u Update) GetID() *ObjectID {
+	return Activity(u).GetID()
+}
+
+// GetType
+func (u Update) GetType() ActivityVocabularyType {
+	return u.Type
+}
+
+// IsObject returns true for Update objects
+func (u Update) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for Update objects
+func (u Update) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the View object
+func (v View) GetID() *ObjectID {
+	return Activity(v).GetID()
+}
+
+// GetType
+func (v View) GetType() ActivityVocabularyType {
+	return v.Type
+}
+
+// IsObject returns true for View objects
+func (v View) IsObject() bool {
+	return true
+}
+
+// IsLink returns false for View objects
+func (v View) IsLink() bool {
 	return false
 }
 
