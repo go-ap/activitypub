@@ -103,12 +103,16 @@ func getAPItems(data []byte, prop string) ItemCollection {
 	var it ItemCollection
 	switch typ {
 	case jsonparser.Array:
-		jsonparser.ArrayEach(val, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			it.Append(unmarshallToAPObject(value))
+		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			i, _ := getAPObjectByType(getAPType(value))
+			err = i.(json.Unmarshaler).UnmarshalJSON(value)
+			it.Append(i)
 		}, prop)
 	case jsonparser.Object:
-		jsonparser.ObjectEach(val, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
-			it.Append(unmarshallToAPObject(value))
+		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
+			i := Object{}
+			err := i.UnmarshalJSON(val)
+			it.Append(i)
 			return err
 		}, prop)
 	case jsonparser.String:
