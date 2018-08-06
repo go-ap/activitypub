@@ -98,6 +98,8 @@ var keywords = Terms{
 	VocabKw,
 }
 
+const NullTerm Term = "-"
+
 type ContextObject struct {
 	ID   interface{} `jsonld:"@id,omitempty,collapsible"`
 	Type interface{} `jsonld:"@type,omitempty,collapsible"`

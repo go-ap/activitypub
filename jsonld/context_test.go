@@ -21,7 +21,7 @@ func TestRef_MarshalText(t *testing.T) {
 
 func TestContext_MarshalJSON(t *testing.T) {
 	url := "test"
-	c := Context{"_": IRI(url)}
+	c := Context{NullTerm: IRI(url)}
 	//c.Language = "en-GB"
 
 	out, err := c.MarshalJSON()
