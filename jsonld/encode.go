@@ -43,75 +43,6 @@ type payloadWithContext struct {
 	Obj     interface{}
 }
 
-type jsonCapableValue struct {
-	isScalar bool
-	scalar   interface{}
-	object   map[string]interface{}
-}
-
-func reflectToJSONValue(v interface{}) jsonCapableValue {
-	a := jsonCapableValue{}
-	a.object = make(map[string]interface{})
-	typ := reflect.TypeOf(v)
-	val := reflect.ValueOf(v)
-	if typ.Kind() == reflect.Ptr {
-		typ = typ.Elem()
-		val = val.Elem()
-	}
-	switch typ.Kind() {
-	case reflect.Array, reflect.Map, reflect.Slice, reflect.String:
-		a.scalar = val.Interface()
-		a.isScalar = true
-		return a
-	case reflect.Bool:
-		a.scalar = val.Bool()
-		a.isScalar = true
-		return a
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		a.scalar = val.Int()
-		a.isScalar = true
-		return a
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		a.scalar = val.Uint()
-		a.isScalar = true
-		return a
-	case reflect.Float32, reflect.Float64:
-		a.scalar = val.Float()
-		a.isScalar = true
-		return a
-	case reflect.Interface, reflect.Ptr:
-		a.isScalar = true
-		return a
-	}
-
-	for i := 0; i < typ.NumField(); i++ {
-		cField := typ.Field(i)
-		cValue := val.Field(i)
-		cTag := cField.Tag
-
-		jsonLdTag, ok := LoadJSONLdTag(cTag)
-		omitEmpty := ok && jsonLdTag.OmitEmpty
-		if jsonLdTag.Ignore {
-			continue
-		}
-		if cField.Anonymous {
-			anonJSONVal := reflectToJSONValue(cValue.Interface())
-			if anonJSONVal.isScalar {
-				continue
-			}
-			for k, v := range anonJSONVal.object {
-				a.object[k] = v
-			}
-		}
-		empty := isEmptyValue(cValue)
-		if !empty || empty && !omitEmpty {
-			a.object[JSONLdName(cField.Name, jsonLdTag)] = cValue.Interface()
-		}
-	}
-
-	return a
-}
-
 func (p payloadWithContext) Collapse() interface{} {
 	return p
 }
@@ -132,6 +63,7 @@ func (p payloadWithContext) Marshal(v interface{}) ([]byte, error) {
 	return Marshal(p)
 }
 
+// Tag used by structs from the ActivityPub package to Marshal and Unmarshal to/from JSON-LD
 type Tag struct {
 	Name        string
 	Ignore      bool
@@ -139,6 +71,7 @@ type Tag struct {
 	Collapsible bool
 }
 
+// LoadJSONLdTag used by structs from the ActivityPub package to Marshal and Unmarshal to/from JSON-LD
 func LoadJSONLdTag(tag reflect.StructTag) (Tag, bool) {
 	jlTag, ok := tag.Lookup(tagLabel)
 	if !ok {
@@ -168,6 +101,7 @@ func LoadJSONLdTag(tag reflect.StructTag) (Tag, bool) {
 	return t, true
 }
 
+// LoadJSONLdTag used by structs from the ActivityPub package to Marshal and Unmarshal to/from JSON-LD
 func JSONLdName(n string, tag Tag) string {
 	if len(tag.Name) > 0 {
 		return tag.Name

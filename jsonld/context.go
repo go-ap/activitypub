@@ -58,13 +58,21 @@ const (
 	GraphKw Term = "@graph"
 )
 
-// Ref basic type
 type (
+	// Ref basic type
 	LangRef string
-	Term    string
-	IRI     string
-	Terms   []Term
+	// Term represents the JSON-LD term for @context maps
+	Term string
+	// IRI is a International Resource Identificator
+	IRI string
+	// Terms is an array of Term values
+	Terms []Term
 )
+
+// Nillable
+type Nillable interface {
+	IsNil() bool
+}
 
 type IRILike interface {
 	IsCompact() bool
@@ -98,14 +106,16 @@ var keywords = Terms{
 	VocabKw,
 }
 
-const NullTerm Term = "-"
+const NilTerm Term = "-"
+const NilLangRef LangRef = "-"
 
 type ContextObject struct {
 	ID   interface{} `jsonld:"@id,omitempty,collapsible"`
 	Type interface{} `jsonld:"@type,omitempty,collapsible"`
 }
 
-// Context is the basic JSON-LD element. It is used to map terms to IRIs or JSON objects.
+// Context is of of the basic JSON-LD elements.
+// It is used to map terms to IRIs or JSON objects.
 // Terms are case sensitive and any valid string that is not a reserved JSON-LD
 // keyword can be used as a term.
 type Context map[Term]IRI
@@ -123,11 +133,15 @@ type Collapsible interface {
 
 // Collapse returns the plain text collapsed value of the current Context object
 func (c Context) Collapse() interface{} {
-	if len(c) == 1 {
-		for _, iri := range c {
+	for term, iri := range c {
+		if len(c) == 1 {
 			return iri
 		}
+		if term == NilTerm {
+
+		}
 	}
+
 	return c
 }
 
@@ -142,15 +156,46 @@ func (i IRI) MarshalText() ([]byte, error) {
 }
 
 // MarshalJSON returns the JSON document represented by the current Context
-func (c *Context) MarshalJSON() ([]byte, error) {
-	a := reflectToJSONValue(c)
-	if a.isScalar {
-		return json.Marshal(a.scalar)
+func (c Context) MarshalJSON() ([]byte, error) {
+	v := func(t Term, i IRI) interface{} {
+		if t.IsNil() && i.IsNil() {
+			return nil
+		}
+		if t.IsNil() && !i.IsNil() {
+			return i
+		}
+		return map[Term]IRI{t: i}
 	}
-	return json.Marshal(a.object)
+
+	arr := make([]interface{}, len(c))
+	i := 0
+	for term, iri := range c {
+		el := v(term, iri)
+		if len(c) == 1 {
+			return json.Marshal(el)
+		}
+		arr[i] = el
+		i += 1
+	}
+	return json.Marshal(arr)
 }
 
 // UnmarshalJSON tries to load the Context from the incoming json value
 func (c *Context) UnmarshalJSON(data []byte) error {
 	return nil
+}
+
+// IsNil returns if current LangRef is equal to empty string or to its nil value
+func (l LangRef) IsNil() bool {
+	return len(l) == 0 || l == NilLangRef
+}
+
+// IsNil returns if current IRI is equal to empty string
+func (i IRI) IsNil() bool {
+	return len(i) == 0
+}
+
+// IsNil returns if current Term is equal to empty string or to its nil value
+func (i Term) IsNil() bool {
+	return len(i) == 0 || i == NilTerm
 }
