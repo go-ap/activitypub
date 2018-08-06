@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/buger/jsonparser"
 )
@@ -88,6 +89,13 @@ func getAPNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
 	return n
 }
 
+func getAPTime(data []byte, prop string) time.Time {
+	t := time.Time{}
+	str, _ := jsonparser.GetUnsafeString(data, prop)
+	t.UnmarshalText([]byte(str))
+	return t
+}
+
 func unmarshallToAPObject(data []byte) Item {
 	if _, err := url.ParseRequestURI(string(data)); err == nil {
 		// try to see if it's an IRI
@@ -150,6 +158,40 @@ func getAPItems(data []byte, prop string) ItemCollection {
 		s, _ := jsonparser.GetString(val)
 		it.Append(URI(s))
 	}
+	return it
+}
+func getAPObjectsArr(data []byte, prop string) ObjectsArr {
+	val, typ, _, err := jsonparser.Get(data, prop)
+	if err != nil {
+		return nil
+	}
+
+	var it ObjectsArr
+	switch typ {
+	case jsonparser.Array:
+		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			i, err := getAPObjectByType(getAPType(value))
+			if err != nil {
+				return
+			}
+			err = i.(json.Unmarshaler).UnmarshalJSON(value)
+			if err != nil {
+				return
+			}
+			it.Append(i)
+		}, prop)
+	case jsonparser.Object:
+		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
+			i := Object{}
+			err := i.UnmarshalJSON(val)
+			it.Append(i)
+			return err
+		}, prop)
+	case jsonparser.String:
+		s, _ := jsonparser.GetString(val)
+		it.Append(URI(s))
+	}
+
 	return it
 }
 

@@ -332,6 +332,9 @@ func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
 	if it != nil {
 		o.OrderedItems = it
 	}
+	o.Published = getAPTime(data, "published")
+	o.StartTime = getAPTime(data, "startTime")
+	o.Updated = getAPTime(data, "updated")
 
 	return nil
 }

@@ -7,6 +7,7 @@ import (
 	"os"
 	"reflect"
 	"testing"
+	"time"
 	"unsafe"
 
 	a "github.com/mariusor/activitypub.go/activitypub"
@@ -180,6 +181,8 @@ func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool
 	return true // i guess?
 }
 
+var zLoc, _ = time.LoadLocation("UTC")
+
 var allTests = tests{
 	"empty": testPair{
 		path:     "./mocks/empty.json",
@@ -276,10 +279,11 @@ var allTests = tests{
 				&a.Object{
 					ID:           a.ObjectID("http://example.com/outbox/53c6fb47"),
 					Type:         a.ArticleType,
-					URL:          a.URI("http://example.com/53c6fb47"),
 					Name:         a.NaturalLanguageValue{a.NullLangRef: "Example title"},
 					Content:      a.NaturalLanguageValue{a.NullLangRef: "Example content!"},
+					URL:          a.URI("http://example.com/53c6fb47"),
 					MediaType:    a.MimeType("text/markdown"),
+					Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
 					Generator:    a.IRI("http://example.com"),
 					AttributedTo: a.IRI("http://example.com/accounts/alice"),
 				},

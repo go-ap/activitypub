@@ -432,6 +432,13 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	o.MediaType = MimeType(getAPString(data, "mediaType"))
 	o.Generator = getAPItem(data, "generator")
 	o.AttributedTo = getAPItem(data, "attributedTo")
+	o.Published = getAPTime(data, "published")
+	o.StartTime = getAPTime(data, "startTime")
+	o.Updated = getAPTime(data, "updated")
+	//to := getAPObjectsArr(data, "to")
+	//if to != nil {
+	//	o.To = to
+	//}
 	//fmt.Printf("%s\n %#v", data, o)
 
 	return nil
