@@ -156,26 +156,33 @@ func (i IRI) MarshalText() ([]byte, error) {
 }
 
 // MarshalJSON returns the JSON document represented by the current Context
+// This should return :
+//    If only one element in the context and the element has no Term -> json marshaled string
+//    If multiple elements in the context without Term -> json marshaled array of strings
+//    If multiple elements where at least one doesn't have a Term and one has a Term -> json marshaled array
+//    If multiple elements where all have Terms -> json marshaled object
 func (c Context) MarshalJSON() ([]byte, error) {
-	v := func(t Term, i IRI) interface{} {
-		if t.IsNil() && i.IsNil() {
-			return nil
-		}
-		if t.IsNil() && !i.IsNil() {
-			return i
-		}
-		return map[Term]IRI{t: i}
-	}
-
-	arr := make([]interface{}, len(c))
+	arr := make([]interface{}, 0)
 	i := 0
-	for term, iri := range c {
-		el := v(term, iri)
-		if len(c) == 1 {
-			return json.Marshal(el)
+	for t, iri := range c {
+		if t.IsNil() {
+			if len(c) == 1 {
+				return json.Marshal(iri)
+			}
+			arr = append(arr, iri)
+			delete(c, t)
+			i += 1
 		}
-		arr[i] = el
-		i += 1
+	}
+	if len(c) > 0 {
+		mapIRI := make(map[Term]IRI, len(c))
+		for t, iri := range c {
+			mapIRI[t] = iri
+		}
+		if len(arr) == 0 {
+			return json.Marshal(mapIRI)
+		}
+		arr = append(arr, mapIRI)
 	}
 	return json.Marshal(arr)
 }

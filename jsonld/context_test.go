@@ -52,4 +52,23 @@ func TestContext_MarshalJSON(t *testing.T) {
 	if !strings.Contains(string(out), asTerm) {
 		t.Errorf("Json doesn't contain Term %s, %s", asTerm, string(out))
 	}
+
+	testTerm := "test_term"
+	c3 := Context{Term(testTerm): IRI(url), Term(asTerm): IRI(asUrl)}
+	out, err = c3.MarshalJSON()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+	if !strings.Contains(string(out), url) {
+		t.Errorf("Json doesn't contain URL %s, %s", url, string(out))
+	}
+	if !strings.Contains(string(out), asUrl) {
+		t.Errorf("Json doesn't contain URL %s, %s", asUrl, string(out))
+	}
+	if !strings.Contains(string(out), asTerm) {
+		t.Errorf("Json doesn't contain Term %s, %s", asTerm, string(out))
+	}
+	if !strings.Contains(string(out), testTerm) {
+		t.Errorf("Json doesn't contain Term %s, %s", testTerm, string(out))
+	}
 }
