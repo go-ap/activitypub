@@ -81,7 +81,7 @@ func getAPNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
 			return err
 		}, prop)
 	case jsonparser.String:
-		n.Append("-", string(val))
+		n.Append(NullLangRef, string(val))
 	}
 
 	return n

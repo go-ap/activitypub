@@ -197,7 +197,7 @@ var allTests = tests{
 			HrefLang:  a.LangRef("en"),
 			MediaType: a.MimeType("text/html"),
 			Name: a.NaturalLanguageValue{
-				a.LangRef("-"): "An example link",
+				a.LangRef(a.NullLangRef): "An example link",
 			},
 		},
 	},
@@ -217,7 +217,7 @@ var allTests = tests{
 			Type: a.ObjectType,
 			ID:   a.ObjectID("http://www.test.example/object/1"),
 			Name: a.NaturalLanguageValue{
-				a.LangRef("-"): "A Simple, non-specific object",
+				a.LangRef(a.NullLangRef): "A Simple, non-specific object",
 			},
 		},
 	},
@@ -227,17 +227,17 @@ var allTests = tests{
 	//	blank:    &a.Activity{},
 	//	result: &a.Activity{
 	//		Type:    a.ActivityType,
-	//		Summary: a.NaturalLanguageValue{a.LangRef("-"): "Sally did something to a note"},
+	//		Summary: a.NaturalLanguageValue{a.LangRef(a.NullLangRef): "Sally did something to a note"},
 	//		Actor: a.Actor(a.Person{
 	//			Type: a.PersonType,
 	//			Name: a.NaturalLanguageValue{
-	//				a.LangRef("-"): "Sally",
+	//				a.LangRef(a.NullLangRef): "Sally",
 	//			},
 	//		}),
 	//		Object: a.Object{
 	//			Type: a.NoteType,
 	//			Name: a.NaturalLanguageValue{
-	//				a.LangRef("-"): "A Note",
+	//				a.LangRef(a.NullLangRef): "A Note",
 	//			},
 	//		},
 	//	},
@@ -250,10 +250,10 @@ var allTests = tests{
 			ID:   a.ObjectID("http://example.com/accounts/ana"),
 			Type: a.PersonType,
 			Name: a.NaturalLanguageValue{
-				a.LangRef("-"): "ana",
+				a.LangRef(a.NullLangRef): "ana",
 			},
 			PreferredUsername: a.NaturalLanguageValue{
-				a.LangRef("-"): "Ana",
+				a.LangRef(a.NullLangRef): "Ana",
 			},
 			URL: a.URI("http://example.com/accounts/ana"),
 			Outbox: &a.OutboxStream{

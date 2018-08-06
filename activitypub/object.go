@@ -51,6 +51,10 @@ const (
 	MentionType ActivityVocabularyType = "Mention"
 )
 
+const (
+	NullLangRef LangRef = "-"
+)
+
 var validGenericObjectTypes = [...]ActivityVocabularyType{
 	ActivityType,
 	IntransitiveActivityType,
@@ -191,7 +195,7 @@ func (n *NaturalLanguageValue) UnmarshalJSON(data []byte) error {
 		if data[len(data)-1] != '"' {
 			return fmt.Errorf("invalid string value when unmarshalling %T value", n)
 		}
-		n.Append(LangRef("-"), string(data[1:len(data)-1]))
+		n.Append(LangRef(NullLangRef), string(data[1:len(data)-1]))
 	}
 	if data[0] == '{' {
 		// an object - trying to load it to the struct
@@ -215,7 +219,7 @@ func (n *NaturalLanguageValue) UnmarshalText(data []byte) error {
 		if data[len(data)-1] != '"' {
 			return fmt.Errorf("invalid string value when unmarshalling %T value", n)
 		}
-		n.Append(LangRef("-"), string(data[1:len(data)-1]))
+		n.Append(LangRef(NullLangRef), string(data[1:len(data)-1]))
 	}
 	return nil
 }
