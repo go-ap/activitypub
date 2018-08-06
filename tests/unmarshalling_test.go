@@ -32,9 +32,9 @@ type visit struct {
 	typ reflect.Type
 }
 
-type errorableFunc func(format string, args ...interface{})
+type canErrorFunc func(format string, args ...interface{})
 
-func assertDeepEquals(t errorableFunc, x, y interface{}) bool {
+func assertDeepEquals(t canErrorFunc, x, y interface{}) bool {
 	if x == nil || y == nil {
 		return x == y
 	}
@@ -47,7 +47,7 @@ func assertDeepEquals(t errorableFunc, x, y interface{}) bool {
 	return deepValueEqual(t, v1, v2, make(map[visit]bool), 0)
 }
 
-func deepValueEqual(t errorableFunc, v1, v2 reflect.Value, visited map[visit]bool, depth int) bool {
+func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool, depth int) bool {
 	if !v1.IsValid() || !v2.IsValid() {
 		return v1.IsValid() == v2.IsValid()
 	}
