@@ -10,8 +10,11 @@
       "type": "Article",
       "name": "Example title",
       "content": "Example content!",
+      "url": "http://example.com/53c6fb47",
       "mediaType": "text/markdown",
-      "published": "2018-07-05T16:46:44.66836Z"
+      "published": "2018-07-05T16:46:44.66836Z",
+      "generator": "http://example.com",
+      "attributedTo": "http://example.com/account/alice"
     }
   ]
 }

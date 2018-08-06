@@ -118,7 +118,22 @@ func deepValueEqual(t errorableFunc, v1, v2 reflect.Value, visited map[visit]boo
 		return true
 	case reflect.Interface:
 		if v1.IsNil() || v2.IsNil() {
-			return v1.IsNil() == v2.IsNil()
+			if v1.IsNil() == v2.IsNil() {
+				return true
+			}
+			var isNil1, isNil2 string
+			if v1.IsNil() {
+				isNil1 = "is"
+			} else {
+				isNil1 = "isn't"
+			}
+			if v2.IsNil() {
+				isNil2 = "is"
+			} else {
+				isNil2 = "isn't"
+			}
+			t("Interface %q %s nil and %q %s nil", v1.Type().Name(), isNil1, v2.Type().Name(), isNil2)
+			return false
 		}
 		return deepValueEqual(t, v1.Elem(), v2.Elem(), visited, depth+1)
 	case reflect.Ptr:
@@ -129,15 +144,18 @@ func deepValueEqual(t errorableFunc, v1, v2 reflect.Value, visited map[visit]boo
 	case reflect.Struct:
 		for i, n := 0, v1.NumField(); i < n; i++ {
 			if !deepValueEqual(t, v1.Field(i), v2.Field(i), visited, depth+1) {
+				t("Struct fields at pos %d %q:%q and %q:%q are not deeply equal", i, v1.Type().Field(i).Name, v1.Field(i).Type().Name(), v2.Type().Field(i).Name, v2.Field(i).Type().Name())
 				return false
 			}
 		}
 		return true
 	case reflect.Map:
 		if v1.IsNil() != v2.IsNil() {
+			t("Maps are not nil", v1.Type().Name(), v2.Type().Name())
 			return false
 		}
 		if v1.Len() != v2.Len() {
+			t("Maps don't have the same length %d vs %d", v1.Len(), v2.Len())
 			return false
 		}
 		if v1.Pointer() == v2.Pointer() {
@@ -147,6 +165,7 @@ func deepValueEqual(t errorableFunc, v1, v2 reflect.Value, visited map[visit]boo
 			val1 := v1.MapIndex(k)
 			val2 := v2.MapIndex(k)
 			if !val1.IsValid() || !val2.IsValid() || !deepValueEqual(t, v1.MapIndex(k), v2.MapIndex(k), visited, depth+1) {
+				t("Maps values at index %s are not equal", k.String())
 				return false
 			}
 		}
@@ -246,7 +265,7 @@ var allTests = tests{
 	},
 	"ordered_collection": testPair{
 		path:     "./mocks/ordered_collection.json",
-		expected: false, // This fails because interface pointers being different I think
+		expected: true,
 		blank:    &a.OrderedCollection{},
 		result: &a.OrderedCollection{
 			ID:         a.ObjectID("http://example.com/outbox"),
@@ -255,11 +274,14 @@ var allTests = tests{
 			TotalItems: 1,
 			OrderedItems: a.ItemCollection{
 				&a.Object{
-					ID:      a.ObjectID("http://example.com/outbox/53c6fb47"),
-					Type:    a.ArticleType,
-					URL:     a.URI("http://example.com/53c6fb47"),
-					Name:    a.NaturalLanguageValue{"-": "Example title"},
-					Content: a.NaturalLanguageValue{"-": "Example content!"},
+					ID:           a.ObjectID("http://example.com/outbox/53c6fb47"),
+					Type:         a.ArticleType,
+					URL:          a.URI("http://example.com/53c6fb47"),
+					Name:         a.NaturalLanguageValue{a.NullLangRef: "Example title"},
+					Content:      a.NaturalLanguageValue{a.NullLangRef: "Example content!"},
+					MediaType:    a.MimeType("text/markdown"),
+					Generator:    a.IRI("http://example.com"),
+					AttributedTo: a.IRI("http://example.com/accounts/alice"),
 				},
 			},
 		},
@@ -272,7 +294,12 @@ func getFileContents(path string) ([]byte, error) {
 		return nil, err
 	}
 
-	data := make([]byte, 512)
+	st, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+
+	data := make([]byte, st.Size())
 	io.ReadFull(f, data)
 	data = bytes.Trim(data, "\x00")
 
@@ -305,26 +332,27 @@ func Test_ActivityPubUnmarshall(t *testing.T) {
 		if !pair.expected {
 			expLbl = "not be "
 		}
-		if pair.expected != assertDeepEquals(f, object, pair.result) {
+		status := assertDeepEquals(f, object, pair.result)
+		if pair.expected != status {
 			f = t.Errorf
 			if stopOnFailure {
 				f = t.Fatalf
 			}
 
 			f("\n%#v\n should %sequal to\n%#v", object, expLbl, pair.result)
-			oj, e1 := j.Marshal(object)
-			if e1 != nil {
-				f(e1.Error())
-			}
-
-			tj, e2 := j.Marshal(pair.result)
-			if e2 != nil {
-				f(e2.Error())
-			}
-			f("\n%s\n should %sequal to expected\n%s", oj, expLbl, tj)
 			continue
 		}
-		//fmt.Printf("%#v", object)
+		if !status {
+			oj, err := j.Marshal(object)
+			if err != nil {
+				f(err.Error())
+			}
+			tj, err := j.Marshal(pair.result)
+			if err != nil {
+				f(err.Error())
+			}
+			f("\n%s\n should %sequal to expected\n%s", oj, expLbl, tj)
+		}
 		if err == nil {
 			fmt.Printf(" --- %s: %s\n          %s\n", "PASS", k, pair.path)
 		}
