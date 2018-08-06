@@ -3,6 +3,7 @@ package activitypub
 import (
 	"encoding"
 	"encoding/json"
+	"net/url"
 	"reflect"
 	"strings"
 
@@ -88,6 +89,11 @@ func getAPNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
 }
 
 func unmarshallToAPObject(data []byte) Item {
+	if _, err := url.ParseRequestURI(string(data)); err == nil {
+		// try to see if it's an IRI
+		return IRI(data)
+	}
+
 	i, err := getAPObjectByType(getAPType(data))
 	if err != nil {
 		return nil
