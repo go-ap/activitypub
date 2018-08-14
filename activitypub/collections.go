@@ -64,7 +64,7 @@ type Collection struct {
 	// The date and time at which the object was published
 	Published time.Time `jsonld:"published,omitempty"`
 	// Identifies a Collection containing objects considered to be responses to this object.
-	Replies CollectionInterface `jsonld:"replies,omitempty"`
+	Replies ObjectsArr `jsonld:"replies,omitempty"`
 	// The date and time describing the actual or expected starting time of the object.
 	// When used with an Activity object, for instance, the startTime property specifies
 	//  the moment the activity began or is scheduled to begin.
@@ -151,7 +151,7 @@ type OrderedCollection struct {
 	// The date and time at which the object was published
 	Published time.Time `jsonld:"published,omitempty"`
 	// Identifies a Collection containing objects considered to be responses to this object.
-	Replies CollectionInterface `jsonld:"replies,omitempty"`
+	Replies ObjectsArr `jsonld:"replies,omitempty"`
 	// The date and time describing the actual or expected starting time of the object.
 	// When used with an Activity object, for instance, the startTime property specifies
 	//  the moment the activity began or is scheduled to begin.
