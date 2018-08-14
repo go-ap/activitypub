@@ -104,7 +104,7 @@ type Actor struct {
 	// The date and time at which the object was published
 	Published time.Time `jsonld:"published,omitempty"`
 	// Identifies a Collection containing objects considered to be responses to this object.
-	Replies ObjectOrLink `jsonld:"replies,omitempty"`
+	Replies CollectionInterface `jsonld:"replies,omitempty"`
 	// The date and time describing the actual or expected starting time of the object.
 	// When used with an Activity object, for instance, the startTime property specifies
 	//  the moment the activity began or is scheduled to begin.
@@ -390,6 +390,14 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 	}
 	o.UnmarshalJSON(v)
 	a.Outbox = &o
+
+	r := Collection{}
+	v1, _, _, err := jsonparser.Get(data, "replies")
+	if err != nil {
+		fmt.Print(err)
+	}
+	r.UnmarshalJSON(v1)
+	r.Replies = &r
 
 	return nil
 }
