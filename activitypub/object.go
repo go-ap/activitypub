@@ -443,13 +443,12 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	//}
 	//fmt.Printf("%s\n %#v", data, o)
 
-	r := Collection{}
-	v1, _, _, err := jsonparser.Get(data, "replies")
-	if err != nil {
-		fmt.Print(err)
+	if v, _, _, err := jsonparser.Get(data, "replies"); err == nil {
+		r := Collection{}
+		if r.UnmarshalJSON(v) == nil {
+			o.Replies = &r
+		}
 	}
-	r.UnmarshalJSON(v1)
-	r.Replies = &r
 
 	return nil
 }

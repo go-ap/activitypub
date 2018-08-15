@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/buger/jsonparser"
@@ -384,20 +383,18 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 	}
 
 	o := OutboxStream{}
-	v, _, _, err := jsonparser.Get(data, "outbox")
-	if err != nil {
-		fmt.Print(err)
+	if v, _, _, err := jsonparser.Get(data, "outbox"); err == nil {
+		if o.UnmarshalJSON(v) == nil {
+			a.Outbox = &o
+		}
 	}
-	o.UnmarshalJSON(v)
-	a.Outbox = &o
 
-	r := Collection{}
-	v1, _, _, err := jsonparser.Get(data, "replies")
-	if err != nil {
-		fmt.Print(err)
+	if v, _, _, err := jsonparser.Get(data, "replies"); err == nil {
+		r := Collection{}
+		if r.UnmarshalJSON(v) == nil {
+			o.Replies = &r
+		}
 	}
-	r.UnmarshalJSON(v1)
-	r.Replies = &r
 
 	return nil
 }

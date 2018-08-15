@@ -224,6 +224,27 @@ var allTests = tests{
 			},
 		},
 	},
+	"object_with_replies": testPair{
+		path:     "./mocks/object_with_replies.json",
+		expected: true,
+		blank:    &a.Object{},
+		result: &a.Object{
+			Type: a.ObjectType,
+			ID:   a.ObjectID("http://www.test.example/object/1"),
+			Replies: &a.Collection{
+				ID:         a.ObjectID("http://www.test.example/object/1/replies"),
+				Type:       a.CollectionType,
+				TotalItems: 1,
+				Items: a.ItemCollection{
+					&a.Object{
+						ID:   a.ObjectID("http://www.test.example/object/1/replies/2"),
+						Type: a.ArticleType,
+						Name: a.NaturalLanguageValue{a.NullLangRef: "Example title"},
+					},
+				},
+			},
+		},
+	},
 	//"activity_simple": testPair{
 	//	path:     "./mocks/activity_simple.json",
 	//	expected: false,
@@ -343,7 +364,7 @@ func Test_ActivityPubUnmarshall(t *testing.T) {
 				f = t.Fatalf
 			}
 
-			f("\n%#v\n should %sequal to\n%#v", object, expLbl, pair.result)
+			f("\n%#v\n should %sequal to expected\n%#v", object, expLbl, pair.result)
 			continue
 		}
 		if !status {

@@ -345,15 +345,18 @@ func (c *Collection) UnmarshalJSON(data []byte) error {
 	c.Type = getAPType(data)
 	c.Name = getAPNaturalLanguageField(data, "name")
 	c.Content = getAPNaturalLanguageField(data, "content")
-	c.TotalItems = uint(getAPInt(data, "totalItems"))
 	u := getURIField(data, "url")
 	if len(u) > 0 {
 		c.URL = u
 	}
+	c.TotalItems = uint(getAPInt(data, "totalItems"))
 	it := getAPItems(data, "items")
 	if it != nil {
 		c.Items = it
 	}
+	c.Published = getAPTime(data, "published")
+	c.StartTime = getAPTime(data, "startTime")
+	c.Updated = getAPTime(data, "updated")
 
 	return nil
 }
