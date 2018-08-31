@@ -429,15 +429,14 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	o.MediaType = MimeType(getAPString(data, "mediaType"))
 	o.Generator = getAPItem(data, "generator")
 	o.AttributedTo = getAPItem(data, "attributedTo")
+	o.InReplyTo = getAPItem(data, "inReplyTo")
 	o.Published = getAPTime(data, "published")
 	o.StartTime = getAPTime(data, "startTime")
 	o.Updated = getAPTime(data, "updated")
-	//to := getAPObjectsArr(data, "to")
-	//if to != nil {
-	//	o.To = to
-	//}
-	//fmt.Printf("%s\n %#v", data, o)
-
+	to := getAPObjectsArr(data, "to")
+	if to != nil {
+		o.To = to
+	}
 	if v, _, _, err := jsonparser.Get(data, "replies"); err == nil {
 		r := Collection{}
 		if r.UnmarshalJSON(v) == nil {
