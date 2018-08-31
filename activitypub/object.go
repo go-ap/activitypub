@@ -189,28 +189,20 @@ func (l *LangRef) UnmarshalText(data []byte) error {
 
 // UnmarshalJSON tries to load the NaturalLanguage array from the incoming json value
 func (n *NaturalLanguageValue) UnmarshalJSON(data []byte) error {
-	if data == nil || len(data) == 0 {
-		return fmt.Errorf("invalid incoming bytes")
+	val, typ, _, err := jsonparser.Get(data)
+	if err != nil {
+		return nil
 	}
-	if data[0] == '"' {
-		// a quoted string - loading it to c.URL
-		if data[len(data)-1] != '"' {
-			return fmt.Errorf("invalid string value when unmarshalling %T value", n)
-		}
-		n.Append(LangRef(NullLangRef), string(data[1:len(data)-1]))
+	switch typ {
+	case jsonparser.Object:
+		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
+			n.Append(LangRef(key), string(value))
+			return err
+		})
+	case jsonparser.String:
+		n.Append(NilLangRef, string(val))
 	}
-	if data[0] == '{' {
-		// an object - trying to load it to the struct
-		if data[len(data)-1] != '}' {
-			return fmt.Errorf("invalid object value when unmarshalling %T value", n)
-		}
-	}
-	if data[0] == '[' {
-		// an object - trying to load it to the struct
-		if data[len(data)-1] != ']' {
-			return fmt.Errorf("invalid object value when unmarshalling %T value", n)
-		}
-	}
+
 	return nil
 }
 
