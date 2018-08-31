@@ -14,42 +14,55 @@ type CreateActivity struct {
 func CreateActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) CreateActivity {
 	act := CreateNew(id, o)
 
-	ok := false
 	if a != nil {
 		typ := a.GetType()
-		if typ == ApplicationType {
+		switch typ {
+		case ApplicationType:
 			var app Application
-			app, ok = a.(Application)
-			act.Actor = Actor(app)
-		}
-		if typ == GroupType {
+			app, _ = a.(Application)
+			if app.Inbox == nil {
+				app.Inbox = InboxNew()
+			}
+			app.Inbox.Append(o)
+			act.Actor = app
+		case GroupType:
 			var grp Group
-			grp, ok = a.(Group)
-			act.Actor = Actor(grp)
-		}
-		if typ == OrganizationType {
+			grp, _ = a.(Group)
+			if grp.Inbox == nil {
+				grp.Inbox = InboxNew()
+			}
+			grp.Inbox.Append(o)
+			act.Actor = grp
+		case OrganizationType:
 			var org Organization
-			org, ok = a.(Organization)
-			act.Actor = Actor(org)
-		}
-		if typ == PersonType {
+			org, _ = a.(Organization)
+			if org.Inbox == nil {
+				org.Inbox = InboxNew()
+			}
+			org.Inbox.Append(o)
+			act.Actor = org
+		case PersonType:
 			var pers Person
-			pers, ok = a.(Person)
-			act.Actor = Actor(pers)
-		}
-		if typ == ServiceType {
+			pers, _ = a.(Person)
+			if pers.Inbox == nil {
+				pers.Inbox = InboxNew()
+			}
+			pers.Inbox.Append(o)
+			act.Actor = pers
+		case ServiceType:
 			var serv Service
-			serv, ok = a.(Service)
-			act.Actor = Actor(serv)
-		}
-		if !ok {
+			serv, _ = a.(Service)
+			serv.Inbox.Append(o)
+			act.Actor = serv
+		default:
 			actor, _ := a.(Actor)
+			if actor.Inbox == nil {
+				actor.Inbox = InboxNew()
+			}
+			actor.Inbox.Append(o)
 			act.Actor = actor
 		}
 	}
-	aa := act.Actor.(*Actor)
-	aa.Inbox = InboxNew()
-	aa.Inbox.Append(o)
 
 	c := CreateActivity{
 		Activity:  act,

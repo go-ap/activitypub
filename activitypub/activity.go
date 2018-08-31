@@ -2,6 +2,8 @@ package activitypub
 
 import (
 	"time"
+
+	"github.com/buger/jsonparser"
 )
 
 // Activity Types
@@ -1358,10 +1360,43 @@ func (v View) IsLink() bool {
 	return false
 }
 
-//// UnmarshalJSON
-//func (a *Activity) UnmarshalJSON(data []byte) error {
-//	ob, err := unmarshal(data, *a)
-//	*a = ob.(Activity)
-//
-//	return err
-//}
+// UnmarshalJSON
+func (a *Activity) UnmarshalJSON(data []byte) error {
+	a.ID = getAPObjectID(data)
+	a.Type = getAPType(data)
+	a.Name = getAPNaturalLanguageField(data, "name")
+	a.Content = getAPNaturalLanguageField(data, "content")
+	u := getURIField(data, "url")
+	if len(u) > 0 {
+		a.URL = u
+	}
+	a.Actor = getAPItem(data, "actor")
+	a.Object = getAPItem(data, "object")
+	a.Generator = getAPItem(data, "generator")
+	a.AttributedTo = getAPItem(data, "attributedTo")
+	a.InReplyTo = getAPItem(data, "inReplyTo")
+	a.Published = getAPTime(data, "published")
+	a.StartTime = getAPTime(data, "startTime")
+	a.Updated = getAPTime(data, "updated")
+	to := getAPObjectsArr(data, "to")
+	if to != nil {
+		a.To = to
+	}
+	if v, _, _, err := jsonparser.Get(data, "replies"); err == nil {
+		r := Collection{}
+		if r.UnmarshalJSON(v) == nil {
+			a.Replies = &r
+		}
+	}
+	return nil
+}
+
+// UnmarshalJSON
+func (c *Create) UnmarshalJSON(data []byte) error {
+	a := Activity(*c)
+	err := a.UnmarshalJSON(data)
+
+	*c = Create(a)
+
+	return err
+}
