@@ -73,17 +73,18 @@ func getAPNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
 	n := NaturalLanguageValue{}
 	val, typ, _, err := jsonparser.Get(data, prop)
 	if err != nil {
-		return NaturalLanguageValue(nil)
+		return nil
 	}
 	switch typ {
 	case jsonparser.Object:
 		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
-			vv, err := jsonparser.GetString(val, string(key))
-			n.Append(LangRef(key), vv)
+			if dataType == jsonparser.String {
+				n.Append(LangRef(key), string(value))
+			}
 			return err
-		}, prop)
+		})
 	case jsonparser.String:
-		n.Append(NullLangRef, string(val))
+		n.Append(NilLangRef, string(val))
 	}
 
 	return n

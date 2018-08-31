@@ -127,7 +127,6 @@ func TestObject_IsObject(t *testing.T) {
 	}
 }
 
-
 func TestObjectsArr_Append(t *testing.T) {
 	d := make(ObjectsArr, 0)
 
@@ -240,7 +239,12 @@ func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
 	langEn := "en-US"
 	valEn := "random"
 	langDe := "de-DE"
-	valDe := "randomisch"
+	valDe := "zufällig\\n"
+
+	//m := make(map[string]string)
+	//m[langEn] = valEn
+	//m[langDe] = valDe
+
 	json := `{
 		"` + langEn + `": "` + valEn + `",
 		"` + langDe + `": "` + valDe + `"

@@ -21,8 +21,8 @@ var stopOnFailure = false
 type testPair struct {
 	path     string
 	expected bool
-	blank    a.ObjectOrLink
-	result   a.ObjectOrLink
+	blank    interface{}
+	result   interface{}
 }
 
 type tests map[string]testPair
@@ -200,7 +200,7 @@ var allTests = tests{
 			HrefLang:  a.LangRef("en"),
 			MediaType: a.MimeType("text/html"),
 			Name: a.NaturalLanguageValue{
-				a.LangRef(a.NullLangRef): "An example link",
+				a.LangRef(a.NilLangRef): "An example link",
 			},
 		},
 	},
@@ -220,7 +220,7 @@ var allTests = tests{
 			Type: a.ObjectType,
 			ID:   a.ObjectID("http://www.test.example/object/1"),
 			Name: a.NaturalLanguageValue{
-				a.LangRef(a.NullLangRef): "A Simple, non-specific object",
+				a.LangRef(a.NilLangRef): "A Simple, non-specific object",
 			},
 		},
 	},
@@ -239,7 +239,7 @@ var allTests = tests{
 					&a.Object{
 						ID:   a.ObjectID("http://www.test.example/object/1/replies/2"),
 						Type: a.ArticleType,
-						Name: a.NaturalLanguageValue{a.NullLangRef: "Example title"},
+						Name: a.NaturalLanguageValue{a.NilLangRef: "Example title"},
 					},
 				},
 			},
@@ -251,17 +251,17 @@ var allTests = tests{
 	//	blank:    &a.Activity{},
 	//	result: &a.Activity{
 	//		Type:    a.ActivityType,
-	//		Summary: a.NaturalLanguageValue{a.LangRef(a.NullLangRef): "Sally did something to a note"},
+	//		Summary: a.NaturalLanguageValue{a.LangRef(a.NilLangRef): "Sally did something to a note"},
 	//		Actor: a.Actor(a.Person{
 	//			Type: a.PersonType,
 	//			Name: a.NaturalLanguageValue{
-	//				a.LangRef(a.NullLangRef): "Sally",
+	//				a.LangRef(a.NilLangRef): "Sally",
 	//			},
 	//		}),
 	//		Object: a.Object{
 	//			Type: a.NoteType,
 	//			Name: a.NaturalLanguageValue{
-	//				a.LangRef(a.NullLangRef): "A Note",
+	//				a.LangRef(a.NilLangRef): "A Note",
 	//			},
 	//		},
 	//	},
@@ -274,10 +274,10 @@ var allTests = tests{
 			ID:   a.ObjectID("http://example.com/accounts/ana"),
 			Type: a.PersonType,
 			Name: a.NaturalLanguageValue{
-				a.LangRef(a.NullLangRef): "ana",
+				a.LangRef(a.NilLangRef): "ana",
 			},
 			PreferredUsername: a.NaturalLanguageValue{
-				a.LangRef(a.NullLangRef): "Ana",
+				a.LangRef(a.NilLangRef): "Ana",
 			},
 			URL: a.URI("http://example.com/accounts/ana"),
 			Outbox: &a.OutboxStream{
@@ -300,8 +300,8 @@ var allTests = tests{
 				&a.Object{
 					ID:           a.ObjectID("http://example.com/outbox/53c6fb47"),
 					Type:         a.ArticleType,
-					Name:         a.NaturalLanguageValue{a.NullLangRef: "Example title"},
-					Content:      a.NaturalLanguageValue{a.NullLangRef: "Example content!"},
+					Name:         a.NaturalLanguageValue{a.NilLangRef: "Example title"},
+					Content:      a.NaturalLanguageValue{a.NilLangRef: "Example content!"},
 					URL:          a.URI("http://example.com/53c6fb47"),
 					MediaType:    a.MimeType("text/markdown"),
 					Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
@@ -309,6 +309,19 @@ var allTests = tests{
 					AttributedTo: a.IRI("http://example.com/accounts/alice"),
 				},
 			},
+		},
+	},
+	"natural_language_values": {
+		path:     "./mocks/natural_language_values.json",
+		expected: true,
+		blank:    &a.NaturalLanguageValue{},
+		result: &a.NaturalLanguageValue{
+			a.LangRef(j.NilLangRef): `
+		
+`,
+			a.LangRef("en"): "Ana got apples ⓐ",
+			a.LangRef("fr"): "Aná a des pommes ⒜",
+			a.LangRef("ro"): "Ana are mere",
 		},
 	},
 }
@@ -334,7 +347,7 @@ func getFileContents(path string) ([]byte, error) {
 func Test_ActivityPubUnmarshall(t *testing.T) {
 	var err error
 
-	var f = t.Logf
+	var f = t.Errorf
 	if len(allTests) == 0 {
 		t.Skip("No tests found")
 	}
@@ -359,7 +372,6 @@ func Test_ActivityPubUnmarshall(t *testing.T) {
 		}
 		status := assertDeepEquals(f, object, pair.result)
 		if pair.expected != status {
-			f = t.Errorf
 			if stopOnFailure {
 				f = t.Fatalf
 			}

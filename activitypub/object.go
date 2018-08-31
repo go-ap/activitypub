@@ -54,7 +54,7 @@ const (
 )
 
 const (
-	NullLangRef LangRef = "-"
+	NilLangRef LangRef = "-"
 )
 
 var validGenericObjectTypes = [...]ActivityVocabularyType{
@@ -221,7 +221,7 @@ func (n *NaturalLanguageValue) UnmarshalText(data []byte) error {
 		if data[len(data)-1] != '"' {
 			return fmt.Errorf("invalid string value when unmarshalling %T value", n)
 		}
-		n.Append(LangRef(NullLangRef), string(data[1:len(data)-1]))
+		n.Append(LangRef(NilLangRef), string(data[1:len(data)-1]))
 	}
 	return nil
 }
