@@ -43,12 +43,13 @@ func CreateActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) CreateActivi
 			act.Actor = Actor(serv)
 		}
 		if !ok {
-			act.Actor, ok = a.(Actor)
+			actor, _ := a.(Actor)
+			act.Actor = actor
 		}
 	}
-
-	act.Actor.Inbox = InboxNew()
-	act.Actor.Inbox.Append(o)
+	aa := act.Actor.(*Actor)
+	aa.Inbox = InboxNew()
+	aa.Inbox.Append(o)
 
 	c := CreateActivity{
 		Activity:  act,

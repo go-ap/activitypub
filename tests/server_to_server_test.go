@@ -214,7 +214,7 @@ Activity being notified about
 
 	c.RecipientsDeduplication()
 
-	checkActor := func(list a.ObjectsArr, actor a.Actor) error {
+	checkActor := func(list a.ObjectsArr, actor a.ObjectOrLink) error {
 		for _, rec := range list {
 			if rec.GetID() == actor.GetID() {
 				return fmt.Errorf("%T[%s] Actor of activity should not be in the recipients list", rec, *actor.GetID())

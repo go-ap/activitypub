@@ -397,6 +397,9 @@ func recipientsDeduplication(recArgs ...*ObjectsArr) error {
 				}
 			}
 			if save {
+				if rec == nil {
+					continue
+				}
 				recIds = append(recIds, *rec.GetID())
 			}
 		}
