@@ -5,7 +5,7 @@
   "object": {
     "type": "Note",
     "attributedTo": "https://littr.git/api/accounts/anonymous",
-    "inReplyTo": "http://littr.git/api/accounts/system/outbox/7ca154ff",
+    "inReplyTo": "https://littr.git/api/accounts/system/outbox/7ca154ff",
     "content": "<p>Hello world</p>",
     "to": "https://www.w3.org/ns/activitystreams#Public"
   }

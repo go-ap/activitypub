@@ -318,8 +318,8 @@ var allTests = tests{
 		blank:    &a.NaturalLanguageValue{},
 		result: &a.NaturalLanguageValue{
 			a.LangRef(j.NilLangRef): `
-		
-`,
+	
+	`,
 			a.LangRef("en"): "Ana got apples ⓐ",
 			a.LangRef("fr"): "Aná a des pommes ⒜",
 			a.LangRef("ro"): "Ana are mere",
@@ -335,7 +335,7 @@ var allTests = tests{
 			Object: &a.Object{
 				Type:         a.NoteType,
 				AttributedTo: a.IRI("https://littr.git/api/accounts/anonymous"),
-				InReplyTo:    a.IRI("http://littr.git/api/accounts/system/outbox/7ca154ff"),
+				InReplyTo:    a.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff"),
 				Content:      a.NaturalLanguageValue{a.NilLangRef: "<p>Hello world</p>"},
 				To:           a.ObjectsArr{a.IRI("https://www.w3.org/ns/activitystreams#Public")},
 			},
