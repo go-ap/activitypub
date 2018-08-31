@@ -9,11 +9,12 @@ import (
 	"time"
 
 	"github.com/buger/jsonparser"
+	"github.com/mariusor/activitypub.go/jsonld"
 )
 
 var (
 	apUnmarshalerType   = reflect.TypeOf(new(ObjectOrLink)).Elem()
-	unmarshalerType     = reflect.TypeOf(new(json.Unmarshaler)).Elem()
+	unmarshalerType     = reflect.TypeOf(new(jsonld.Unmarshaler)).Elem()
 	textUnmarshalerType = reflect.TypeOf(new(encoding.TextUnmarshaler)).Elem()
 )
 
@@ -97,7 +98,7 @@ func getAPTime(data []byte, prop string) time.Time {
 	return t
 }
 
-func unmarshallToAPObject(data []byte) Item {
+func unmarshalToAPObject(data []byte) Item {
 	if _, err := url.ParseRequestURI(string(data)); err == nil {
 		// try to see if it's an IRI
 		return IRI(data)
@@ -108,10 +109,10 @@ func unmarshallToAPObject(data []byte) Item {
 		return nil
 	}
 	p := reflect.PtrTo(reflect.TypeOf(i))
-	if p.Implements(unmarshalerType) {
-		err = i.(json.Unmarshaler).UnmarshalJSON(data)
+	if reflect.TypeOf(i).Implements(unmarshalerType) || p.Implements(unmarshalerType) {
+		err = i.(jsonld.Unmarshaler).UnmarshalJSON(data)
 	}
-	if p.Implements(textUnmarshalerType) {
+	if reflect.TypeOf(i).Implements(textUnmarshalerType) || p.Implements(textUnmarshalerType) {
 		err = i.(encoding.TextUnmarshaler).UnmarshalText(data)
 	}
 	if err != nil {
@@ -121,11 +122,32 @@ func unmarshallToAPObject(data []byte) Item {
 }
 
 func getAPItem(data []byte, prop string) Item {
-	val, _, _, err := jsonparser.Get(data, prop)
+	val, typ, _, err := jsonparser.Get(data, prop)
 	if err != nil {
 		return nil
 	}
-	return unmarshallToAPObject(val)
+	switch typ {
+	case jsonparser.String:
+		if _, err = url.ParseRequestURI(string(val)); err == nil {
+			// try to see if it's an IRI
+			return IRI(val)
+		}
+	case jsonparser.Object:
+		return unmarshalToAPObject(val)
+	case jsonparser.Number:
+		fallthrough
+	case jsonparser.Array:
+		fallthrough
+	case jsonparser.Boolean:
+		fallthrough
+	case jsonparser.Null:
+		fallthrough
+	case jsonparser.Unknown:
+		fallthrough
+	default:
+		return nil
+	}
+	return nil
 }
 
 func getAPItems(data []byte, prop string) ItemCollection {
@@ -138,21 +160,41 @@ func getAPItems(data []byte, prop string) ItemCollection {
 	switch typ {
 	case jsonparser.Array:
 		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			i, err := getAPObjectByType(getAPType(value))
+			var i Item
+			switch dataType {
+			case jsonparser.String:
+				if _, err = url.ParseRequestURI(string(val)); err == nil {
+					// try to see if it's an IRI
+					i = IRI(value)
+				}
+			case jsonparser.Object:
+				i = unmarshalToAPObject(value)
+			case jsonparser.Number:
+				fallthrough
+			case jsonparser.Array:
+				fallthrough
+			case jsonparser.Boolean:
+				fallthrough
+			case jsonparser.Null:
+				fallthrough
+			case jsonparser.Unknown:
+				fallthrough
+			default:
+				return
+			}
 			if err != nil {
 				return
 			}
-			err = i.(json.Unmarshaler).UnmarshalJSON(value)
-			if err != nil {
-				return
+			if i != nil {
+				it.Append(i)
 			}
-			it.Append(i)
 		}, prop)
 	case jsonparser.Object:
 		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
-			i := Object{}
-			err := i.UnmarshalJSON(val)
-			it.Append(i)
+			i := unmarshalToAPObject(value)
+			if i != nil {
+				it.Append(i)
+			}
 			return err
 		}, prop)
 	case jsonparser.String:
@@ -189,8 +231,7 @@ func getAPObjectsArr(data []byte, prop string) ObjectsArr {
 			return err
 		}, prop)
 	case jsonparser.String:
-		s, _ := jsonparser.GetString(val)
-		it.Append(URI(s))
+		it.Append(IRI(val))
 	}
 
 	return it
