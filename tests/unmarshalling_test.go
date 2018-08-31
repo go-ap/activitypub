@@ -146,6 +146,7 @@ func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool
 		for i, n := 0, v1.NumField(); i < n; i++ {
 			if !deepValueEqual(t, v1.Field(i), v2.Field(i), visited, depth+1) {
 				t("Struct fields at pos %d %q:%q and %q:%q are not deeply equal", i, v1.Type().Field(i).Name, v1.Field(i).Type().Name(), v2.Type().Field(i).Name, v2.Field(i).Type().Name())
+				t("  Values: %#v - %#v", v1.Field(i).Interface(), v2.Field(i).Interface())
 				return false
 			}
 		}
