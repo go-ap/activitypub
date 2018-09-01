@@ -50,6 +50,11 @@ type Endpoints struct {
 	SharedInbox ObjectOrLink `jsonld:"sharedInbox,omitempty"`
 }
 
+type CanAct interface {
+	ObjectOrLink
+	Actor() Actor
+}
+
 // Actor is generally one of the ActivityStreams Actor Types, but they don't have to be.
 // For example, a Profile object might be used as an actor, or a type from an ActivityStreams extension.
 // Actors are retrieved like any other Object in ActivityPub.
@@ -277,7 +282,7 @@ func (a Application) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the  Application object
 func (a Application) GetID() *ObjectID {
-	return Actor(a).GetID()
+	return a.Actor().GetID()
 }
 
 // GetType returns the type corresponding to the Application object
@@ -297,7 +302,7 @@ func (g Group) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the  Group object
 func (g Group) GetID() *ObjectID {
-	return Actor(g).GetID()
+	return g.Actor().GetID()
 }
 
 // GetType returns the type corresponding to the Group object
@@ -317,7 +322,7 @@ func (o Organization) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the  Organization object
 func (o Organization) GetID() *ObjectID {
-	return Actor(o).GetID()
+	return o.Actor().GetID()
 }
 
 // GetType returns the type corresponding to the Organization object
@@ -337,7 +342,7 @@ func (s Service) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the  Service object
 func (s Service) GetID() *ObjectID {
-	return Actor(s).GetID()
+	return s.Actor().GetID()
 }
 
 // GetType returns the type corresponding to the Service object
@@ -357,7 +362,7 @@ func (p Person) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the Person object
 func (p Person) GetID() *ObjectID {
-	return Actor(p).GetID()
+	return p.Actor().GetID()
 }
 
 // GetType returns the object type for the current Person object
@@ -400,10 +405,37 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 }
 
 func (p *Person) UnmarshalJSON(data []byte) error {
-	a := Actor(*p)
+	a := p.Actor()
 	err := a.UnmarshalJSON(data)
 
 	*p = Person(a)
 
 	return err
+}
+
+// Actor returns the underlying Actor type
+func (a Actor) Actor() Actor {
+	return a
+}
+
+// Actor returns the underlying Actor type
+func (a Application) Actor() Actor {
+	return Actor(a)
+}
+
+// Actor returns the underlying Actor type
+func (g Group) Actor() Actor {
+	return Actor(g)
+}
+// Actor returns the underlying Actor type
+func (o Organization) Actor() Actor {
+	return Actor(o)
+}
+// Actor returns the underlying Actor type
+func (p Person) Actor() Actor {
+	return Actor(p)
+}
+// Actor returns the underlying Actor type
+func (s Service) Actor() Actor {
+	return Actor(s)
 }
