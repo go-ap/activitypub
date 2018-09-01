@@ -41,7 +41,7 @@ func (l *Liked) Append(ob ObjectOrLink) error {
 
 // GetID returns the ObjectID corresponding to the LikedCollection
 func (l LikedCollection) GetID() *ObjectID {
-	return OrderedCollection(l).GetID()
+	return l.Collection().GetID()
 }
 
 // GetType returns the LikedCollection's type
@@ -61,7 +61,7 @@ func (l LikedCollection) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the Liked
 func (l Liked) GetID() *ObjectID {
-	return OrderedCollection(l).GetID()
+	return l.Collection().GetID()
 }
 
 // GetType returns the Liked's type
@@ -77,4 +77,16 @@ func (l Liked) IsLink() bool {
 // IsObject returns true for a Liked object
 func (l Liked) IsObject() bool {
 	return true
+}
+
+// Collection returns the underlying Collection type
+func (l *Liked) Collection() CollectionInterface {
+	c  := OrderedCollection(*l)
+	return &c
+}
+
+// Collection returns the underlying Collection type
+func (l *LikedCollection) Collection() CollectionInterface {
+	c  := OrderedCollection(*l)
+	return &c
 }

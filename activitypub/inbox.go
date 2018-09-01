@@ -46,42 +46,42 @@ func (i *Inbox) Append(ob ObjectOrLink) error {
 }
 
 // GetID returns the ObjectID corresponding to InboxStream
-func (i InboxStream) GetID() *ObjectID {
-	return OrderedCollection(i).GetID()
+func (i *InboxStream) GetID() *ObjectID {
+	return i.Collection().GetID()
 }
 
 // GetType returns the InboxStream's type
-func (i InboxStream) GetType() ActivityVocabularyType {
+func (i *InboxStream) GetType() ActivityVocabularyType {
 	return i.Type
 }
 
 // IsLink returns false for an InboxStream object
-func (i InboxStream) IsLink() bool {
+func (i *InboxStream) IsLink() bool {
 	return false
 }
 
 // IsObject returns true for a InboxStream object
-func (i InboxStream) IsObject() bool {
+func (i *InboxStream) IsObject() bool {
 	return true
 }
 
 // GetID returns the ObjectID corresponding to Inbox
-func (i Inbox) GetID() *ObjectID {
-	return OrderedCollection(i).GetID()
+func (i *Inbox) GetID() *ObjectID {
+	return i.Collection().GetID()
 }
 
 // GetType returns the Inbox's type
-func (i Inbox) GetType() ActivityVocabularyType {
+func (i *Inbox) GetType() ActivityVocabularyType {
 	return i.Type
 }
 
 // IsLink returns false for an Inbox object
-func (i Inbox) IsLink() bool {
+func (i *Inbox) IsLink() bool {
 	return false
 }
 
 // IsObject returns true for a Inbox object
-func (i Inbox) IsObject() bool {
+func (i *Inbox) IsObject() bool {
 	return true
 }
 
@@ -103,4 +103,16 @@ func (i *Inbox) UnmarshalJSON(data []byte) error {
 	*i = Inbox(c)
 
 	return err
+}
+
+// Collection returns the underlying Collection type
+func (i *Inbox) Collection() CollectionInterface {
+	 c  := OrderedCollection(*i)
+	 return &c
+}
+
+// Collection returns the underlying Collection type
+func (i *InboxStream) Collection() CollectionInterface {
+	 c  := OrderedCollection(*i)
+	 return &c
 }

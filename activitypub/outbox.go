@@ -40,7 +40,7 @@ func (o *Outbox) Append(ob ObjectOrLink) error {
 
 // GetID returns the ObjectID corresponding to the OutboxStream
 func (o OutboxStream) GetID() *ObjectID {
-	return OrderedCollection(o).GetID()
+	return o.Collection().GetID()
 }
 
 // GetType returns the OutboxStream's type
@@ -60,7 +60,7 @@ func (o OutboxStream) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to Outbox
 func (o Outbox) GetID() *ObjectID {
-	return OrderedCollection(o).GetID()
+	return o.Collection().GetID()
 }
 
 // GetType returns the Outbox's type
@@ -96,4 +96,16 @@ func (o *Outbox) UnmarshalJSON(data []byte) error {
 	*o = Outbox(c)
 
 	return err
+}
+
+// Collection returns the underlying Collection type
+func (o *Outbox) Collection() CollectionInterface {
+	c  := OrderedCollection(*o)
+	return &c
+}
+
+// Collection returns the underlying Collection type
+func (o *OutboxStream) Collection() CollectionInterface {
+	c  := OrderedCollection(*o)
+	return &c
 }

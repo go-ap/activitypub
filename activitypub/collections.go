@@ -11,6 +11,7 @@ type Page ObjectOrLink
 
 type CollectionInterface interface {
 	ObjectOrLink
+	Collection() CollectionInterface
 	Append(ob ObjectOrLink) error
 }
 
@@ -370,3 +371,13 @@ func (o *OrderedCollection) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 */
+
+// Collection returns the underlying Collection type
+func (c *Collection) Collection() CollectionInterface {
+	return c
+}
+
+// Collection returns the underlying Collection type
+func (o *OrderedCollection) Collection() CollectionInterface {
+	return o
+}
