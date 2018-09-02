@@ -246,27 +246,27 @@ var allTests = tests{
 			},
 		},
 	},
-	//"activity_simple": testPair{
-	//	path:     "./mocks/activity_simple.json",
-	//	expected: false,
-	//	blank:    &a.Activity{},
-	//	result: &a.Activity{
-	//		Type:    a.ActivityType,
-	//		Summary: a.NaturalLanguageValue{{a.NilLangRef, "Sally did something to a note"}},
-	//		Actor: a.Actor(a.Person{
-	//			Type: a.PersonType,
-	//			Name: a.NaturalLanguageValue{{
-	//				a.NilLangRef, "Sally",
-	//			}},
-	//		}),
-	//		Object: a.Object{
-	//			Type: a.NoteType,
-	//			Name: a.NaturalLanguageValue{{
-	//				a.NilLangRef, "A Note",
-	//			}},
-	//		},
-	//	},
-	//},
+	"activity_simple": testPair{
+		path:     "./mocks/activity_simple.json",
+		expected: true,
+		blank:    &a.Activity{},
+		result: &a.Activity{
+			Type:    a.ActivityType,
+			Summary: a.NaturalLanguageValue{{a.NilLangRef, "Sally did something to a note"}},
+			Actor: &a.Person{
+				Type: a.PersonType,
+				Name: a.NaturalLanguageValue{{
+					a.NilLangRef, "Sally",
+				}},
+			},
+			Object: &a.Object{
+				Type: a.NoteType,
+				Name: a.NaturalLanguageValue{{
+					a.NilLangRef, "A Note",
+				}},
+			},
+		},
+	},
 	"person_with_outbox": testPair{
 		path:     "./mocks/person_with_outbox.json",
 		expected: true,
