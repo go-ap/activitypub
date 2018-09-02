@@ -42,7 +42,7 @@ type Collection struct {
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
 	//  common originating context or purpose. An example could be all activities relating to a common project or event.
-	//Context ObjectOrLink `jsonld:"_"`
+	Context ObjectOrLink `jsonld:"context,omitempty"`
 	// The date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
 	//  the activity concluded or is expected to conclude.
@@ -129,7 +129,7 @@ type OrderedCollection struct {
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
 	//  common originating context or purpose. An example could be all activities relating to a common project or event.
-	//Context ObjectOrLink `jsonld:"_"`
+	Context ObjectOrLink `jsonld:"context,omitempty"`
 	// The date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
 	//  the activity concluded or is expected to conclude.
@@ -238,18 +238,18 @@ func ValidCollectionType(typ ActivityVocabularyType) bool {
 // CollectionNew initializes a new Collection
 func CollectionNew(id ObjectID) *Collection {
 	c := Collection{ID: id, Type: CollectionType}
-	c.Name = make(NaturalLanguageValue)
-	c.Content = make(NaturalLanguageValue)
-	c.Summary = make(NaturalLanguageValue)
+	c.Name = NaturalLanguageValueNew()
+	c.Content = NaturalLanguageValueNew()
+	c.Summary = NaturalLanguageValueNew()
 	return &c
 }
 
 // CollectionNew initializes a new Collection
 func OrderedCollectionNew(id ObjectID) *OrderedCollection {
 	o := OrderedCollection{ID: id, Type: OrderedCollectionType}
-	o.Name = make(NaturalLanguageValue)
-	o.Content = make(NaturalLanguageValue)
-	o.Summary = make(NaturalLanguageValue)
+	o.Name = NaturalLanguageValueNew()
+	o.Content = NaturalLanguageValueNew()
+	o.Summary = NaturalLanguageValueNew()
 
 	return &o
 }

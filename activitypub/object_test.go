@@ -50,12 +50,15 @@ func TestValidObjectType(t *testing.T) {
 }
 
 func TestMarshalJSON(t *testing.T) {
-	m := make(map[LangRef]string)
-	m["en"] = "test"
-	m["de"] = "test"
-
-	n := NaturalLanguageValue(m)
-	result, err := n.MarshalJSON()
+	m := NaturalLanguageValue{
+		{
+		"en", "test",
+		},
+		{
+			"de", "test",
+		},
+	}
+	result, err := m.MarshalJSON()
 	if err != nil {
 		t.Errorf("Failed marshaling '%v'", err)
 	}
@@ -63,10 +66,14 @@ func TestMarshalJSON(t *testing.T) {
 	if string(result) != mRes {
 		t.Errorf("Different results '%v' vs. '%v'", string(result), mRes)
 	}
+	//n := NaturalLanguageValueNew()
+	//result, err := n.MarshalJSON()
 
 	s := make(map[LangRef]string)
 	s["en"] = "test"
-	n1 := NaturalLanguageValue(s)
+	n1 := NaturalLanguageValue{{
+		"en", "test",
+	}}
 	result1, err1 := n1.MarshalJSON()
 	if err1 != nil {
 		t.Errorf("Failed marshaling '%v'", err1)
@@ -78,10 +85,14 @@ func TestMarshalJSON(t *testing.T) {
 }
 
 func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
-	p := make(NaturalLanguageValue, 2)
-	p["en"] = "the test"
-	p["fr"] = "le test"
-
+	p := NaturalLanguageValue{
+		{
+			"en", "the test",
+		},
+		{
+			"fr", "le test",
+		},
+	}
 	js := "{\"en\":\"the test\",\"fr\":\"le test\"}"
 	out, err := p.MarshalJSON()
 
@@ -91,8 +102,11 @@ func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
 	if js != string(out) {
 		t.Errorf("Different marshal result '%s', instead of '%s'", out, js)
 	}
-	p1 := make(NaturalLanguageValue, 1)
-	p1["en"] = "the test"
+	p1 :=NaturalLanguageValue{
+		{
+			"en", "the test",
+		},
+	}
 
 	out1, err1 := p1.MarshalJSON()
 
@@ -192,6 +206,23 @@ func TestRecipientsDeduplication(t *testing.T) {
 	}
 }
 
+func TestNaturalLanguageValue_Get(t *testing.T) {
+	testVal := "test"
+	a := NaturalLanguageValue{{NilLangRef, testVal}}
+	if a.Get(NilLangRef) != testVal {
+		t.Errorf("Invalid Get result. Expected %s received %s", testVal, a.Get(NilLangRef))
+	}
+}
+
+func TestNaturalLanguageValue_Set(t *testing.T) {
+	testVal := "test"
+	a := NaturalLanguageValue{{NilLangRef, "ana are mere"}}
+	err := a.Set(LangRef("en"), testVal)
+	if err != nil {
+		t.Errorf("Received error when doing Set %s", err)
+	}
+}
+
 func TestNaturalLanguageValue_Append(t *testing.T) {
 	var a NaturalLanguageValue
 
@@ -205,8 +236,8 @@ func TestNaturalLanguageValue_Append(t *testing.T) {
 	if len(a) != 1 {
 		t.Errorf("Invalid append of one element to %T. Size %d != 1", a, len(a))
 	}
-	if a[langEn] != valEn {
-		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langEn, valEn, a[langEn])
+	if a.Get(langEn) != valEn {
+		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langEn, valEn, a.Get(langEn))
 	}
 	langDe := LangRef("de")
 	valDe := "randomisch"
@@ -215,11 +246,11 @@ func TestNaturalLanguageValue_Append(t *testing.T) {
 	if len(a) != 2 {
 		t.Errorf("Invalid append of one element to %T. Size %d != 2", a, len(a))
 	}
-	if a[langEn] != valEn {
-		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langEn, valEn, a[langEn])
+	if a.Get(langEn) != valEn {
+		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langEn, valEn, a.Get(langEn))
 	}
-	if a[langDe] != valDe {
-		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langDe, valDe, a[langDe])
+	if a.Get(langDe) != valDe {
+		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langDe, valDe, a.Get(langDe))
 	}
 }
 
@@ -258,14 +289,14 @@ func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
 		t.Error(err)
 	}
 	for lang, val := range a {
-		if lang != LangRef(langEn) && lang != LangRef(langDe) {
+		if val.Ref != LangRef(langEn) && val.Ref != LangRef(langDe) {
 			t.Errorf("Invalid json unmarshal for %T. Expected lang %q or %q, found %q", a, langEn, langDe, lang)
 		}
 
-		if lang == LangRef(langEn) && val != valEn {
+		if val.Ref == LangRef(langEn) && val.Value != valEn {
 			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valEn, val)
 		}
-		if lang == LangRef(langDe) && val != valDe {
+		if val.Ref == LangRef(langDe) && val.Value != valDe {
 			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valDe, val)
 		}
 	}

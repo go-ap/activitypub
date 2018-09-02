@@ -16,9 +16,9 @@ func LikedNew() *Liked {
 	id := ObjectID("liked")
 
 	l := Liked{ID: id, Type: OrderedCollectionType}
-	l.Name = make(NaturalLanguageValue)
-	l.Content = make(NaturalLanguageValue)
-	l.Summary = make(NaturalLanguageValue)
+	l.Name = NaturalLanguageValueNew()
+	l.Content = NaturalLanguageValueNew()
+	l.Summary = NaturalLanguageValueNew()
 
 	l.TotalItems = 0
 

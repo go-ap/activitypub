@@ -119,10 +119,33 @@ type (
 	MimeType string
 	// LangRef is the type for a language reference, should be ISO 639-1 language specifier.
 	LangRef string
+
+	LangRefValue struct {
+		Ref   LangRef
+		Value string
+	}
 	// NaturalLanguageValue is a mapping for multiple language values
-	NaturalLanguageValue map[LangRef]string
+	NaturalLanguageValue []LangRefValue
 )
 
+func NaturalLanguageValueNew() NaturalLanguageValue {
+	return make(NaturalLanguageValue, 0)
+}
+
+func (n NaturalLanguageValue) Get(ref LangRef) string {
+	for _, val := range n {
+		if val.Ref == ref {
+			return val.Value
+		}
+	}
+	return ""
+}
+
+func (n *NaturalLanguageValue) Set(ref LangRef, v string) error {
+	t := append(*n, LangRefValue{ref, v})
+	*n = t
+	return nil
+}
 // IsLink validates if currentActivity Pub Object is a Link
 func (o Object) IsLink() bool {
 	return false
@@ -135,19 +158,26 @@ func (o Object) IsObject() bool {
 
 // MarshalJSON serializes the NaturalLanguageValue into JSON
 func (n NaturalLanguageValue) MarshalJSON() ([]byte, error) {
+	if len(n) == 0 {
+		return json.Marshal(nil)
+	}
 	if len(n) == 1 {
 		for _, v := range n {
-			return json.Marshal(v)
+			return json.Marshal(v.Value)
 		}
 	}
+	mm := make(map[LangRef]string)
+	for _, val := range n {
+		mm[val.Ref] = val.Value
+	}
 
-	return json.Marshal(map[LangRef]string(n))
+	return json.Marshal(mm)
 }
 
 // First returns the first element in the map
 func (n NaturalLanguageValue) First() string {
 	for _, v := range n {
-		return v
+		return v.Value
 	}
 	return ""
 }
@@ -169,7 +199,7 @@ func (n *NaturalLanguageValue) Append(lang LangRef, value string) error {
 	} else {
 		t = *n
 	}
-	t[lang] = value
+	t = append(*n, LangRefValue{lang, value})
 	*n = t
 
 	return nil
@@ -340,9 +370,9 @@ func ObjectNew(id ObjectID, typ ActivityVocabularyType) *Object {
 		typ = ObjectType
 	}
 	o := Object{ID: id, Type: typ}
-	o.Name = make(NaturalLanguageValue)
-	o.Content = make(NaturalLanguageValue)
-	o.Summary = make(NaturalLanguageValue)
+	o.Name = NaturalLanguageValueNew()
+	o.Content = NaturalLanguageValueNew()
+	o.Summary = NaturalLanguageValueNew()
 	return &o
 }
 

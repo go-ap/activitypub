@@ -101,7 +101,7 @@ type Activity struct {
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
 	//  common originating context or purpose. An example could be all activities relating to a common project or event.
-	//Context ObjectOrLink `jsonld:"_"`
+	Context ObjectOrLink `jsonld:"context,omitempty"`
 	// The date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
 	//  the activity concluded or is expected to conclude.
@@ -207,7 +207,7 @@ type IntransitiveActivity struct {
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
 	//  common originating context or purpose. An example could be all activities relating to a common project or event.
-	//Context ObjectOrLink `jsonld:"_"`
+	Context ObjectOrLink `jsonld:"context,omitempty"`
 	// The date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
 	//  the activity concluded or is expected to conclude.
@@ -418,7 +418,7 @@ type Question struct {
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
 	//  common originating context or purpose. An example could be all activities relating to a common project or event.
-	//Context ObjectOrLink `jsonld:"_"`
+	Context ObjectOrLink `jsonld:"context,omitempty"`
 	// The date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
 	//  the activity concluded or is expected to conclude.
@@ -693,9 +693,9 @@ func ViewNew(id ObjectID, ob ObjectOrLink) *View {
 // QuestionNew initializes a Question activity
 func QuestionNew(id ObjectID) *Question {
 	q := Question{ID: id, Type: QuestionType}
-	q.Name = make(NaturalLanguageValue)
-	q.Content = make(NaturalLanguageValue)
-	q.Summary = make(NaturalLanguageValue)
+	q.Name = NaturalLanguageValueNew()
+	q.Content = NaturalLanguageValueNew()
+	q.Summary = NaturalLanguageValueNew()
 	return &q
 }
 
@@ -715,9 +715,9 @@ func ActivityNew(id ObjectID, typ ActivityVocabularyType, ob ObjectOrLink) *Acti
 		typ = ActivityType
 	}
 	a := Activity{ID: id, Type: typ}
-	a.Name = make(NaturalLanguageValue)
-	a.Content = make(NaturalLanguageValue)
-	a.Summary = make(NaturalLanguageValue)
+	a.Name = NaturalLanguageValueNew()
+	a.Content = NaturalLanguageValueNew()
+	a.Summary = NaturalLanguageValueNew()
 
 	a.Object = ob
 
@@ -730,9 +730,9 @@ func IntransitiveActivityNew(id ObjectID, typ ActivityVocabularyType) *Intransit
 		typ = IntransitiveActivityType
 	}
 	i := IntransitiveActivity{ID: id, Type: typ}
-	i.Name = make(NaturalLanguageValue)
-	i.Content = make(NaturalLanguageValue)
-	i.Summary = make(NaturalLanguageValue)
+	i.Name = NaturalLanguageValueNew()
+	i.Content = NaturalLanguageValueNew()
+	i.Summary = NaturalLanguageValueNew()
 
 	return &i
 }
@@ -1366,6 +1366,7 @@ func (a *Activity) UnmarshalJSON(data []byte) error {
 	a.Type = getAPType(data)
 	a.Name = getAPNaturalLanguageField(data, "name")
 	a.Content = getAPNaturalLanguageField(data, "content")
+	a.Summary = getAPNaturalLanguageField(data, "summary")
 	u := getURIField(data, "url")
 	if len(u) > 0 {
 		a.URL = u

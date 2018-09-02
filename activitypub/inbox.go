@@ -19,9 +19,9 @@ func InboxNew() *Inbox {
 	id := ObjectID("inbox")
 
 	i := Inbox{ID: id, Type: OrderedCollectionType}
-	i.Name = make(NaturalLanguageValue)
-	i.Content = make(NaturalLanguageValue)
-	i.Summary = make(NaturalLanguageValue)
+	i.Name = NaturalLanguageValueNew()
+	i.Content = NaturalLanguageValueNew()
+	i.Summary = NaturalLanguageValueNew()
 
 	i.TotalItems = 0
 

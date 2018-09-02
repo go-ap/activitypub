@@ -15,9 +15,9 @@ func OutboxNew() *Outbox {
 	id := ObjectID("outbox")
 
 	i := Outbox{ID: id, Type: OrderedCollectionType}
-	i.Name = make(NaturalLanguageValue)
-	i.Content = make(NaturalLanguageValue)
-	i.Summary = make(NaturalLanguageValue)
+	i.Name = NaturalLanguageValueNew()
+	i.Content = NaturalLanguageValueNew()
+	i.Summary = NaturalLanguageValueNew()
 
 	i.TotalItems = 0
 

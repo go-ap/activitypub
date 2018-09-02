@@ -200,9 +200,9 @@ var allTests = tests{
 			Href:      a.URI("http://example.org/abc"),
 			HrefLang:  a.LangRef("en"),
 			MediaType: a.MimeType("text/html"),
-			Name: a.NaturalLanguageValue{
-				a.LangRef(a.NilLangRef): "An example link",
-			},
+			Name: a.NaturalLanguageValue{{
+				a.NilLangRef, "An example link",
+			}},
 		},
 	},
 	"object_with_url": testPair{
@@ -220,9 +220,9 @@ var allTests = tests{
 		result: &a.Object{
 			Type: a.ObjectType,
 			ID:   a.ObjectID("http://www.test.example/object/1"),
-			Name: a.NaturalLanguageValue{
-				a.LangRef(a.NilLangRef): "A Simple, non-specific object",
-			},
+			Name: a.NaturalLanguageValue{{
+				a.NilLangRef, "A Simple, non-specific object",
+			}},
 		},
 	},
 	"object_with_replies": testPair{
@@ -240,7 +240,7 @@ var allTests = tests{
 					&a.Object{
 						ID:   a.ObjectID("http://www.test.example/object/1/replies/2"),
 						Type: a.ArticleType,
-						Name: a.NaturalLanguageValue{a.NilLangRef: "Example title"},
+						Name: a.NaturalLanguageValue{{a.NilLangRef, "Example title"}},
 					},
 				},
 			},
@@ -252,18 +252,18 @@ var allTests = tests{
 	//	blank:    &a.Activity{},
 	//	result: &a.Activity{
 	//		Type:    a.ActivityType,
-	//		Summary: a.NaturalLanguageValue{a.LangRef(a.NilLangRef): "Sally did something to a note"},
+	//		Summary: a.NaturalLanguageValue{{a.NilLangRef, "Sally did something to a note"}},
 	//		Actor: a.Actor(a.Person{
 	//			Type: a.PersonType,
-	//			Name: a.NaturalLanguageValue{
-	//				a.LangRef(a.NilLangRef): "Sally",
-	//			},
+	//			Name: a.NaturalLanguageValue{{
+	//				a.NilLangRef, "Sally",
+	//			}},
 	//		}),
 	//		Object: a.Object{
 	//			Type: a.NoteType,
-	//			Name: a.NaturalLanguageValue{
-	//				a.LangRef(a.NilLangRef): "A Note",
-	//			},
+	//			Name: a.NaturalLanguageValue{{
+	//				a.NilLangRef, "A Note",
+	//			}},
 	//		},
 	//	},
 	//},
@@ -274,12 +274,12 @@ var allTests = tests{
 		result: &a.Person{
 			ID:   a.ObjectID("http://example.com/accounts/ana"),
 			Type: a.PersonType,
-			Name: a.NaturalLanguageValue{
-				a.LangRef(a.NilLangRef): "ana",
-			},
-			PreferredUsername: a.NaturalLanguageValue{
-				a.LangRef(a.NilLangRef): "Ana",
-			},
+			Name: a.NaturalLanguageValue{{
+				a.NilLangRef, "ana",
+			}},
+			PreferredUsername: a.NaturalLanguageValue{{
+				a.NilLangRef, "Ana",
+			}},
 			URL: a.URI("http://example.com/accounts/ana"),
 			Outbox: &a.OutboxStream{
 				ID:   a.ObjectID("http://example.com/accounts/ana/outbox"),
@@ -301,8 +301,8 @@ var allTests = tests{
 				&a.Object{
 					ID:           a.ObjectID("http://example.com/outbox/53c6fb47"),
 					Type:         a.ArticleType,
-					Name:         a.NaturalLanguageValue{a.NilLangRef: "Example title"},
-					Content:      a.NaturalLanguageValue{a.NilLangRef: "Example content!"},
+					Name:         a.NaturalLanguageValue{{a.NilLangRef, "Example title"}},
+					Content:      a.NaturalLanguageValue{{a.NilLangRef, "Example content!"}},
 					URL:          a.URI("http://example.com/53c6fb47"),
 					MediaType:    a.MimeType("text/markdown"),
 					Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
@@ -317,12 +317,13 @@ var allTests = tests{
 		expected: true,
 		blank:    &a.NaturalLanguageValue{},
 		result: &a.NaturalLanguageValue{
-			a.LangRef(j.NilLangRef): `
+			{
+				a.NilLangRef, `
 	
-	`,
-			a.LangRef("en"): "Ana got apples ⓐ",
-			a.LangRef("fr"): "Aná a des pommes ⒜",
-			a.LangRef("ro"): "Ana are mere",
+	`},
+			{a.LangRef("en"), "Ana got apples ⓐ"},
+			{a.LangRef("fr"), "Aná a des pommes ⒜"},
+			{a.LangRef("ro"), "Ana are mere"},
 		},
 	},
 	"create_activity_simple": {
@@ -336,7 +337,7 @@ var allTests = tests{
 				Type:         a.NoteType,
 				AttributedTo: a.IRI("https://littr.git/api/accounts/anonymous"),
 				InReplyTo:    a.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff"),
-				Content:      a.NaturalLanguageValue{a.NilLangRef: "<p>Hello world</p>"},
+				Content:      a.NaturalLanguageValue{{a.NilLangRef, "<p>Hello world</p>"}},
 				To:           a.ObjectsArr{a.IRI("https://www.w3.org/ns/activitystreams#Public")},
 			},
 		},
