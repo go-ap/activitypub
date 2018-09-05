@@ -115,10 +115,16 @@ type ContextObject struct {
 }
 
 // Context is of of the basic JSON-LD elements.
-// It is used to map terms to IRIs or JSON objects.
+// It represents an array of ContextElements
+type Context []ContextElement
+
+// ContextElement is used to map terms to IRIs or JSON objects.
 // Terms are case sensitive and any valid string that is not a reserved JSON-LD
 // keyword can be used as a term.
-type Context map[Term]IRI
+type ContextElement struct {
+	Term Term
+	IRI  IRI
+}
 
 func GetContext() Context {
 	return Context{}
@@ -133,11 +139,11 @@ type Collapsible interface {
 
 // Collapse returns the plain text collapsed value of the current Context object
 func (c Context) Collapse() interface{} {
-	for term, iri := range c {
-		if len(c) == 1 {
-			return iri
-		}
-		if term == NilTerm {
+	if len(c) == 1 && len(c[0].IRI) > 0 {
+		return c[0].IRI
+	}
+	for _, el := range c {
+		if el.Term == NilTerm {
 
 		}
 	}
@@ -162,23 +168,25 @@ func (i IRI) MarshalText() ([]byte, error) {
 //    If multiple elements where at least one doesn't have a Term and one has a Term -> json marshaled array
 //    If multiple elements where all have Terms -> json marshaled object
 func (c Context) MarshalJSON() ([]byte, error) {
+	mapIRI := make(map[Term]IRI, 0)
 	arr := make([]interface{}, 0)
 	i := 0
-	for t, iri := range c {
+	if len(c) == 1 && len(c[0].IRI) > 0 {
+		return json.Marshal(c[0].IRI)
+	}
+	for _, el := range c {
+		t := el.Term
+		iri := el.IRI
 		if t.IsNil() {
-			if len(c) == 1 {
-				return json.Marshal(iri)
-			}
 			arr = append(arr, iri)
-			delete(c, t)
 			i += 1
+		} else {
+			if len(iri) > 0 {
+				mapIRI[t] = iri
+			}
 		}
 	}
-	if len(c) > 0 {
-		mapIRI := make(map[Term]IRI, len(c))
-		for t, iri := range c {
-			mapIRI[t] = iri
-		}
+	if len(mapIRI) > 0 {
 		if len(arr) == 0 {
 			return json.Marshal(mapIRI)
 		}

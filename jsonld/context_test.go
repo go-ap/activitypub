@@ -21,54 +21,81 @@ func TestRef_MarshalText(t *testing.T) {
 }
 
 func TestContext_MarshalJSON(t *testing.T) {
-	url := "test"
-	c := Context{NilTerm: IRI(url)}
+	{
+		url := "test"
+		c := Context{{NilTerm, IRI(url)}}
 
-	out, err := c.MarshalJSON()
-	if err != nil {
-		t.Errorf("%s", err)
+		out, err := c.MarshalJSON()
+		if err != nil {
+			t.Errorf("%s", err)
+		}
+		if !strings.Contains(string(out), url) {
+			t.Errorf("Json doesn't contain %s, %s", url, string(out))
+		}
+		jUrl, _ := json.Marshal(url)
+		if !bytes.Equal(jUrl, out) {
+			t.Errorf("Strings should be equal %s, %s", jUrl, out)
+		}
 	}
-	if !strings.Contains(string(out), url) {
-		t.Errorf("Json doesn't contain %s, %s", url, string(out))
+	{
+		url := "example.com"
+		asTerm := "testingTerm##"
+		asUrl := "https://activitipubrocks.com"
+		c2 := Context{{NilTerm, IRI(url)}, {Term(asTerm), IRI(asUrl)}}
+		out, err := c2.MarshalJSON()
+		if err != nil {
+			t.Errorf("%s", err)
+		}
+		if !strings.Contains(string(out), url) {
+			t.Errorf("Json doesn't contain URL %s, %s", url, string(out))
+		}
+		if !strings.Contains(string(out), asUrl) {
+			t.Errorf("Json doesn't contain URL %s, %s", asUrl, string(out))
+		}
+		if !strings.Contains(string(out), asTerm) {
+			t.Errorf("Json doesn't contain Term %s, %s", asTerm, string(out))
+		}
 	}
-	jUrl, _ := json.Marshal(url)
-	if !bytes.Equal(jUrl, out) {
-		t.Errorf("Strings should be equal %s, %s", jUrl, out)
+	{
+		url := "test"
+		testTerm := "test_term"
+		asTerm := "testingTerm##"
+		asUrl := "https://activitipubrocks.com"
+		c3 := Context{{Term(testTerm), IRI(url)}, {Term(asTerm), IRI(asUrl)}}
+		out, err := c3.MarshalJSON()
+		if err != nil {
+			t.Errorf("%s", err)
+		}
+		if !strings.Contains(string(out), url) {
+			t.Errorf("Json doesn't contain URL %s, %s", url, string(out))
+		}
+		if !strings.Contains(string(out), asUrl) {
+			t.Errorf("Json doesn't contain URL %s, %s", asUrl, string(out))
+		}
+		if !strings.Contains(string(out), asTerm) {
+			t.Errorf("Json doesn't contain Term %s, %s", asTerm, string(out))
+		}
+		if !strings.Contains(string(out), testTerm) {
+			t.Errorf("Json doesn't contain Term %s, %s", testTerm, string(out))
+		}
 	}
+	{
+		url1 := "test"
+		url2 := "http://example.com"
+		c := Context{
+			{IRI: IRI(url1)},
+			{IRI: IRI(url2)},
+		}
 
-	asTerm := "testingTerm##"
-	asUrl := "https://activitipubrocks.com"
-	c2 := Context{NilTerm: IRI(url), Term(asTerm): IRI(asUrl)}
-	out, err = c2.MarshalJSON()
-	if err != nil {
-		t.Errorf("%s", err)
-	}
-	if !strings.Contains(string(out), url) {
-		t.Errorf("Json doesn't contain URL %s, %s", url, string(out))
-	}
-	if !strings.Contains(string(out), asUrl) {
-		t.Errorf("Json doesn't contain URL %s, %s", asUrl, string(out))
-	}
-	if !strings.Contains(string(out), asTerm) {
-		t.Errorf("Json doesn't contain Term %s, %s", asTerm, string(out))
-	}
-
-	testTerm := "test_term"
-	c3 := Context{Term(testTerm): IRI(url), Term(asTerm): IRI(asUrl)}
-	out, err = c3.MarshalJSON()
-	if err != nil {
-		t.Errorf("%s", err)
-	}
-	if !strings.Contains(string(out), url) {
-		t.Errorf("Json doesn't contain URL %s, %s", url, string(out))
-	}
-	if !strings.Contains(string(out), asUrl) {
-		t.Errorf("Json doesn't contain URL %s, %s", asUrl, string(out))
-	}
-	if !strings.Contains(string(out), asTerm) {
-		t.Errorf("Json doesn't contain Term %s, %s", asTerm, string(out))
-	}
-	if !strings.Contains(string(out), testTerm) {
-		t.Errorf("Json doesn't contain Term %s, %s", testTerm, string(out))
+		out, err := c.MarshalJSON()
+		if err != nil {
+			t.Errorf("%s", err)
+		}
+		if !strings.Contains(string(out), url1) {
+			t.Errorf("Json doesn't contain %s, %s", url1, string(out))
+		}
+		if !strings.Contains(string(out), url2) {
+			t.Errorf("Json doesn't contain %s, %s", url1, string(out))
+		}
 	}
 }
