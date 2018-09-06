@@ -4,10 +4,10 @@ import "time"
 
 // LikeActivity is the type for a create activity message
 type LikeActivity struct {
-	Activity  *Like
-	Published time.Time
-	To        ObjectsArr
-	CC        ObjectsArr
+	Activity  *Like      `jsonld:"activity"`
+	Published time.Time  `jsonld:"published"`
+	To        ObjectsArr `jsonld:"to,omitempty,collapsible"`
+	CC        ObjectsArr `jsonld:"cc,omitempty,collapsible"`
 }
 
 func loadActorWithLikedObject(a ObjectOrLink, o ObjectOrLink) ObjectOrLink {

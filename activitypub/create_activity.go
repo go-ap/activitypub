@@ -4,10 +4,10 @@ import "time"
 
 // CreateActivity is the type for a create activity message
 type CreateActivity struct {
-	Activity  *Create
-	Published time.Time
-	To        ObjectsArr
-	CC        ObjectsArr
+	Activity  *Create    `jsonld:"activity"`
+	Published time.Time  `jsonld:"published"`
+	To        ObjectsArr `jsonld:"to,omitempty,collapsible"`
+	CC        ObjectsArr `jsonld:"cc,omitempty,collapsible"`
 }
 
 func loadActorWithInboxObject(a ObjectOrLink, o ObjectOrLink) ObjectOrLink {
