@@ -92,3 +92,13 @@ func (l *Like) UnmarshalJSON(data []byte) error {
 
 	return err
 }
+
+// UnmarshalJSON
+func (d *Dislike) UnmarshalJSON(data []byte) error {
+	a := Activity(*d)
+	err := a.UnmarshalJSON(data)
+
+	*d = Dislike(a)
+
+	return err
+}
