@@ -768,6 +768,13 @@ func (l *Like) RecipientsDeduplication() {
 	recipientsDeduplication(&dedupObjects, &l.To, &l.Bto, &l.CC, &l.BCC)
 }
 
+func (d *Dislike) RecipientsDeduplication() {
+	var dedupObjects ObjectsArr
+	dedupObjects.Append(d.Actor)
+	dedupObjects.Append(d.Object)
+	recipientsDeduplication(&dedupObjects, &d.To, &d.Bto, &d.CC, &d.BCC)
+}
+
 // GetType
 func (i IntransitiveActivity) GetType() ActivityVocabularyType {
 	return i.Type

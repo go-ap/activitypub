@@ -10,6 +10,14 @@ type LikeActivity struct {
 	CC        ObjectsArr `jsonld:"cc,omitempty,collapsible"`
 }
 
+// DislikeActivity is the type for a create activity message
+type DislikeActivity struct {
+	Activity  *Dislike   `jsonld:"activity"`
+	Published time.Time  `jsonld:"published"`
+	To        ObjectsArr `jsonld:"to,omitempty,collapsible"`
+	CC        ObjectsArr `jsonld:"cc,omitempty,collapsible"`
+}
+
 func loadActorWithLikedObject(a ObjectOrLink, o ObjectOrLink) ObjectOrLink {
 	typ := a.GetType()
 	switch typ {
@@ -81,6 +89,29 @@ func LikeActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) LikeActivity {
 	}
 
 	return c
+}
+
+// DislikeActivityNew initializes a new LikeActivity message
+func DislikeActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) DislikeActivity {
+	act := DislikeNew(id, o)
+
+	if a != nil {
+		if a.IsObject() {
+			act.Actor = loadActorWithLikedObject(a, o)
+		}
+		if a.IsLink() {
+			act.Actor = a
+		}
+	}
+
+	act.RecipientsDeduplication()
+
+	d := DislikeActivity{
+		Activity:  act,
+		Published: time.Now(),
+	}
+
+	return d
 }
 
 // UnmarshalJSON
