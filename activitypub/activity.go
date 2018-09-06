@@ -753,11 +753,19 @@ func (b *Block) RecipientsDeduplication() {
 	dedupObjects.Append(b.Object)
 	recipientsDeduplication(&dedupObjects, &b.To, &b.Bto, &b.CC, &b.BCC)
 }
+
 func (c *Create) RecipientsDeduplication() {
 	var dedupObjects ObjectsArr
 	dedupObjects.Append(c.Actor)
 	dedupObjects.Append(c.Object)
 	recipientsDeduplication(&dedupObjects, &c.To, &c.Bto, &c.CC, &c.BCC)
+}
+
+func (l *Like) RecipientsDeduplication() {
+	var dedupObjects ObjectsArr
+	dedupObjects.Append(l.Actor)
+	dedupObjects.Append(l.Object)
+	recipientsDeduplication(&dedupObjects, &l.To, &l.Bto, &l.CC, &l.BCC)
 }
 
 // GetType
