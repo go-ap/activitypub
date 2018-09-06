@@ -82,3 +82,13 @@ func CreateActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) CreateActivi
 
 	return c
 }
+
+// UnmarshalJSON
+func (c *Create) UnmarshalJSON(data []byte) error {
+	a := Activity(*c)
+	err := a.UnmarshalJSON(data)
+
+	*c = Create(a)
+
+	return err
+}

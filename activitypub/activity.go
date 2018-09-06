@@ -1399,13 +1399,3 @@ func (a *Activity) UnmarshalJSON(data []byte) error {
 	}
 	return nil
 }
-
-// UnmarshalJSON
-func (c *Create) UnmarshalJSON(data []byte) error {
-	a := Activity(*c)
-	err := a.UnmarshalJSON(data)
-
-	*c = Create(a)
-
-	return err
-}
