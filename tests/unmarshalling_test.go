@@ -146,7 +146,9 @@ func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool
 		for i, n := 0, v1.NumField(); i < n; i++ {
 			if !deepValueEqual(t, v1.Field(i), v2.Field(i), visited, depth+1) {
 				t("Struct fields at pos %d %q:%q and %q:%q are not deeply equal", i, v1.Type().Field(i).Name, v1.Field(i).Type().Name(), v2.Type().Field(i).Name, v2.Field(i).Type().Name())
-				t("  Values: %#v - %#v", v1.Field(i).Interface(), v2.Field(i).Interface())
+				if v1.Field(i).CanAddr() && v2.Field(i).CanAddr() {
+					t("  Values: %#v - %#v", v1.Field(i).Interface(), v2.Field(i).Interface())
+				}
 				return false
 			}
 		}
@@ -340,6 +342,22 @@ var allTests = tests{
 				Content:      a.NaturalLanguageValue{{a.NilLangRef, "<p>Hello world</p>"}},
 				To:           a.ObjectsArr{a.IRI("https://www.w3.org/ns/activitystreams#Public")},
 			},
+		},
+	},
+	"like_activity_with_iri_actor": {
+		path:     "./mocks/like_activity_with_iri_actor.json",
+		expected: true,
+		blank:    &a.LikeActivity{},
+		result: &a.LikeActivity{
+			Activity: &a.Like{
+				Type:  a.LikeType,
+				Actor: a.IRI("https://littr.git/api/accounts/24d4b96f"),
+				Object: &a.Object{
+					ID:   a.ObjectID("https://littr.git/api/accounts/ana/liked/7ca154ff"),
+					Type: a.ArticleType,
+				},
+			},
+			Published: time.Date(2018, time.September, 6, 15, 15, 9, 0, zLoc),
 		},
 	},
 }
