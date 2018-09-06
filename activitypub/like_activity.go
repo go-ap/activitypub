@@ -82,3 +82,13 @@ func LikeActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) LikeActivity {
 
 	return c
 }
+
+// UnmarshalJSON
+func (l *Like) UnmarshalJSON(data []byte) error {
+	a := Activity(*l)
+	err := a.UnmarshalJSON(data)
+
+	*l = Like(a)
+
+	return err
+}
