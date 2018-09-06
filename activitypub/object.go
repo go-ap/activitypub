@@ -146,6 +146,7 @@ func (n *NaturalLanguageValue) Set(ref LangRef, v string) error {
 	*n = t
 	return nil
 }
+
 // IsLink validates if currentActivity Pub Object is a Link
 func (o Object) IsLink() bool {
 	return false
@@ -411,18 +412,26 @@ func recipientsDeduplication(recArgs ...*ObjectsArr) error {
 		toRemove := make([]int, 0)
 		for i, rec := range *recList {
 			save := true
+			if rec == nil {
+				continue
+			}
+			var testId ObjectID
+			if rec.IsObject() {
+				testId = *rec.GetID()
+			} else if rec.IsLink() {
+				testId = ObjectID(rec.(IRI))
+			} else {
+				continue
+			}
 			for _, id := range recIds {
-				if *rec.GetID() == id {
+				if testId == id {
 					// mark the element for removal
 					toRemove = append(toRemove, i)
 					save = false
 				}
 			}
 			if save {
-				if rec == nil {
-					continue
-				}
-				recIds = append(recIds, *rec.GetID())
+				recIds = append(recIds, testId)
 			}
 		}
 
