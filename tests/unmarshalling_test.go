@@ -326,8 +326,8 @@ var allTests = tests{
 			{a.LangRef("ro"), "Ana are mere"},
 		},
 	},
-	"create_activity_simple": {
-		path:     "./mocks/create_activity_simple.json",
+	"activity_create_simple": {
+		path:     "./mocks/activity_create_simple.json",
 		expected: true,
 		blank:    &a.Create{},
 		result: &a.Create{
