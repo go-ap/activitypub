@@ -677,10 +677,10 @@ func UndoNew(id ObjectID, ob ObjectOrLink) *Undo {
 }
 
 // UpdateNew initializes an Update activity
-func UpdateNew(id ObjectID, ob ObjectOrLink) *Accept {
+func UpdateNew(id ObjectID, ob ObjectOrLink) *Update {
 	a := ActivityNew(id, UpdateType, ob)
-	o := Accept(*a)
-	return &o
+	u := Update(*a)
+	return &u
 }
 
 // ViewNew initializes a View activity
@@ -737,16 +737,21 @@ func IntransitiveActivityNew(id ObjectID, typ ActivityVocabularyType) *Intransit
 	return &i
 }
 
+// RecipientsDeduplication
 func (a *Activity) RecipientsDeduplication() {
 	var actor ObjectsArr
 	actor.Append(a.Actor)
 	recipientsDeduplication(&actor, &a.To, &a.Bto, &a.CC, &a.BCC)
 }
+
+// RecipientsDeduplication
 func (i *IntransitiveActivity) RecipientsDeduplication() {
 	var actor ObjectsArr
 	actor.Append(i.Actor)
 	recipientsDeduplication(&actor, &i.To, &i.Bto, &i.CC, &i.BCC)
 }
+
+// RecipientsDeduplication
 func (b *Block) RecipientsDeduplication() {
 	var dedupObjects ObjectsArr
 	dedupObjects.Append(b.Actor)
@@ -754,6 +759,7 @@ func (b *Block) RecipientsDeduplication() {
 	recipientsDeduplication(&dedupObjects, &b.To, &b.Bto, &b.CC, &b.BCC)
 }
 
+// RecipientsDeduplication
 func (c *Create) RecipientsDeduplication() {
 	var dedupObjects ObjectsArr
 	dedupObjects.Append(c.Actor)
@@ -761,6 +767,7 @@ func (c *Create) RecipientsDeduplication() {
 	recipientsDeduplication(&dedupObjects, &c.To, &c.Bto, &c.CC, &c.BCC)
 }
 
+// RecipientsDeduplication
 func (l *Like) RecipientsDeduplication() {
 	var dedupObjects ObjectsArr
 	dedupObjects.Append(l.Actor)
@@ -768,11 +775,20 @@ func (l *Like) RecipientsDeduplication() {
 	recipientsDeduplication(&dedupObjects, &l.To, &l.Bto, &l.CC, &l.BCC)
 }
 
+// RecipientsDeduplication
 func (d *Dislike) RecipientsDeduplication() {
 	var dedupObjects ObjectsArr
 	dedupObjects.Append(d.Actor)
 	dedupObjects.Append(d.Object)
 	recipientsDeduplication(&dedupObjects, &d.To, &d.Bto, &d.CC, &d.BCC)
+}
+
+// RecipientsDeduplication
+func (u *Update) RecipientsDeduplication() {
+	var dedupObjects ObjectsArr
+	dedupObjects.Append(u.Actor)
+	dedupObjects.Append(u.Object)
+	recipientsDeduplication(&dedupObjects, &u.To, &u.Bto, &u.CC, &u.BCC)
 }
 
 // GetType
