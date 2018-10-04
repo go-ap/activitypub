@@ -99,13 +99,13 @@ func (o *Outbox) UnmarshalJSON(data []byte) error {
 }
 
 // Collection returns the underlying Collection type
-func (o *Outbox) Collection() CollectionInterface {
-	c := OrderedCollection(*o)
+func (o Outbox) Collection() CollectionInterface {
+	c := OrderedCollection(o)
 	return &c
 }
 
 // Collection returns the underlying Collection type
-func (o *OutboxStream) Collection() CollectionInterface {
-	c := OrderedCollection(*o)
+func (o OutboxStream) Collection() CollectionInterface {
+	c := OrderedCollection(o)
 	return &c
 }
