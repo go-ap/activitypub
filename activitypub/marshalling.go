@@ -4,8 +4,8 @@ import (
 	"fmt"
 )
 
-func getAPObjectByType(typ ActivityVocabularyType) (ObjectOrLink, error) {
-	var ret ObjectOrLink
+func getAPObjectByType(typ ActivityVocabularyType) (Item, error) {
+	var ret Item
 	var err error
 
 	switch typ {

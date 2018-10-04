@@ -52,7 +52,7 @@ func TestValidObjectType(t *testing.T) {
 func TestMarshalJSON(t *testing.T) {
 	m := NaturalLanguageValue{
 		{
-		"en", "test",
+			"en", "test",
 		},
 		{
 			"de", "test",
@@ -102,7 +102,7 @@ func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
 	if js != string(out) {
 		t.Errorf("Different marshal result '%s', instead of '%s'", out, js)
 	}
-	p1 :=NaturalLanguageValue{
+	p1 := NaturalLanguageValue{
 		{
 			"en", "the test",
 		},
@@ -142,7 +142,7 @@ func TestObject_IsObject(t *testing.T) {
 }
 
 func TestObjectsArr_Append(t *testing.T) {
-	d := make(ObjectsArr, 0)
+	d := make(ItemCollection, 0)
 
 	val := Object{ID: ObjectID("grrr")}
 
@@ -162,7 +162,7 @@ func TestRecipientsDeduplication(t *testing.T) {
 	foo := OrganizationNew("foo")
 	bar := GroupNew("bar")
 
-	first := make(ObjectsArr, 0)
+	first := make(ItemCollection, 0)
 	if len(first) != 0 {
 		t.Errorf("Objects array should have exactly an element")
 	}
@@ -188,7 +188,7 @@ func TestRecipientsDeduplication(t *testing.T) {
 		t.Errorf("Objects array should have exactly 4(four) elements, not %d", len(first))
 	}
 
-	second := make(ObjectsArr, 0)
+	second := make(ItemCollection, 0)
 	second.Append(bar)
 	second.Append(foo)
 

@@ -4,14 +4,14 @@ import "time"
 
 // UpdateActivity is the type for a Update activity message
 type UpdateActivity struct {
-	Activity  *Update    `jsonld:"activity"`
-	Published time.Time  `jsonld:"published"`
-	To        ObjectsArr `jsonld:"to,omitempty,collapsible"`
-	CC        ObjectsArr `jsonld:"cc,omitempty,collapsible"`
+	Activity  *Update        `jsonld:"activity"`
+	Published time.Time      `jsonld:"published"`
+	To        ItemCollection `jsonld:"to,omitempty,collapsible"`
+	CC        ItemCollection `jsonld:"cc,omitempty,collapsible"`
 }
 
 // UpdateActivityNew initializes a new UpdateActivity message
-func UpdateActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) UpdateActivity {
+func UpdateActivityNew(id ObjectID, a Item, o Item) UpdateActivity {
 	act := UpdateNew(id, o)
 
 	if a != nil {

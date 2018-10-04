@@ -26,14 +26,14 @@ func LikedNew() *Liked {
 }
 
 // Append adds an element to an LikedCollection
-func (l *LikedCollection) Append(o ObjectOrLink) error {
+func (l *LikedCollection) Append(o Item) error {
 	l.OrderedItems = append(l.OrderedItems, o)
 	l.TotalItems++
 	return nil
 }
 
 // Append adds an element to an Outbox
-func (l *Liked) Append(ob ObjectOrLink) error {
+func (l *Liked) Append(ob Item) error {
 	l.OrderedItems = append(l.OrderedItems, ob)
 	l.TotalItems++
 	return nil
@@ -81,12 +81,12 @@ func (l Liked) IsObject() bool {
 
 // Collection returns the underlying Collection type
 func (l *Liked) Collection() CollectionInterface {
-	c  := OrderedCollection(*l)
+	c := OrderedCollection(*l)
 	return &c
 }
 
 // Collection returns the underlying Collection type
 func (l *LikedCollection) Collection() CollectionInterface {
-	c  := OrderedCollection(*l)
+	c := OrderedCollection(*l)
 	return &c
 }

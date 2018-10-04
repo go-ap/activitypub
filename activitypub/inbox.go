@@ -29,7 +29,7 @@ func InboxNew() *Inbox {
 }
 
 // Append adds an element to an InboxStream
-func (i *InboxStream) Append(o ObjectOrLink) error {
+func (i *InboxStream) Append(o Item) error {
 	if i == nil {
 		return fmt.Errorf("nil ")
 	}
@@ -39,7 +39,7 @@ func (i *InboxStream) Append(o ObjectOrLink) error {
 }
 
 // Append adds an element to an Inbox
-func (i *Inbox) Append(ob ObjectOrLink) error {
+func (i *Inbox) Append(ob Item) error {
 	i.OrderedItems = append(i.OrderedItems, ob)
 	i.TotalItems++
 	return nil
@@ -107,12 +107,12 @@ func (i *Inbox) UnmarshalJSON(data []byte) error {
 
 // Collection returns the underlying Collection type
 func (i *Inbox) Collection() CollectionInterface {
-	 c  := OrderedCollection(*i)
-	 return &c
+	c := OrderedCollection(*i)
+	return &c
 }
 
 // Collection returns the underlying Collection type
 func (i *InboxStream) Collection() CollectionInterface {
-	 c  := OrderedCollection(*i)
-	 return &c
+	c := OrderedCollection(*i)
+	return &c
 }

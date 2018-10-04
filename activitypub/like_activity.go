@@ -4,72 +4,99 @@ import "time"
 
 // LikeActivity is the type for a create activity message
 type LikeActivity struct {
-	Activity  *Like      `jsonld:"activity"`
-	Published time.Time  `jsonld:"published"`
-	To        ObjectsArr `jsonld:"to,omitempty,collapsible"`
-	CC        ObjectsArr `jsonld:"cc,omitempty,collapsible"`
+	Activity  *Like          `jsonld:"activity"`
+	Published time.Time      `jsonld:"published"`
+	To        ItemCollection `jsonld:"to,omitempty,collapsible"`
+	CC        ItemCollection `jsonld:"cc,omitempty,collapsible"`
 }
 
 // DislikeActivity is the type for a create activity message
 type DislikeActivity struct {
-	Activity  *Dislike   `jsonld:"activity"`
-	Published time.Time  `jsonld:"published"`
-	To        ObjectsArr `jsonld:"to,omitempty,collapsible"`
-	CC        ObjectsArr `jsonld:"cc,omitempty,collapsible"`
+	Activity  *Dislike       `jsonld:"activity"`
+	Published time.Time      `jsonld:"published"`
+	To        ItemCollection `jsonld:"to,omitempty,collapsible"`
+	CC        ItemCollection `jsonld:"cc,omitempty,collapsible"`
 }
 
-func loadActorWithLikedObject(a ObjectOrLink, o ObjectOrLink) ObjectOrLink {
+func loadActorWithLikedObject(a Item, o Item) Item {
 	typ := a.GetType()
 	switch typ {
 	case ApplicationType:
 		var app Application
 		app, _ = a.(Application)
+		var liked *Liked
 		if app.Liked == nil {
-			app.Liked = LikedNew()
+			liked = LikedNew()
+		} else {
+			liked = app.Liked.(*Liked)
 		}
-		app.Liked.Append(o)
+		liked.Append(o)
+		app.Liked = liked
 		return app
 	case GroupType:
 		var grp Group
 		grp, _ = a.(Group)
+		var liked *Liked
 		if grp.Liked == nil {
-			grp.Liked = LikedNew()
+			liked = LikedNew()
+		} else {
+			liked = grp.Liked.(*Liked)
 		}
-		grp.Liked.Append(o)
+		liked.Append(o)
+		grp.Liked = liked
 		return grp
 	case OrganizationType:
 		var org Organization
 		org, _ = a.(Organization)
+		var liked *Liked
 		if org.Liked == nil {
-			org.Liked = LikedNew()
+			liked = LikedNew()
+		} else {
+			liked = org.Liked.(*Liked)
 		}
-		org.Liked.Append(o)
+		liked.Append(o)
+		org.Liked = liked
 		return org
 	case PersonType:
 		var pers Person
 		pers, _ = a.(Person)
+		var liked *Liked
 		if pers.Liked == nil {
-			pers.Liked = LikedNew()
+			liked = LikedNew()
+		} else {
+			liked = pers.Liked.(*Liked)
 		}
-		pers.Liked.Append(o)
+		liked.Append(o)
+		pers.Liked = liked
 		return pers
 	case ServiceType:
 		var serv Service
 		serv, _ = a.(Service)
-		serv.Liked.Append(o)
+		var liked *Liked
+		if serv.Liked == nil {
+			liked = LikedNew()
+		} else {
+			liked = serv.Liked.(*Liked)
+		}
+		liked.Append(o)
+		serv.Liked = liked
 		return serv
 	default:
 		actor, _ := a.(Actor)
+		var liked *Liked
 		if actor.Liked == nil {
-			actor.Liked = LikedNew()
+			liked = LikedNew()
+		} else {
+			liked = actor.Liked.(*Liked)
 		}
-		actor.Liked.Append(o)
+		liked.Append(o)
+		actor.Liked = liked
 		return actor
 	}
 }
 
 // LikeActivityNew initializes a new LikeActivity message
-func LikeActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) LikeActivity {
+func LikeActivityNew(id ObjectID, a Item, o Item) LikeActivity {
 	act := LikeNew(id, o)
 
 	if a != nil {
@@ -92,7 +119,7 @@ func LikeActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) LikeActivity {
 }
 
 // DislikeActivityNew initializes a new LikeActivity message
-func DislikeActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) DislikeActivity {
+func DislikeActivityNew(id ObjectID, a Item, o Item) DislikeActivity {
 	act := DislikeNew(id, o)
 
 	if a != nil {

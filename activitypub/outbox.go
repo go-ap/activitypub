@@ -25,14 +25,14 @@ func OutboxNew() *Outbox {
 }
 
 // Append adds an element to an OutboxStream
-func (o *OutboxStream) Append(ob ObjectOrLink) error {
+func (o *OutboxStream) Append(ob Item) error {
 	o.OrderedItems = append(o.OrderedItems, ob)
 	o.TotalItems++
 	return nil
 }
 
 // Append adds an element to an Outbox
-func (o *Outbox) Append(ob ObjectOrLink) error {
+func (o *Outbox) Append(ob Item) error {
 	o.OrderedItems = append(o.OrderedItems, ob)
 	o.TotalItems++
 	return nil
@@ -100,12 +100,12 @@ func (o *Outbox) UnmarshalJSON(data []byte) error {
 
 // Collection returns the underlying Collection type
 func (o *Outbox) Collection() CollectionInterface {
-	c  := OrderedCollection(*o)
+	c := OrderedCollection(*o)
 	return &c
 }
 
 // Collection returns the underlying Collection type
 func (o *OutboxStream) Collection() CollectionInterface {
-	c  := OrderedCollection(*o)
+	c := OrderedCollection(*o)
 	return &c
 }

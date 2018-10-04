@@ -4,64 +4,91 @@ import "time"
 
 // CreateActivity is the type for a create activity message
 type CreateActivity struct {
-	Activity  *Create    `jsonld:"activity"`
-	Published time.Time  `jsonld:"published"`
-	To        ObjectsArr `jsonld:"to,omitempty,collapsible"`
-	CC        ObjectsArr `jsonld:"cc,omitempty,collapsible"`
+	Activity  *Create        `jsonld:"activity"`
+	Published time.Time      `jsonld:"published"`
+	To        ItemCollection `jsonld:"to,omitempty,collapsible"`
+	CC        ItemCollection `jsonld:"cc,omitempty,collapsible"`
 }
 
-func loadActorWithInboxObject(a ObjectOrLink, o ObjectOrLink) ObjectOrLink {
+func loadActorWithInboxObject(a Item, o Item) Item {
 	typ := a.GetType()
 	switch typ {
 	case ApplicationType:
 		var app Application
 		app, _ = a.(Application)
+		var inbox *Inbox
 		if app.Inbox == nil {
-			app.Inbox = InboxNew()
+			inbox = InboxNew()
+		} else {
+			inbox = app.Inbox.(*Inbox)
 		}
-		app.Inbox.Append(o)
+		inbox.Append(o)
+		app.Inbox = inbox
 		return app
 	case GroupType:
 		var grp Group
 		grp, _ = a.(Group)
+		var inbox *Inbox
 		if grp.Inbox == nil {
-			grp.Inbox = InboxNew()
+			inbox = InboxNew()
+		} else {
+			inbox = grp.Inbox.(*Inbox)
 		}
-		grp.Inbox.Append(o)
+		inbox.Append(o)
+		grp.Inbox = inbox
 		return grp
 	case OrganizationType:
 		var org Organization
 		org, _ = a.(Organization)
+		var inbox *Inbox
 		if org.Inbox == nil {
-			org.Inbox = InboxNew()
+			inbox = InboxNew()
+		} else {
+			inbox = org.Inbox.(*Inbox)
 		}
-		org.Inbox.Append(o)
+		inbox.Append(o)
+		org.Inbox = inbox
 		return org
 	case PersonType:
 		var pers Person
 		pers, _ = a.(Person)
+		var inbox *Inbox
 		if pers.Inbox == nil {
-			pers.Inbox = InboxNew()
+			inbox = InboxNew()
+		} else {
+			inbox = pers.Inbox.(*Inbox)
 		}
-		pers.Inbox.Append(o)
+		inbox.Append(o)
+		pers.Inbox = inbox
 		return pers
 	case ServiceType:
 		var serv Service
 		serv, _ = a.(Service)
-		serv.Inbox.Append(o)
+		var inbox *Inbox
+		if serv.Inbox == nil {
+			inbox = InboxNew()
+		} else {
+			inbox = serv.Inbox.(*Inbox)
+		}
+		inbox.Append(o)
+		serv.Inbox = inbox
 		return serv
 	default:
 		actor, _ := a.(Actor)
+		var inbox *Inbox
 		if actor.Inbox == nil {
-			actor.Inbox = InboxNew()
+			inbox = InboxNew()
+		} else {
+			inbox = actor.Inbox.(*Inbox)
 		}
-		actor.Inbox.Append(o)
+		inbox.Append(o)
+		actor.Inbox = inbox
 		return actor
 	}
 }
 
 // CreateActivityNew initializes a new CreateActivity message
-func CreateActivityNew(id ObjectID, a ObjectOrLink, o ObjectOrLink) CreateActivity {
+func CreateActivityNew(id ObjectID, a Item, o Item) CreateActivity {
 	act := CreateNew(id, o)
 
 	if a != nil {

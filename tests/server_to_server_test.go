@@ -152,7 +152,7 @@ S2S Server: Deduplication of recipient list
 
 	c.RecipientsDeduplication()
 
-	checkDedup := func(list a.ObjectsArr, recIds *[]a.ObjectID) error {
+	checkDedup := func(list a.ItemCollection, recIds *[]a.ObjectID) error {
 		for _, rec := range list {
 			for _, id := range *recIds {
 				if *rec.GetID() == id {
@@ -214,7 +214,7 @@ Activity being notified about
 
 	c.RecipientsDeduplication()
 
-	checkActor := func(list a.ObjectsArr, actor a.ObjectOrLink) error {
+	checkActor := func(list a.ItemCollection, actor a.Item) error {
 		for _, rec := range list {
 			if rec.GetID() == actor.GetID() {
 				return fmt.Errorf("%T[%s] Actor of activity should not be in the recipients list", rec, *actor.GetID())
@@ -266,7 +266,7 @@ S2S Server: Do-not-deliver considerations
 
 	b.RecipientsDeduplication()
 
-	checkActor := func(list a.ObjectsArr, ob a.ObjectOrLink) error {
+	checkActor := func(list a.ItemCollection, ob a.Item) error {
 		for _, rec := range list {
 			if rec.GetID() == ob.GetID() {
 				return fmt.Errorf("%T[%s] of activity should not be in the recipients list", rec, *ob.GetID())

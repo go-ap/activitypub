@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	apUnmarshalerType   = reflect.TypeOf(new(ObjectOrLink)).Elem()
+	apUnmarshalerType   = reflect.TypeOf(new(Item)).Elem()
 	unmarshalerType     = reflect.TypeOf(new(jsonld.Unmarshaler)).Elem()
 	textUnmarshalerType = reflect.TypeOf(new(encoding.TextUnmarshaler)).Elem()
 )
@@ -203,13 +203,13 @@ func getAPItems(data []byte, prop string) ItemCollection {
 	}
 	return it
 }
-func getAPObjectsArr(data []byte, prop string) ObjectsArr {
+func getAPItemCollection(data []byte, prop string) ItemCollection {
 	val, typ, _, err := jsonparser.Get(data, prop)
 	if err != nil {
 		return nil
 	}
 
-	var it ObjectsArr
+	var it ItemCollection
 	switch typ {
 	case jsonparser.Array:
 		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {

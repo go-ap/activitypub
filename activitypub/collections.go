@@ -7,12 +7,12 @@ import (
 var validCollectionTypes = [...]ActivityVocabularyType{CollectionType, OrderedCollectionType}
 
 // Page represents a Web Page.
-type Page ObjectOrLink
+type Page Item
 
 type CollectionInterface interface {
 	ObjectOrLink
 	Collection() CollectionInterface
-	Append(ob ObjectOrLink) error
+	Append(ob Item) error
 }
 
 // Collection is a subtype of Activity Pub Object that represents ordered or unordered sets of Activity Pub Object or Link instances.
@@ -26,13 +26,13 @@ type Collection struct {
 	Name NaturalLanguageValue `jsonld:"name,omitempty,collapsible"`
 	// Identifies a resource attached or related to an object that potentially requires special handling.
 	// The intent is to provide a model that is at least semantically similar to attachments in email.
-	Attachment ObjectOrLink `jsonld:"attachment,omitempty"`
+	Attachment Item `jsonld:"attachment,omitempty"`
 	// Identifies one or more entities to which this object is attributed. The attributed entities might not be Actors.
 	// For instance, an object might be attributed to the completion of another activity.
-	AttributedTo ObjectOrLink `jsonld:"attributedTo,omitempty"`
+	AttributedTo Item `jsonld:"attributedTo,omitempty"`
 	// Identifies one or more entities that represent the total population of entities
 	//  for which the object can considered to be relevant.
-	Audience ObjectOrLink `jsonld:"audience,omitempty"`
+	Audience Item `jsonld:"audience,omitempty"`
 	// The content or textual representation of the Activity Pub Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
@@ -42,13 +42,13 @@ type Collection struct {
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
 	//  common originating context or purpose. An example could be all activities relating to a common project or event.
-	Context ObjectOrLink `jsonld:"context,omitempty"`
+	Context Item `jsonld:"context,omitempty"`
 	// The date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
 	//  the activity concluded or is expected to conclude.
 	EndTime time.Time `jsonld:"endTime,omitempty"`
 	// Identifies the entity (e.g. an application) that generated the object.
-	Generator ObjectOrLink `jsonld:"generator,omitempty"`
+	Generator Item `jsonld:"generator,omitempty"`
 	// Indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
 	//  and should be suitable for presentation at a small size.
@@ -57,15 +57,15 @@ type Collection struct {
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
 	Image ImageOrLink `jsonld:"image,omitempty"`
 	// Indicates one or more entities for which this object is considered a response.
-	InReplyTo ObjectOrLink `jsonld:"inReplyTo,omitempty"`
+	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
 	// Indicates one or more physical or logical locations associated with the object.
-	Location ObjectOrLink `jsonld:"location,omitempty"`
+	Location Item `jsonld:"location,omitempty"`
 	// Identifies an entity that provides a preview of this object.
-	Preview ObjectOrLink `jsonld:"preview,omitempty"`
+	Preview Item `jsonld:"preview,omitempty"`
 	// The date and time at which the object was published
 	Published time.Time `jsonld:"published,omitempty"`
 	// Identifies a Collection containing objects considered to be responses to this object.
-	Replies CollectionInterface `jsonld:"replies,omitempty"`
+	Replies Item `jsonld:"replies,omitempty"`
 	// The date and time describing the actual or expected starting time of the object.
 	// When used with an Activity object, for instance, the startTime property specifies
 	//  the moment the activity began or is scheduled to begin.
@@ -76,19 +76,19 @@ type Collection struct {
 	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	//  while the latter implies associated by reference.
-	Tag ObjectOrLink `jsonld:"tag,omitempty"`
+	Tag Item `jsonld:"tag,omitempty"`
 	// The date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
 	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
-	To ObjectsArr `jsonld:"to,omitempty"`
+	To ItemCollection `jsonld:"to,omitempty"`
 	// Identifies an Activity Pub Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
-	Bto ObjectsArr `jsonld:"bto,omitempty"`
+	Bto ItemCollection `jsonld:"bto,omitempty"`
 	// Identifies an Activity Pub Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
-	CC ObjectsArr `jsonld:"cc,omitempty"`
+	CC ItemCollection `jsonld:"cc,omitempty"`
 	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
-	BCC ObjectsArr `jsonld:"bcc,omitempty"`
+	BCC ItemCollection `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
@@ -113,13 +113,13 @@ type OrderedCollection struct {
 	Name NaturalLanguageValue `jsonld:"name,omitempty,collapsible"`
 	// Identifies a resource attached or related to an object that potentially requires special handling.
 	// The intent is to provide a model that is at least semantically similar to attachments in email.
-	Attachment ObjectOrLink `jsonld:"attachment,omitempty"`
+	Attachment Item `jsonld:"attachment,omitempty"`
 	// Identifies one or more entities to which this object is attributed. The attributed entities might not be Actors.
 	// For instance, an object might be attributed to the completion of another activity.
-	AttributedTo ObjectOrLink `jsonld:"attributedTo,omitempty"`
+	AttributedTo Item `jsonld:"attributedTo,omitempty"`
 	// Identifies one or more entities that represent the total population of entities
 	//  for which the object can considered to be relevant.
-	Audience ObjectOrLink `jsonld:"audience,omitempty"`
+	Audience Item `jsonld:"audience,omitempty"`
 	// The content or textual representation of the Activity Pub Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
@@ -129,13 +129,13 @@ type OrderedCollection struct {
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
 	//  common originating context or purpose. An example could be all activities relating to a common project or event.
-	Context ObjectOrLink `jsonld:"context,omitempty"`
+	Context Item `jsonld:"context,omitempty"`
 	// The date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
 	//  the activity concluded or is expected to conclude.
 	EndTime time.Time `jsonld:"endTime,omitempty"`
 	// Identifies the entity (e.g. an application) that generated the object.
-	Generator ObjectOrLink `jsonld:"generator,omitempty"`
+	Generator Item `jsonld:"generator,omitempty"`
 	// Indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
 	//  and should be suitable for presentation at a small size.
@@ -144,15 +144,15 @@ type OrderedCollection struct {
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
 	Image ImageOrLink `jsonld:"image,omitempty"`
 	// Indicates one or more entities for which this object is considered a response.
-	InReplyTo ObjectOrLink `jsonld:"inReplyTo,omitempty"`
+	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
 	// Indicates one or more physical or logical locations associated with the object.
-	Location ObjectOrLink `jsonld:"location,omitempty"`
+	Location Item `jsonld:"location,omitempty"`
 	// Identifies an entity that provides a preview of this object.
-	Preview ObjectOrLink `jsonld:"preview,omitempty"`
+	Preview Item `jsonld:"preview,omitempty"`
 	// The date and time at which the object was published
 	Published time.Time `jsonld:"published,omitempty"`
 	// Identifies a Collection containing objects considered to be responses to this object.
-	Replies CollectionInterface `jsonld:"replies,omitempty"`
+	Replies Item `jsonld:"replies,omitempty"`
 	// The date and time describing the actual or expected starting time of the object.
 	// When used with an Activity object, for instance, the startTime property specifies
 	//  the moment the activity began or is scheduled to begin.
@@ -163,19 +163,19 @@ type OrderedCollection struct {
 	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	//  while the latter implies associated by reference.
-	Tag ObjectOrLink `jsonld:"tag,omitempty"`
+	Tag Item `jsonld:"tag,omitempty"`
 	// The date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
 	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
-	To ObjectsArr `jsonld:"to,omitempty"`
+	To ItemCollection `jsonld:"to,omitempty"`
 	// Identifies an Activity Pub Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
-	Bto ObjectsArr `jsonld:"bto,omitempty"`
+	Bto ItemCollection `jsonld:"bto,omitempty"`
 	// Identifies an Activity Pub Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
-	CC ObjectsArr `jsonld:"cc,omitempty"`
+	CC ItemCollection `jsonld:"cc,omitempty"`
 	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
-	BCC ObjectsArr `jsonld:"bcc,omitempty"`
+	BCC ItemCollection `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
@@ -265,14 +265,14 @@ func OrderedCollectionPageNew(parent *OrderedCollection) *OrderedCollectionPage 
 }
 
 // Append adds an element to an OrderedCollection
-func (o *OrderedCollection) Append(ob ObjectOrLink) error {
+func (o *OrderedCollection) Append(ob Item) error {
 	o.OrderedItems = append(o.OrderedItems, ob)
 	o.TotalItems++
 	return nil
 }
 
 // Append adds an element to an Collection
-func (c *Collection) Append(ob ObjectOrLink) error {
+func (c *Collection) Append(ob Item) error {
 	c.Items = append(c.Items, ob)
 	c.TotalItems++
 	return nil

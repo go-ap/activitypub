@@ -30,7 +30,7 @@ type Link struct {
 	// On a Link, specifies a hint as to the rendering width in device-independent pixels of the linked resource.
 	Width uint `jsonld:"width,omitempty"`
 	// Identifies an entity that provides a preview of this object.
-	Preview ObjectOrLink `jsonld:"preview,omitempty"`
+	Preview Item `jsonld:"preview,omitempty"`
 	// The target resource pointed to by a Link.
 	Href URI `jsonld:"href,omitempty"`
 	// Hints as to the language used by the target resource.

@@ -95,7 +95,7 @@ type (
 	ActivityObject interface {
 		GetID() *ObjectID
 	}
-	// ObjectOrLink describes an object of any kind.
+	// Item describes an object of any kind.
 	ObjectOrLink interface {
 		ActivityObject
 		GetType() ActivityVocabularyType
@@ -103,8 +103,6 @@ type (
 		IsObject() bool
 		//UnmarshalJSON([]byte) error
 	}
-	// ObjectsArr is a named type for matching an ObjectOrLink slice type to Collection interface
-	ObjectsArr []ObjectOrLink
 	// LinkOrURI is an interface that Object and Link structs implement, and at the same time
 	// they are kept disjointed
 	LinkOrURI interface {
@@ -112,7 +110,7 @@ type (
 	}
 	// ImageOrLink is an interface that Image and Link structs implement
 	ImageOrLink interface {
-		ObjectOrLink
+		Item
 		LinkOrURI
 	}
 	// MimeType is the type for MIME types
@@ -262,13 +260,13 @@ type Object struct {
 	Name NaturalLanguageValue `jsonld:"name,omitempty,collapsible"`
 	// Identifies a resource attached or related to an object that potentially requires special handling.
 	// The intent is to provide a model that is at least semantically similar to attachments in email.
-	Attachment ObjectOrLink `jsonld:"attachment,omitempty"`
+	Attachment Item `jsonld:"attachment,omitempty"`
 	// Identifies one or more entities to which this object is attributed. The attributed entities might not be Actors.
 	// For instance, an object might be attributed to the completion of another activity.
-	AttributedTo ObjectOrLink `jsonld:"attributedTo,omitempty"`
+	AttributedTo Item `jsonld:"attributedTo,omitempty"`
 	// Identifies one or more entities that represent the total population of entities
 	//  for which the object can considered to be relevant.
-	Audience ObjectOrLink `jsonld:"audience,omitempty"`
+	Audience Item `jsonld:"audience,omitempty"`
 	// The content or textual representation of the Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
@@ -278,7 +276,7 @@ type Object struct {
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
 	//  common originating context or purpose. An example could be all activities relating to a common project or event.
-	Context ObjectOrLink `jsonld:"context,omitempty"`
+	Context Item `jsonld:"context,omitempty"`
 	// When used on an Object, identifies the MIME media type of the value of the content property.
 	// If not specified, the content property is assumed to contain text/html content.
 	MediaType MimeType `jsonld:"mediaType,omitempty"`
@@ -287,7 +285,7 @@ type Object struct {
 	//  the activity concluded or is expected to conclude.
 	EndTime time.Time `jsonld:"endTime,omitempty"`
 	// Identifies the entity (e.g. an application) that generated the object.
-	Generator ObjectOrLink `jsonld:"generator,omitempty"`
+	Generator Item `jsonld:"generator,omitempty"`
 	// Indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
 	//  and should be suitable for presentation at a small size.
@@ -296,15 +294,15 @@ type Object struct {
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
 	Image ImageOrLink `jsonld:"image,omitempty"`
 	// Indicates one or more entities for which this object is considered a response.
-	InReplyTo ObjectOrLink `jsonld:"inReplyTo,omitempty"`
+	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
 	// Indicates one or more physical or logical locations associated with the object.
-	Location ObjectOrLink `jsonld:"location,omitempty"`
+	Location Item `jsonld:"location,omitempty"`
 	// Identifies an entity that provides a preview of this object.
-	Preview ObjectOrLink `jsonld:"preview,omitempty"`
+	Preview Item `jsonld:"preview,omitempty"`
 	// The date and time at which the object was published
 	Published time.Time `jsonld:"published,omitempty"`
 	// Identifies a Collection containing objects considered to be responses to this object.
-	Replies CollectionInterface `jsonld:"replies,omitempty"`
+	Replies Item `jsonld:"replies,omitempty"`
 	// The date and time describing the actual or expected starting time of the object.
 	// When used with an Activity object, for instance, the startTime property specifies
 	//  the moment the activity began or is scheduled to begin.
@@ -315,19 +313,19 @@ type Object struct {
 	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	//  while the latter implies associated by reference.
-	Tag ObjectOrLink `jsonld:"tag,omitempty"`
+	Tag Item `jsonld:"tag,omitempty"`
 	// The date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// Identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
 	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
-	To ObjectsArr `jsonld:"to,omitempty"`
+	To ItemCollection `jsonld:"to,omitempty"`
 	// Identifies anActivity Pub Object that is part of the private primary audience of this Activity Pub Object.
-	Bto ObjectsArr `jsonld:"bto,omitempty"`
+	Bto ItemCollection `jsonld:"bto,omitempty"`
 	// Identifies anActivity Pub Object that is part of the public secondary audience of this Activity Pub Object.
-	CC ObjectsArr `jsonld:"cc,omitempty"`
+	CC ItemCollection `jsonld:"cc,omitempty"`
 	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
-	BCC ObjectsArr `jsonld:"bcc,omitempty"`
+	BCC ItemCollection `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	//  the duration property indicates the object's approximate duration.
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
@@ -387,21 +385,21 @@ func (o Object) GetType() ActivityVocabularyType {
 	return o.Type
 }
 
-// Append facilitates adding elements to ObjectOrLink arrays
-// and ensures ObjectsArr implements the Collection interface
-func (c *ObjectsArr) Append(o ObjectOrLink) error {
-	oldLen := len(*c)
-	d := make(ObjectsArr, oldLen+1)
-	for k, it := range *c {
+// Append facilitates adding elements to Item arrays
+// and ensures ItemCollection implements the Collection interface
+func (i *ItemCollection) Append(o Item) error {
+	oldLen := len(*i)
+	d := make(ItemCollection, oldLen+1)
+	for k, it := range *i {
 		d[k] = it
 	}
 	d[oldLen] = o
-	*c = d
+	*i = d
 	return nil
 }
 
 // recipientsDeduplication normalizes the received arguments lists
-func recipientsDeduplication(recArgs ...*ObjectsArr) error {
+func recipientsDeduplication(recArgs ...*ItemCollection) error {
 	recIds := make([]ObjectID, 0)
 
 	for _, recList := range recArgs {
@@ -473,7 +471,7 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	o.Published = getAPTime(data, "published")
 	o.StartTime = getAPTime(data, "startTime")
 	o.Updated = getAPTime(data, "updated")
-	to := getAPObjectsArr(data, "to")
+	to := getAPItemCollection(data, "to")
 	if to != nil {
 		o.To = to
 	}

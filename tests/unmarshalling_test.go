@@ -340,7 +340,7 @@ var allTests = tests{
 				AttributedTo: a.IRI("https://littr.git/api/accounts/anonymous"),
 				InReplyTo:    a.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff"),
 				Content:      a.NaturalLanguageValue{{a.NilLangRef, "<p>Hello world</p>"}},
-				To:           a.ObjectsArr{a.IRI("https://www.w3.org/ns/activitystreams#Public")},
+				To:           a.ItemCollection{a.IRI("https://www.w3.org/ns/activitystreams#Public")},
 			},
 		},
 	},

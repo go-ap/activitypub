@@ -25,9 +25,3 @@ func (i ItemCollection) IsLink() bool {
 func (i ItemCollection) IsObject() bool {
 	return false
 }
-
-// Append adds an element to an Inbox
-func (i *ItemCollection) Append(ob ObjectOrLink) error {
-	*i = append(*i, ob)
-	return nil
-}

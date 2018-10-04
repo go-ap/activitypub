@@ -43,7 +43,7 @@ func TestAcceptSerialization(t *testing.T) {
 func TestCreateActivityHTTPSerialization(t *testing.T) {
 	id := a.ObjectID("test_object")
 	obj := a.AcceptNew(id, nil)
-	obj.Name.Set("en","Accept New")
+	obj.Name.Set("en", "Accept New")
 
 	uri := string(a.ActivityBaseURI)
 

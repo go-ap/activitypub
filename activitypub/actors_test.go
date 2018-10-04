@@ -141,4 +141,3 @@ func TestPerson_IsObject(t *testing.T) {
 		t.Errorf("%T should be a valid object", m)
 	}
 }
-
