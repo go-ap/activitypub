@@ -80,13 +80,13 @@ func (l Liked) IsObject() bool {
 }
 
 // Collection returns the underlying Collection type
-func (l *Liked) Collection() CollectionInterface {
-	c := OrderedCollection(*l)
+func (l Liked) Collection() CollectionInterface {
+	c := OrderedCollection(l)
 	return &c
 }
 
 // Collection returns the underlying Collection type
-func (l *LikedCollection) Collection() CollectionInterface {
-	c := OrderedCollection(*l)
+func (l LikedCollection) Collection() CollectionInterface {
+	c := OrderedCollection(l)
 	return &c
 }
