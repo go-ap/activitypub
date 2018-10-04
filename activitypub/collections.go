@@ -279,12 +279,12 @@ func (c *Collection) Append(ob Item) error {
 }
 
 // GetType returns the Collection's type
-func (c *Collection) GetType() ActivityVocabularyType {
+func (c Collection) GetType() ActivityVocabularyType {
 	return c.Type
 }
 
 // IsLink returns false for a Collection object
-func (c *Collection) IsLink() bool {
+func (c Collection) IsLink() bool {
 	return false
 }
 
@@ -294,17 +294,17 @@ func (c *Collection) GetID() *ObjectID {
 }
 
 // IsObject returns true for a Collection object
-func (c *Collection) IsObject() bool {
+func (c Collection) IsObject() bool {
 	return true
 }
 
 // GetType returns the OrderedCollection's type
-func (o *OrderedCollection) GetType() ActivityVocabularyType {
+func (o OrderedCollection) GetType() ActivityVocabularyType {
 	return o.Type
 }
 
 // IsLink returns false for an OrderedCollection object
-func (o *OrderedCollection) IsLink() bool {
+func (o OrderedCollection) IsLink() bool {
 	return false
 }
 
@@ -314,7 +314,7 @@ func (o OrderedCollection) GetID() *ObjectID {
 }
 
 // IsObject returns true for am OrderedCollection object
-func (o *OrderedCollection) IsObject() bool {
+func (o OrderedCollection) IsObject() bool {
 	return true
 }
 
