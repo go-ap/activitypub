@@ -94,6 +94,12 @@ type Collection struct {
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
 	//  section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
 	Duration time.Duration `jsonld:"duration,omitempty"`
+	// In a paged Collection, indicates the page that contains the most recently updated member items.
+	Current ObjectOrLink `jsonld:"current,omitempty"`
+	// 	In a paged Collection, indicates the furthest preceeding page of items in the collection.
+	First ObjectOrLink `jsonld:"first,omitempty"`
+	// In a paged Collection, indicates the furthest proceeding page of the collection.
+	Last ObjectOrLink `jsonld:"last,omitempty"`
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
 	TotalItems uint `jsonld:"totalItems,omitempty"`
@@ -181,6 +187,12 @@ type OrderedCollection struct {
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
 	//  section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
 	Duration time.Duration `jsonld:"duration,omitempty"`
+	// In a paged Collection, indicates the page that contains the most recently updated member items.
+	Current ObjectOrLink `jsonld:"current,omitempty"`
+	// 	In a paged Collection, indicates the furthest preceeding page of items in the collection.
+	First ObjectOrLink `jsonld:"first,omitempty"`
+	// In a paged Collection, indicates the furthest proceeding page of the collection.
+	Last ObjectOrLink `jsonld:"last,omitempty"`
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
 	TotalItems uint `jsonld:"totalItems,omitempty"`
