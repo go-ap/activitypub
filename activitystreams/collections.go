@@ -304,6 +304,11 @@ func (c *Collection) GetID() *ObjectID {
 	return &c.ID
 }
 
+// GetLink returns the IRI corresponding to the Collection object
+func (c Collection) GetLink() IRI {
+	return IRI(c.ID)
+}
+
 // IsObject returns true for a Collection object
 func (c Collection) IsObject() bool {
 	return true
@@ -322,6 +327,11 @@ func (o OrderedCollection) IsLink() bool {
 // GetID returns the ObjectID corresponding to the OrderedCollection
 func (o OrderedCollection) GetID() *ObjectID {
 	return &o.ID
+}
+
+// GetLink returns the IRI corresponding to the OrderedCollection object
+func (o OrderedCollection) GetLink() IRI {
+	return IRI(o.ID)
 }
 
 // IsObject returns true for am OrderedCollection object

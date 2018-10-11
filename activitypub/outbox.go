@@ -44,6 +44,11 @@ func (o OutboxStream) GetID() *as.ObjectID {
 	return o.Collection().GetID()
 }
 
+// GetLink returns the IRI corresponding to the current OutboxStream object
+func (o OutboxStream) GetLink() as.IRI {
+	return as.IRI(o.ID)
+}
+
 // GetType returns the OutboxStream's type
 func (o OutboxStream) GetType() as.ActivityVocabularyType {
 	return o.Type
@@ -62,6 +67,11 @@ func (o OutboxStream) IsObject() bool {
 // GetID returns the ObjectID corresponding to Outbox
 func (o Outbox) GetID() *as.ObjectID {
 	return o.Collection().GetID()
+}
+
+// GetLink returns the IRI corresponding to the current Outbox object
+func (o Outbox) GetLink() as.IRI {
+	return as.IRI(o.ID)
 }
 
 // GetType returns the Outbox's type

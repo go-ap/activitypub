@@ -379,7 +379,7 @@ func (o Object) GetID() *ObjectID {
 	return &o.ID
 }
 
-// GetID returns the ObjectID corresponding to the current object
+// GetLink returns the IRI corresponding to the current object
 func (o Object) GetLink() IRI {
 	return IRI(o.ID)
 }
@@ -387,19 +387,6 @@ func (o Object) GetLink() IRI {
 // Link returns the Link corresponding to the current object
 func (o Object) GetType() ActivityVocabularyType {
 	return o.Type
-}
-
-// Append facilitates adding elements to Item arrays
-// and ensures ItemCollection implements the Collection interface
-func (i *ItemCollection) Append(o Item) error {
-	oldLen := len(*i)
-	d := make(ItemCollection, oldLen+1)
-	for k, it := range *i {
-		d[k] = it
-	}
-	d[oldLen] = o
-	*i = d
-	return nil
 }
 
 // recipientsDeduplication normalizes the received arguments lists

@@ -265,6 +265,11 @@ func (a Actor) GetID() *ObjectID {
 	return &a.ID
 }
 
+// GetLink returns the IRI corresponding to the Actor object
+func (a Actor) GetLink() IRI {
+	return IRI(a.ID)
+}
+
 // GetType returns the type corresponding to the Actor object
 func (a Actor) GetType() ActivityVocabularyType {
 	return a.Type
@@ -283,6 +288,11 @@ func (a Application) IsObject() bool {
 // GetID returns the ObjectID corresponding to the  Application object
 func (a Application) GetID() *ObjectID {
 	return a.Actor().GetID()
+}
+
+// GetLink returns the IRI corresponding to the Application object
+func (a Application) GetLink() IRI {
+	return IRI(a.ID)
 }
 
 // GetType returns the type corresponding to the Application object
@@ -305,6 +315,11 @@ func (g Group) GetID() *ObjectID {
 	return g.Actor().GetID()
 }
 
+// GetLink returns the IRI corresponding to the Group object
+func (g Group) GetLink() IRI {
+	return IRI(g.ID)
+}
+
 // GetType returns the type corresponding to the Group object
 func (g Group) GetType() ActivityVocabularyType {
 	return g.Type
@@ -325,6 +340,11 @@ func (o Organization) GetID() *ObjectID {
 	return o.Actor().GetID()
 }
 
+// GetLink returns the IRI corresponding to the Organization object
+func (o Organization) GetLink() IRI {
+	return IRI(o.ID)
+}
+
 // GetType returns the type corresponding to the Organization object
 func (o Organization) GetType() ActivityVocabularyType {
 	return o.Type
@@ -340,9 +360,14 @@ func (s Service) IsObject() bool {
 	return s.Type == ObjectType || ValidObjectType(s.Type)
 }
 
-// GetID returns the ObjectID corresponding to the  Service object
+// GetID returns the ObjectID corresponding to the Service object
 func (s Service) GetID() *ObjectID {
 	return s.Actor().GetID()
+}
+
+// GetLink returns the IRI corresponding to the Service object
+func (s Service) GetLink() IRI {
+	return IRI(s.ID)
 }
 
 // GetType returns the type corresponding to the Service object
@@ -370,9 +395,9 @@ func (p Person) GetType() ActivityVocabularyType {
 	return p.Type
 }
 
-// Link returns the URI for the current Person object
+// GetLink returns the IRI corresponding to the Person object
 func (p Person) GetLink() IRI {
-	return p.URL.(IRI)
+	return IRI(p.ID)
 }
 
 // UnmarshalJSON

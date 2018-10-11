@@ -45,6 +45,11 @@ func (l LikedCollection) GetID() *as.ObjectID {
 	return l.Collection().GetID()
 }
 
+// GetLink returns the IRI corresponding to the current LikedCollection object
+func (l LikedCollection) GetLink() as.IRI {
+	return as.IRI(l.ID)
+}
+
 // GetType returns the LikedCollection's type
 func (l LikedCollection) GetType() as.ActivityVocabularyType {
 	return l.Type
@@ -63,6 +68,11 @@ func (l LikedCollection) IsObject() bool {
 // GetID returns the ObjectID corresponding to the Liked
 func (l Liked) GetID() *as.ObjectID {
 	return l.Collection().GetID()
+}
+
+// GetLink returns the IRI corresponding to the current Liked object
+func (l Liked) GetLink() as.IRI {
+	return as.IRI(l.ID)
 }
 
 // GetType returns the Liked's type

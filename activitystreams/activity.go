@@ -803,6 +803,11 @@ func (i IntransitiveActivity) GetID() *ObjectID {
 	return &i.ID
 }
 
+// GetLink returns the IRI corresponding to the IntransitiveActivity object
+func (i IntransitiveActivity) GetLink() IRI {
+	return IRI(i.ID)
+}
+
 // IsObject
 func (i IntransitiveActivity) IsObject() bool {
 	return true
@@ -823,6 +828,11 @@ func (a Activity) GetID() *ObjectID {
 	return &a.ID
 }
 
+// GetLink returns the IRI corresponding to the Activity object
+func (a Activity) GetLink() IRI {
+	return IRI(a.ID)
+}
+
 // IsObject returns true for Activity objects
 func (a Activity) IsObject() bool {
 	return true
@@ -831,6 +841,11 @@ func (a Activity) IsObject() bool {
 // GetID returns the ObjectID corresponding to the Like object
 func (l Like) GetID() *ObjectID {
 	return Activity(l).GetID()
+}
+
+// GetLink returns the IRI corresponding to the Like object
+func (l Like) GetLink() IRI {
+	return IRI(l.ID)
 }
 
 // GetType
@@ -853,6 +868,11 @@ func (d Dislike) GetID() *ObjectID {
 	return Activity(d).GetID()
 }
 
+// GetLink returns the IRI corresponding to the Dislike object
+func (d Dislike) GetLink() IRI {
+	return IRI(d.ID)
+}
+
 // GetType
 func (d Dislike) GetType() ActivityVocabularyType {
 	return d.Type
@@ -871,6 +891,11 @@ func (d Dislike) IsLink() bool {
 // GetID returns the ObjectID corresponding to the Accept object
 func (a Accept) GetID() *ObjectID {
 	return Activity(a).GetID()
+}
+
+// GetLink returns the IRI corresponding to the Accept object
+func (a Accept) GetLink() IRI {
+	return IRI(a.ID)
 }
 
 // GetType
@@ -893,6 +918,11 @@ func (a Add) GetID() *ObjectID {
 	return Activity(a).GetID()
 }
 
+// GetLink returns the IRI corresponding to the Add object
+func (a Add) GetLink() IRI {
+	return IRI(a.ID)
+}
+
 // GetType
 func (a Add) GetType() ActivityVocabularyType {
 	return a.Type
@@ -911,6 +941,11 @@ func (a Add) IsLink() bool {
 // GetID returns the ObjectID corresponding to the Announce object
 func (a Announce) GetID() *ObjectID {
 	return Activity(a).GetID()
+}
+
+// GetLink returns the IRI corresponding to the Announce object
+func (a Announce) GetLink() IRI {
+	return IRI(a.ID)
 }
 
 // GetType
@@ -933,6 +968,11 @@ func (a Arrive) GetID() *ObjectID {
 	return IntransitiveActivity(a).GetID()
 }
 
+// GetLink returns the IRI corresponding to the Arrive object
+func (a Arrive) GetLink() IRI {
+	return IRI(a.ID)
+}
+
 // GetType
 func (a Arrive) GetType() ActivityVocabularyType {
 	return a.Type
@@ -951,6 +991,11 @@ func (a Arrive) IsLink() bool {
 // GetID returns the ObjectID corresponding to the Block object
 func (b Block) GetID() *ObjectID {
 	return Activity(b).GetID()
+}
+
+// GetLink returns the IRI corresponding to the Block object
+func (b Block) GetLink() IRI {
+	return IRI(b.ID)
 }
 
 // GetType
@@ -973,6 +1018,11 @@ func (c Create) GetID() *ObjectID {
 	return Activity(c).GetID()
 }
 
+// GetLink returns the IRI corresponding to the Create object
+func (c Create) GetLink() IRI {
+	return IRI(c.ID)
+}
+
 // GetType
 func (c Create) GetType() ActivityVocabularyType {
 	return c.Type
@@ -991,6 +1041,11 @@ func (c Create) IsLink() bool {
 // GetID returns the ObjectID corresponding to the Delete object
 func (d Delete) GetID() *ObjectID {
 	return Activity(d).GetID()
+}
+
+// GetLink returns the IRI corresponding to the Delete object
+func (d Delete) GetLink() IRI {
+	return IRI(d.ID)
 }
 
 // GetType
@@ -1013,6 +1068,11 @@ func (f Flag) GetID() *ObjectID {
 	return Activity(f).GetID()
 }
 
+// GetLink returns the IRI corresponding to the Flag object
+func (f Flag) GetLink() IRI {
+	return IRI(f.ID)
+}
+
 // GetType
 func (f Flag) GetType() ActivityVocabularyType {
 	return f.Type
@@ -1031,6 +1091,11 @@ func (f Flag) IsLink() bool {
 // GetID returns the ObjectID corresponding to the Follow object
 func (f Follow) GetID() *ObjectID {
 	return Activity(f).GetID()
+}
+
+// GetLink returns the IRI corresponding to the Follow object
+func (f Follow) GetLink() IRI {
+	return IRI(f.ID)
 }
 
 // GetType
@@ -1053,6 +1118,11 @@ func (i Ignore) GetID() *ObjectID {
 	return Activity(i).GetID()
 }
 
+// GetLink returns the IRI corresponding to the Ignore object
+func (i Ignore) GetLink() IRI {
+	return IRI(i.ID)
+}
+
 // GetType
 func (i Ignore) GetType() ActivityVocabularyType {
 	return i.Type
@@ -1071,6 +1141,11 @@ func (i Ignore) IsLink() bool {
 // GetID returns the ObjectID corresponding to the Invite object
 func (i Invite) GetID() *ObjectID {
 	return Activity(i).GetID()
+}
+
+// GetLink returns the IRI corresponding to the Invite object
+func (i Invite) GetLink() IRI {
+	return IRI(i.ID)
 }
 
 // GetType
@@ -1093,6 +1168,11 @@ func (j Join) GetID() *ObjectID {
 	return Activity(j).GetID()
 }
 
+// GetLink returns the IRI corresponding to the Join object
+func (j Join) GetLink() IRI {
+	return IRI(j.ID)
+}
+
 // GetType
 func (j Join) GetType() ActivityVocabularyType {
 	return j.Type
@@ -1111,6 +1191,11 @@ func (j Join) IsLink() bool {
 // GetID returns the ObjectID corresponding to the Leave object
 func (l Leave) GetID() *ObjectID {
 	return Activity(l).GetID()
+}
+
+// GetLink returns the IRI corresponding to the Leave object
+func (l Leave) GetLink() IRI {
+	return IRI(l.ID)
 }
 
 // GetType
@@ -1133,6 +1218,11 @@ func (l Listen) GetID() *ObjectID {
 	return Activity(l).GetID()
 }
 
+// GetLink returns the IRI corresponding to the Listen object
+func (l Listen) GetLink() IRI {
+	return IRI(l.ID)
+}
+
 // GetType
 func (l Listen) GetType() ActivityVocabularyType {
 	return l.Type
@@ -1151,6 +1241,11 @@ func (l Listen) IsLink() bool {
 // GetID returns the ObjectID corresponding to the Move object
 func (m Move) GetID() *ObjectID {
 	return Activity(m).GetID()
+}
+
+// GetLink returns the IRI corresponding to the Move object
+func (m Move) GetLink() IRI {
+	return IRI(m.ID)
 }
 
 // GetType
@@ -1173,6 +1268,11 @@ func (o Offer) GetID() *ObjectID {
 	return Activity(o).GetID()
 }
 
+// GetLink returns the IRI corresponding to the Offer object
+func (o Offer) GetLink() IRI {
+	return IRI(o.ID)
+}
+
 // GetType
 func (o Offer) GetType() ActivityVocabularyType {
 	return o.Type
@@ -1191,6 +1291,11 @@ func (o Offer) IsLink() bool {
 // GetID returns the ObjectID corresponding to the Question object
 func (q Question) GetID() *ObjectID {
 	return &q.ID
+}
+
+// GetLink returns the IRI corresponding to the Question object
+func (q Question) GetLink() IRI {
+	return IRI(q.ID)
 }
 
 // GetType
@@ -1213,6 +1318,11 @@ func (r Reject) GetID() *ObjectID {
 	return Activity(r).GetID()
 }
 
+// GetLink returns the IRI corresponding to the Reject object
+func (r Reject) GetLink() IRI {
+	return IRI(r.ID)
+}
+
 // GetType
 func (r Reject) GetType() ActivityVocabularyType {
 	return r.Type
@@ -1231,6 +1341,11 @@ func (r Reject) IsLink() bool {
 // GetID returns the ObjectID corresponding to the Remove object
 func (r Remove) GetID() *ObjectID {
 	return Activity(r).GetID()
+}
+
+// GetLink returns the IRI corresponding to the Remove object
+func (r Remove) GetLink() IRI {
+	return IRI(r.ID)
 }
 
 // GetType
@@ -1253,6 +1368,11 @@ func (r Read) GetID() *ObjectID {
 	return Activity(r).GetID()
 }
 
+// GetLink returns the IRI corresponding to the Read object
+func (r Read) GetLink() IRI {
+	return IRI(r.ID)
+}
+
 // GetType
 func (r Read) GetType() ActivityVocabularyType {
 	return r.Type
@@ -1271,6 +1391,11 @@ func (r Read) IsLink() bool {
 // GetID returns the ObjectID corresponding to the TentativeAccept object
 func (t TentativeAccept) GetID() *ObjectID {
 	return Activity(t).GetID()
+}
+
+// GetLink returns the IRI corresponding to the TentativeAccept object
+func (t TentativeAccept) GetLink() IRI {
+	return IRI(t.ID)
 }
 
 // GetType
@@ -1293,6 +1418,11 @@ func (t TentativeReject) GetID() *ObjectID {
 	return Activity(t).GetID()
 }
 
+// GetLink returns the IRI corresponding to the TentativeReject object
+func (t TentativeReject) GetLink() IRI {
+	return IRI(t.ID)
+}
+
 // GetType
 func (t TentativeReject) GetType() ActivityVocabularyType {
 	return t.Type
@@ -1311,6 +1441,11 @@ func (t TentativeReject) IsLink() bool {
 // GetID returns the ObjectID corresponding to the Travel object
 func (t Travel) GetID() *ObjectID {
 	return IntransitiveActivity(t).GetID()
+}
+
+// GetLink returns the IRI corresponding to the Travel object
+func (t Travel) GetLink() IRI {
+	return IRI(t.ID)
 }
 
 // GetType
@@ -1333,6 +1468,11 @@ func (u Undo) GetID() *ObjectID {
 	return Activity(u).GetID()
 }
 
+// GetLink returns the IRI corresponding to the Unto object
+func (u Undo) GetLink() IRI {
+	return IRI(u.ID)
+}
+
 // GetType
 func (u Undo) GetType() ActivityVocabularyType {
 	return u.Type
@@ -1353,6 +1493,11 @@ func (u Update) GetID() *ObjectID {
 	return Activity(u).GetID()
 }
 
+// GetLink returns the IRI corresponding to the Update object
+func (u Update) GetLink() IRI {
+	return IRI(u.ID)
+}
+
 // GetType
 func (u Update) GetType() ActivityVocabularyType {
 	return u.Type
@@ -1371,6 +1516,11 @@ func (u Update) IsLink() bool {
 // GetID returns the ObjectID corresponding to the View object
 func (v View) GetID() *ObjectID {
 	return Activity(v).GetID()
+}
+
+// GetLink returns the IRI corresponding to the View object
+func (v View) GetLink() IRI {
+	return IRI(v.ID)
 }
 
 // GetType

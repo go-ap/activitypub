@@ -74,9 +74,14 @@ func (l Link) IsObject() bool {
 	return l.Type == ObjectType || ValidObjectType(l.Type)
 }
 
-// GetID returns the ObjectID corresponding to the Mention object
+// GetID returns the ObjectID corresponding to the Link object
 func (l Link) GetID() *ObjectID {
 	return &l.ID
+}
+
+// GetLink returns the IRI corresponding to the current Link
+func (l Link) GetLink() IRI {
+	return IRI(l.ID)
 }
 
 // GetType returns the Type corresponding to the Mention object
@@ -97,6 +102,11 @@ func (m Mention) IsObject() bool {
 // GetID returns the ObjectID corresponding to the Mention object
 func (m Mention) GetID() *ObjectID {
 	return Link(m).GetID()
+}
+
+// GetLink returns the IRI corresponding to the current Mention
+func (m Mention) GetLink() IRI {
+	return IRI(m.ID)
 }
 
 // GetType returns the Type corresponding to the Mention object

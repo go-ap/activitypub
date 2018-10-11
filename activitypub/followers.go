@@ -28,90 +28,100 @@ func FollowersNew() *Followers {
 }
 
 // Append adds an element to an FollowersCollection
-func (i *FollowersCollection) Append(o as.Item) error {
-	if i == nil {
+func (f *FollowersCollection) Append(o as.Item) error {
+	if f == nil {
 		return fmt.Errorf("nil ")
 	}
-	i.Items = append(i.Items, o)
-	i.TotalItems++
+	f.Items = append(f.Items, o)
+	f.TotalItems++
 	return nil
 }
 
 // Append adds an element to an Followers
-func (i *Followers) Append(ob as.Item) error {
-	i.Items = append(i.Items, ob)
-	i.TotalItems++
+func (f *Followers) Append(ob as.Item) error {
+	f.Items = append(f.Items, ob)
+	f.TotalItems++
 	return nil
 }
 
 // GetID returns the ObjectID corresponding to FollowersCollection
-func (i FollowersCollection) GetID() *as.ObjectID {
-	return i.Collection().GetID()
+func (f FollowersCollection) GetID() *as.ObjectID {
+	return f.Collection().GetID()
+}
+
+// GetLink returns the IRI corresponding to the current FollowersCollection object
+func (f FollowersCollection) GetLink() as.IRI {
+	return as.IRI(f.ID)
 }
 
 // GetType returns the FollowersCollection's type
-func (i FollowersCollection) GetType() as.ActivityVocabularyType {
-	return i.Type
+func (f FollowersCollection) GetType() as.ActivityVocabularyType {
+	return f.Type
 }
 
 // IsLink returns false for an FollowersCollection object
-func (i FollowersCollection) IsLink() bool {
+func (f FollowersCollection) IsLink() bool {
 	return false
 }
 
 // IsObject returns true for a FollowersCollection object
-func (i FollowersCollection) IsObject() bool {
+func (f FollowersCollection) IsObject() bool {
 	return true
 }
 
 // GetID returns the ObjectID corresponding to Followers
-func (i Followers) GetID() *as.ObjectID {
-	return i.Collection().GetID()
+func (f Followers) GetID() *as.ObjectID {
+	return f.Collection().GetID()
+}
+
+// GetLink returns the IRI corresponding to the current Followers object
+func (f Followers) GetLink() as.IRI {
+	return as.IRI(f.ID)
 }
 
 // GetType returns the Followers's type
-func (i Followers) GetType() as.ActivityVocabularyType {
-	return i.Type
+func (f Followers) GetType() as.ActivityVocabularyType {
+	return f.Type
 }
 
 // IsLink returns false for an Followers object
-func (i Followers) IsLink() bool {
+func (f Followers) IsLink() bool {
 	return false
 }
 
 // IsObject returns true for a Followers object
-func (i Followers) IsObject() bool {
+func (f Followers) IsObject() bool {
 	return true
 }
 
 // UnmarshalJSON
-func (i *FollowersCollection) UnmarshalJSON(data []byte) error {
-	c := as.Collection(*i)
+func (f *FollowersCollection) UnmarshalJSON(data []byte) error {
+	c := as.Collection(*f)
 	err := c.UnmarshalJSON(data)
 
-	*i = FollowersCollection(c)
+	*f = FollowersCollection(c)
 
 	return err
 }
 
 // UnmarshalJSON
-func (i *Followers) UnmarshalJSON(data []byte) error {
-	c := as.Collection(*i)
+func (f *Followers) UnmarshalJSON(data []byte) error {
+	c := as.Collection(*f)
 	err := c.UnmarshalJSON(data)
 
-	*i = Followers(c)
+	*f = Followers(c)
 
 	return err
 }
 
 // Collection returns the underlying Collection type
-func (i Followers) Collection() as.CollectionInterface {
-	c := as.Collection(i)
+func (f Followers) Collection() as.CollectionInterface {
+	c := as.Collection(f)
 	return &c
 }
 
 // Collection returns the underlying Collection type
-func (i FollowersCollection) Collection() as.CollectionInterface {
-	c := as.Collection(i)
+func (f FollowersCollection) Collection() as.CollectionInterface {
+	c := as.Collection(f)
 	return &c
 }
