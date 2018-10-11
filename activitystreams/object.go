@@ -1,4 +1,4 @@
-package activitypub
+package activitystreams
 
 import (
 	"encoding/json"
@@ -364,14 +364,13 @@ func ValidObjectType(typ ActivityVocabularyType) bool {
 }
 
 // ObjectNew initializes a new Object
-func ObjectNew(id ObjectID, typ ActivityVocabularyType) *Object {
+func ObjectNew(typ ActivityVocabularyType) *Object {
 	if !(ValidObjectType(typ)) {
 		typ = ObjectType
 	}
-	o := Object{ID: id, Type: typ}
+	o := Object{Type: typ}
 	o.Name = NaturalLanguageValueNew()
 	o.Content = NaturalLanguageValueNew()
-	o.Summary = NaturalLanguageValueNew()
 	return &o
 }
 

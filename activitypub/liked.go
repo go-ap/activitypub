@@ -1,5 +1,7 @@
 package activitypub
 
+import as "github.com/mariusor/activitypub.go/activitystreams"
+
 type (
 	// LikedCollection is a list of every object from all of the actor's Like activities,
 	// added as a side effect. The liked collection MUST be either an OrderedCollection or
@@ -8,17 +10,16 @@ type (
 	LikedCollection Liked
 
 	// Liked is a type alias for an Ordered Collection
-	Liked OrderedCollection
+	Liked as.OrderedCollection
 )
 
 // LikedCollection initializes a new Outbox
-func LikedNew() *Liked {
-	id := ObjectID("liked")
+func LikedNew() *as.OrderedCollection {
+	id := as.ObjectID("liked")
 
-	l := Liked{ID: id, Type: OrderedCollectionType}
-	l.Name = NaturalLanguageValueNew()
-	l.Content = NaturalLanguageValueNew()
-	l.Summary = NaturalLanguageValueNew()
+	l := as.OrderedCollection{ID: id, Type: as.OrderedCollectionType}
+	l.Name = as.NaturalLanguageValueNew()
+	l.Content = as.NaturalLanguageValueNew()
 
 	l.TotalItems = 0
 
@@ -26,26 +27,26 @@ func LikedNew() *Liked {
 }
 
 // Append adds an element to an LikedCollection
-func (l *LikedCollection) Append(o Item) error {
+func (l *LikedCollection) Append(o as.Item) error {
 	l.OrderedItems = append(l.OrderedItems, o)
 	l.TotalItems++
 	return nil
 }
 
 // Append adds an element to an Outbox
-func (l *Liked) Append(ob Item) error {
+func (l *Liked) Append(ob as.Item) error {
 	l.OrderedItems = append(l.OrderedItems, ob)
 	l.TotalItems++
 	return nil
 }
 
 // GetID returns the ObjectID corresponding to the LikedCollection
-func (l LikedCollection) GetID() *ObjectID {
+func (l LikedCollection) GetID() *as.ObjectID {
 	return l.Collection().GetID()
 }
 
 // GetType returns the LikedCollection's type
-func (l LikedCollection) GetType() ActivityVocabularyType {
+func (l LikedCollection) GetType() as.ActivityVocabularyType {
 	return l.Type
 }
 
@@ -60,12 +61,12 @@ func (l LikedCollection) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Liked
-func (l Liked) GetID() *ObjectID {
+func (l Liked) GetID() *as.ObjectID {
 	return l.Collection().GetID()
 }
 
 // GetType returns the Liked's type
-func (l Liked) GetType() ActivityVocabularyType {
+func (l Liked) GetType() as.ActivityVocabularyType {
 	return l.Type
 }
 
@@ -80,13 +81,13 @@ func (l Liked) IsObject() bool {
 }
 
 // Collection returns the underlying Collection type
-func (l Liked) Collection() CollectionInterface {
-	c := OrderedCollection(l)
+func (l Liked) Collection() as.CollectionInterface {
+	c := as.OrderedCollection(l)
 	return &c
 }
 
 // Collection returns the underlying Collection type
-func (l LikedCollection) Collection() CollectionInterface {
-	c := OrderedCollection(l)
+func (l LikedCollection) Collection() as.CollectionInterface {
+	c := as.OrderedCollection(l)
 	return &c
 }

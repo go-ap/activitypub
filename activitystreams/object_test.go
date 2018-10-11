@@ -1,4 +1,4 @@
-package activitypub
+package activitystreams
 
 import (
 	"reflect"
@@ -9,7 +9,8 @@ func TestObjectNew(t *testing.T) {
 	var testValue = ObjectID("test")
 	var testType = ArticleType
 
-	o := ObjectNew(testValue, testType)
+	o := ObjectNew(testType)
+	o.ID = testValue
 
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
@@ -18,7 +19,8 @@ func TestObjectNew(t *testing.T) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, testType)
 	}
 
-	n := ObjectNew(testValue, "")
+	n := ObjectNew("")
+	n.ID = testValue
 	if n.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", n.ID, testValue)
 	}
@@ -120,22 +122,26 @@ func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
 }
 
 func TestObject_IsLink(t *testing.T) {
-	o := ObjectNew("test", ObjectType)
+	o := ObjectNew(ObjectType)
+	o.ID = "test"
 	if o.IsLink() {
 		t.Errorf("%#v should not be a valid link", o.Type)
 	}
-	m := ObjectNew("test", AcceptType)
+	m := ObjectNew(AcceptType)
+	m.ID = "test"
 	if m.IsLink() {
 		t.Errorf("%#v should not be a valid link", m.Type)
 	}
 }
 
 func TestObject_IsObject(t *testing.T) {
-	o := ObjectNew("test", ObjectType)
+	o := ObjectNew(ObjectType)
+	o.ID = "test"
 	if !o.IsObject() {
 		t.Errorf("%#v should be a valid object", o.Type)
 	}
-	m := ObjectNew("test", AcceptType)
+	m := ObjectNew(AcceptType)
+	m.ID = "test"
 	if !m.IsObject() {
 		t.Errorf("%#v should be a valid object", m.Type)
 	}

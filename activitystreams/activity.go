@@ -1,4 +1,4 @@
-package activitypub
+package activitystreams
 
 import (
 	"time"
@@ -695,7 +695,6 @@ func QuestionNew(id ObjectID) *Question {
 	q := Question{ID: id, Type: QuestionType}
 	q.Name = NaturalLanguageValueNew()
 	q.Content = NaturalLanguageValueNew()
-	q.Summary = NaturalLanguageValueNew()
 	return &q
 }
 
@@ -717,7 +716,6 @@ func ActivityNew(id ObjectID, typ ActivityVocabularyType, ob Item) *Activity {
 	a := Activity{ID: id, Type: typ}
 	a.Name = NaturalLanguageValueNew()
 	a.Content = NaturalLanguageValueNew()
-	a.Summary = NaturalLanguageValueNew()
 
 	a.Object = ob
 
@@ -732,7 +730,6 @@ func IntransitiveActivityNew(id ObjectID, typ ActivityVocabularyType) *Intransit
 	i := IntransitiveActivity{ID: id, Type: typ}
 	i.Name = NaturalLanguageValueNew()
 	i.Content = NaturalLanguageValueNew()
-	i.Summary = NaturalLanguageValueNew()
 
 	return &i
 }
@@ -1421,4 +1418,44 @@ func (a *Activity) UnmarshalJSON(data []byte) error {
 		}
 	}
 	return nil
+}
+
+// UnmarshalJSON
+func (l *Like) UnmarshalJSON(data []byte) error {
+	a := Activity(*l)
+	err := a.UnmarshalJSON(data)
+
+	*l = Like(a)
+
+	return err
+}
+
+// UnmarshalJSON
+func (d *Dislike) UnmarshalJSON(data []byte) error {
+	a := Activity(*d)
+	err := a.UnmarshalJSON(data)
+
+	*d = Dislike(a)
+
+	return err
+}
+
+// UnmarshalJSON
+func (u *Update) UnmarshalJSON(data []byte) error {
+	a := Activity(*u)
+	err := a.UnmarshalJSON(data)
+
+	*u = Update(a)
+
+	return err
+}
+
+// UnmarshalJSON
+func (c *Create) UnmarshalJSON(data []byte) error {
+	a := Activity(*c)
+	err := a.UnmarshalJSON(data)
+
+	*c = Create(a)
+
+	return err
 }

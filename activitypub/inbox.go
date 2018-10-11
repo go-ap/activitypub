@@ -1,6 +1,10 @@
 package activitypub
 
-import "fmt"
+import (
+	"fmt"
+
+	as "github.com/mariusor/activitypub.go/activitystreams"
+)
 
 type (
 	// InboxStream contains all activities received by the actor.
@@ -11,17 +15,16 @@ type (
 	InboxStream Inbox
 
 	// Inbox is a type alias for an Ordered Collection
-	Inbox OrderedCollection
+	Inbox as.OrderedCollection
 )
 
 // InboxNew initializes a new Inbox
-func InboxNew() *Inbox {
-	id := ObjectID("inbox")
+func InboxNew() *as.OrderedCollection {
+	id := as.ObjectID("inbox")
 
-	i := Inbox{ID: id, Type: OrderedCollectionType}
-	i.Name = NaturalLanguageValueNew()
-	i.Content = NaturalLanguageValueNew()
-	i.Summary = NaturalLanguageValueNew()
+	i := as.OrderedCollection{ID: id, Type: as.OrderedCollectionType}
+	i.Name = as.NaturalLanguageValueNew()
+	i.Content = as.NaturalLanguageValueNew()
 
 	i.TotalItems = 0
 
@@ -29,7 +32,7 @@ func InboxNew() *Inbox {
 }
 
 // Append adds an element to an InboxStream
-func (i *InboxStream) Append(o Item) error {
+func (i *InboxStream) Append(o as.Item) error {
 	if i == nil {
 		return fmt.Errorf("nil ")
 	}
@@ -39,19 +42,19 @@ func (i *InboxStream) Append(o Item) error {
 }
 
 // Append adds an element to an Inbox
-func (i *Inbox) Append(ob Item) error {
+func (i *Inbox) Append(ob as.Item) error {
 	i.OrderedItems = append(i.OrderedItems, ob)
 	i.TotalItems++
 	return nil
 }
 
 // GetID returns the ObjectID corresponding to InboxStream
-func (i InboxStream) GetID() *ObjectID {
+func (i InboxStream) GetID() *as.ObjectID {
 	return i.Collection().GetID()
 }
 
 // GetType returns the InboxStream's type
-func (i InboxStream) GetType() ActivityVocabularyType {
+func (i InboxStream) GetType() as.ActivityVocabularyType {
 	return i.Type
 }
 
@@ -66,12 +69,12 @@ func (i InboxStream) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to Inbox
-func (i Inbox) GetID() *ObjectID {
+func (i Inbox) GetID() *as.ObjectID {
 	return i.Collection().GetID()
 }
 
 // GetType returns the Inbox's type
-func (i Inbox) GetType() ActivityVocabularyType {
+func (i Inbox) GetType() as.ActivityVocabularyType {
 	return i.Type
 }
 
@@ -87,7 +90,7 @@ func (i Inbox) IsObject() bool {
 
 // UnmarshalJSON
 func (i *InboxStream) UnmarshalJSON(data []byte) error {
-	c := OrderedCollection(*i)
+	c := as.OrderedCollection(*i)
 	err := c.UnmarshalJSON(data)
 
 	*i = InboxStream(c)
@@ -97,7 +100,7 @@ func (i *InboxStream) UnmarshalJSON(data []byte) error {
 
 // UnmarshalJSON
 func (i *Inbox) UnmarshalJSON(data []byte) error {
-	c := OrderedCollection(*i)
+	c := as.OrderedCollection(*i)
 	err := c.UnmarshalJSON(data)
 
 	*i = Inbox(c)
@@ -106,13 +109,13 @@ func (i *Inbox) UnmarshalJSON(data []byte) error {
 }
 
 // Collection returns the underlying Collection type
-func (i Inbox) Collection() CollectionInterface {
-	c := OrderedCollection(i)
+func (i Inbox) Collection() as.CollectionInterface {
+	c := as.OrderedCollection(i)
 	return &c
 }
 
 // Collection returns the underlying Collection type
-func (i InboxStream) Collection() CollectionInterface {
-	c := OrderedCollection(i)
+func (i InboxStream) Collection() as.CollectionInterface {
+	c := as.OrderedCollection(i)
 	return &c
 }

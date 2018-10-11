@@ -1,4 +1,4 @@
-package activitypub
+package activitystreams
 
 import (
 	"fmt"
@@ -10,9 +10,7 @@ func getAPObjectByType(typ ActivityVocabularyType) (Item, error) {
 
 	switch typ {
 	case ObjectType:
-		ret = &Object{}
-		o := ret.(*Object)
-		o.Type = typ
+		ret = ObjectNew(typ)
 	case LinkType:
 		ret = &Link{}
 		o := ret.(*Link)
@@ -38,52 +36,32 @@ func getAPObjectByType(typ ActivityVocabularyType) (Item, error) {
 		o := ret.(*Link)
 		o.Type = typ
 	case ArticleType:
-		ret = &Object{}
-		o := ret.(*Object)
-		o.Type = typ
+		ret = ObjectNew(typ)
 	case AudioType:
-		ret = &Object{}
-		o := ret.(*Object)
-		o.Type = typ
+		ret = ObjectNew(typ)
 	case DocumentType:
-		ret = &Object{}
-		o := ret.(*Object)
-		o.Type = typ
+		ret = ObjectNew(typ)
 	case EventType:
 		o := Object{}
 		o.Type = typ
 	case ImageType:
-		ret = &Object{}
+		ret = ObjectNew(typ)
 		o := ret.(*Object)
 		o.Type = typ
 	case NoteType:
-		ret = &Object{}
-		o := ret.(*Object)
-		o.Type = typ
+		ret = ObjectNew(typ)
 	case PageType:
-		ret = &Object{}
-		o := ret.(*Object)
-		o.Type = typ
+		ret = ObjectNew(typ)
 	case PlaceType:
-		ret = &Object{}
-		o := ret.(*Object)
-		o.Type = typ
+		ret = ObjectNew(typ)
 	case ProfileType:
-		ret = &Object{}
-		o := ret.(*Object)
-		o.Type = typ
+		ret = ObjectNew(typ)
 	case RelationshipType:
-		ret = &Object{}
-		o := ret.(*Object)
-		o.Type = typ
+		ret = ObjectNew(typ)
 	case TombstoneType:
-		ret = &Object{}
-		o := ret.(*Object)
-		o.Type = typ
+		ret = ObjectNew(typ)
 	case VideoType:
-		ret = &Object{}
-		o := ret.(*Object)
-		o.Type = typ
+		ret = ObjectNew(typ)
 	case MentionType:
 		ret = &Mention{}
 		o := ret.(*Mention)

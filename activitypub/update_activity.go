@@ -1,18 +1,21 @@
 package activitypub
 
-import "time"
+import (
+	as "github.com/mariusor/activitypub.go/activitystreams"
+	"time"
+)
 
 // UpdateActivity is the type for a Update activity message
 type UpdateActivity struct {
-	Activity  *Update        `jsonld:"activity"`
-	Published time.Time      `jsonld:"published"`
-	To        ItemCollection `jsonld:"to,omitempty,collapsible"`
-	CC        ItemCollection `jsonld:"cc,omitempty,collapsible"`
+	Activity  *as.Update        `jsonld:"activity"`
+	Published time.Time         `jsonld:"published"`
+	To        as.ItemCollection `jsonld:"to,omitempty,collapsible"`
+	CC        as.ItemCollection `jsonld:"cc,omitempty,collapsible"`
 }
 
 // UpdateActivityNew initializes a new UpdateActivity message
-func UpdateActivityNew(id ObjectID, a Item, o Item) UpdateActivity {
-	act := UpdateNew(id, o)
+func UpdateActivityNew(id as.ObjectID, a as.Item, o as.Item) UpdateActivity {
+	act := as.UpdateNew(id, o)
 
 	if a != nil {
 		if a.IsObject() {
@@ -31,14 +34,4 @@ func UpdateActivityNew(id ObjectID, a Item, o Item) UpdateActivity {
 	}
 
 	return c
-}
-
-// UnmarshalJSON
-func (u *Update) UnmarshalJSON(data []byte) error {
-	a := Activity(*u)
-	err := a.UnmarshalJSON(data)
-
-	*u = Update(a)
-
-	return err
 }

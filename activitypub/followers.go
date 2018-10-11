@@ -1,23 +1,26 @@
 package activitypub
 
-import "fmt"
+import (
+	"fmt"
+	as "github.com/mariusor/activitypub.go/activitystreams"
+)
 
 type (
 	// FollowersCollection is a collection of followers
 	FollowersCollection Followers
 
 	// Followers is a Collection type
-	Followers Collection
+	Followers as.Collection
 )
 
 // FollowersNew initializes a new Followers
 func FollowersNew() *Followers {
-	id := ObjectID("followers")
+	id := as.ObjectID("followers")
 
-	i := Followers{ID: id, Type: OrderedCollectionType}
-	i.Name = NaturalLanguageValueNew()
-	i.Content = NaturalLanguageValueNew()
-	i.Summary = NaturalLanguageValueNew()
+	i := Followers{ID: id, Type: as.OrderedCollectionType}
+	i.Name = as.NaturalLanguageValueNew()
+	i.Content = as.NaturalLanguageValueNew()
+	i.Summary = as.NaturalLanguageValueNew()
 
 	i.TotalItems = 0
 
@@ -25,7 +28,7 @@ func FollowersNew() *Followers {
 }
 
 // Append adds an element to an FollowersCollection
-func (i *FollowersCollection) Append(o Item) error {
+func (i *FollowersCollection) Append(o as.Item) error {
 	if i == nil {
 		return fmt.Errorf("nil ")
 	}
@@ -35,19 +38,19 @@ func (i *FollowersCollection) Append(o Item) error {
 }
 
 // Append adds an element to an Followers
-func (i *Followers) Append(ob Item) error {
+func (i *Followers) Append(ob as.Item) error {
 	i.Items = append(i.Items, ob)
 	i.TotalItems++
 	return nil
 }
 
 // GetID returns the ObjectID corresponding to FollowersCollection
-func (i FollowersCollection) GetID() *ObjectID {
+func (i FollowersCollection) GetID() *as.ObjectID {
 	return i.Collection().GetID()
 }
 
 // GetType returns the FollowersCollection's type
-func (i FollowersCollection) GetType() ActivityVocabularyType {
+func (i FollowersCollection) GetType() as.ActivityVocabularyType {
 	return i.Type
 }
 
@@ -62,12 +65,12 @@ func (i FollowersCollection) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to Followers
-func (i Followers) GetID() *ObjectID {
+func (i Followers) GetID() *as.ObjectID {
 	return i.Collection().GetID()
 }
 
 // GetType returns the Followers's type
-func (i Followers) GetType() ActivityVocabularyType {
+func (i Followers) GetType() as.ActivityVocabularyType {
 	return i.Type
 }
 
@@ -83,7 +86,7 @@ func (i Followers) IsObject() bool {
 
 // UnmarshalJSON
 func (i *FollowersCollection) UnmarshalJSON(data []byte) error {
-	c := Collection(*i)
+	c := as.Collection(*i)
 	err := c.UnmarshalJSON(data)
 
 	*i = FollowersCollection(c)
@@ -93,7 +96,7 @@ func (i *FollowersCollection) UnmarshalJSON(data []byte) error {
 
 // UnmarshalJSON
 func (i *Followers) UnmarshalJSON(data []byte) error {
-	c := Collection(*i)
+	c := as.Collection(*i)
 	err := c.UnmarshalJSON(data)
 
 	*i = Followers(c)
@@ -102,13 +105,13 @@ func (i *Followers) UnmarshalJSON(data []byte) error {
 }
 
 // Collection returns the underlying Collection type
-func (i Followers) Collection() CollectionInterface {
-	c := Collection(i)
+func (i Followers) Collection() as.CollectionInterface {
+	c := as.Collection(i)
 	return &c
 }
 
 // Collection returns the underlying Collection type
-func (i FollowersCollection) Collection() CollectionInterface {
-	c := Collection(i)
+func (i FollowersCollection) Collection() as.CollectionInterface {
+	c := as.Collection(i)
 	return &c
 }

@@ -3,12 +3,14 @@ package activitypub
 import (
 	"reflect"
 	"testing"
+
+	as "github.com/mariusor/activitypub.go/activitystreams"
 )
 
 func TestOutboxNew(t *testing.T) {
 	o := OutboxNew()
 
-	id := ObjectID("outbox")
+	id := as.ObjectID("outbox")
 	if o.ID != id {
 		t.Errorf("%T should be initialized with %q as %T", o, id, id)
 	}
@@ -31,7 +33,7 @@ func TestOutboxStream_GetID(t *testing.T) {
 	if *o.GetID() != "" {
 		t.Errorf("%T should be initialized with empty %T", o, o.GetID())
 	}
-	id := ObjectID("test_out_stream")
+	id := as.ObjectID("test_out_stream")
 	o.ID = id
 	if *o.GetID() != id {
 		t.Errorf("%T should have %T as %q", o, id, id)
@@ -45,16 +47,16 @@ func TestOutboxStream_GetType(t *testing.T) {
 		t.Errorf("%T should be initialized with empty %T", o, o.GetType())
 	}
 
-	o.Type = OrderedCollectionType
-	if o.GetType() != OrderedCollectionType {
-		t.Errorf("%T should have %T as %q", o, o.GetType(), OrderedCollectionType)
+	o.Type = as.OrderedCollectionType
+	if o.GetType() != as.OrderedCollectionType {
+		t.Errorf("%T should have %T as %q", o, o.GetType(), as.OrderedCollectionType)
 	}
 }
 
 func TestOutboxStream_Append(t *testing.T) {
 	o := OutboxStream{}
 
-	val := Object{ID: ObjectID("grrr")}
+	val := as.Object{ID: as.ObjectID("grrr")}
 
 	o.Append(val)
 	if o.TotalItems != 1 {
@@ -68,7 +70,7 @@ func TestOutboxStream_Append(t *testing.T) {
 func TestOutbox_Append(t *testing.T) {
 	o := OutboxNew()
 
-	val := Object{ID: ObjectID("grrr")}
+	val := as.Object{ID: as.ObjectID("grrr")}
 
 	o.Append(val)
 	if o.TotalItems != 1 {

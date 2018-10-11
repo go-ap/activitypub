@@ -4,7 +4,7 @@ package tests
 
 import (
 	"fmt"
-	a "github.com/mariusor/activitypub.go/activitypub"
+	a "github.com/mariusor/activitypub.go/activitystreams"
 	"testing"
 )
 
@@ -142,9 +142,10 @@ S2S Server: Deduplication of recipient list
 	t.Log(desc)
 
 	to := a.PersonNew("bob")
-	o := a.ObjectNew("something", a.ArticleType)
+	o := a.ObjectNew(a.ArticleType)
 	cc := a.PersonNew("alice")
 
+	o.ID = "something"
 	c := a.CreateNew("create", o)
 	c.To.Append(to)
 	c.CC.Append(cc)
@@ -199,9 +200,10 @@ Activity being notified about
 	p := a.PersonNew("main actor")
 
 	to := a.PersonNew("bob")
-	o := a.ObjectNew("something", a.ArticleType)
+	o := a.ObjectNew(a.ArticleType)
 	cc := a.PersonNew("alice")
 
+	o.ID = "something"
 	c := a.CreateNew("create", o)
 	c.Actor = a.Actor(*p)
 

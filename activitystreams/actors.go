@@ -1,4 +1,4 @@
-package activitypub
+package activitystreams
 
 import (
 	"time"
@@ -203,9 +203,9 @@ func ActorNew(id ObjectID, typ ActivityVocabularyType) *Actor {
 	a.Name = NaturalLanguageValueNew()
 	a.Content = NaturalLanguageValueNew()
 	a.Summary = NaturalLanguageValueNew()
-	in := InboxNew()
-	out := OutboxNew()
-	liked := LikedNew()
+	in := OrderedCollectionNew(ObjectID("test-inbox"))
+	out := OrderedCollectionNew(ObjectID("test-outbox"))
+	liked := OrderedCollectionNew(ObjectID("test-liked"))
 
 	a.Inbox = in
 	a.Outbox = out
@@ -387,10 +387,10 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 		a.URL = u
 	}
 
-	o := OutboxStream{}
+	o := OrderedCollectionNew(ObjectID("test-outbox"))
 	if v, _, _, err := jsonparser.Get(data, "outbox"); err == nil {
 		if o.UnmarshalJSON(v) == nil {
-			a.Outbox = &o
+			a.Outbox = o
 		}
 	}
 

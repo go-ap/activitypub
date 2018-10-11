@@ -1,5 +1,7 @@
 package activitypub
 
+import as "github.com/mariusor/activitypub.go/activitystreams"
+
 type (
 	// SharesCollection is a list of all Announce activities with this object as the object property,
 	// added as a side effect. The shares collection MUST be either an OrderedCollection or a Collection
@@ -8,5 +10,5 @@ type (
 	SharesCollection Shares
 
 	// Shares is a type alias for an Ordered Collection
-	Shares OrderedCollection
+	Shares as.OrderedCollection
 )

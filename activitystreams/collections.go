@@ -1,4 +1,4 @@
-package activitypub
+package activitystreams
 
 import (
 	"time"
@@ -261,7 +261,6 @@ func OrderedCollectionNew(id ObjectID) *OrderedCollection {
 	o := OrderedCollection{ID: id, Type: OrderedCollectionType}
 	o.Name = NaturalLanguageValueNew()
 	o.Content = NaturalLanguageValueNew()
-	o.Summary = NaturalLanguageValueNew()
 
 	return &o
 }

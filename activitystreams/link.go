@@ -1,4 +1,4 @@
-package activitypub
+package activitystreams
 
 var validLinkTypes = [...]ActivityVocabularyType{
 	MentionType,

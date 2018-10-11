@@ -1,4 +1,4 @@
-package activitypub
+package activitystreams
 
 // ItemCollection is an array of items
 type ItemCollection []Item

@@ -1,5 +1,7 @@
 package activitypub
 
+import as "github.com/mariusor/activitypub.go/activitystreams"
+
 type (
 	// OutboxStream contains activities the user has published,
 	// subject to the ability of the requestor to retrieve the activity (that is,
@@ -7,17 +9,16 @@ type (
 	OutboxStream Outbox
 
 	// Outbox is a type alias for an Ordered Collection
-	Outbox OrderedCollection
+	Outbox as.OrderedCollection
 )
 
 // OutboxNew initializes a new Outbox
 func OutboxNew() *Outbox {
-	id := ObjectID("outbox")
+	id := as.ObjectID("outbox")
 
-	i := Outbox{ID: id, Type: OrderedCollectionType}
-	i.Name = NaturalLanguageValueNew()
-	i.Content = NaturalLanguageValueNew()
-	i.Summary = NaturalLanguageValueNew()
+	i := Outbox{ID: id, Type: as.OrderedCollectionType}
+	i.Name = as.NaturalLanguageValueNew()
+	i.Content = as.NaturalLanguageValueNew()
 
 	i.TotalItems = 0
 
@@ -25,26 +26,26 @@ func OutboxNew() *Outbox {
 }
 
 // Append adds an element to an OutboxStream
-func (o *OutboxStream) Append(ob Item) error {
+func (o *OutboxStream) Append(ob as.Item) error {
 	o.OrderedItems = append(o.OrderedItems, ob)
 	o.TotalItems++
 	return nil
 }
 
 // Append adds an element to an Outbox
-func (o *Outbox) Append(ob Item) error {
+func (o *Outbox) Append(ob as.Item) error {
 	o.OrderedItems = append(o.OrderedItems, ob)
 	o.TotalItems++
 	return nil
 }
 
 // GetID returns the ObjectID corresponding to the OutboxStream
-func (o OutboxStream) GetID() *ObjectID {
+func (o OutboxStream) GetID() *as.ObjectID {
 	return o.Collection().GetID()
 }
 
 // GetType returns the OutboxStream's type
-func (o OutboxStream) GetType() ActivityVocabularyType {
+func (o OutboxStream) GetType() as.ActivityVocabularyType {
 	return o.Type
 }
 
@@ -59,12 +60,12 @@ func (o OutboxStream) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to Outbox
-func (o Outbox) GetID() *ObjectID {
+func (o Outbox) GetID() *as.ObjectID {
 	return o.Collection().GetID()
 }
 
 // GetType returns the Outbox's type
-func (o Outbox) GetType() ActivityVocabularyType {
+func (o Outbox) GetType() as.ActivityVocabularyType {
 	return o.Type
 }
 
@@ -80,7 +81,7 @@ func (o Outbox) IsObject() bool {
 
 // UnmarshalJSON
 func (o *OutboxStream) UnmarshalJSON(data []byte) error {
-	c := OrderedCollection(*o)
+	c := as.OrderedCollection(*o)
 	err := c.UnmarshalJSON(data)
 
 	*o = OutboxStream(c)
@@ -90,7 +91,7 @@ func (o *OutboxStream) UnmarshalJSON(data []byte) error {
 
 // UnmarshalJSON
 func (o *Outbox) UnmarshalJSON(data []byte) error {
-	c := OrderedCollection(*o)
+	c := as.OrderedCollection(*o)
 	err := c.UnmarshalJSON(data)
 
 	*o = Outbox(c)
@@ -99,13 +100,13 @@ func (o *Outbox) UnmarshalJSON(data []byte) error {
 }
 
 // Collection returns the underlying Collection type
-func (o Outbox) Collection() CollectionInterface {
-	c := OrderedCollection(o)
+func (o Outbox) Collection() as.CollectionInterface {
+	c := as.OrderedCollection(o)
 	return &c
 }
 
 // Collection returns the underlying Collection type
-func (o OutboxStream) Collection() CollectionInterface {
-	c := OrderedCollection(o)
+func (o OutboxStream) Collection() as.CollectionInterface {
+	c := as.OrderedCollection(o)
 	return &c
 }

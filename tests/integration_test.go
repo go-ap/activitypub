@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	a "github.com/mariusor/activitypub.go/activitypub"
+	a "github.com/mariusor/activitypub.go/activitystreams"
 	j "github.com/mariusor/activitypub.go/jsonld"
 
 	"strings"

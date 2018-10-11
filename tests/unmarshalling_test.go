@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 	"time"
 	"unsafe"
 
-	a "github.com/mariusor/activitypub.go/activitypub"
+	ap "github.com/mariusor/activitypub.go/activitypub"
+	a "github.com/mariusor/activitypub.go/activitystreams"
 	j "github.com/mariusor/activitypub.go/jsonld"
 )
 
@@ -19,7 +21,6 @@ const dir = "./mocks"
 var stopOnFailure = false
 
 type testPair struct {
-	path     string
 	expected bool
 	blank    interface{}
 	result   interface{}
@@ -188,13 +189,11 @@ var zLoc, _ = time.LoadLocation("UTC")
 
 var allTests = tests{
 	"empty": testPair{
-		path:     "./mocks/empty.json",
 		expected: true,
 		blank:    &a.Object{},
 		result:   &a.Object{},
 	},
 	"link_simple": testPair{
-		path:     "./mocks/link_simple.json",
 		expected: true,
 		blank:    &a.Link{},
 		result: &a.Link{
@@ -208,7 +207,6 @@ var allTests = tests{
 		},
 	},
 	"object_with_url": testPair{
-		path:     "./mocks/object_with_url.json",
 		expected: true,
 		blank:    &a.Object{},
 		result: &a.Object{
@@ -216,7 +214,6 @@ var allTests = tests{
 		},
 	},
 	"object_simple": testPair{
-		path:     "./mocks/object_simple.json",
 		expected: true,
 		blank:    &a.Object{},
 		result: &a.Object{
@@ -228,7 +225,6 @@ var allTests = tests{
 		},
 	},
 	"object_with_replies": testPair{
-		path:     "./mocks/object_with_replies.json",
 		expected: true,
 		blank:    &a.Object{},
 		result: &a.Object{
@@ -249,7 +245,6 @@ var allTests = tests{
 		},
 	},
 	"activity_simple": testPair{
-		path:     "./mocks/activity_simple.json",
 		expected: true,
 		blank:    &a.Activity{},
 		result: &a.Activity{
@@ -257,33 +252,24 @@ var allTests = tests{
 			Summary: a.NaturalLanguageValue{{a.NilLangRef, "Sally did something to a note"}},
 			Actor: &a.Person{
 				Type: a.PersonType,
-				Name: a.NaturalLanguageValue{{
-					a.NilLangRef, "Sally",
-				}},
+				Name: a.NaturalLanguageValue{{a.NilLangRef, "Sally"}},
 			},
 			Object: &a.Object{
 				Type: a.NoteType,
-				Name: a.NaturalLanguageValue{{
-					a.NilLangRef, "A Note",
-				}},
+				Name: a.NaturalLanguageValue{{a.NilLangRef, "A Note"}},
 			},
 		},
 	},
 	"person_with_outbox": testPair{
-		path:     "./mocks/person_with_outbox.json",
 		expected: true,
 		blank:    &a.Person{},
 		result: &a.Person{
-			ID:   a.ObjectID("http://example.com/accounts/ana"),
-			Type: a.PersonType,
-			Name: a.NaturalLanguageValue{{
-				a.NilLangRef, "ana",
-			}},
-			PreferredUsername: a.NaturalLanguageValue{{
-				a.NilLangRef, "Ana",
-			}},
-			URL: a.URI("http://example.com/accounts/ana"),
-			Outbox: &a.OutboxStream{
+			ID:                a.ObjectID("http://example.com/accounts/ana"),
+			Type:              a.PersonType,
+			Name:              a.NaturalLanguageValue{{a.NilLangRef, "ana"}},
+			PreferredUsername: a.NaturalLanguageValue{{a.NilLangRef, "Ana"}},
+			URL:               a.URI("http://example.com/accounts/ana"),
+			Outbox: &a.OrderedCollection{
 				ID:   a.ObjectID("http://example.com/accounts/ana/outbox"),
 				Type: a.OrderedCollectionType,
 				URL:  a.URI("http://example.com/outbox"),
@@ -291,7 +277,6 @@ var allTests = tests{
 		},
 	},
 	"ordered_collection": testPair{
-		path:     "./mocks/ordered_collection.json",
 		expected: true,
 		blank:    &a.OrderedCollection{},
 		result: &a.OrderedCollection{
@@ -315,7 +300,6 @@ var allTests = tests{
 		},
 	},
 	"natural_language_values": {
-		path:     "./mocks/natural_language_values.json",
 		expected: true,
 		blank:    &a.NaturalLanguageValue{},
 		result: &a.NaturalLanguageValue{
@@ -329,7 +313,6 @@ var allTests = tests{
 		},
 	},
 	"activity_create_simple": {
-		path:     "./mocks/activity_create_simple.json",
 		expected: true,
 		blank:    &a.Create{},
 		result: &a.Create{
@@ -345,10 +328,9 @@ var allTests = tests{
 		},
 	},
 	"like_activity_with_iri_actor": {
-		path:     "./mocks/like_activity_with_iri_actor.json",
 		expected: true,
-		blank:    &a.LikeActivity{},
-		result: &a.LikeActivity{
+		blank:    &ap.LikeActivity{},
+		result: &ap.LikeActivity{
 			Activity: &a.Like{
 				Type:  a.LikeType,
 				Actor: a.IRI("https://littr.git/api/accounts/24d4b96f"),
@@ -390,9 +372,10 @@ func Test_ActivityPubUnmarshall(t *testing.T) {
 
 	for k, pair := range allTests {
 		var data []byte
-		data, err = getFileContents(pair.path)
+		path := filepath.Join(dir, fmt.Sprintf("%s.json", k))
+		data, err = getFileContents(path)
 		if err != nil {
-			f("Error: %s for %s", err, pair.path)
+			f("Error: %s for %s", err, path)
 			continue
 		}
 		object := pair.blank
@@ -427,7 +410,7 @@ func Test_ActivityPubUnmarshall(t *testing.T) {
 			f("\n%s\n should %sequal to expected\n%s", oj, expLbl, tj)
 		}
 		if err == nil {
-			fmt.Printf(" --- %s: %s\n          %s\n", "PASS", k, pair.path)
+			fmt.Printf(" --- %s: %s\n          %s\n", "PASS", k, path)
 		}
 	}
 }
