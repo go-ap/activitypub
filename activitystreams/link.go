@@ -32,7 +32,7 @@ type Link struct {
 	// Identifies an entity that provides a preview of this object.
 	Preview Item `jsonld:"preview,omitempty"`
 	// The target resource pointed to by a Link.
-	Href URI `jsonld:"href,omitempty"`
+	Href IRI `jsonld:"href,omitempty"`
 	// Hints as to the language used by the target resource.
 	// Value must be a [BCP47](https://tools.ietf.org/html/bcp47) Language-Tag.
 	HrefLang LangRef `jsonld:"hrefLang,omitempty"`

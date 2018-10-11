@@ -199,7 +199,7 @@ func getAPItems(data []byte, prop string) ItemCollection {
 		}, prop)
 	case jsonparser.String:
 		s, _ := jsonparser.GetString(val)
-		it.Append(URI(s))
+		it.Append(IRI(s))
 	}
 	return it
 }
@@ -237,12 +237,12 @@ func getAPItemCollection(data []byte, prop string) ItemCollection {
 	return it
 }
 
-func getURIField(data []byte, prop string) URI {
+func getURIField(data []byte, prop string) IRI {
 	val, err := jsonparser.GetString(data, prop)
 	if err != nil {
-		return URI("")
+		return IRI("")
 	}
-	return URI(val)
+	return IRI(val)
 }
 
 func getAPLangRefField(data []byte, prop string) LangRef {

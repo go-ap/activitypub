@@ -26,7 +26,7 @@ type ObjectID IRI
 
 const (
 	// ActivityBaseURI the basic URI for the activity streams namespaces
-	ActivityBaseURI                                 = URI("https://www.w3.org/ns/activitystreams")
+	ActivityBaseURI                                 = IRI("https://www.w3.org/ns/activitystreams")
 	ObjectType               ActivityVocabularyType = "Object"
 	LinkType                 ActivityVocabularyType = "Link"
 	ActivityType             ActivityVocabularyType = "Activity"
@@ -106,11 +106,11 @@ type (
 	// LinkOrURI is an interface that Object and Link structs implement, and at the same time
 	// they are kept disjointed
 	LinkOrURI interface {
-		GetLink() URI
+		GetLink() IRI
 	}
 	// ImageOrLink is an interface that Image and Link structs implement
 	ImageOrLink interface {
-		Item
+		ObjectOrLink
 		LinkOrURI
 	}
 	// MimeType is the type for MIME types
@@ -377,6 +377,11 @@ func ObjectNew(typ ActivityVocabularyType) *Object {
 // GetID returns the ObjectID corresponding to the current object
 func (o Object) GetID() *ObjectID {
 	return &o.ID
+}
+
+// GetID returns the ObjectID corresponding to the current object
+func (o Object) GetLink() IRI {
+	return IRI(o.ID)
 }
 
 // Link returns the Link corresponding to the current object

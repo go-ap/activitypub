@@ -198,7 +198,7 @@ var allTests = tests{
 		blank:    &a.Link{},
 		result: &a.Link{
 			Type:      a.LinkType,
-			Href:      a.URI("http://example.org/abc"),
+			Href:      a.IRI("http://example.org/abc"),
 			HrefLang:  a.LangRef("en"),
 			MediaType: a.MimeType("text/html"),
 			Name: a.NaturalLanguageValue{{
@@ -210,7 +210,7 @@ var allTests = tests{
 		expected: true,
 		blank:    &a.Object{},
 		result: &a.Object{
-			URL: a.URI("http://littr.git/api/accounts/system"),
+			URL: a.IRI("http://littr.git/api/accounts/system"),
 		},
 	},
 	"object_simple": testPair{
@@ -268,11 +268,11 @@ var allTests = tests{
 			Type:              a.PersonType,
 			Name:              a.NaturalLanguageValue{{a.NilLangRef, "ana"}},
 			PreferredUsername: a.NaturalLanguageValue{{a.NilLangRef, "Ana"}},
-			URL:               a.URI("http://example.com/accounts/ana"),
+			URL:               a.IRI("http://example.com/accounts/ana"),
 			Outbox: &a.OrderedCollection{
 				ID:   a.ObjectID("http://example.com/accounts/ana/outbox"),
 				Type: a.OrderedCollectionType,
-				URL:  a.URI("http://example.com/outbox"),
+				URL:  a.IRI("http://example.com/outbox"),
 			},
 		},
 	},
@@ -282,7 +282,7 @@ var allTests = tests{
 		result: &a.OrderedCollection{
 			ID:         a.ObjectID("http://example.com/outbox"),
 			Type:       a.OrderedCollectionType,
-			URL:        a.URI("http://example.com/outbox"),
+			URL:        a.IRI("http://example.com/outbox"),
 			TotalItems: 1,
 			OrderedItems: a.ItemCollection{
 				&a.Object{
@@ -290,7 +290,7 @@ var allTests = tests{
 					Type:         a.ArticleType,
 					Name:         a.NaturalLanguageValue{{a.NilLangRef, "Example title"}},
 					Content:      a.NaturalLanguageValue{{a.NilLangRef, "Example content!"}},
-					URL:          a.URI("http://example.com/53c6fb47"),
+					URL:          a.IRI("http://example.com/53c6fb47"),
 					MediaType:    a.MimeType("text/markdown"),
 					Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
 					Generator:    a.IRI("http://example.com"),

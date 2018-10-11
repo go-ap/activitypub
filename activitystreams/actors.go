@@ -371,8 +371,8 @@ func (p Person) GetType() ActivityVocabularyType {
 }
 
 // Link returns the URI for the current Person object
-func (p Person) GetLink() URI {
-	return p.URL.(URI)
+func (p Person) GetLink() IRI {
+	return p.URL.(IRI)
 }
 
 // UnmarshalJSON
