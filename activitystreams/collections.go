@@ -297,7 +297,7 @@ func (c Collection) IsLink() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Collection object
-func (c *Collection) GetID() *ObjectID {
+func (c Collection) GetID() *ObjectID {
 	return &c.ID
 }
 
