@@ -22,7 +22,7 @@ import (
 // to that of their originating server. (Publicly facing content SHOULD use HTTPS URIs).
 // 2. An ID explicitly specified as the JSON null object, which implies an anonymous object
 // (a part of its parent context)
-type ObjectID string
+type ObjectID IRI
 
 const (
 	// ActivityBaseURI the basic URI for the activity streams namespaces
