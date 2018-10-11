@@ -111,10 +111,10 @@ type Activity struct {
 	// Indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
 	//  and should be suitable for presentation at a small size.
-	Icon ImageOrLink `jsonld:"icon,omitempty"`
+	Icon Item `jsonld:"icon,omitempty"`
 	// Indicates an entity that describes an image for this object.
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
-	Image ImageOrLink `jsonld:"image,omitempty"`
+	Image Item `jsonld:"image,omitempty"`
 	// Indicates one or more entities for which this object is considered a response.
 	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
 	// Indicates one or more physical or logical locations associated with the object.
@@ -217,10 +217,10 @@ type IntransitiveActivity struct {
 	// Indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
 	//  and should be suitable for presentation at a small size.
-	Icon ImageOrLink `jsonld:"icon,omitempty"`
+	Icon Item `jsonld:"icon,omitempty"`
 	// Indicates an entity that describes an image for this object.
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
-	Image ImageOrLink `jsonld:"image,omitempty"`
+	Image Item `jsonld:"image,omitempty"`
 	// Indicates one or more entities for which this object is considered a response.
 	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
 	// Indicates one or more physical or logical locations associated with the object.
@@ -428,10 +428,10 @@ type Question struct {
 	// Indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
 	//  and should be suitable for presentation at a small size.
-	Icon ImageOrLink `jsonld:"icon,omitempty"`
+	Icon Item `jsonld:"icon,omitempty"`
 	// Indicates an entity that describes an image for this object.
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
-	Image ImageOrLink `jsonld:"image,omitempty"`
+	Image Item `jsonld:"image,omitempty"`
 	// Indicates one or more entities for which this object is considered a response.
 	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
 	// Indicates one or more physical or logical locations associated with the object.

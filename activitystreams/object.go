@@ -98,6 +98,7 @@ type (
 	// Item describes an object of any kind.
 	ObjectOrLink interface {
 		ActivityObject
+		LinkOrURI
 		GetType() ActivityVocabularyType
 		IsLink() bool
 		IsObject() bool
@@ -107,11 +108,6 @@ type (
 	// they are kept disjointed
 	LinkOrURI interface {
 		GetLink() IRI
-	}
-	// ImageOrLink is an interface that Image and Link structs implement
-	ImageOrLink interface {
-		ObjectOrLink
-		LinkOrURI
 	}
 	// MimeType is the type for MIME types
 	MimeType string
@@ -289,10 +285,10 @@ type Object struct {
 	// Indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
 	//  and should be suitable for presentation at a small size.
-	Icon ImageOrLink `jsonld:"icon,omitempty"`
+	Icon Item `jsonld:"icon,omitempty"`
 	// Indicates an entity that describes an image for this object.
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
-	Image ImageOrLink `jsonld:"image,omitempty"`
+	Image Item `jsonld:"image,omitempty"`
 	// Indicates one or more entities for which this object is considered a response.
 	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
 	// Indicates one or more physical or logical locations associated with the object.
@@ -430,10 +426,10 @@ type Relationship struct {
 	// Indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
 	//  and should be suitable for presentation at a small size.
-	Icon ImageOrLink `jsonld:"icon,omitempty"`
+	Icon Item `jsonld:"icon,omitempty"`
 	// Indicates an entity that describes an image for this object.
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
-	Image ImageOrLink `jsonld:"image,omitempty"`
+	Image Item `jsonld:"image,omitempty"`
 	// Indicates one or more entities for which this object is considered a response.
 	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
 	// Indicates one or more physical or logical locations associated with the object.
