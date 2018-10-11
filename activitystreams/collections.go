@@ -6,9 +6,6 @@ import (
 
 var validCollectionTypes = [...]ActivityVocabularyType{CollectionType, OrderedCollectionType}
 
-// Page represents a Web Page.
-type Page Item
-
 type CollectionInterface interface {
 	ObjectOrLink
 	Collection() CollectionInterface
