@@ -201,17 +201,19 @@ type OrderedCollection struct {
 // for an implementation to serialize every item contained by a Collection using the items (or orderedItems)
 // property alone. In such cases, the items within a Collection can be divided into distinct subsets or "pages".
 type CollectionPage struct {
-	PartOf *Collection
+	Collection
+	// Identifies the Collection to which a CollectionPage objects items belong.
+	PartOf Item
 	// In a paged Collection, indicates the page that contains the most recently updated member items.
-	Current Page `jsonld:"current,omitempty"`
+	Current Item `jsonld:"current,omitempty"`
 	// In a paged Collection, indicates the furthest preceeding page of items in the collection.
-	First Page `jsonld:"first,omitempty"`
+	First Item `jsonld:"first,omitempty"`
 	// In a paged Collection, indicates the furthest proceeding page of the collection.
-	Last Page `jsonld:"last,omitempty"`
+	Last Item `jsonld:"last,omitempty"`
 	// In a paged Collection, indicates the next page of items.
-	Next Page `jsonld:"next,omitempty"`
+	Next Item `jsonld:"next,omitempty"`
 	// In a paged Collection, identifies the previous page of items.
-	Prev Page `jsonld:"prev,omitempty"`
+	Prev Item `jsonld:"prev,omitempty"`
 }
 
 // OrderedCollectionPage type extends from both CollectionPage and OrderedCollection.
@@ -219,17 +221,19 @@ type CollectionPage struct {
 // may contain an additional startIndex property whose value indicates the relative index position
 // of the first item contained by the page within the OrderedCollection to which the page belongs.
 type OrderedCollectionPage struct {
-	PartOf *OrderedCollection
+	OrderedCollection
+	// Identifies the Collection to which a CollectionPage objects items belong.
+	PartOf Item
 	// In a paged Collection, indicates the page that contains the most recently updated member items.
-	Current Page `jsonld:"current,omitempty"`
+	Current Item `jsonld:"current,omitempty"`
 	// In a paged Collection, indicates the furthest preceeding page of items in the collection.
-	First Page `jsonld:"first,omitempty"`
+	First Item `jsonld:"first,omitempty"`
 	// In a paged Collection, indicates the furthest proceeding page of the collection.
-	Last Page `jsonld:"last,omitempty"`
+	Last Item `jsonld:"last,omitempty"`
 	// In a paged Collection, indicates the next page of items.
-	Next Page `jsonld:"next,omitempty"`
+	Next Item `jsonld:"next,omitempty"`
 	// In a paged Collection, identifies the previous page of items.
-	Prev Page `jsonld:"prev,omitempty"`
+	Prev Item `jsonld:"prev,omitempty"`
 	// A non-negative integer value identifying the relative position within the logical view of a strictly ordered collection.
 	StartIndex uint `jsonld:"startIndex,omitempty"`
 }
@@ -262,14 +266,26 @@ func OrderedCollectionNew(id ObjectID) *OrderedCollection {
 	return &o
 }
 
-// CollectionNew initializes a new Collection
-func CollectionPageNew(parent *Collection) *CollectionPage {
-	return &CollectionPage{PartOf: parent}
+// CollectionNew initializes a new CollectionPage
+func CollectionPageNew(parent CollectionInterface) *CollectionPage {
+	p := CollectionPage{
+		PartOf: parent.GetLink(),
+	}
+	if pc, ok := parent.(*Collection); ok {
+		p.Collection = *pc
+	}
+	return &p
 }
 
-// CollectionNew initializes a new Collection
-func OrderedCollectionPageNew(parent *OrderedCollection) *OrderedCollectionPage {
-	return &OrderedCollectionPage{PartOf: parent}
+// CollectionNew initializes a new OrderedCollectionPage
+func OrderedCollectionPageNew(parent CollectionInterface) *OrderedCollectionPage {
+	p := OrderedCollectionPage{
+		PartOf: parent.GetLink(),
+	}
+	if pc, ok := parent.(*OrderedCollection); ok {
+		p.OrderedCollection = *pc
+	}
+	return &p
 }
 
 // Append adds an element to an OrderedCollection
@@ -279,8 +295,22 @@ func (o *OrderedCollection) Append(ob Item) error {
 	return nil
 }
 
-// Append adds an element to an Collection
+// Append adds an element to a Collection
 func (c *Collection) Append(ob Item) error {
+	c.Items = append(c.Items, ob)
+	c.TotalItems++
+	return nil
+}
+
+// Append adds an element to an OrderedCollectionPage
+func (o *OrderedCollectionPage) Append(ob Item) error {
+	o.OrderedItems = append(o.OrderedItems, ob)
+	o.TotalItems++
+	return nil
+}
+
+// Append adds an element to a CollectionPage
+func (c *CollectionPage) Append(ob Item) error {
 	c.Items = append(c.Items, ob)
 	c.TotalItems++
 	return nil

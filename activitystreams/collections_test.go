@@ -36,7 +36,10 @@ func TestCollectionPageNew(t *testing.T) {
 
 	c := CollectionNew(testValue)
 	p := CollectionPageNew(c)
-	if p.PartOf != c {
+	if reflect.DeepEqual(p.Collection, c) {
+		t.Errorf("Invalid collection parent '%v'", p.PartOf)
+	}
+	if p.PartOf != c.GetLink() {
 		t.Errorf("Invalid collection '%v'", p.PartOf)
 	}
 }
@@ -46,7 +49,10 @@ func TestOrderedCollectionPageNew(t *testing.T) {
 
 	c := OrderedCollectionNew(testValue)
 	p := OrderedCollectionPageNew(c)
-	if p.PartOf != c {
+	if reflect.DeepEqual(p.OrderedCollection, c) {
+		t.Errorf("Invalid ordered collection parent '%v'", p.PartOf)
+	}
+	if p.PartOf != c.GetLink() {
 		t.Errorf("Invalid collection '%v'", p.PartOf)
 	}
 }
