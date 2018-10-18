@@ -8,20 +8,20 @@ var validLinkTypes = [...]ActivityVocabularyType{
 // The fundamental model for links is established by [ RFC5988].
 // Many of the properties defined by the Activity Vocabulary allow values that are either instances of APObject or Link.
 // When a Link is used, it establishes a qualified relation connecting the subject
-//  (the containing object) to the resource identified by the href.
+// (the containing object) to the resource identified by the href.
 // Properties of the Link are properties of the reference as opposed to properties of the resource.
 type Link struct {
 	// Provides the globally unique identifier for an APObject or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
-	//  Identifies the APObject or Link type. Multiple values may be specified.
+	// Identifies the APObject or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValue `jsonld:"name,omitempty,collapsible"`
 	// A link relation associated with a Link. The value must conform to both the [HTML5] and
-	//  [RFC5988](https://tools.ietf.org/html/rfc5988) "link relation" definitions.
+	// [RFC5988](https://tools.ietf.org/html/rfc5988) "link relation" definitions.
 	// In the [HTML5], any string not containing the "space" U+0020, "tab" (U+0009), "LF" (U+000A),
-	//  "FF" (U+000C), "CR" (U+000D) or "," (U+002C) characters can be used as a valid link relation.
+	// "FF" (U+000C), "CR" (U+000D) or "," (U+002C) characters can be used as a valid link relation.
 	Rel *Link `jsonld:"rel,omitempty"`
 	// When used on a Link, identifies the MIME media type of the referenced resource.
 	MediaType MimeType `jsonld:"mediaType,omitempty"`

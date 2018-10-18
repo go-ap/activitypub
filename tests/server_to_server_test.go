@@ -91,7 +91,7 @@ S2S Server: Activities requiring the object property
 
 // S2S Server: Activities requiring the target property
 // The distribution of the following activities require that they contain the target property:
-//   Add, Remove.
+// Add, Remove.
 // Implementation always includes target property for each of the above supported activities.
 func TestTargetPropertyExists(t *testing.T) {
 	desc := `
@@ -127,7 +127,7 @@ property: Add, Remove.
 // Attempt to submit for delivery an activity that addresses the same actor
 // (ie an actor with the same id) twice.
 // (For example, the same actor could appear on both the to and cc fields,
-//  or the actor could be explicitly addressed
+// or the actor could be explicitly addressed
 // in to but could also be a member of the addressed followers collection of the sending actor.)
 // The server should deduplicate the list of inboxes to deliver to before delivering.
 // The final recipient list is deduplicated before delivery.
@@ -304,7 +304,7 @@ individual recipients and instead deliver objects to said sharedInbox.
 }
 
 // S2S Sever: Support for sharedInbox
-//  Deliver to actor inboxes and collections otherwise addressed which do not have a sharedInbox.
+// Deliver to actor inboxes and collections otherwise addressed which do not have a sharedInbox.
 func TestSharedInboxActorsWOSharedInbox(t *testing.T) {
 	desc := `
 S2S Server: Do-not-deliver considerations
@@ -327,7 +327,7 @@ S2S Server: Deduplicating received activities
 
 // S2S Server: Special forwarding mechanism
 // ActivityPub contains a special mechanism for forwarding replies to avoid "ghost replies".
-//  Forwards incoming activities to the values of to, bto, cc, bcc, audience if and only if criteria are met.
+// Forwards incoming activities to the values of to, bto, cc, bcc, audience if and only if criteria are met.
 func TestForwardingMechanismsToRecipients(t *testing.T) {
 	desc := `
 S2S Server: Special forwarding mechanism
@@ -340,7 +340,7 @@ S2S Server: Special forwarding mechanism
 
 // S2S Server: Special forwarding mechanism
 // ActivityPub contains a special mechanism for forwarding replies to avoid "ghost replies".
-//  Recurse through to, bto, cc, bcc, audience object values to determine whether/where
+// Recurse through to, bto, cc, bcc, audience object values to determine whether/where
 // to forward according to criteria in 7.1.2
 func TestForwardingMechanismsRecurseRecipients(t *testing.T) {
 	desc := `
@@ -355,7 +355,7 @@ ActivityPub contains a special mechanism for forwarding replies to avoid "ghost 
 
 // S2S Server: Special forwarding mechanism
 // ActivityPub contains a special mechanism for forwarding replies to avoid "ghost replies".
-//  Limits depth of this recursion.
+// Limits depth of this recursion.
 func TestForwardingMechanismsLimitsRecursion(t *testing.T) {
 	desc := `
 S2S Server: Special forwarding mechanism
@@ -385,7 +385,7 @@ S2S Server: Verification of content authorship
 
 // S2S Server: Update activity
 // On receiving an Update activity to an actor's inbox, the server:
-//  Takes care to be sure that the Update is authorized to modify its object
+// Takes care to be sure that the Update is authorized to modify its object
 func TestUpdateIsAuthorized(t *testing.T) {
 	desc := `
 S2S Server: Update activity
@@ -398,7 +398,7 @@ S2S Server: Update activity
 
 // S2S Server: Update activity
 // On receiving an Update activity to an actor's inbox, the server:
-//  Completely replaces its copy of the activity with the newly received value
+// Completely replaces its copy of the activity with the newly received value
 func TestUpdateReplacesActivity(t *testing.T) {
 	desc := `
 S2S Server: Update activity
@@ -410,7 +410,7 @@ S2S Server: Update activity
 }
 
 // S2S Server: Delete activity
-//  Delete removes object's representation, assuming object is owned by sending actor/server
+// Delete removes object's representation, assuming object is owned by sending actor/server
 func TestDeleteRemoves(t *testing.T) {
 	desc := `
 S2S Server: Delete activity
@@ -421,7 +421,7 @@ S2S Server: Delete activity
 }
 
 // S2S Server: Delete activity
-//  Replaces deleted object with a Tombstone object (optional)
+// Replaces deleted object with a Tombstone object (optional)
 func TestDeleteReplacesWithTombstone(t *testing.T) {
 	desc := `
 S2S Server: Delete activity
@@ -432,7 +432,7 @@ S2S Server: Delete activity
 }
 
 //S2S Server: Following, and handling accept/reject of follows
-//  Follow should add the activity's actor to the receiving actor's Followers Collection.
+// Follow should add the activity's actor to the receiving actor's Followers Collection.
 func TestFollowAddsToFollowers(t *testing.T) {
 	desc := `
 S2S Server: Following, and handling accept/reject of follows
@@ -443,7 +443,7 @@ S2S Server: Following, and handling accept/reject of follows
 }
 
 //S2S Server: Following, and handling accept/reject of follows
-//  Generates either an Accept or Reject activity with Follow as object and deliver to actor of the Follow
+// Generates either an Accept or Reject activity with Follow as object and deliver to actor of the Follow
 func TestGeneratesAcceptOrReject(t *testing.T) {
 	desc := `
 S2S Server: Following, and handling accept/reject of follows
@@ -454,7 +454,7 @@ S2S Server: Following, and handling accept/reject of follows
 }
 
 //S2S Server: Following, and handling accept/reject of follows
-//  If receiving an Accept in reply to a Follow activity, adds actor to receiver's Following Collection
+// If receiving an Accept in reply to a Follow activity, adds actor to receiver's Following Collection
 func TestAddsFollowerIfAccept(t *testing.T) {
 	desc := `
 S2S Server: Following, and handling accept/reject of follows
@@ -465,7 +465,7 @@ S2S Server: Following, and handling accept/reject of follows
 }
 
 //S2S Server: Following, and handling accept/reject of follows
-//  If receiving a Reject in reply to a Follow activity, does not add actor to receiver's Following Collection
+// If receiving a Reject in reply to a Follow activity, does not add actor to receiver's Following Collection
 func TestDoesntAddFollowerIfReject(t *testing.T) {
 	desc := `
 S2S Server: Following, and handling accept/reject of follows
@@ -478,7 +478,7 @@ S2S Server: Following, and handling accept/reject of follows
 //S2S Server: Activity acceptance side-effects
 // Test accepting the following activities to an actor's inbox and observe the side effects:
 //
-//  Create makes record of the object existing
+// Create makes record of the object existing
 func TestCreateMakesRecord(t *testing.T) {
 	desc := `
 S2S Server: Activity acceptance side-effects
@@ -492,8 +492,8 @@ S2S Server: Activity acceptance side-effects
 //S2S Server: Activity acceptance side-effects
 // Test accepting the following activities to an actor's inbox and observe the side effects:
 //
-//  Add should add the activity's object to the Collection specified in the target property,
-//  unless not allowed per requirements
+// Add should add the activity's object to the Collection specified in the target property,
+// unless not allowed per requirements
 func TestAddObjectToTarget(t *testing.T) {
 	desc := `
 S2S Server: Activity acceptance side-effects
@@ -508,8 +508,8 @@ S2S Server: Activity acceptance side-effects
 //S2S Server: Activity acceptance side-effects
 // Test accepting the following activities to an actor's inbox and observe the side effects:
 //
-//  Remove should remove the object from the Collection specified in the target property,
-//  unless not allowed per requirements
+// Remove should remove the object from the Collection specified in the target property,
+// unless not allowed per requirements
 func TestRemoveObjectFromTarget(t *testing.T) {
 	desc := `
 S2S Server: Activity acceptance side-effects
@@ -524,8 +524,8 @@ S2S Server: Activity acceptance side-effects
 //S2S Server: Activity acceptance side-effects
 // Test accepting the following activities to an actor's inbox and observe the side effects:
 //
-//  Like increments the object's count of likes by adding the received activity to the likes
-//  collection if this collection is present
+// Like increments the object's count of likes by adding the received activity to the likes
+// collection if this collection is present
 func TestLikeIncrementsLikes(t *testing.T) {
 	desc := `
 S2S Server: Activity acceptance side-effects
@@ -540,7 +540,7 @@ S2S Server: Activity acceptance side-effects
 //S2S Server: Activity acceptance side-effects
 // Test accepting the following activities to an actor's inbox and observe the side effects:
 //
-//  Announce increments object's count of shares by adding the received activity to the
+// Announce increments object's count of shares by adding the received activity to the
 // 'shares' collection if this collection is present
 func TestAnnounceIncrementsShares(t *testing.T) {
 	desc := `
@@ -556,7 +556,7 @@ S2S Server: Activity acceptance side-effects
 //S2S Server: Activity acceptance side-effects
 // Test accepting the following activities to an actor's inbox and observe the side effects:
 //
-//  Undo performs Undo of object in federated context
+// Undo performs Undo of object in federated context
 func TestUndoPerformsUndoOnObject(t *testing.T) {
 	desc := `
 S2S Server: Activity acceptance side-effects

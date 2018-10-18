@@ -163,10 +163,10 @@ func (i IRI) MarshalText() ([]byte, error) {
 
 // MarshalJSON returns the JSON document represented by the current Context
 // This should return :
-//    If only one element in the context and the element has no Term -> json marshaled string
-//    If multiple elements in the context without Term -> json marshaled array of strings
-//    If multiple elements where at least one doesn't have a Term and one has a Term -> json marshaled array
-//    If multiple elements where all have Terms -> json marshaled object
+// If only one element in the context and the element has no Term -> json marshaled string
+// If multiple elements in the context without Term -> json marshaled array of strings
+// If multiple elements where at least one doesn't have a Term and one has a Term -> json marshaled array
+// If multiple elements where all have Terms -> json marshaled object
 func (c Context) MarshalJSON() ([]byte, error) {
 	mapIRI := make(map[Term]IRI, 0)
 	arr := make([]interface{}, 0)

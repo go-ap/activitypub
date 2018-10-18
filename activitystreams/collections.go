@@ -16,7 +16,7 @@ type CollectionInterface interface {
 type Collection struct {
 	// Provides the globally unique identifier for an Activity Pub Activity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
-	//  Identifies the Activity Pub Activity Pub Object or Link type. Multiple values may be specified.
+	// Identifies the Activity Pub Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
@@ -28,7 +28,7 @@ type Collection struct {
 	// For instance, an object might be attributed to the completion of another activity.
 	AttributedTo Item `jsonld:"attributedTo,omitempty"`
 	// Identifies one or more entities that represent the total population of entities
-	//  for which the object can considered to be relevant.
+	// for which the object can considered to be relevant.
 	Audience Item `jsonld:"audience,omitempty"`
 	// The content or textual representation of the Activity Pub Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
@@ -38,17 +38,17 @@ type Collection struct {
 	// Identifies the context within which the object exists or an activity was performed.
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
-	//  common originating context or purpose. An example could be all activities relating to a common project or event.
+	// common originating context or purpose. An example could be all activities relating to a common project or event.
 	Context Item `jsonld:"context,omitempty"`
 	// The date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
-	//  the activity concluded or is expected to conclude.
+	// the activity concluded or is expected to conclude.
 	EndTime time.Time `jsonld:"endTime,omitempty"`
 	// Identifies the entity (e.g. an application) that generated the object.
 	Generator Item `jsonld:"generator,omitempty"`
 	// Indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
-	//  and should be suitable for presentation at a small size.
+	// and should be suitable for presentation at a small size.
 	Icon Item `jsonld:"icon,omitempty"`
 	// Indicates an entity that describes an image for this object.
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
@@ -65,14 +65,14 @@ type Collection struct {
 	Replies Item `jsonld:"replies,omitempty"`
 	// The date and time describing the actual or expected starting time of the object.
 	// When used with an Activity object, for instance, the startTime property specifies
-	//  the moment the activity began or is scheduled to begin.
+	// the moment the activity began or is scheduled to begin.
 	StartTime time.Time `jsonld:"startTime,omitempty"`
 	// A natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
 	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
-	//  while the latter implies associated by reference.
+	// while the latter implies associated by reference.
 	Tag Item `jsonld:"tag,omitempty"`
 	// The date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
@@ -87,13 +87,13 @@ type Collection struct {
 	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
 	BCC ItemCollection `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
-	//  the duration property indicates the object's approximate duration.
+	// the duration property indicates the object's approximate duration.
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
-	//  section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
+	// section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
 	Duration time.Duration `jsonld:"duration,omitempty"`
 	// In a paged Collection, indicates the page that contains the most recently updated member items.
 	Current ObjectOrLink `jsonld:"current,omitempty"`
-	// 	In a paged Collection, indicates the furthest preceeding page of items in the collection.
+	// In a paged Collection, indicates the furthest preceeding page of items in the collection.
 	First ObjectOrLink `jsonld:"first,omitempty"`
 	// In a paged Collection, indicates the furthest proceeding page of the collection.
 	Last ObjectOrLink `jsonld:"last,omitempty"`
@@ -109,7 +109,7 @@ type Collection struct {
 type OrderedCollection struct {
 	// Provides the globally unique identifier for an Activity Pub Activity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
-	//  Identifies the Activity Pub Activity Pub Object or Link type. Multiple values may be specified.
+	// Identifies the Activity Pub Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
@@ -121,7 +121,7 @@ type OrderedCollection struct {
 	// For instance, an object might be attributed to the completion of another activity.
 	AttributedTo Item `jsonld:"attributedTo,omitempty"`
 	// Identifies one or more entities that represent the total population of entities
-	//  for which the object can considered to be relevant.
+	// for which the object can considered to be relevant.
 	Audience Item `jsonld:"audience,omitempty"`
 	// The content or textual representation of the Activity Pub Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
@@ -131,17 +131,17 @@ type OrderedCollection struct {
 	// Identifies the context within which the object exists or an activity was performed.
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
-	//  common originating context or purpose. An example could be all activities relating to a common project or event.
+	// common originating context or purpose. An example could be all activities relating to a common project or event.
 	Context Item `jsonld:"context,omitempty"`
 	// The date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
-	//  the activity concluded or is expected to conclude.
+	// the activity concluded or is expected to conclude.
 	EndTime time.Time `jsonld:"endTime,omitempty"`
 	// Identifies the entity (e.g. an application) that generated the object.
 	Generator Item `jsonld:"generator,omitempty"`
 	// Indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
-	//  and should be suitable for presentation at a small size.
+	// and should be suitable for presentation at a small size.
 	Icon Item `jsonld:"icon,omitempty"`
 	// Indicates an entity that describes an image for this object.
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
@@ -158,14 +158,14 @@ type OrderedCollection struct {
 	Replies Item `jsonld:"replies,omitempty"`
 	// The date and time describing the actual or expected starting time of the object.
 	// When used with an Activity object, for instance, the startTime property specifies
-	//  the moment the activity began or is scheduled to begin.
+	// the moment the activity began or is scheduled to begin.
 	StartTime time.Time `jsonld:"startTime,omitempty"`
 	// A natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
 	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
-	//  while the latter implies associated by reference.
+	// while the latter implies associated by reference.
 	Tag Item `jsonld:"tag,omitempty"`
 	// The date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
@@ -180,13 +180,13 @@ type OrderedCollection struct {
 	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
 	BCC ItemCollection `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
-	//  the duration property indicates the object's approximate duration.
+	// the duration property indicates the object's approximate duration.
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
-	//  section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
+	// section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
 	Duration time.Duration `jsonld:"duration,omitempty"`
 	// In a paged Collection, indicates the page that contains the most recently updated member items.
 	Current ObjectOrLink `jsonld:"current,omitempty"`
-	// 	In a paged Collection, indicates the furthest preceeding page of items in the collection.
+	// In a paged Collection, indicates the furthest preceeding page of items in the collection.
 	First ObjectOrLink `jsonld:"first,omitempty"`
 	// In a paged Collection, indicates the furthest proceeding page of the collection.
 	Last ObjectOrLink `jsonld:"last,omitempty"`

@@ -31,22 +31,22 @@ type Endpoints struct {
 	// Upload endpoint URI for this user for binary data.
 	UploadMedia Item `jsonld:"uploadMedia,omitempty"`
 	// Endpoint URI so this actor's clients may access remote ActivityStreams objects which require authentication
-	//  to access. To use this endpoint, the client posts an x-www-form-urlencoded id parameter with the value being
-	//  the id of the requested ActivityStreams object.
+	// to access. To use this endpoint, the client posts an x-www-form-urlencoded id parameter with the value being
+	// the id of the requested ActivityStreams object.
 	OauthAuthorizationEndpoint Item `jsonld:"oauthAuthorizationEndpoint,omitempty"`
 	// If OAuth 2.0 bearer tokens [RFC6749] [RFC6750] are being used for authenticating client to server interactions,
-	//  this endpoint specifies a URI at which a browser-authenticated user may obtain a new authorization grant.
+	// this endpoint specifies a URI at which a browser-authenticated user may obtain a new authorization grant.
 	OauthTokenEndpoint Item `jsonld:"oauthTokenEndpoint,omitempty"`
 	// If OAuth 2.0 bearer tokens [RFC6749] [RFC6750] are being used for authenticating client to server interactions,
-	//  this endpoint specifies a URI at which a client may acquire an access token.
+	// this endpoint specifies a URI at which a client may acquire an access token.
 	ProvideClientKey Item `jsonld:"provideClientKey,omitempty"`
 	// If Linked Data Signatures and HTTP Signatures are being used for authentication and authorization,
-	//  this endpoint specifies a URI at which browser-authenticated users may authorize a client's public
-	//  key for client to server interactions.
+	// this endpoint specifies a URI at which browser-authenticated users may authorize a client's public
+	// key for client to server interactions.
 	SignClientKey Item `jsonld:"signClientKey,omitempty"`
 	// If Linked Data Signatures and HTTP Signatures are being used for authentication and authorization,
-	//  this endpoint specifies a URI at which a client key may be signed by the actor's key for a time window to
-	//  act on behalf of the actor in interacting with foreign servers.
+	// this endpoint specifies a URI at which a client key may be signed by the actor's key for a time window to
+	// act on behalf of the actor in interacting with foreign servers.
 	SharedInbox Item `jsonld:"sharedInbox,omitempty"`
 }
 
@@ -62,7 +62,7 @@ type WillAct interface {
 type Actor struct {
 	// Provides the globally unique identifier for an Activity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
-	//  Identifies the Activity Pub Object or Link type. Multiple values may be specified.
+	// Identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
@@ -74,7 +74,7 @@ type Actor struct {
 	// For instance, an object might be attributed to the completion of another activity.
 	AttributedTo Item `jsonld:"attributedTo,omitempty"`
 	// Identifies one or more entities that represent the total population of entities
-	//  for which the object can considered to be relevant.
+	// for which the object can considered to be relevant.
 	Audience Item `jsonld:"audience,omitempty"`
 	// The content or textual representation of the Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
@@ -84,17 +84,17 @@ type Actor struct {
 	// Identifies the context within which the object exists or an activity was performed.
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
-	//  common originating context or purpose. An example could be all activities relating to a common project or event.
+	// common originating context or purpose. An example could be all activities relating to a common project or event.
 	Context Item `jsonld:"context,omitempty"`
 	// The date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
-	//  the activity concluded or is expected to conclude.
+	// the activity concluded or is expected to conclude.
 	EndTime time.Time `jsonld:"endTime,omitempty"`
 	// Identifies the entity (e.g. an application) that generated the object.
 	Generator Item `jsonld:"generator,omitempty"`
 	// Indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
-	//  and should be suitable for presentation at a small size.
+	// and should be suitable for presentation at a small size.
 	Icon Item `jsonld:"icon,omitempty"`
 	// Indicates an entity that describes an image for this object.
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
@@ -111,14 +111,14 @@ type Actor struct {
 	Replies Item `jsonld:"replies,omitempty"`
 	// The date and time describing the actual or expected starting time of the object.
 	// When used with an Activity object, for instance, the startTime property specifies
-	//  the moment the activity began or is scheduled to begin.
+	// the moment the activity began or is scheduled to begin.
 	StartTime time.Time `jsonld:"startTime,omitempty"`
 	// A natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
 	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
-	//  while the latter implies associated by reference.
+	// while the latter implies associated by reference.
 	Tag Item `jsonld:"tag,omitempty"`
 	// The date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
@@ -133,31 +133,31 @@ type Actor struct {
 	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
 	BCC ItemCollection `jsonld:"bcc,omitempty"`
 	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
-	//  the duration property indicates the object's approximate duration.
+	// the duration property indicates the object's approximate duration.
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
-	//  section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
+	// section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
 	Duration time.Duration `jsonld:"duration,omitempty"`
 	// A reference to an [ActivityStreams] OrderedCollection comprised of all the messages received by the actor;
-	//  see 5.2 Inbox.
+	// see 5.2 Inbox.
 	Inbox Item `jsonld:"inbox,omitempty"`
 	// An [ActivityStreams] OrderedCollection comprised of all the messages produced by the actor;
-	//  see 5.1 Outbox.
+	// see 5.1 Outbox.
 	Outbox Item `jsonld:"outbox,omitempty"`
 	// A link to an [ActivityStreams] collection of the actors that this actor is following;
-	//  see 5.4 Following Collection
+	// see 5.4 Following Collection
 	Following Item `jsonld:"following,omitempty"`
 	// A link to an [ActivityStreams] collection of the actors that follow this actor;
-	//  see 5.3 Followers Collection.
+	// see 5.3 Followers Collection.
 	Followers Item `jsonld:"followers,omitempty"`
 	// A link to an [ActivityStreams] collection of the actors that follow this actor;
-	//  see 5.3 Followers Collection.
+	// see 5.3 Followers Collection.
 	Liked Item `jsonld:"liked,omitempty"`
 	// A short username which may be used to refer to the actor, with no uniqueness guarantees.
 	PreferredUsername NaturalLanguageValue `jsonld:"preferredUsername,omitempty,collapsible"`
 	// A json object which maps additional (typically server/domain-wide) endpoints which may be useful either
-	//  for this actor or someone referencing this actor.
+	// for this actor or someone referencing this actor.
 	// This mapping may be nested inside the actor document as the value or may be a link
-	//  to a JSON-LD document with these properties.
+	// to a JSON-LD document with these properties.
 	Endpoints Endpoints `jsonld:"endpoints,omitempty"`
 	// A list of supplementary Collections which may be of interest.
 	Streams []Item `jsonld:"streams,omitempty"`

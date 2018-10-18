@@ -1,6 +1,6 @@
 package activitystreams
 
-// ItemCollection is an array of items
+// ItemCollection represents an array of items
 type ItemCollection []Item
 
 // Item struct

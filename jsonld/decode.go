@@ -610,9 +610,9 @@ func (d *decodeState) object(v reflect.Value) {
 	}
 
 	// Check type of target:
-	//   struct or
-	//   map[T1]T2 where T1 is string, an integer type,
-	//             or an encoding.TextUnmarshaler
+	// struct or
+	// map[T1]T2 where T1 is string, an integer type,
+	// or an encoding.TextUnmarshaler
 	switch v.Kind() {
 	case reflect.Map:
 		// Map key must either have string kind, have an integer kind,
