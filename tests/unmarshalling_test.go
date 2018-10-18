@@ -299,6 +299,35 @@ var allTests = tests{
 			},
 		},
 	},
+	"ordered_collection_page": testPair{
+		expected: true,
+		blank:    &a.OrderedCollectionPage{},
+		result: &a.OrderedCollectionPage{
+			PartOf:  a.IRI("http://example.com/outbox"),
+			Next:    a.IRI("http://example.com/outbox?page=3"),
+			Prev:    a.IRI("http://example.com/outbox?page=1"),
+			Current: a.IRI("http://example.com/outbox?page=2"),
+			OrderedCollection: a.OrderedCollection{
+				ID:         a.ObjectID("http://example.com/outbox?page=2"),
+				Type:       a.OrderedCollectionPageType,
+				URL:        a.IRI("http://example.com/outbox?page=2"),
+				TotalItems: 1,
+				OrderedItems: a.ItemCollection{
+					&a.Object{
+						ID:           a.ObjectID("http://example.com/outbox/53c6fb47"),
+						Type:         a.ArticleType,
+						Name:         a.NaturalLanguageValue{{a.NilLangRef, "Example title"}},
+						Content:      a.NaturalLanguageValue{{a.NilLangRef, "Example content!"}},
+						URL:          a.IRI("http://example.com/53c6fb47"),
+						MediaType:    a.MimeType("text/markdown"),
+						Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
+						Generator:    a.IRI("http://example.com"),
+						AttributedTo: a.IRI("http://example.com/accounts/alice"),
+					},
+				},
+			},
+		},
+	},
 	"natural_language_values": {
 		expected: true,
 		blank:    &a.NaturalLanguageValue{},

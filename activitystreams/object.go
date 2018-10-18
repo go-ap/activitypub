@@ -26,14 +26,16 @@ type ObjectID IRI
 
 const (
 	// ActivityBaseURI the basic URI for the activity streams namespaces
-	ActivityBaseURI                                 = IRI("https://www.w3.org/ns/activitystreams")
-	ObjectType               ActivityVocabularyType = "Object"
-	LinkType                 ActivityVocabularyType = "Link"
-	ActivityType             ActivityVocabularyType = "Activity"
-	IntransitiveActivityType ActivityVocabularyType = "IntransitiveActivity"
-	ActorType                ActivityVocabularyType = "Actor"
-	CollectionType           ActivityVocabularyType = "Collection"
-	OrderedCollectionType    ActivityVocabularyType = "OrderedCollection"
+	ActivityBaseURI                                  = IRI("https://www.w3.org/ns/activitystreams")
+	ObjectType                ActivityVocabularyType = "Object"
+	LinkType                  ActivityVocabularyType = "Link"
+	ActivityType              ActivityVocabularyType = "Activity"
+	IntransitiveActivityType  ActivityVocabularyType = "IntransitiveActivity"
+	ActorType                 ActivityVocabularyType = "Actor"
+	CollectionType            ActivityVocabularyType = "Collection"
+	OrderedCollectionType     ActivityVocabularyType = "OrderedCollection"
+	CollectionPageType        ActivityVocabularyType = "CollectionPage"
+	OrderedCollectionPageType ActivityVocabularyType = "OrderedCollectionPage"
 
 	// Activity Pub Object Types
 	ArticleType      ActivityVocabularyType = "Article"
