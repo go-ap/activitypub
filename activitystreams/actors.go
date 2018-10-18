@@ -50,9 +50,9 @@ type Endpoints struct {
 	SharedInbox Item `jsonld:"sharedInbox,omitempty"`
 }
 
-type CanAct interface {
+type WillAct interface {
 	Item
-	Actor() Actor
+	GetActor() Actor
 }
 
 // Actor is generally one of the ActivityStreams Actor Types, but they don't have to be.
@@ -287,7 +287,7 @@ func (a Application) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the  Application object
 func (a Application) GetID() *ObjectID {
-	return a.Actor().GetID()
+	return a.GetActor().GetID()
 }
 
 // GetLink returns the IRI corresponding to the Application object
@@ -312,7 +312,7 @@ func (g Group) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the  Group object
 func (g Group) GetID() *ObjectID {
-	return g.Actor().GetID()
+	return g.GetActor().GetID()
 }
 
 // GetLink returns the IRI corresponding to the Group object
@@ -337,7 +337,7 @@ func (o Organization) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the  Organization object
 func (o Organization) GetID() *ObjectID {
-	return o.Actor().GetID()
+	return o.GetActor().GetID()
 }
 
 // GetLink returns the IRI corresponding to the Organization object
@@ -362,7 +362,7 @@ func (s Service) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the Service object
 func (s Service) GetID() *ObjectID {
-	return s.Actor().GetID()
+	return s.GetActor().GetID()
 }
 
 // GetLink returns the IRI corresponding to the Service object
@@ -387,7 +387,7 @@ func (p Person) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the Person object
 func (p Person) GetID() *ObjectID {
-	return p.Actor().GetID()
+	return p.GetActor().GetID()
 }
 
 // GetType returns the object type for the current Person object
@@ -430,7 +430,7 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 }
 
 func (p *Person) UnmarshalJSON(data []byte) error {
-	a := p.Actor()
+	a := p.GetActor()
 	err := a.UnmarshalJSON(data)
 
 	*p = Person(a)
@@ -438,32 +438,32 @@ func (p *Person) UnmarshalJSON(data []byte) error {
 	return err
 }
 
-// Actor returns the underlying Actor type
-func (a Actor) Actor() Actor {
+// GetActor returns the underlying Actor type
+func (a Actor) GetActor() Actor {
 	return a
 }
 
-// Actor returns the underlying Actor type
-func (a Application) Actor() Actor {
+// GetActor returns the underlying Actor type
+func (a Application) GetActor() Actor {
 	return Actor(a)
 }
 
-// Actor returns the underlying Actor type
-func (g Group) Actor() Actor {
+// GetActor returns the underlying Actor type
+func (g Group) GetActor() Actor {
 	return Actor(g)
 }
 
-// Actor returns the underlying Actor type
-func (o Organization) Actor() Actor {
+// GetActor returns the underlying Actor type
+func (o Organization) GetActor() Actor {
 	return Actor(o)
 }
 
-// Actor returns the underlying Actor type
-func (p Person) Actor() Actor {
+// GetActor returns the underlying Actor type
+func (p Person) GetActor() Actor {
 	return Actor(p)
 }
 
-// Actor returns the underlying Actor type
-func (s Service) Actor() Actor {
+// GetActor returns the underlying Actor type
+func (s Service) GetActor() Actor {
 	return Actor(s)
 }
