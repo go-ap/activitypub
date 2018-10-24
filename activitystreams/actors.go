@@ -28,23 +28,23 @@ var validActorTypes = [...]ActivityVocabularyType{
 // This mapping may be nested inside the actor document as the value or may be a link to
 // a JSON-LD document with these properties.
 type Endpoints struct {
-	// Upload endpoint URI for this user for binary data.
+	// UploadMedia Upload endpoint URI for this user for binary data.
 	UploadMedia Item `jsonld:"uploadMedia,omitempty"`
-	// Endpoint URI so this actor's clients may access remote ActivityStreams objects which require authentication
+	// OauthAuthorizationEndpoint Endpoint URI so this actor's clients may access remote ActivityStreams objects which require authentication
 	// to access. To use this endpoint, the client posts an x-www-form-urlencoded id parameter with the value being
 	// the id of the requested ActivityStreams object.
 	OauthAuthorizationEndpoint Item `jsonld:"oauthAuthorizationEndpoint,omitempty"`
-	// If OAuth 2.0 bearer tokens [RFC6749] [RFC6750] are being used for authenticating client to server interactions,
+	// OauthTokenEndpoint If OAuth 2.0 bearer tokens [RFC6749] [RFC6750] are being used for authenticating client to server interactions,
 	// this endpoint specifies a URI at which a browser-authenticated user may obtain a new authorization grant.
 	OauthTokenEndpoint Item `jsonld:"oauthTokenEndpoint,omitempty"`
-	// If OAuth 2.0 bearer tokens [RFC6749] [RFC6750] are being used for authenticating client to server interactions,
+	// ProvideClientKey  If OAuth 2.0 bearer tokens [RFC6749] [RFC6750] are being used for authenticating client to server interactions,
 	// this endpoint specifies a URI at which a client may acquire an access token.
 	ProvideClientKey Item `jsonld:"provideClientKey,omitempty"`
-	// If Linked Data Signatures and HTTP Signatures are being used for authentication and authorization,
+	// SignClientKey If Linked Data Signatures and HTTP Signatures are being used for authentication and authorization,
 	// this endpoint specifies a URI at which browser-authenticated users may authorize a client's public
 	// key for client to server interactions.
 	SignClientKey Item `jsonld:"signClientKey,omitempty"`
-	// If Linked Data Signatures and HTTP Signatures are being used for authentication and authorization,
+	// SharedInbox If Linked Data Signatures and HTTP Signatures are being used for authentication and authorization,
 	// this endpoint specifies a URI at which a client key may be signed by the actor's key for a time window to
 	// act on behalf of the actor in interacting with foreign servers.
 	SharedInbox Item `jsonld:"sharedInbox,omitempty"`

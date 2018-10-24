@@ -264,7 +264,7 @@ func CollectionNew(id ObjectID) *Collection {
 	return &c
 }
 
-// CollectionNew initializes a new Collection
+// OrderedCollectionNew initializes a new OrderedCollection
 func OrderedCollectionNew(id ObjectID) *OrderedCollection {
 	o := OrderedCollection{ID: id, Type: OrderedCollectionType}
 	o.Name = NaturalLanguageValueNew()
@@ -285,7 +285,7 @@ func CollectionPageNew(parent CollectionInterface) *CollectionPage {
 	return &p
 }
 
-// CollectionNew initializes a new OrderedCollectionPage
+// OrderedCollectionPageNew initializes a new OrderedCollectionPage
 func OrderedCollectionPageNew(parent CollectionInterface) *OrderedCollectionPage {
 	p := OrderedCollectionPage{
 		PartOf: parent.GetLink(),

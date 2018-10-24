@@ -76,103 +76,102 @@ var validActivityTypes = [...]ActivityVocabularyType{
 // It is important to note that the Activity type itself does not carry any specific semantics
 // about the kind of action being taken.
 type Activity struct {
-	// Provides the globally unique identifier for an Activity Pub Object or Link.
+	// ID providesthe globally unique identifier for an Activity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
-	// Identifies the Activity Pub Object or Link type. Multiple values may be specified.
+	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
-	// A simple, human-readable, plain-text name for the object.
+	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValue `jsonld:"name,omitempty,collapsible"`
-	// Identifies a resource attached or related to an object that potentially requires special handling.
+	// Attachment identifies a resource attached or related to an object that potentially requires special handling.
 	// The intent is to provide a model that is at least semantically similar to attachments in email.
 	Attachment Item `jsonld:"attachment,omitempty"`
-	// Identifies one or more entities to which this object is attributed. The attributed entities might not be Actors.
+	// AttributedTo identifies one or more entities to which this object is attributed. The attributed entities might not be Actors.
 	// For instance, an object might be attributed to the completion of another activity.
 	AttributedTo Item `jsonld:"attributedTo,omitempty"`
-	// Identifies one or more entities that represent the total population of entities
+	// Audience identifies one or more entities that represent the total population of entities
 	// for which the object can considered to be relevant.
 	Audience Item `jsonld:"audience,omitempty"`
-	// The content or textual representation of the Activity Pub Object encoded as a JSON string.
+	// Content the content or textual representation of the Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
 	Content NaturalLanguageValue `jsonld:"content,omitempty,collapsible"`
-	// Identifies the context within which the object exists or an activity was performed.
+	// Context identifies the context within which the object exists or an activity was performed.
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
 	// common originating context or purpose. An example could be all activities relating to a common project or event.
 	Context Item `jsonld:"context,omitempty"`
-	// The date and time describing the actual or expected ending time of the object.
+	// EndTime the date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
 	// the activity concluded or is expected to conclude.
 	EndTime time.Time `jsonld:"endTime,omitempty"`
-	// Identifies the entity (e.g. an application) that generated the object.
+	// Generator identifies the entity (e.g. an application) that generated the object.
 	Generator Item `jsonld:"generator,omitempty"`
-	// Indicates an entity that describes an icon for this object.
+	// Icon indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
 	// and should be suitable for presentation at a small size.
 	Icon Item `jsonld:"icon,omitempty"`
-	// Indicates an entity that describes an image for this object.
+	// Image indicates an entity that describes an image for this object.
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
 	Image Item `jsonld:"image,omitempty"`
-	// Indicates one or more entities for which this object is considered a response.
+	// InReplyTo indicates one or more entities for which this object is considered a response.
 	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
-	// Indicates one or more physical or logical locations associated with the object.
+	// Location indicates one or more physical or logical locations associated with the object.
 	Location Item `jsonld:"location,omitempty"`
-	// Identifies an entity that provides a preview of this object.
+	// Preview identifies an entity that providesa preview of this object.
 	Preview Item `jsonld:"preview,omitempty"`
-	// The date and time at which the object was published
+	// Published the date and time at which the object was published
 	Published time.Time `jsonld:"published,omitempty"`
-	// Identifies a Collection containing objects considered to be responses to this object.
+	// Replies identifies a Collection containing objects considered to be responses to this object.
 	Replies Item `jsonld:"replies,omitempty"`
-	// The date and time describing the actual or expected starting time of the object.
+	// StartTime the date and time describing the actual or expected starting time of the object.
 	// When used with an Activity object, for instance, the startTime property specifies
 	// the moment the activity began or is scheduled to begin.
 	StartTime time.Time `jsonld:"startTime,omitempty"`
-	// A natural language summarization of the object encoded as HTML.
+	// Summary a natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
-	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
+	// Tag One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	// while the latter implies associated by reference.
 	Tag Item `jsonld:"tag,omitempty"`
-	// The date and time at which the object was updated
+	// Updated the date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
-	// Identifies one or more links to representations of the object
+	// URL identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
-	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
+	// To identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ItemCollection `jsonld:"to,omitempty"`
-	// Identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
+	// Bto identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
 	Bto ItemCollection `jsonld:"bto,omitempty"`
-	// Identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
+	// CC identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
 	CC ItemCollection `jsonld:"cc,omitempty"`
-	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
+	// BCC identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
 	BCC ItemCollection `jsonld:"bcc,omitempty"`
-	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
+	// Duration  When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	// the duration property indicates the object's approximate duration.
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
 	// section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
 	Duration time.Duration `jsonld:"duration,omitempty"`
-	// Describes one or more entities that either performed or are expected to perform the activity.
+	// Actor describes one or more entities that either performed or are expected to perform the activity.
 	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
 	Actor Item `jsonld:"actor,omitempty"`
-	// Describes the indirect object, or target, of the activity.
+	// Target describes the indirect object, or target, of the activity.
 	// The precise meaning of the target is largely dependent on the type of action being described
 	// but will often be the object of the English preposition "to".
 	// For instance, in the activity "John added a movie to his wishlist",
 	// the target of the activity is John's wishlist. An activity can have more than one target.
 	Target Item `jsonld:"target,omitempty"`
-	// Describes the result of the activity. For instance, if a particular action results in the creation
+	// Result describes the result of the activity. For instance, if a particular action results in the creation
 	// of a new resource, the result property can be used to describe that new resource.
 	Result Item `jsonld:"result,omitempty"`
-	// Describes an indirect object of the activity from which the activity is directed.
+	// Origin describes an indirect object of the activity from which the activity is directed.
 	// The precise meaning of the origin is the object of the English preposition "from".
 	// For instance, in the activity "John moved an item to List B from List A", the origin of the activity is "List A".
 	Origin Item `jsonld:"origin,omitempty"`
-	// Identifies one or more objects used (or to be used) in the completion of an Activity.
-	Instrument Item   `jsonld:"instrument,omitempty"`
-	Source     Source `jsonld:"source,omitempty"`
-	// When used within an Activity, describes the direct object of the activity.
+	// Instrument identifies one or more objects used (or to be used) in the completion of an Activity.
+	Instrument Item `jsonld:"instrument,omitempty"`
+	// Object When used within an Activity, describes the direct object of the activity.
 	// For instance, in the activity "John added a movie to his wishlist",
 	// the object of the activity is the movie added.
 	// When used within a Relationship describes the entity to which the subject is related.
@@ -182,102 +181,101 @@ type Activity struct {
 // IntransitiveActivity Instances of IntransitiveActivity are a subtype of Activity representing intransitive actions.
 // The object property is therefore inappropriate for these activities.
 type IntransitiveActivity struct {
-	// Provides the globally unique identifier for an Activity Pub Object or Link.
+	// ID providesthe globally unique identifier for an Activity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
-	// Identifies the Activity Pub Object or Link type. Multiple values may be specified.
+	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
-	// A simple, human-readable, plain-text name for the object.
+	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValue `jsonld:"name,omitempty,collapsible"`
-	// Identifies a resource attached or related to an object that potentially requires special handling.
+	// Attachment identifies a resource attached or related to an object that potentially requires special handling.
 	// The intent is to provide a model that is at least semantically similar to attachments in email.
 	Attachment Item `jsonld:"attachment,omitempty"`
-	// Identifies one or more entities to which this object is attributed. The attributed entities might not be Actors.
+	// AttributedTo identifies one or more entities to which this object is attributed. The attributed entities might not be Actors.
 	// For instance, an object might be attributed to the completion of another activity.
 	AttributedTo Item `jsonld:"attributedTo,omitempty"`
-	// Identifies one or more entities that represent the total population of entities
+	// Audience identifies one or more entities that represent the total population of entities
 	// for which the object can considered to be relevant.
 	Audience Item `jsonld:"audience,omitempty"`
-	// The content or textual representation of the Activity Pub Object encoded as a JSON string.
+	// Content the content or textual representation of the Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
 	Content NaturalLanguageValue `jsonld:"content,omitempty,collapsible"`
-	// Identifies the context within which the object exists or an activity was performed.
+	// Context identifies the context within which the object exists or an activity was performed.
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
 	// common originating context or purpose. An example could be all activities relating to a common project or event.
 	Context Item `jsonld:"context,omitempty"`
-	// The date and time describing the actual or expected ending time of the object.
+	// EndTime the date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
 	// the activity concluded or is expected to conclude.
 	EndTime time.Time `jsonld:"endTime,omitempty"`
-	// Identifies the entity (e.g. an application) that generated the object.
+	// Generator identifies the entity (e.g. an application) that generated the object.
 	Generator Item `jsonld:"generator,omitempty"`
-	// Indicates an entity that describes an icon for this object.
+	// Icon indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
 	// and should be suitable for presentation at a small size.
 	Icon Item `jsonld:"icon,omitempty"`
-	// Indicates an entity that describes an image for this object.
+	// Image indicates an entity that describes an image for this object.
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
 	Image Item `jsonld:"image,omitempty"`
-	// Indicates one or more entities for which this object is considered a response.
+	// InReplyTo indicates one or more entities for which this object is considered a response.
 	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
-	// Indicates one or more physical or logical locations associated with the object.
+	// Location indicates one or more physical or logical locations associated with the object.
 	Location Item `jsonld:"location,omitempty"`
-	// Identifies an entity that provides a preview of this object.
+	// Preview identifies an entity that providesa preview of this object.
 	Preview Item `jsonld:"preview,omitempty"`
-	// The date and time at which the object was published
+	// Published the date and time at which the object was published
 	Published time.Time `jsonld:"published,omitempty"`
-	// Identifies a Collection containing objects considered to be responses to this object.
+	// Replies identifies a Collection containing objects considered to be responses to this object.
 	Replies Item `jsonld:"replies,omitempty"`
-	// The date and time describing the actual or expected starting time of the object.
+	// StartTime the date and time describing the actual or expected starting time of the object.
 	// When used with an Activity object, for instance, the startTime property specifies
 	// the moment the activity began or is scheduled to begin.
 	StartTime time.Time `jsonld:"startTime,omitempty"`
-	// A natural language summarization of the object encoded as HTML.
+	// Summary a natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
-	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
+	// Tag One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	// while the latter implies associated by reference.
 	Tag Item `jsonld:"tag,omitempty"`
-	// The date and time at which the object was updated
+	// Updated the date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
-	// Identifies one or more links to representations of the object
+	// URL identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
-	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
+	// To identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ItemCollection `jsonld:"to,omitempty"`
-	// Identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
+	// Bto identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
 	Bto ItemCollection `jsonld:"bto,omitempty"`
-	// Identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
+	// CC identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
 	CC ItemCollection `jsonld:"cc,omitempty"`
-	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
+	// BCC identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
 	BCC ItemCollection `jsonld:"bcc,omitempty"`
-	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
+	// Duration When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	// the duration property indicates the object's approximate duration.
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
 	// section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
 	Duration time.Duration `jsonld:"duration,omitempty"`
-	// Describes one or more entities that either performed or are expected to perform the activity.
+	// Actor describes one or more entities that either performed or are expected to perform the activity.
 	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
 	Actor Actor `jsonld:"actor,omitempty"`
-	// Describes the indirect object, or target, of the activity.
+	// Target describes the indirect object, or target, of the activity.
 	// The precise meaning of the target is largely dependent on the type of action being described
 	// but will often be the object of the English preposition "to".
 	// For instance, in the activity "John added a movie to his wishlist",
 	// the target of the activity is John's wishlist. An activity can have more than one target.
 	Target Item `jsonld:"target,omitempty"`
-	// Describes the result of the activity. For instance, if a particular action results in the creation
+	// Result describes the result of the activity. For instance, if a particular action results in the creation
 	// of a new resource, the result property can be used to describe that new resource.
 	Result Item `jsonld:"result,omitempty"`
-	// Describes an indirect object of the activity from which the activity is directed.
+	// Origin describes an indirect object of the activity from which the activity is directed.
 	// The precise meaning of the origin is the object of the English preposition "from".
 	// For instance, in the activity "John moved an item to List B from List A", the origin of the activity is "List A".
 	Origin Item `jsonld:"origin,omitempty"`
-	// Identifies one or more objects used (or to be used) in the completion of an Activity.
-	Instrument Item   `jsonld:"instrument,omitempty"`
-	Source     Source `jsonld:"source,omitempty"`
+	// Instrument identifies one or more objects used (or to be used) in the completion of an Activity.
+	Instrument Item `jsonld:"instrument,omitempty"`
 }
 
 type (
@@ -393,109 +391,108 @@ type (
 // Either of the anyOf and oneOf properties may be used to express possible answers,
 // but a Question object must not have both properties.
 type Question struct {
-	// Provides the globally unique identifier for an Activity Pub Object or Link.
+	// ID providesthe globally unique identifier for an Activity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
-	// Identifies the Activity Pub Object or Link type. Multiple values may be specified.
+	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
-	// A simple, human-readable, plain-text name for the object.
+	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValue `jsonld:"name,omitempty,collapsible"`
-	// Identifies a resource attached or related to an object that potentially requires special handling.
+	// Attachment identifies a resource attached or related to an object that potentially requires special handling.
 	// The intent is to provide a model that is at least semantically similar to attachments in email.
 	Attachment Item `jsonld:"attachment,omitempty"`
-	// Identifies one or more entities to which this object is attributed. The attributed entities might not be Actors.
+	// AttributedTo identifies one or more entities to which this object is attributed. The attributed entities might not be Actors.
 	// For instance, an object might be attributed to the completion of another activity.
 	AttributedTo Item `jsonld:"attributedTo,omitempty"`
-	// Identifies one or more entities that represent the total population of entities
+	// Audience identifies one or more entities that represent the total population of entities
 	// for which the object can considered to be relevant.
 	Audience Item `jsonld:"audience,omitempty"`
-	// The content or textual representation of the Activity Pub Object encoded as a JSON string.
+	// Content the content or textual representation of the Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
 	Content NaturalLanguageValue `jsonld:"content,omitempty,collapsible"`
-	// Identifies the context within which the object exists or an activity was performed.
+	// Context identifies the context within which the object exists or an activity was performed.
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
 	// common originating context or purpose. An example could be all activities relating to a common project or event.
 	Context Item `jsonld:"context,omitempty"`
-	// The date and time describing the actual or expected ending time of the object.
+	// EndTime the date and time describing the actual or expected ending time of the object.
 	// When used with an Activity object, for instance, the endTime property specifies the moment
 	// the activity concluded or is expected to conclude.
 	EndTime time.Time `jsonld:"endTime,omitempty"`
-	// Identifies the entity (e.g. an application) that generated the object.
+	// Generator identifies the entity (e.g. an application) that generated the object.
 	Generator Item `jsonld:"generator,omitempty"`
-	// Indicates an entity that describes an icon for this object.
+	// Icon indicates an entity that describes an icon for this object.
 	// The image should have an aspect ratio of one (horizontal) to one (vertical)
 	// and should be suitable for presentation at a small size.
 	Icon Item `jsonld:"icon,omitempty"`
-	// Indicates an entity that describes an image for this object.
+	// Image indicates an entity that describes an image for this object.
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
 	Image Item `jsonld:"image,omitempty"`
-	// Indicates one or more entities for which this object is considered a response.
+	// InReplyTo indicates one or more entities for which this object is considered a response.
 	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
-	// Indicates one or more physical or logical locations associated with the object.
+	// Location indicates one or more physical or logical locations associated with the object.
 	Location Item `jsonld:"location,omitempty"`
-	// Identifies an entity that provides a preview of this object.
+	// Preview identifies an entity that providesa preview of this object.
 	Preview Item `jsonld:"preview,omitempty"`
-	// The date and time at which the object was published
+	// Published the date and time at which the object was published
 	Published time.Time `jsonld:"published,omitempty"`
-	// Identifies a Collection containing objects considered to be responses to this object.
+	// Replies identifies a Collection containing objects considered to be responses to this object.
 	Replies Item `jsonld:"replies,omitempty"`
-	// The date and time describing the actual or expected starting time of the object.
+	// StartTime the date and time describing the actual or expected starting time of the object.
 	// When used with an Activity object, for instance, the startTime property specifies
 	// the moment the activity began or is scheduled to begin.
 	StartTime time.Time `jsonld:"startTime,omitempty"`
-	// A natural language summarization of the object encoded as HTML.
+	// Summary a natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
 	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
-	// One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
+	// Tag One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	// while the latter implies associated by reference.
 	Tag Item `jsonld:"tag,omitempty"`
-	// The date and time at which the object was updated
+	// Updated the date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
-	// Identifies one or more links to representations of the object
+	// URL identifies one or more links to representations of the object
 	URL LinkOrURI `jsonld:"url,omitempty"`
-	// Identifies an entity considered to be part of the public primary audience of an Activity Pub Object
+	// To identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ItemCollection `jsonld:"to,omitempty"`
-	// Identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
+	// Bto identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
 	Bto ItemCollection `jsonld:"bto,omitempty"`
-	// Identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
+	// CC identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
 	CC ItemCollection `jsonld:"cc,omitempty"`
-	// Identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
+	// BCC identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
 	BCC ItemCollection `jsonld:"bcc,omitempty"`
-	// When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
+	// Duration When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	// the duration property indicates the object's approximate duration.
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
 	// section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
 	Duration time.Duration `jsonld:"duration,omitempty"`
-	// Describes one or more entities that either performed or are expected to perform the activity.
+	// Actor describes one or more entities that either performed or are expected to perform the activity.
 	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
 	Actor Actor `jsonld:"actor,omitempty"`
-	// Describes the indirect object, or target, of the activity.
+	// Target describes the indirect object, or target, of the activity.
 	// The precise meaning of the target is largely dependent on the type of action being described
 	// but will often be the object of the English preposition "to".
 	// For instance, in the activity "John added a movie to his wishlist",
 	// the target of the activity is John's wishlist. An activity can have more than one target.
 	Target Item `jsonld:"target,omitempty"`
-	// Describes the result of the activity. For instance, if a particular action results in the creation
+	// Result describes the result of the activity. For instance, if a particular action results in the creation
 	// of a new resource, the result property can be used to describe that new resource.
 	Result Item `jsonld:"result,omitempty"`
-	// Describes an indirect object of the activity from which the activity is directed.
+	// Origin describes an indirect object of the activity from which the activity is directed.
 	// The precise meaning of the origin is the object of the English preposition "from".
 	// For instance, in the activity "John moved an item to List B from List A", the origin of the activity is "List A".
 	Origin Item `jsonld:"origin,omitempty"`
-	// Identifies one or more objects used (or to be used) in the completion of an Activity.
-	Instrument Item   `jsonld:"instrument,omitempty"`
-	Source     Source `jsonld:"source,omitempty"`
-	// Identifies an exclusive option for a Question. Use of oneOf implies that the Question
+	// Instrument identifies one or more objects used (or to be used) in the completion of an Activity.
+	Instrument Item `jsonld:"instrument,omitempty"`
+	// OneOf identifies an exclusive option for a Question. Use of oneOf implies that the Question
 	// can have only a single answer. To indicate that a Question can have multiple answers, use anyOf.
 	OneOf Item `jsonld:"oneOf,omitempty"`
-	// Identifies an inclusive option for a Question. Use of anyOf implies that the Question can have multiple answers.
+	// AnyOf identifies an inclusive option for a Question. Use of anyOf implies that the Question can have multiple answers.
 	// To indicate that a Question can have only one answer, use oneOf.
 	AnyOf Item `jsonld:"anyOf,omitempty"`
-	// Indicates that a question has been closed, and answers are no longer accepted.
+	// Closed indicates that a question has been closed, and answers are no longer accepted.
 	Closed bool `jsonld:"closed,omitempty"`
 }
 
