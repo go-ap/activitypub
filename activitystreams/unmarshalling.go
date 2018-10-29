@@ -9,12 +9,11 @@ import (
 	"time"
 
 	"github.com/buger/jsonparser"
-	"github.com/mariusor/activitypub.go/jsonld"
 )
 
 var (
 	apUnmarshalerType   = reflect.TypeOf(new(Item)).Elem()
-	unmarshalerType     = reflect.TypeOf(new(jsonld.Unmarshaler)).Elem()
+	unmarshalerType     = reflect.TypeOf(new(json.Unmarshaler)).Elem()
 	textUnmarshalerType = reflect.TypeOf(new(encoding.TextUnmarshaler)).Elem()
 )
 
@@ -110,7 +109,7 @@ func unmarshalToAPObject(data []byte) Item {
 	}
 	p := reflect.PtrTo(reflect.TypeOf(i))
 	if reflect.TypeOf(i).Implements(unmarshalerType) || p.Implements(unmarshalerType) {
-		err = i.(jsonld.Unmarshaler).UnmarshalJSON(data)
+		err = i.(json.Unmarshaler).UnmarshalJSON(data)
 	}
 	if reflect.TypeOf(i).Implements(textUnmarshalerType) || p.Implements(textUnmarshalerType) {
 		err = i.(encoding.TextUnmarshaler).UnmarshalText(data)

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -96,18 +97,6 @@ func Unmarshal(data []byte, v interface{}) error {
 
 	d.init(data)
 	return d.unmarshal(&v)
-}
-
-// Unmarshaler is the interface implemented by types
-// that can unmarshal a JSON description of themselves.
-// The input can be assumed to be a valid encoding of
-// a JSON value. UnmarshalJSON must copy the JSON data
-// if it wishes to retain the data after returning.
-//
-// By convention, to approximate the behavior of Unmarshal itself,
-// Unmarshalers implement UnmarshalJSON([]byte("null")) as a no-op.
-type Unmarshaler interface {
-	UnmarshalJSON([]byte) error
 }
 
 // An UnmarshalTypeError describes a JSON value that was
@@ -430,7 +419,7 @@ func (d *decodeState) valueQuoted() interface{} {
 // until it gets to a non-pointer.
 // if it encounters an Unmarshaler, indirect stops and returns that.
 // if decodingNull is true, indirect stops at the last pointer so it can be set to nil.
-func (d *decodeState) indirect(v reflect.Value, decodingNull bool) (Unmarshaler, encoding.TextUnmarshaler, reflect.Value) {
+func (d *decodeState) indirect(v reflect.Value, decodingNull bool) (json.Unmarshaler, encoding.TextUnmarshaler, reflect.Value) {
 	// If v is a named type and is addressable,
 	// start with its address, so that if the type has pointer methods,
 	// we find them.
@@ -459,7 +448,7 @@ func (d *decodeState) indirect(v reflect.Value, decodingNull bool) (Unmarshaler,
 			v.Set(reflect.New(v.Type().Elem()))
 		}
 		if v.Type().NumMethod() > 0 {
-			if u, ok := v.Interface().(Unmarshaler); ok {
+			if u, ok := v.Interface().(json.Unmarshaler); ok {
 				return u, nil, reflect.Value{}
 			}
 			if !decodingNull {
