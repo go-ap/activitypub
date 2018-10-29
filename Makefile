@@ -1,6 +1,6 @@
 TEST := go test
-TEST_FLAGS := -v
-TEST_TARGET := ./...
+TEST_FLAGS ?= -v
+TEST_TARGET ?= ./...
 
 export GOPATH += $$GOPATH:$(shell pwd)
 
