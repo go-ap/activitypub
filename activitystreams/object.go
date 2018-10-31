@@ -602,10 +602,7 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	o.Name = getAPNaturalLanguageField(data, "name")
 	o.Content = getAPNaturalLanguageField(data, "content")
 	o.Context = getAPItem(data, "context")
-	u := getURIField(data, "url")
-	if len(u) > 0 {
-		o.URL = u
-	}
+	o.URL = getURIField(data, "url")
 	o.MediaType = MimeType(getAPString(data, "mediaType"))
 	o.Generator = getAPItem(data, "generator")
 	o.AttributedTo = getAPItem(data, "attributedTo")

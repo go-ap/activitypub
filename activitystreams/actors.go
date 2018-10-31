@@ -407,10 +407,7 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 	a.Name = getAPNaturalLanguageField(data, "name")
 	a.PreferredUsername = getAPNaturalLanguageField(data, "preferredUsername")
 	a.Content = getAPNaturalLanguageField(data, "content")
-	u := getURIField(data, "url")
-	if len(u) > 0 {
-		a.URL = u
-	}
+	a.URL = getURIField(data, "url")
 
 	o := OrderedCollectionNew(ObjectID("test-outbox"))
 	if v, _, _, err := jsonparser.Get(data, "outbox"); err == nil {

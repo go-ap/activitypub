@@ -236,12 +236,39 @@ func getAPItemCollection(data []byte, prop string) ItemCollection {
 	return it
 }
 
-func getURIField(data []byte, prop string) IRI {
-	val, err := jsonparser.GetString(data, prop)
+func getURIField(data []byte, prop string) Item {
+	val, typ, _, err := jsonparser.Get(data, prop)
 	if err != nil {
-		return IRI("")
+		return nil
 	}
-	return IRI(val)
+
+	switch typ {
+	case jsonparser.Object:
+		return getAPItem(data, prop)
+	case jsonparser.Array:
+		var it ItemCollection
+		jsonparser.ArrayEach(val, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			if _, err := url.Parse(string(value)); err == nil {
+				it.Append(IRI(value))
+				return
+			}
+			i, err := getAPObjectByType(getAPType(value))
+			if err != nil {
+				return
+			}
+			err = i.(json.Unmarshaler).UnmarshalJSON(value)
+			if err != nil {
+				return
+			}
+			it.Append(i)
+		})
+
+		return it
+	case jsonparser.String:
+		return IRI(val)
+	}
+
+	return nil
 }
 
 func getAPLangRefField(data []byte, prop string) LangRef {

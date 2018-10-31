@@ -213,6 +213,16 @@ var allTests = tests{
 			URL: a.IRI("http://littr.git/api/accounts/system"),
 		},
 	},
+	"object_with_url_collection": testPair{
+		expected: true,
+		blank:    &a.Object{},
+		result: &a.Object{
+			URL: a.ItemCollection{
+				a.IRI("http://littr.git/api/accounts/system"),
+				a.IRI("http://littr.git/~system"),
+			},
+		},
+	},
 	"object_simple": testPair{
 		expected: true,
 		blank:    &a.Object{},

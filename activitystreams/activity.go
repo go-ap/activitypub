@@ -1542,10 +1542,7 @@ func (a *Activity) UnmarshalJSON(data []byte) error {
 	a.Name = getAPNaturalLanguageField(data, "name")
 	a.Content = getAPNaturalLanguageField(data, "content")
 	a.Summary = getAPNaturalLanguageField(data, "summary")
-	u := getURIField(data, "url")
-	if len(u) > 0 {
-		a.URL = u
-	}
+	a.URL = getURIField(data, "url")
 	a.Actor = getAPItem(data, "actor")
 	a.Object = getAPItem(data, "object")
 	a.Generator = getAPItem(data, "generator")

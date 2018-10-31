@@ -381,10 +381,7 @@ func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
 	o.Type = getAPType(data)
 	o.Name = getAPNaturalLanguageField(data, "name")
 	o.Content = getAPNaturalLanguageField(data, "content")
-	u := getURIField(data, "url")
-	if len(u) > 0 {
-		o.URL = u
-	}
+	o.URL = getURIField(data, "url")
 	o.TotalItems = uint(getAPInt(data, "totalItems"))
 	it := getAPItems(data, "orderedItems")
 	if it != nil {
@@ -403,15 +400,9 @@ func (c *Collection) UnmarshalJSON(data []byte) error {
 	c.Type = getAPType(data)
 	c.Name = getAPNaturalLanguageField(data, "name")
 	c.Content = getAPNaturalLanguageField(data, "content")
-	u := getURIField(data, "url")
-	if len(u) > 0 {
-		c.URL = u
-	}
+	c.URL = getURIField(data, "url")
 	c.TotalItems = uint(getAPInt(data, "totalItems"))
-	it := getAPItems(data, "items")
-	if it != nil {
-		c.Items = it
-	}
+	c.Items = getAPItems(data, "items")
 	c.Published = getAPTime(data, "published")
 	c.StartTime = getAPTime(data, "startTime")
 	c.Updated = getAPTime(data, "updated")

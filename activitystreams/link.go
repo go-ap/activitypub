@@ -122,8 +122,8 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 	l.Name = getAPNaturalLanguageField(data, "name")
 	l.HrefLang = getAPLangRefField(data, "hrefLang")
 	u := getURIField(data, "href")
-	if len(u) > 0 {
-		l.Href = u
+	if !u.IsObject() {
+		l.Href = u.GetLink()
 	}
 
 	//fmt.Printf("%s\n %#v", data, l)
