@@ -38,6 +38,86 @@ const (
 	ViewType            ActivityVocabularyType = "View"
 )
 
+var validContentManagementActivityTypes = [...]ActivityVocabularyType{
+	CreateType,
+	DeleteType,
+	UpdateType,
+}
+
+var validCollectionManagementActivityTypes = [...]ActivityVocabularyType{
+	AddType,
+	MoveType,
+	RemoveType,
+}
+
+var validReactionsActivityTypes = [...]ActivityVocabularyType{
+	AcceptType,
+	BlockType,
+	DislikeType,
+	FlagType,
+	IgnoreType,
+	LikeType,
+	RejectType,
+	TentativeAcceptType,
+	TentativeRejectType,
+}
+
+var validEventRSVPActivityTypes = [...]ActivityVocabularyType{
+	AcceptType,
+	IgnoreType,
+	InviteType,
+	RejectType,
+	TentativeAcceptType,
+	TentativeRejectType,
+}
+
+var validGroupManagementActivityTypes = [...]ActivityVocabularyType{
+	AddType,
+	JoinType,
+	LeaveType,
+	RemoveType,
+}
+
+var validContentExperienceActivityTypes = [...]ActivityVocabularyType{
+	ArriveType,
+	LeaveType,
+	TravelType,
+}
+
+var validGeoSocialEventsActivityTypes = [...]ActivityVocabularyType{
+	ArriveType,
+	LeaveType,
+	TravelType,
+}
+
+var validNotificationActivityTypes = [...]ActivityVocabularyType{
+	AnnounceType,
+}
+
+var validQuestionActivityTypes = [...]ActivityVocabularyType{
+	QuestionType,
+}
+
+var validRelationshipManagementActivityTypes = [...]ActivityVocabularyType{
+	AcceptType,
+	AddType,
+	BlockType,
+	CreateType,
+	DeleteType,
+	FollowType,
+	IgnoreType,
+	InviteType,
+	RejectType,
+}
+
+var validNegatingActivityTypes = [...]ActivityVocabularyType{
+	UndoType,
+}
+
+var validOffersActivityTypes = [...]ActivityVocabularyType{
+	OfferType,
+}
+
 var validActivityTypes = [...]ActivityVocabularyType{
 	AcceptType,
 	AddType,
@@ -693,6 +773,36 @@ func QuestionNew(id ObjectID) *Question {
 	q.Name = NaturalLanguageValueNew()
 	q.Content = NaturalLanguageValueNew()
 	return &q
+}
+
+// ValidContentManagementType is a validation function for content management Activity objects
+func ValidContentManagementType(typ ActivityVocabularyType) bool {
+	for _, v := range validContentManagementActivityTypes {
+		if v == typ {
+			return true
+		}
+	}
+	return false
+}
+
+// ValidCollectionManagementType is a validation function for collection management Activity objects
+func ValidCollectionManagementType(typ ActivityVocabularyType) bool {
+	for _, v := range validCollectionManagementActivityTypes {
+		if v == typ {
+			return true
+		}
+	}
+	return false
+}
+
+// ValidReactionsType is a validation function for reactions Activity objects
+func ValidReactionsType(typ ActivityVocabularyType) bool {
+	for _, v := range validReactionsActivityTypes {
+		if v == typ {
+			return true
+		}
+	}
+	return false
 }
 
 // ValidActivityType is a validation function for Activity objects
