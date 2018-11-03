@@ -1,10 +1,11 @@
 package activitypub
 
 import (
-	as "github.com/mariusor/activitypub.go/activitystreams"
 	"reflect"
 	"testing"
 	"time"
+
+	as "github.com/mariusor/activitypub.go/activitystreams"
 )
 
 func TestCreateActivityNew(t *testing.T) {

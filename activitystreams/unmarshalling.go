@@ -299,7 +299,7 @@ func unmarshal(data []byte, a interface{}) (interface{}, error) {
 		cField := typ.Field(i)
 		cValue := val.Field(i)
 		cTag := cField.Tag
-		tag, _ := jsonld.LoadJSONLdTag(cTag)
+		tag, _ := jsonld.LoadTag(cTag)
 
 		var vv reflect.Value
 		for key, j := range ta {

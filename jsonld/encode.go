@@ -71,8 +71,8 @@ type Tag struct {
 	Collapsible bool
 }
 
-// LoadJSONLdTag used by structs from the ActivityPub package to Marshal and Unmarshal to/from JSON-LD
-func LoadJSONLdTag(tag reflect.StructTag) (Tag, bool) {
+// LoadTag used by structs from the ActivityPub package to Marshal and Unmarshal to/from JSON-LD
+func LoadTag(tag reflect.StructTag) (Tag, bool) {
 	jlTag, ok := tag.Lookup(tagLabel)
 	if !ok {
 		return Tag{}, false
@@ -101,8 +101,8 @@ func LoadJSONLdTag(tag reflect.StructTag) (Tag, bool) {
 	return t, true
 }
 
-// LoadJSONLdTag used by structs from the ActivityPub package to Marshal and Unmarshal to/from JSON-LD
-func JSONLdName(n string, tag Tag) string {
+// TagName used by structs from the ActivityPub package to Marshal and Unmarshal to/from JSON-LD
+func TagName(n string, tag Tag) string {
 	if len(tag.Name) > 0 {
 		return tag.Name
 	}
