@@ -1,3 +1,3 @@
 module github.com/mariusor/activitypub.go
 
-require github.com/buger/jsonparser v0.0.0-20180318095312-2cac668e8456
+require github.com/buger/jsonparser v0.0.0-20181023193515-52c6e1462ebd
