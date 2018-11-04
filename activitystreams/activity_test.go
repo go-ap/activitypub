@@ -26,7 +26,7 @@ func TestActivityNew(t *testing.T) {
 
 func TestIntransitiveActivityNew(t *testing.T) {
 	var testValue = ObjectID("test")
-	var testType ActivityVocabularyType = "Accept"
+	var testType ActivityVocabularyType = "Arrive"
 
 	a := IntransitiveActivityNew(testValue, testType)
 
@@ -64,6 +64,104 @@ func TestValidActivityType(t *testing.T) {
 	for _, validType := range validActivityTypes {
 		if !ValidActivityType(validType) {
 			t.Errorf("Activity Type '%v' should be valid", validType)
+		}
+	}
+}
+
+func TestValidIntransitiveActivityType(t *testing.T) {
+	var invalidType ActivityVocabularyType = "RandomType"
+
+	if ValidIntransitiveActivityType(ActivityType) {
+		t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
+	}
+	for _, inValidType := range validActivityTypes {
+		if ValidIntransitiveActivityType(inValidType) {
+			t.Errorf("APObject Type '%v' should be invalid", inValidType)
+		}
+	}
+	if ValidIntransitiveActivityType(invalidType) {
+		t.Errorf("Activity Type '%v' should not be valid", invalidType)
+	}
+	for _, validType := range validIntransitiveActivityTypes {
+		if !ValidIntransitiveActivityType(validType) {
+			t.Errorf("Activity Type '%v' should be valid", validType)
+		}
+	}
+}
+func TestValidCollectionManagementType(t *testing.T) {
+	var invalidType ActivityVocabularyType = "RandomType"
+
+	if ValidActivityType(ActivityType) {
+		t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
+	}
+	for _, inValidType := range validCollectionManagementActivityTypes {
+		if !ValidCollectionManagementType(inValidType) {
+			t.Errorf("APObject Type '%v' should be valid", inValidType)
+		}
+	}
+	if ValidCollectionManagementType(invalidType) {
+		t.Errorf("Activity Type '%v' should not be valid", invalidType)
+	}
+	for _, validType := range validContentManagementActivityTypes {
+		if ValidCollectionManagementType(validType) {
+			t.Errorf("Activity Type '%v' should not be valid", validType)
+		}
+	}
+	for _, validType := range validReactionsActivityTypes {
+		if ValidCollectionManagementType(validType) {
+			t.Errorf("Activity Type '%v' should not be valid", validType)
+		}
+	}
+}
+
+func TestValidContentManagementType(t *testing.T) {
+	var invalidType ActivityVocabularyType = "RandomType"
+
+	if ValidActivityType(ActivityType) {
+		t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
+	}
+	for _, inValidType := range validContentManagementActivityTypes {
+		if !ValidContentManagementType(inValidType) {
+			t.Errorf("APObject Type '%v' should be valid", inValidType)
+		}
+	}
+	if ValidContentManagementType(invalidType) {
+		t.Errorf("Activity Type '%v' should not be valid", invalidType)
+	}
+	for _, validType := range validCollectionManagementActivityTypes {
+		if ValidContentManagementType(validType) {
+			t.Errorf("Activity Type '%v' should not be valid", validType)
+		}
+	}
+	for _, validType := range validReactionsActivityTypes {
+		if ValidContentManagementType(validType) {
+			t.Errorf("Activity Type '%v' should not be valid", validType)
+		}
+	}
+}
+
+func TestValidReactionsType(t *testing.T) {
+	var invalidType ActivityVocabularyType = "RandomType"
+
+	if ValidReactionsType(ActivityType) {
+		t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
+	}
+	for _, inValidType := range validReactionsActivityTypes {
+		if !ValidReactionsType(inValidType) {
+			t.Errorf("APObject Type '%v' should be valid", inValidType)
+		}
+	}
+	if ValidReactionsType(invalidType) {
+		t.Errorf("Activity Type '%v' should not be valid", invalidType)
+	}
+	for _, validType := range validCollectionManagementActivityTypes {
+		if ValidReactionsType(validType) {
+			t.Errorf("Activity Type '%v' should not be valid", validType)
+		}
+	}
+	for _, validType := range validContentManagementActivityTypes {
+		if ValidReactionsType(validType) {
+			t.Errorf("Activity Type '%v' should not be valid", validType)
 		}
 	}
 }
@@ -624,14 +722,14 @@ func TestActivity_GetID(t *testing.T) {
 	a := ActivityNew("test", ActivityType, Person{})
 
 	if *a.GetID() != "test" {
-		t.Errorf("%T should return an empty %T object. Received %#v", a, a, a)
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
 	}
 }
 func TestActivity_GetIDGetType(t *testing.T) {
 	a := ActivityNew("test", ActivityType, Person{})
 
 	if *a.GetID() != "test" || a.GetType() != ActivityType {
-		t.Errorf("%T should not return an empty %T object. Received %#v", a, a, a)
+		t.Errorf("%T should not return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
 	}
 }
 func TestActivity_IsLink(t *testing.T) {
@@ -684,4 +782,1109 @@ func TestIntransitiveActivity_RecipientsDeduplication(t *testing.T) {
 }
 func TestBlock_RecipientsDeduplication(t *testing.T) {
 	t.Skip("See TestDeduplication")
+}
+
+func TestRead_GetID(t *testing.T) {
+	a := ReadNew("test", Person{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestAccept_GetID(t *testing.T) {
+	a := AcceptNew("test", Person{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestAdd_GetID(t *testing.T) {
+	a := AddNew("test", Person{}, Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), a)
+	}
+}
+
+func TestAnnounce_GetID(t *testing.T) {
+	a := AnnounceNew("test", Person{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestArrive_GetID(t *testing.T) {
+	a := ArriveNew("test")
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestBlock_GetID(t *testing.T) {
+	a := BlockNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestCreate_GetID(t *testing.T) {
+	a := CreateNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestDelete_GetID(t *testing.T) {
+	a := DeleteNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestDislike_GetID(t *testing.T) {
+	a := DislikeNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestFlag_GetID(t *testing.T) {
+	a := FlagNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestFollow_GetID(t *testing.T) {
+	a := FollowNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestIgnore_GetID(t *testing.T) {
+	a := IgnoreNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestInvite_GetID(t *testing.T) {
+	a := InviteNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestJoin_GetID(t *testing.T) {
+	a := JoinNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestLeave_GetID(t *testing.T) {
+	a := LeaveNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestLike_GetID(t *testing.T) {
+	a := LikeNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestListen_GetID(t *testing.T) {
+	a := ListenNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestMove_GetID(t *testing.T) {
+	a := MoveNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestOffer_GetID(t *testing.T) {
+	a := OfferNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestQuestion_GetID(t *testing.T) {
+	a := QuestionNew("test")
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestReject_GetID(t *testing.T) {
+	a := RejectNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestRemove_GetID(t *testing.T) {
+	a := RemoveNew("test", Object{}, Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestTravel_GetID(t *testing.T) {
+	a := TravelNew("test")
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestUndo_GetID(t *testing.T) {
+	a := UndoNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestUpdate_GetID(t *testing.T) {
+	a := UpdateNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestView_GetID(t *testing.T) {
+	a := ViewNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestIntransitiveActivity_GetID(t *testing.T) {
+	a := IntransitiveActivityNew("test", IntransitiveActivityType)
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestTentativeAccept_GetID(t *testing.T) {
+	a := TentativeAcceptNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestTentativeReject_GetID(t *testing.T) {
+	a := TentativeRejectNew("test", Object{})
+
+	if *a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	}
+}
+
+func TestAccept_IsObject(t *testing.T) {
+	a := AcceptNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+
+func TestAdd_IsObject(t *testing.T) {
+	a := AddNew("test", Object{}, Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+
+func TestAnnounce_IsObject(t *testing.T) {
+	a := AnnounceNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+
+func TestArrive_IsObject(t *testing.T) {
+	a := ArriveNew("test")
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+
+func TestBlock_IsObject(t *testing.T) {
+	a := BlockNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestCreate_IsObject(t *testing.T) {
+	a := CreateNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+
+func TestDelete_IsObject(t *testing.T) {
+	a := DeleteNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestDislike_IsObject(t *testing.T) {
+	a := DislikeNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+
+func TestFlag_IsObject(t *testing.T) {
+	a := FlagNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestFollow_IsObject(t *testing.T) {
+	a := FollowNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestIgnore_IsObject(t *testing.T) {
+	a := IgnoreNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestInvite_IsObject(t *testing.T) {
+	a := InviteNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestJoin_IsObject(t *testing.T) {
+	a := JoinNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestLeave_IsObject(t *testing.T) {
+	a := LeaveNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestLike_IsObject(t *testing.T) {
+	a := LikeNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestListen_IsObject(t *testing.T) {
+	a := ListenNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestMove_IsObject(t *testing.T) {
+	a := MoveNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestOffer_IsObject(t *testing.T) {
+	a := OfferNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestQuestion_IsObject(t *testing.T) {
+	a := QuestionNew("test")
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestRead_IsObject(t *testing.T) {
+	a := ReadNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestReject_IsObject(t *testing.T) {
+	a := RejectNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestRemove_IsObject(t *testing.T) {
+	a := RemoveNew("test", Object{}, Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestTravel_IsObject(t *testing.T) {
+	a := TravelNew("test")
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestUndo_IsObject(t *testing.T) {
+	a := UndoNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+func TestUpdate_IsObject(t *testing.T) {
+	a := UpdateNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+
+func TestView_IsObject(t *testing.T) {
+	a := ViewNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+
+func TestTentativeAccept_IsObject(t *testing.T) {
+	a := TentativeAcceptNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+
+func TestTentativeReject_IsObject(t *testing.T) {
+	a := TentativeRejectNew("test", Object{})
+
+	if !a.IsObject() {
+		t.Errorf("%T should respond true to IsObject", a)
+	}
+}
+
+func TestAccept_IsLink(t *testing.T) {
+	a := AcceptNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+
+func TestAdd_IsLink(t *testing.T) {
+	a := AddNew("test", Object{}, Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+
+func TestAnnounce_IsLink(t *testing.T) {
+	a := AnnounceNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+
+func TestArrive_IsLink(t *testing.T) {
+	a := ArriveNew("test")
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+
+func TestBlock_IsLink(t *testing.T) {
+	a := BlockNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestCreate_IsLink(t *testing.T) {
+	a := CreateNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+
+func TestDelete_IsLink(t *testing.T) {
+	a := DeleteNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestDislike_IsLink(t *testing.T) {
+	a := DislikeNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+
+func TestFlag_IsLink(t *testing.T) {
+	a := FlagNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestFollow_IsLink(t *testing.T) {
+	a := FollowNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestIgnore_IsLink(t *testing.T) {
+	a := IgnoreNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestInvite_IsLink(t *testing.T) {
+	a := InviteNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestJoin_IsLink(t *testing.T) {
+	a := JoinNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestLeave_IsLink(t *testing.T) {
+	a := LeaveNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestLike_IsLink(t *testing.T) {
+	a := LikeNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestListen_IsLink(t *testing.T) {
+	a := ListenNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestMove_IsLink(t *testing.T) {
+	a := MoveNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestOffer_IsLink(t *testing.T) {
+	a := OfferNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestQuestion_IsLink(t *testing.T) {
+	a := QuestionNew("test")
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestRead_IsLink(t *testing.T) {
+	a := ReadNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestReject_IsLink(t *testing.T) {
+	a := RejectNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestRemove_IsLink(t *testing.T) {
+	a := RemoveNew("test", Object{}, Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestTravel_IsLink(t *testing.T) {
+	a := TravelNew("test")
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestUndo_IsLink(t *testing.T) {
+	a := UndoNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+func TestUpdate_IsLink(t *testing.T) {
+	a := UpdateNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+
+func TestView_IsLink(t *testing.T) {
+	a := ViewNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+
+func TestTentativeAccept_IsLink(t *testing.T) {
+	a := TentativeAcceptNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+
+func TestTentativeReject_IsLink(t *testing.T) {
+	a := TentativeRejectNew("test", Object{})
+
+	if a.IsLink() {
+		t.Errorf("%T should respond false to IsLink", a)
+	}
+}
+
+func TestAccept_GetLink(t *testing.T) {
+	a := AcceptNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+
+func TestAdd_GetLink(t *testing.T) {
+	a := AddNew("test", Object{}, Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+
+func TestAnnounce_GetLink(t *testing.T) {
+	a := AnnounceNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+
+func TestArrive_GetLink(t *testing.T) {
+	a := ArriveNew("test")
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+
+func TestBlock_GetLink(t *testing.T) {
+	a := BlockNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestCreate_GetLink(t *testing.T) {
+	a := CreateNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+
+func TestDelete_GetLink(t *testing.T) {
+	a := DeleteNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestDislike_GetLink(t *testing.T) {
+	a := DislikeNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+
+func TestFlag_GetLink(t *testing.T) {
+	a := FlagNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestFollow_GetLink(t *testing.T) {
+	a := FollowNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestIgnore_GetLink(t *testing.T) {
+	a := IgnoreNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestInvite_GetLink(t *testing.T) {
+	a := InviteNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestJoin_GetLink(t *testing.T) {
+	a := JoinNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestLeave_GetLink(t *testing.T) {
+	a := LeaveNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestLike_GetLink(t *testing.T) {
+	a := LikeNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestListen_GetLink(t *testing.T) {
+	a := ListenNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestMove_GetLink(t *testing.T) {
+	a := MoveNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestOffer_GetLink(t *testing.T) {
+	a := OfferNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestQuestion_GetLink(t *testing.T) {
+	a := QuestionNew("test")
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestRead_GetLink(t *testing.T) {
+	a := ReadNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestReject_GetLink(t *testing.T) {
+	a := RejectNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestRemove_GetLink(t *testing.T) {
+	a := RemoveNew("test", Object{}, Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestTravel_GetLink(t *testing.T) {
+	a := TravelNew("test")
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestUndo_GetLink(t *testing.T) {
+	a := UndoNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+func TestUpdate_GetLink(t *testing.T) {
+	a := UpdateNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\"for %T, received %q", a, a.GetLink())
+	}
+}
+
+func TestView_GetLink(t *testing.T) {
+	a := ViewNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+
+func TestTentativeAccept_GetLink(t *testing.T) {
+	a := TentativeAcceptNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+
+func TestTentativeReject_GetLink(t *testing.T) {
+	a := TentativeRejectNew("test", Object{})
+
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
+	}
+}
+
+func TestAccept_GetType(t *testing.T) {
+	a := AcceptNew("test", Object{})
+
+	if a.GetType() != AcceptType {
+		t.Errorf("GetType should return %q for %T, received %q", AcceptType, a, a.GetType())
+	}
+}
+
+func TestAdd_GetType(t *testing.T) {
+	a := AddNew("test", Object{}, Object{})
+
+	if a.GetType() != AddType {
+		t.Errorf("GetType should return %q for %T, received %q", AddType, a, a.GetType())
+	}
+}
+
+func TestAnnounce_GetType(t *testing.T) {
+	a := AnnounceNew("test", Object{})
+
+	if a.GetType() != AnnounceType {
+		t.Errorf("GetType should return %q for %T, received %q", AnnounceType, a, a.GetType())
+	}
+}
+
+func TestArrive_GetType(t *testing.T) {
+	a := ArriveNew("test")
+
+	if a.GetType() != ArriveType {
+		t.Errorf("GetType should return %q for %T, received %q", ArriveType, a, a.GetType())
+	}
+}
+
+func TestBlock_GetType(t *testing.T) {
+	a := BlockNew("test", Object{})
+
+	if a.GetType() != BlockType {
+		t.Errorf("GetType should return %q for %T, received %q", BlockType, a, a.GetType())
+	}
+}
+func TestCreate_GetType(t *testing.T) {
+	a := CreateNew("test", Object{})
+
+	if a.GetType() != CreateType {
+		t.Errorf("GetType should return %q for %T, received %q", CreateType, a, a.GetType())
+	}
+}
+
+func TestDelete_GetType(t *testing.T) {
+	a := DeleteNew("test", Object{})
+
+	if a.GetType() != DeleteType {
+		t.Errorf("GetType should return %q for %T, received %q", DeleteType, a, a.GetType())
+	}
+}
+func TestDislike_GetType(t *testing.T) {
+	a := DislikeNew("test", Object{})
+
+	if a.GetType() != DislikeType {
+		t.Errorf("GetType should return %q for %T, received %q", DislikeType, a, a.GetType())
+	}
+}
+
+func TestFlag_GetType(t *testing.T) {
+	a := FlagNew("test", Object{})
+
+	if a.GetType() != FlagType {
+		t.Errorf("GetType should return %q for %T, received %q", FlagType, a, a.GetType())
+	}
+}
+func TestFollow_GetType(t *testing.T) {
+	a := FollowNew("test", Object{})
+
+	if a.GetType() != FollowType {
+		t.Errorf("GetType should return %q for %T, received %q", FollowType, a, a.GetType())
+	}
+}
+func TestIgnore_GetType(t *testing.T) {
+	a := IgnoreNew("test", Object{})
+
+	if a.GetType() != IgnoreType {
+		t.Errorf("GetType should return %q for %T, received %q", IgnoreType, a, a.GetType())
+	}
+}
+func TestInvite_GetType(t *testing.T) {
+	a := InviteNew("test", Object{})
+
+	if a.GetType() != InviteType {
+		t.Errorf("GetType should return %q for %T, received %q", InviteType, a, a.GetType())
+	}
+}
+func TestJoin_GetType(t *testing.T) {
+	a := JoinNew("test", Object{})
+
+	if a.GetType() != JoinType {
+		t.Errorf("GetType should return %q for %T, received %q", JoinType, a, a.GetType())
+	}
+}
+func TestLeave_GetType(t *testing.T) {
+	a := LeaveNew("test", Object{})
+
+	if a.GetType() != LeaveType {
+		t.Errorf("GetType should return %q for %T, received %q", LeaveType, a, a.GetType())
+	}
+}
+func TestLike_GetType(t *testing.T) {
+	a := LikeNew("test", Object{})
+
+	if a.GetType() != LikeType {
+		t.Errorf("GetType should return %q for %T, received %q", LikeType, a, a.GetType())
+	}
+}
+func TestListen_GetType(t *testing.T) {
+	a := ListenNew("test", Object{})
+
+	if a.GetType() != ListenType {
+		t.Errorf("GetType should return %q for %T, received %q", ListenType, a, a.GetType())
+	}
+}
+func TestMove_GetType(t *testing.T) {
+	a := MoveNew("test", Object{})
+
+	if a.GetType() != MoveType {
+		t.Errorf("GetType should return %q for %T, received %q", MoveType, a, a.GetType())
+	}
+}
+func TestOffer_GetType(t *testing.T) {
+	a := OfferNew("test", Object{})
+
+	if a.GetType() != OfferType {
+		t.Errorf("GetType should return %q for %T, received %q", OfferType, a, a.GetType())
+	}
+}
+func TestQuestion_GetType(t *testing.T) {
+	a := QuestionNew("test")
+
+	if a.GetType() != QuestionType {
+		t.Errorf("GetType should return %q for %T, received %q", QuestionType, a, a.GetType())
+	}
+}
+func TestRead_GetType(t *testing.T) {
+	a := ReadNew("test", Object{})
+
+	if a.GetType() != ReadType {
+		t.Errorf("GetType should return %q for %T, received %q", ReadType, a, a.GetType())
+	}
+}
+func TestReject_GetType(t *testing.T) {
+	a := RejectNew("test", Object{})
+
+	if a.GetType() != RejectType {
+		t.Errorf("GetType should return %q for %T, received %q", RejectType, a, a.GetType())
+	}
+}
+func TestRemove_GetType(t *testing.T) {
+	a := RemoveNew("test", Object{}, Object{})
+
+	if a.GetType() != RemoveType {
+		t.Errorf("GetType should return %q for %T, received %q", RemoveType, a, a.GetType())
+	}
+}
+func TestTravel_GetType(t *testing.T) {
+	a := TravelNew("test")
+
+	if a.GetType() != TravelType {
+		t.Errorf("GetType should return %q for %T, received %q", TravelType, a, a.GetType())
+	}
+}
+func TestUndo_GetType(t *testing.T) {
+	a := UndoNew("test", Object{})
+
+	if a.GetType() != UndoType {
+		t.Errorf("GetType should return %q for %T, received %q", UndoType, a, a.GetType())
+	}
+}
+func TestUpdate_GetType(t *testing.T) {
+	a := UpdateNew("test", Object{})
+
+	if a.GetType() != UpdateType {
+		t.Errorf("GetType should return %q for %T, received %q", UpdateType, a, a.GetType())
+	}
+}
+
+func TestView_GetType(t *testing.T) {
+	a := ViewNew("test", Object{})
+
+	if a.GetType() != ViewType {
+		t.Errorf("GetType should return %q for %T, received %q", ViewType, a, a.GetType())
+	}
+}
+
+func TestTentativeAccept_GetType(t *testing.T) {
+	a := TentativeAcceptNew("test", Object{})
+
+	if a.GetType() != TentativeAcceptType {
+		t.Errorf("GetType should return %q for %T, received %q", TentativeAcceptType, a, a.GetType())
+	}
+}
+
+func TestTentativeReject_GetType(t *testing.T) {
+	a := TentativeRejectNew("test", Object{})
+
+	if a.GetType() != TentativeRejectType {
+		t.Errorf("GetType should return %q for %T, received %q", TentativeRejectType, a, a.GetType())
+	}
+}
+
+func TestActivity_GetLink(t *testing.T) {
+	a := ActivityNew("test", ActivityType, Object{})
+	if a.GetLink() != "test" {
+		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetType())
+	}
+}
+
+func TestActivity_GetType(t *testing.T) {
+	{
+		a := ActivityNew("test", ActivityType, Object{})
+		if a.GetType() != ActivityType {
+			t.Errorf("GetType should return %q for %T, received %q", ActivityType, a, a.GetType())
+		}
+	}
+	{
+		a := ActivityNew("test", AcceptType, Object{})
+		if a.GetType() != AcceptType {
+			t.Errorf("GetType should return %q for %T, received %q", AcceptType, a, a.GetType())
+		}
+	}
+	{
+		a := ActivityNew("test", BlockType, Object{})
+		if a.GetType() != BlockType {
+			t.Errorf("GetType should return %q for %T, received %q", BlockType, a, a.GetType())
+		}
+	}
+}
+
+func TestIntransitiveActivity_GetType(t *testing.T) {
+	{
+		a := IntransitiveActivityNew("test", IntransitiveActivityType)
+		if a.GetType() != IntransitiveActivityType {
+			t.Errorf("GetType should return %q for %T, received %q", IntransitiveActivityType, a, a.GetType())
+		}
+	}
+	{
+		a := IntransitiveActivityNew("test", ArriveType)
+		if a.GetType() != ArriveType {
+			t.Errorf("GetType should return %q for %T, received %q", ArriveType, a, a.GetType())
+		}
+	}
+	{
+		a := IntransitiveActivityNew("test", QuestionType)
+		if a.GetType() != QuestionType {
+			t.Errorf("GetType should return %q for %T, received %q", QuestionType, a, a.GetType())
+		}
+	}
 }

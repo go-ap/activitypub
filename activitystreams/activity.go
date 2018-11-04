@@ -117,12 +117,15 @@ var validNegatingActivityTypes = [...]ActivityVocabularyType{
 var validOffersActivityTypes = [...]ActivityVocabularyType{
 	OfferType,
 }
-
+var validIntransitiveActivityTypes = [...]ActivityVocabularyType{
+	ArriveType,
+	TravelType,
+	QuestionType,
+}
 var validActivityTypes = [...]ActivityVocabularyType{
 	AcceptType,
 	AddType,
 	AnnounceType,
-	ArriveType,
 	BlockType,
 	CreateType,
 	DeleteType,
@@ -137,13 +140,11 @@ var validActivityTypes = [...]ActivityVocabularyType{
 	ListenType,
 	MoveType,
 	OfferType,
-	QuestionType,
 	RejectType,
 	ReadType,
 	RemoveType,
 	TentativeRejectType,
 	TentativeAcceptType,
-	TravelType,
 	UndoType,
 	UpdateType,
 	ViewType,
@@ -815,6 +816,16 @@ func ValidActivityType(typ ActivityVocabularyType) bool {
 	return false
 }
 
+// ValidActivityType is a validation function for Activity objects
+func ValidIntransitiveActivityType(typ ActivityVocabularyType) bool {
+	for _, v := range validIntransitiveActivityTypes {
+		if v == typ {
+			return true
+		}
+	}
+	return false
+}
+
 // ActivityNew initializes a basic activity
 func ActivityNew(id ObjectID, typ ActivityVocabularyType, ob Item) *Activity {
 	if !ValidActivityType(typ) {
@@ -831,7 +842,7 @@ func ActivityNew(id ObjectID, typ ActivityVocabularyType, ob Item) *Activity {
 
 // IntransitiveActivityNew initializes a intransitive activity
 func IntransitiveActivityNew(id ObjectID, typ ActivityVocabularyType) *IntransitiveActivity {
-	if !ValidActivityType(typ) {
+	if !ValidIntransitiveActivityType(typ) {
 		typ = IntransitiveActivityType
 	}
 	i := IntransitiveActivity{ID: id, Type: typ}
