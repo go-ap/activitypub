@@ -180,11 +180,107 @@ func TestCollection_IsObject(t *testing.T) {
 }
 
 func TestCollection_UnmarshalJSON(t *testing.T) {
+	c := Collection{}
 
+	dataEmpty := []byte("{}")
+	c.UnmarshalJSON(dataEmpty)
+	if c.ID != "" {
+		t.Errorf("Unmarshalled object should have empty ID, received %q", c.ID)
+	}
+	if c.Type != "" {
+		t.Errorf("Unmarshalled object should have empty Type, received %q", c.Type)
+	}
+	if c.AttributedTo != nil {
+		t.Errorf("Unmarshalled object should have empty AttributedTo, received %q", c.AttributedTo)
+	}
+	if len(c.Name) != 0 {
+		t.Errorf("Unmarshalled object should have empty Name, received %q", c.Name)
+	}
+	if len(c.Summary) != 0 {
+		t.Errorf("Unmarshalled object should have empty Summary, received %q", c.Summary)
+	}
+	if len(c.Content) != 0 {
+		t.Errorf("Unmarshalled object should have empty Content, received %q", c.Content)
+	}
+	if c.TotalItems != 0 {
+		t.Errorf("Unmarshalled object should have empty TotalItems, received %d", c.TotalItems)
+	}
+	if len(c.Items) > 0 {
+		t.Errorf("Unmarshalled object should have empty Items, received %v", c.Items)
+	}
+	if c.URL != nil {
+		t.Errorf("Unmarshalled object should have empty URL, received %v", c.URL)
+	}
+	if !c.Published.IsZero() {
+		t.Errorf("Unmarshalled object should have empty Published, received %q", c.Published)
+	}
+	if !c.StartTime.IsZero() {
+		t.Errorf("Unmarshalled object should have empty StartTime, received %q", c.StartTime)
+	}
+	if !c.Updated.IsZero() {
+		t.Errorf("Unmarshalled object should have empty Updated, received %q", c.Updated)
+	}
 }
 
 func TestCollectionPage_UnmarshalJSON(t *testing.T) {
+	p := CollectionPage{}
 
+	dataEmpty := []byte("{}")
+	p.UnmarshalJSON(dataEmpty)
+	if p.ID != "" {
+		t.Errorf("Unmarshalled object should have empty ID, received %q", p.ID)
+	}
+	if p.Type != "" {
+		t.Errorf("Unmarshalled object should have empty Type, received %q", p.Type)
+	}
+	if p.AttributedTo != nil {
+		t.Errorf("Unmarshalled object should have empty AttributedTo, received %q", p.AttributedTo)
+	}
+	if len(p.Name) != 0 {
+		t.Errorf("Unmarshalled object should have empty Name, received %q", p.Name)
+	}
+	if len(p.Summary) != 0 {
+		t.Errorf("Unmarshalled object should have empty Summary, received %q", p.Summary)
+	}
+	if len(p.Content) != 0 {
+		t.Errorf("Unmarshalled object should have empty Content, received %q", p.Content)
+	}
+	if p.TotalItems != 0 {
+		t.Errorf("Unmarshalled object should have empty TotalItems, received %d", p.TotalItems)
+	}
+	if len(p.Items) > 0 {
+		t.Errorf("Unmarshalled object should have empty Items, received %v", p.Items)
+	}
+	if p.URL != nil {
+		t.Errorf("Unmarshalled object should have empty URL, received %v", p.URL)
+	}
+	if !p.Published.IsZero() {
+		t.Errorf("Unmarshalled object should have empty Published, received %q", p.Published)
+	}
+	if !p.StartTime.IsZero() {
+		t.Errorf("Unmarshalled object should have empty StartTime, received %q", p.StartTime)
+	}
+	if !p.Updated.IsZero() {
+		t.Errorf("Unmarshalled object should have empty Updated, received %q", p.Updated)
+	}
+	if p.PartOf != nil {
+		t.Errorf("Unmarshalled object should have empty PartOf, received %q", p.PartOf)
+	}
+	if p.Current != nil {
+		t.Errorf("Unmarshalled object should have empty Current, received %q", p.Current)
+	}
+	if p.First != nil {
+		t.Errorf("Unmarshalled object should have empty First, received %q", p.First)
+	}
+	if p.Last != nil {
+		t.Errorf("Unmarshalled object should have empty Last, received %q", p.Last)
+	}
+	if p.Next != nil {
+		t.Errorf("Unmarshalled object should have empty Next, received %q", p.Next)
+	}
+	if p.Prev != nil {
+		t.Errorf("Unmarshalled object should have empty Prev, received %q", p.Prev)
+	}
 }
 
 func TestOrderedCollection_Append(t *testing.T) {
@@ -270,14 +366,110 @@ func TestOrderedCollection_IsObject(t *testing.T) {
 }
 
 func TestOrderedCollection_UnmarshalJSON(t *testing.T) {
+	c := OrderedCollection{}
 
-}
-
-func TestOrderedCollectionPage_Append(t *testing.T) {
-
+	dataEmpty := []byte("{}")
+	c.UnmarshalJSON(dataEmpty)
+	if c.ID != "" {
+		t.Errorf("Unmarshalled object should have empty ID, received %q", c.ID)
+	}
+	if c.Type != "" {
+		t.Errorf("Unmarshalled object should have empty Type, received %q", c.Type)
+	}
+	if c.AttributedTo != nil {
+		t.Errorf("Unmarshalled object should have empty AttributedTo, received %q", c.AttributedTo)
+	}
+	if len(c.Name) != 0 {
+		t.Errorf("Unmarshalled object should have empty Name, received %q", c.Name)
+	}
+	if len(c.Summary) != 0 {
+		t.Errorf("Unmarshalled object should have empty Summary, received %q", c.Summary)
+	}
+	if len(c.Content) != 0 {
+		t.Errorf("Unmarshalled object should have empty Content, received %q", c.Content)
+	}
+	if c.TotalItems != 0 {
+		t.Errorf("Unmarshalled object should have empty TotalItems, received %d", c.TotalItems)
+	}
+	if len(c.OrderedItems) > 0 {
+		t.Errorf("Unmarshalled object should have empty OrderedItems, received %v", c.OrderedItems)
+	}
+	if c.URL != nil {
+		t.Errorf("Unmarshalled object should have empty URL, received %v", c.URL)
+	}
+	if !c.Published.IsZero() {
+		t.Errorf("Unmarshalled object should have empty Published, received %q", c.Published)
+	}
+	if !c.StartTime.IsZero() {
+		t.Errorf("Unmarshalled object should have empty StartTime, received %q", c.StartTime)
+	}
+	if !c.Updated.IsZero() {
+		t.Errorf("Unmarshalled object should have empty Updated, received %q", c.Updated)
+	}
 }
 
 func TestOrderedCollectionPage_UnmarshalJSON(t *testing.T) {
+	p := OrderedCollectionPage{}
+
+	dataEmpty := []byte("{}")
+	p.UnmarshalJSON(dataEmpty)
+	if p.ID != "" {
+		t.Errorf("Unmarshalled object should have empty ID, received %q", p.ID)
+	}
+	if p.Type != "" {
+		t.Errorf("Unmarshalled object should have empty Type, received %q", p.Type)
+	}
+	if p.AttributedTo != nil {
+		t.Errorf("Unmarshalled object should have empty AttributedTo, received %q", p.AttributedTo)
+	}
+	if len(p.Name) != 0 {
+		t.Errorf("Unmarshalled object should have empty Name, received %q", p.Name)
+	}
+	if len(p.Summary) != 0 {
+		t.Errorf("Unmarshalled object should have empty Summary, received %q", p.Summary)
+	}
+	if len(p.Content) != 0 {
+		t.Errorf("Unmarshalled object should have empty Content, received %q", p.Content)
+	}
+	if p.TotalItems != 0 {
+		t.Errorf("Unmarshalled object should have empty TotalItems, received %d", p.TotalItems)
+	}
+	if len(p.OrderedItems) > 0 {
+		t.Errorf("Unmarshalled object should have empty OrderedItems, received %v", p.OrderedItems)
+	}
+	if p.URL != nil {
+		t.Errorf("Unmarshalled object should have empty URL, received %v", p.URL)
+	}
+	if !p.Published.IsZero() {
+		t.Errorf("Unmarshalled object should have empty Published, received %q", p.Published)
+	}
+	if !p.StartTime.IsZero() {
+		t.Errorf("Unmarshalled object should have empty StartTime, received %q", p.StartTime)
+	}
+	if !p.Updated.IsZero() {
+		t.Errorf("Unmarshalled object should have empty Updated, received %q", p.Updated)
+	}
+	if p.PartOf != nil {
+		t.Errorf("Unmarshalled object should have empty PartOf, received %q", p.PartOf)
+	}
+	if p.Current != nil {
+		t.Errorf("Unmarshalled object should have empty Current, received %q", p.Current)
+	}
+	if p.First != nil {
+		t.Errorf("Unmarshalled object should have empty First, received %q", p.First)
+	}
+	if p.Last != nil {
+		t.Errorf("Unmarshalled object should have empty Last, received %q", p.Last)
+	}
+	if p.Next != nil {
+		t.Errorf("Unmarshalled object should have empty Next, received %q", p.Next)
+	}
+	if p.Prev != nil {
+		t.Errorf("Unmarshalled object should have empty Prev, received %q", p.Prev)
+	}
+}
+
+func TestOrderedCollectionPage_Append(t *testing.T) {
 	id := ObjectID("test")
 
 	val := Object{ID: ObjectID("grrr")}
