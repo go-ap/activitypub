@@ -23,8 +23,5 @@ script:
 
 after_success:
 - export GOPATH="$GOPATH:$(pwd)"
-- go test -cover -coverprofile activitystreams.coverprofile github.com/mariusor/activitypub.go/activitystreams
-- go test -cover -coverprofile activitypub.coverprofile github.com/mariusor/activitypub.go/activitypub
-- go test -cover -coverprofile jsonld.coverprofile github.com/mariusor/activitypub.go/jsonld
-- gover
-- bash <(curl -s https://codecov.io/bash) -f gover.coverprofile
+- go test -cover -coverprofile activitypub.coverprofile ./...
+- bash <(curl -s https://codecov.io/bash) -f activitypub.coverprofile
