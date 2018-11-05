@@ -816,7 +816,7 @@ func ValidActivityType(typ ActivityVocabularyType) bool {
 	return false
 }
 
-// ValidActivityType is a validation function for Activity objects
+// ValidIntransitiveActivityType is a validation function for IntransitiveActivity objects
 func ValidIntransitiveActivityType(typ ActivityVocabularyType) bool {
 	for _, v := range validIntransitiveActivityTypes {
 		if v == typ {
@@ -852,21 +852,21 @@ func IntransitiveActivityNew(id ObjectID, typ ActivityVocabularyType) *Intransit
 	return &i
 }
 
-// RecipientsDeduplication
+// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (a *Activity) RecipientsDeduplication() {
 	var actor ItemCollection
 	actor.Append(a.Actor)
 	recipientsDeduplication(&actor, &a.To, &a.Bto, &a.CC, &a.BCC)
 }
 
-// RecipientsDeduplication
+// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (i *IntransitiveActivity) RecipientsDeduplication() {
 	var actor ItemCollection
 	actor.Append(i.Actor)
 	recipientsDeduplication(&actor, &i.To, &i.Bto, &i.CC, &i.BCC)
 }
 
-// RecipientsDeduplication
+// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (b *Block) RecipientsDeduplication() {
 	var dedupObjects ItemCollection
 	dedupObjects.Append(b.Actor)
@@ -874,7 +874,7 @@ func (b *Block) RecipientsDeduplication() {
 	recipientsDeduplication(&dedupObjects, &b.To, &b.Bto, &b.CC, &b.BCC)
 }
 
-// RecipientsDeduplication
+// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (c *Create) RecipientsDeduplication() {
 	var dedupObjects ItemCollection
 	dedupObjects.Append(c.Actor)
@@ -882,7 +882,7 @@ func (c *Create) RecipientsDeduplication() {
 	recipientsDeduplication(&dedupObjects, &c.To, &c.Bto, &c.CC, &c.BCC)
 }
 
-// RecipientsDeduplication
+// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (l *Like) RecipientsDeduplication() {
 	var dedupObjects ItemCollection
 	dedupObjects.Append(l.Actor)
@@ -890,7 +890,7 @@ func (l *Like) RecipientsDeduplication() {
 	recipientsDeduplication(&dedupObjects, &l.To, &l.Bto, &l.CC, &l.BCC)
 }
 
-// RecipientsDeduplication
+// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (d *Dislike) RecipientsDeduplication() {
 	var dedupObjects ItemCollection
 	dedupObjects.Append(d.Actor)
@@ -898,7 +898,7 @@ func (d *Dislike) RecipientsDeduplication() {
 	recipientsDeduplication(&dedupObjects, &d.To, &d.Bto, &d.CC, &d.BCC)
 }
 
-// RecipientsDeduplication
+// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (u *Update) RecipientsDeduplication() {
 	var dedupObjects ItemCollection
 	dedupObjects.Append(u.Actor)
@@ -906,12 +906,12 @@ func (u *Update) RecipientsDeduplication() {
 	recipientsDeduplication(&dedupObjects, &u.To, &u.Bto, &u.CC, &u.BCC)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Intransitive Activity
 func (i IntransitiveActivity) GetType() ActivityVocabularyType {
 	return i.Type
 }
 
-// IsLink
+// IsLink returns false for Activity objects
 func (i IntransitiveActivity) IsLink() bool {
 	return false
 }
@@ -926,12 +926,12 @@ func (i IntransitiveActivity) GetLink() IRI {
 	return IRI(i.ID)
 }
 
-// IsObject
+// IsObject returns true for Activity objects
 func (i IntransitiveActivity) IsObject() bool {
 	return true
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (a Activity) GetType() ActivityVocabularyType {
 	return a.Type
 }
@@ -966,7 +966,7 @@ func (l Like) GetLink() IRI {
 	return IRI(l.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (l Like) GetType() ActivityVocabularyType {
 	return l.Type
 }
@@ -991,7 +991,7 @@ func (d Dislike) GetLink() IRI {
 	return IRI(d.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (d Dislike) GetType() ActivityVocabularyType {
 	return d.Type
 }
@@ -1016,7 +1016,7 @@ func (a Accept) GetLink() IRI {
 	return IRI(a.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (a Accept) GetType() ActivityVocabularyType {
 	return a.Type
 }
@@ -1041,7 +1041,7 @@ func (a Add) GetLink() IRI {
 	return IRI(a.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (a Add) GetType() ActivityVocabularyType {
 	return a.Type
 }
@@ -1066,7 +1066,7 @@ func (a Announce) GetLink() IRI {
 	return IRI(a.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (a Announce) GetType() ActivityVocabularyType {
 	return a.Type
 }
@@ -1091,7 +1091,7 @@ func (a Arrive) GetLink() IRI {
 	return IRI(a.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (a Arrive) GetType() ActivityVocabularyType {
 	return a.Type
 }
@@ -1116,7 +1116,7 @@ func (b Block) GetLink() IRI {
 	return IRI(b.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (b Block) GetType() ActivityVocabularyType {
 	return b.Type
 }
@@ -1141,7 +1141,7 @@ func (c Create) GetLink() IRI {
 	return IRI(c.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (c Create) GetType() ActivityVocabularyType {
 	return c.Type
 }
@@ -1166,7 +1166,7 @@ func (d Delete) GetLink() IRI {
 	return IRI(d.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (d Delete) GetType() ActivityVocabularyType {
 	return d.Type
 }
@@ -1191,7 +1191,7 @@ func (f Flag) GetLink() IRI {
 	return IRI(f.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (f Flag) GetType() ActivityVocabularyType {
 	return f.Type
 }
@@ -1216,7 +1216,7 @@ func (f Follow) GetLink() IRI {
 	return IRI(f.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (f Follow) GetType() ActivityVocabularyType {
 	return f.Type
 }
@@ -1241,7 +1241,7 @@ func (i Ignore) GetLink() IRI {
 	return IRI(i.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (i Ignore) GetType() ActivityVocabularyType {
 	return i.Type
 }
@@ -1266,7 +1266,7 @@ func (i Invite) GetLink() IRI {
 	return IRI(i.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (i Invite) GetType() ActivityVocabularyType {
 	return i.Type
 }
@@ -1291,7 +1291,7 @@ func (j Join) GetLink() IRI {
 	return IRI(j.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (j Join) GetType() ActivityVocabularyType {
 	return j.Type
 }
@@ -1316,7 +1316,7 @@ func (l Leave) GetLink() IRI {
 	return IRI(l.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (l Leave) GetType() ActivityVocabularyType {
 	return l.Type
 }
@@ -1341,7 +1341,7 @@ func (l Listen) GetLink() IRI {
 	return IRI(l.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (l Listen) GetType() ActivityVocabularyType {
 	return l.Type
 }
@@ -1366,7 +1366,7 @@ func (m Move) GetLink() IRI {
 	return IRI(m.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (m Move) GetType() ActivityVocabularyType {
 	return m.Type
 }
@@ -1391,7 +1391,7 @@ func (o Offer) GetLink() IRI {
 	return IRI(o.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (o Offer) GetType() ActivityVocabularyType {
 	return o.Type
 }
@@ -1416,7 +1416,7 @@ func (q Question) GetLink() IRI {
 	return IRI(q.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (q Question) GetType() ActivityVocabularyType {
 	return q.Type
 }
@@ -1441,7 +1441,7 @@ func (r Reject) GetLink() IRI {
 	return IRI(r.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (r Reject) GetType() ActivityVocabularyType {
 	return r.Type
 }
@@ -1466,7 +1466,7 @@ func (r Remove) GetLink() IRI {
 	return IRI(r.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (r Remove) GetType() ActivityVocabularyType {
 	return r.Type
 }
@@ -1491,7 +1491,7 @@ func (r Read) GetLink() IRI {
 	return IRI(r.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (r Read) GetType() ActivityVocabularyType {
 	return r.Type
 }
@@ -1516,7 +1516,7 @@ func (t TentativeAccept) GetLink() IRI {
 	return IRI(t.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (t TentativeAccept) GetType() ActivityVocabularyType {
 	return t.Type
 }
@@ -1541,7 +1541,7 @@ func (t TentativeReject) GetLink() IRI {
 	return IRI(t.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (t TentativeReject) GetType() ActivityVocabularyType {
 	return t.Type
 }
@@ -1566,7 +1566,7 @@ func (t Travel) GetLink() IRI {
 	return IRI(t.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (t Travel) GetType() ActivityVocabularyType {
 	return t.Type
 }
@@ -1591,7 +1591,7 @@ func (u Undo) GetLink() IRI {
 	return IRI(u.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (u Undo) GetType() ActivityVocabularyType {
 	return u.Type
 }
@@ -1616,7 +1616,7 @@ func (u Update) GetLink() IRI {
 	return IRI(u.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (u Update) GetType() ActivityVocabularyType {
 	return u.Type
 }
@@ -1641,7 +1641,7 @@ func (v View) GetLink() IRI {
 	return IRI(v.ID)
 }
 
-// GetType
+// GetType returns the ActivityVocabulary type of the current Activity
 func (v View) GetType() ActivityVocabularyType {
 	return v.Type
 }
