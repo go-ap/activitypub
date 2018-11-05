@@ -93,9 +93,8 @@ func LoadTag(tag reflect.StructTag) (Tag, bool) {
 	t.Name, t.Ignore = func(v string) (string, bool) {
 		if len(v) > 0 && v != "_" {
 			return v, false
-		} else {
-			return "", true
 		}
+		return "", true
 	}(val[0])
 
 	return t, true
