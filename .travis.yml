@@ -13,15 +13,11 @@ matrix:
   fast_finish: true
 
 install:
-- go get -v -u github.com/modocache/gover
-- go get -v -u github.com/buger/jsonparser
-- GOPATH=$GOPATH:$(pwd) go get -t -v ./...
+- go get -t -v ./...
 
 script:
-- export GOPATH="$GOPATH:$(pwd)"
 - go test -v ./...
 
 after_success:
-- export GOPATH="$GOPATH:$(pwd)"
 - go test -cover -coverprofile activitypub.coverprofile ./...
 - bash <(curl -s https://codecov.io/bash) -f activitypub.coverprofile
