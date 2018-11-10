@@ -18,7 +18,7 @@ func (i ItemCollection) GetLink() IRI {
 
 // GetType returns the ItemCollection's type
 func (i ItemCollection) GetType() ActivityVocabularyType {
-	return ActivityVocabularyType("")
+	return i.First().GetType()
 }
 
 // IsLink returns false for an ItemCollection object
@@ -42,6 +42,14 @@ func (i *ItemCollection) Append(o Item) error {
 	d[oldLen] = o
 	*i = d
 	return nil
+}
+
+// First returns the ObjectID corresponding to ItemCollection
+func (i ItemCollection) First() Item {
+	if len(i) == 0 {
+		return nil
+	}
+	return i[0]
 }
 
 // Collection returns the current object as collection interface
