@@ -17,3 +17,23 @@ func TestIRI_String(t *testing.T) {
 		t.Errorf("IRI %q should equal %q", u, val)
 	}
 }
+
+func TestIRI_GetID(t *testing.T) {
+
+}
+
+func TestIRI_GetType(t *testing.T) {
+
+}
+
+func TestIRI_IsLink(t *testing.T) {
+
+}
+
+func TestIRI_IsObject(t *testing.T) {
+
+}
+
+func TestIRI_UnmarshalJSON(t *testing.T) {
+
+}

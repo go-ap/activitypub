@@ -77,3 +77,35 @@ func TestMention_Object(t *testing.T) {
 		t.Errorf("%#v should be an empty object", m.GetID())
 	}
 }
+
+func TestLink_GetID(t *testing.T) {
+
+}
+
+func TestLink_GetLink(t *testing.T) {
+
+}
+
+func TestLink_GetType(t *testing.T) {
+
+}
+
+func TestLink_UnmarshalJSON(t *testing.T) {
+
+}
+
+func TestMention_GetID(t *testing.T) {
+
+}
+
+func TestMention_GetLink(t *testing.T) {
+
+}
+
+func TestMention_GetType(t *testing.T) {
+
+}
+
+func TestMentionNew(t *testing.T) {
+
+}

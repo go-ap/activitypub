@@ -141,3 +141,137 @@ func TestPerson_IsObject(t *testing.T) {
 		t.Errorf("%T should be a valid object", m)
 	}
 }
+
+func TestActor_UnmarshalJSON(t *testing.T) {
+
+}
+
+func TestActor_GetActor(t *testing.T) {
+
+}
+
+func TestActor_GetID(t *testing.T) {
+
+}
+
+func TestActor_GetLink(t *testing.T) {
+
+}
+
+func TestActor_GetType(t *testing.T) {
+
+}
+
+func TestApplication_GetActor(t *testing.T) {
+
+}
+
+func TestApplication_GetID(t *testing.T) {
+
+}
+
+func TestApplication_GetLink(t *testing.T) {
+
+}
+
+func TestApplication_GetType(t *testing.T) {
+
+}
+
+func TestApplication_IsLink(t *testing.T) {
+
+}
+
+func TestApplication_IsObject(t *testing.T) {
+
+}
+func TestGroup_GetActor(t *testing.T) {
+
+}
+
+func TestGroup_GetID(t *testing.T) {
+
+}
+
+func TestGroup_GetLink(t *testing.T) {
+
+}
+
+func TestGroup_GetType(t *testing.T) {
+
+}
+
+func TestGroup_IsLink(t *testing.T) {
+
+}
+
+func TestGroup_IsObject(t *testing.T) {
+
+}
+
+func TestOrganization_GetActor(t *testing.T) {
+
+}
+
+func TestOrganization_GetID(t *testing.T) {
+
+}
+
+func TestOrganization_GetLink(t *testing.T) {
+
+}
+
+func TestOrganization_GetType(t *testing.T) {
+
+}
+
+func TestOrganization_IsLink(t *testing.T) {
+
+}
+func TestOrganization_IsObject(t *testing.T) {
+
+}
+
+func TestPerson_GetActor(t *testing.T) {
+
+}
+
+func TestPerson_GetID(t *testing.T) {
+
+}
+
+func TestPerson_GetLink(t *testing.T) {
+
+}
+
+func TestPerson_GetType(t *testing.T) {
+
+}
+
+func TestPerson_UnmarshalJSON(t *testing.T) {
+
+}
+
+func TestService_GetActor(t *testing.T) {
+
+}
+
+func TestService_GetID(t *testing.T) {
+
+}
+
+func TestService_GetLink(t *testing.T) {
+
+}
+
+func TestService_GetType(t *testing.T) {
+
+}
+
+func TestService_IsLink(t *testing.T) {
+
+}
+
+func TestService_IsObject(t *testing.T) {
+
+}

@@ -436,3 +436,7 @@ func TestNaturalLanguageValueNew(t *testing.T) {
 		t.Errorf("Initial %T should have length 0, received %d", n, len(n))
 	}
 }
+
+func TestNaturalLanguageValue_MarshalText(t *testing.T) {
+
+}
