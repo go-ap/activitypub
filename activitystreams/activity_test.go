@@ -1,6 +1,9 @@
 package activitystreams
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestActivityNew(t *testing.T) {
 	var testValue = ObjectID("test")
@@ -654,6 +657,24 @@ func TestBlockRecipientsDeduplication(t *testing.T) {
 	if len(b.BCC) != 0 {
 		t.Errorf("%T.BCC should have exactly 0(zero) elements, not %d", b, len(b.BCC))
 	}
+	var err error
+	recIds := make([]ObjectID, 0)
+	err = checkDedup(b.To, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(b.Bto, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(b.CC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(b.BCC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func TestIntransitiveActivityRecipientsDeduplication(t *testing.T) {
@@ -717,7 +738,162 @@ func TestIntransitiveActivityRecipientsDeduplication(t *testing.T) {
 	if len(b.BCC) != 0 {
 		t.Errorf("%T.BCC should have exactly 0(zero) elements, not %d", b, len(b.BCC))
 	}
+	var err error
+	recIds := make([]ObjectID, 0)
+	err = checkDedup(b.To, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(b.Bto, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(b.CC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(b.BCC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
 }
+
+func TestCreate_RecipientsDeduplication(t *testing.T) {
+	to := PersonNew("bob")
+	o := ObjectNew(ArticleType)
+	cc := PersonNew("alice")
+
+	o.ID = "something"
+
+	c := CreateNew("act", o)
+	c.To.Append(to)
+	c.CC.Append(cc)
+	c.BCC.Append(cc)
+
+	c.RecipientsDeduplication()
+
+	var err error
+	recIds := make([]ObjectID, 0)
+	err = checkDedup(c.To, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(c.Bto, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(c.CC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(c.BCC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestDislike_RecipientsDeduplication(t *testing.T) {
+	to := PersonNew("bob")
+	o := ObjectNew(ArticleType)
+	cc := PersonNew("alice")
+
+	o.ID = "something"
+
+	d := DislikeNew("act", o)
+	d.To.Append(to)
+	d.CC.Append(cc)
+	d.BCC.Append(cc)
+
+	d.RecipientsDeduplication()
+
+	var err error
+	recIds := make([]ObjectID, 0)
+	err = checkDedup(d.To, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(d.Bto, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(d.CC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(d.BCC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestLike_RecipientsDeduplication(t *testing.T) {
+	to := PersonNew("bob")
+	o := ObjectNew(ArticleType)
+	cc := PersonNew("alice")
+
+	o.ID = "something"
+
+	l := LikeNew("act", o)
+	l.To.Append(to)
+	l.CC.Append(cc)
+	l.BCC.Append(cc)
+
+	l.RecipientsDeduplication()
+
+	var err error
+	recIds := make([]ObjectID, 0)
+	err = checkDedup(l.To, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(l.Bto, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(l.CC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(l.BCC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestUpdate_RecipientsDeduplication(t *testing.T) {
+	to := PersonNew("bob")
+	o := ObjectNew(ArticleType)
+	cc := PersonNew("alice")
+
+	o.ID = "something"
+
+	u := UpdateNew("act", o)
+	u.To.Append(to)
+	u.CC.Append(cc)
+	u.BCC.Append(cc)
+
+	u.RecipientsDeduplication()
+
+	var err error
+	recIds := make([]ObjectID, 0)
+	err = checkDedup(u.To, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(u.Bto, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(u.CC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(u.BCC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func TestActivity_GetID(t *testing.T) {
 	a := ActivityNew("test", ActivityType, Person{})
 
@@ -774,14 +950,117 @@ func TestIntransitiveActivity_IsObject(t *testing.T) {
 		t.Errorf("%T should respond true to IsObject", i)
 	}
 }
+
+func checkDedup(list ItemCollection, recIds *[]ObjectID) error {
+	for _, rec := range list {
+		for _, id := range *recIds {
+			if *rec.GetID() == id {
+				return fmt.Errorf("%T[%s] already stored in recipients list, Deduplication faild", rec, id)
+			}
+		}
+		*recIds = append(*recIds, *rec.GetID())
+	}
+	return nil
+}
+
 func TestActivity_RecipientsDeduplication(t *testing.T) {
-	t.Skip("See TestDeduplication")
+	to := PersonNew("bob")
+	o := ObjectNew(ArticleType)
+	cc := PersonNew("alice")
+
+	o.ID = "something"
+
+	c := ActivityNew("act", ActivityType, o)
+	c.To.Append(to)
+	c.CC.Append(cc)
+	c.BCC.Append(cc)
+
+	c.RecipientsDeduplication()
+
+	var err error
+	recIds := make([]ObjectID, 0)
+	err = checkDedup(c.To, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(c.Bto, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(c.CC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(c.BCC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
 }
 func TestIntransitiveActivity_RecipientsDeduplication(t *testing.T) {
-	t.Skip("See TestDeduplication")
+	to := PersonNew("bob")
+	o := ObjectNew(ArticleType)
+	cc := PersonNew("alice")
+
+	o.ID = "something"
+
+	c := IntransitiveActivityNew("act", IntransitiveActivityType)
+	c.To.Append(to)
+	c.CC.Append(cc)
+	c.BCC.Append(cc)
+
+	c.RecipientsDeduplication()
+
+	var err error
+	recIds := make([]ObjectID, 0)
+	err = checkDedup(c.To, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(c.Bto, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(c.CC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(c.BCC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
 }
 func TestBlock_RecipientsDeduplication(t *testing.T) {
-	t.Skip("See TestDeduplication")
+	to := PersonNew("bob")
+	o := ObjectNew(ArticleType)
+	cc := PersonNew("alice")
+
+	o.ID = "something"
+
+	b := BlockNew("act", o)
+	b.To.Append(to)
+	b.CC.Append(cc)
+	b.BCC.Append(cc)
+
+	b.RecipientsDeduplication()
+
+	var err error
+	recIds := make([]ObjectID, 0)
+	err = checkDedup(b.To, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(b.Bto, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(b.CC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
+	err = checkDedup(b.BCC, &recIds)
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func TestRead_GetID(t *testing.T) {
@@ -1886,5 +2165,190 @@ func TestIntransitiveActivity_GetType(t *testing.T) {
 		if a.GetType() != QuestionType {
 			t.Errorf("GetType should return %q for %T, received %q", QuestionType, a, a.GetType())
 		}
+	}
+}
+
+func TestActivity_UnmarshalJSON(t *testing.T) {
+	a := Activity{}
+
+	dataEmpty := []byte("{}")
+	a.UnmarshalJSON(dataEmpty)
+	if a.ID != "" {
+		t.Errorf("Unmarshalled object %T should have empty ID, received %q", a, a.ID)
+	}
+	if a.Type != "" {
+		t.Errorf("Unmarshalled object %T should have empty Type, received %q", a, a.Type)
+	}
+	if a.AttributedTo != nil {
+		t.Errorf("Unmarshalled object %T should have empty AttributedTo, received %q", a, a.AttributedTo)
+	}
+	if len(a.Name) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Name, received %q", a, a.Name)
+	}
+	if len(a.Summary) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Summary, received %q", a, a.Summary)
+	}
+	if len(a.Content) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Content, received %q", a, a.Content)
+	}
+	if a.URL != nil {
+		t.Errorf("Unmarshalled object %T should have empty URL, received %v", a, a.URL)
+	}
+	if !a.Published.IsZero() {
+		t.Errorf("Unmarshalled object %T should have empty Published, received %q", a, a.Published)
+	}
+	if !a.StartTime.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty StartTime, received %q", a, a.StartTime)
+	}
+	if !a.Updated.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty Updated, received %q", a, a.Updated)
+	}
+}
+
+func TestCreate_UnmarshalJSON(t *testing.T) {
+	c := Create{}
+
+	dataEmpty := []byte("{}")
+	c.UnmarshalJSON(dataEmpty)
+	if c.ID != "" {
+		t.Errorf("Unmarshalled object %T should have empty ID, received %q", c, c.ID)
+	}
+	if c.Type != "" {
+		t.Errorf("Unmarshalled object %T should have empty Type, received %q", c, c.Type)
+	}
+	if c.AttributedTo != nil {
+		t.Errorf("Unmarshalled object %T should have empty AttributedTo, received %q", c, c.AttributedTo)
+	}
+	if len(c.Name) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Name, received %q", c, c.Name)
+	}
+	if len(c.Summary) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Summary, received %q", c, c.Summary)
+	}
+	if len(c.Content) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Content, received %q", c, c.Content)
+	}
+	if c.URL != nil {
+		t.Errorf("Unmarshalled object %T should have empty URL, received %v", c, c.URL)
+	}
+	if !c.Published.IsZero() {
+		t.Errorf("Unmarshalled object %T should have empty Published, received %q", c, c.Published)
+	}
+	if !c.StartTime.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty StartTime, received %q", c, c.StartTime)
+	}
+	if !c.Updated.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty Updated, received %q", c, c.Updated)
+	}
+}
+
+func TestDislike_UnmarshalJSON(t *testing.T) {
+	d := Dislike{}
+
+	dataEmpty := []byte("{}")
+	d.UnmarshalJSON(dataEmpty)
+	if d.ID != "" {
+		t.Errorf("Unmarshalled object %T should have empty ID, received %q", d, d.ID)
+	}
+	if d.Type != "" {
+		t.Errorf("Unmarshalled object %T should have empty Type, received %q", d, d.Type)
+	}
+	if d.AttributedTo != nil {
+		t.Errorf("Unmarshalled object %T should have empty AttributedTo, received %q", d, d.AttributedTo)
+	}
+	if len(d.Name) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Name, received %q", d, d.Name)
+	}
+	if len(d.Summary) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Summary, received %q", d, d.Summary)
+	}
+	if len(d.Content) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Content, received %q", d, d.Content)
+	}
+	if d.URL != nil {
+		t.Errorf("Unmarshalled object %T should have empty URL, received %v", d, d.URL)
+	}
+	if !d.Published.IsZero() {
+		t.Errorf("Unmarshalled object %T should have empty Published, received %q", d, d.Published)
+	}
+	if !d.StartTime.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty StartTime, received %q", d, d.StartTime)
+	}
+	if !d.Updated.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty Updated, received %q", d, d.Updated)
+	}
+}
+
+func TestLike_UnmarshalJSON(t *testing.T) {
+	l := Like{}
+
+	dataEmpty := []byte("{}")
+	l.UnmarshalJSON(dataEmpty)
+	if l.ID != "" {
+		t.Errorf("Unmarshalled object %T should have empty ID, received %q", l, l.ID)
+	}
+	if l.Type != "" {
+		t.Errorf("Unmarshalled object %T should have empty Type, received %q", l, l.Type)
+	}
+	if l.AttributedTo != nil {
+		t.Errorf("Unmarshalled object %T should have empty AttributedTo, received %q", l, l.AttributedTo)
+	}
+	if len(l.Name) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Name, received %q", l, l.Name)
+	}
+	if len(l.Summary) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Summary, received %q", l, l.Summary)
+	}
+	if len(l.Content) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Content, received %q", l, l.Content)
+	}
+	if l.URL != nil {
+		t.Errorf("Unmarshalled object %T should have empty URL, received %v", l, l.URL)
+	}
+	if !l.Published.IsZero() {
+		t.Errorf("Unmarshalled object %T should have empty Published, received %q", l, l.Published)
+	}
+	if !l.StartTime.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty StartTime, received %q", l, l.StartTime)
+	}
+	if !l.Updated.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty Updated, received %q", l, l.Updated)
+	}
+}
+
+func TestUpdate_UnmarshalJSON(t *testing.T) {
+	u := Update{}
+
+	dataEmpty := []byte("{}")
+	u.UnmarshalJSON(dataEmpty)
+	if u.ID != "" {
+		t.Errorf("Unmarshalled object %T should have empty ID, received %q", u, u.ID)
+	}
+	if u.Type != "" {
+		t.Errorf("Unmarshalled object %T should have empty Type, received %q", u, u.Type)
+	}
+	if u.AttributedTo != nil {
+		t.Errorf("Unmarshalled object %T should have empty AttributedTo, received %q", u, u.AttributedTo)
+	}
+	if len(u.Name) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Name, received %q", u, u.Name)
+	}
+	if len(u.Summary) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Summary, received %q", u, u.Summary)
+	}
+	if len(u.Content) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Content, received %q", u, u.Content)
+	}
+	if u.URL != nil {
+		t.Errorf("Unmarshalled object %T should have empty URL, received %v", u, u.URL)
+	}
+	if !u.Published.IsZero() {
+		t.Errorf("Unmarshalled object %T should have empty Published, received %q", u, u.Published)
+	}
+	if !u.StartTime.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty StartTime, received %q", u, u.StartTime)
+	}
+	if !u.Updated.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty Updated, received %q", u, u.Updated)
 	}
 }
