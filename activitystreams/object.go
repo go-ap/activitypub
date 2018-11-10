@@ -204,13 +204,22 @@ func (n *NaturalLanguageValue) Append(lang LangRef, value string) error {
 
 // UnmarshalJSON tries to load the NaturalLanguage array from the incoming json value
 func (l *LangRef) UnmarshalJSON(data []byte) error {
-	*l = LangRef(data[1 : len(data)-1])
-	return nil
+	return l.UnmarshalText(data)
 }
 
 // UnmarshalText tries to load the NaturalLanguage array from the incoming Text value
 func (l *LangRef) UnmarshalText(data []byte) error {
-	*l = LangRef(data[1 : len(data)-1])
+	*l = LangRef("")
+	if len(data) == 0 {
+		return nil
+	}
+	if len(data) > 2 {
+		if data[0] == '"' && data[len(data)-1] == '"' {
+			*l = LangRef(data[1 : len(data)-1])
+		}
+	} else {
+		*l = LangRef(data)
+	}
 	return nil
 }
 

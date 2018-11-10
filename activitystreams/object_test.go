@@ -307,3 +307,132 @@ func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
 		}
 	}
 }
+
+func validateEmptyObject(o Object, t *testing.T) {
+	if o.ID != "" {
+		t.Errorf("Unmarshalled object %T should have empty ID, received %q", o, o.ID)
+	}
+	if o.Type != "" {
+		t.Errorf("Unmarshalled object %T should have empty Type, received %q", o, o.Type)
+	}
+	if o.AttributedTo != nil {
+		t.Errorf("Unmarshalled object %T should have empty AttributedTo, received %q", o, o.AttributedTo)
+	}
+	if len(o.Name) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Name, received %q", o, o.Name)
+	}
+	if len(o.Summary) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Summary, received %q", o, o.Summary)
+	}
+	if len(o.Content) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Content, received %q", o, o.Content)
+	}
+	if o.URL != nil {
+		t.Errorf("Unmarshalled object %T should have empty URL, received %v", o, o.URL)
+	}
+	if !o.Published.IsZero() {
+		t.Errorf("Unmarshalled object %T should have empty Published, received %q", o, o.Published)
+	}
+	if !o.StartTime.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty StartTime, received %q", o, o.StartTime)
+	}
+	if !o.Updated.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty Updated, received %q", o, o.Updated)
+	}
+}
+
+func TestObject_UnmarshalJSON(t *testing.T) {
+	o := Object{}
+
+	dataEmpty := []byte("{}")
+	o.UnmarshalJSON(dataEmpty)
+	validateEmptyObject(o, t)
+}
+
+func TestContentType_UnmarshalJSON(t *testing.T) {
+	c := ContentType("")
+	dataEmpty := []byte("")
+
+	c.UnmarshalJSON(dataEmpty)
+	if c != "" {
+		t.Errorf("Unmarshalled object %T should be an empty string, received %q", c, c)
+	}
+}
+
+func TestLangRef_UnmarshalText(t *testing.T) {
+	l := LangRef("")
+	dataEmpty := []byte("")
+
+	l.UnmarshalText(dataEmpty)
+	if l != "" {
+		t.Errorf("Unmarshalled object %T should be an empty string, received %q", l, l)
+	}
+}
+
+func TestObjectID_UnmarshalJSON(t *testing.T) {
+	o := ObjectID("")
+	dataEmpty := []byte("")
+
+	o.UnmarshalJSON(dataEmpty)
+	if o != "" {
+		t.Errorf("Unmarshalled object %T should be an empty string, received %q", o, o)
+	}
+}
+
+func TestNaturalLanguageValue_UnmarshalJSON(t *testing.T) {
+	l := LangRef("")
+	dataEmpty := []byte("")
+
+	l.UnmarshalJSON(dataEmpty)
+	if l != "" {
+		t.Errorf("Unmarshalled object %T should be an empty string, received %q", l, l)
+	}
+}
+
+func TestNaturalLanguageValue_UnmarshalText(t *testing.T) {
+	l := LangRef("")
+	dataEmpty := []byte("")
+
+	l.UnmarshalText(dataEmpty)
+	if l != "" {
+		t.Errorf("Unmarshalled object %T should be an empty string, received %q", l, l)
+	}
+}
+
+func TestObject_GetID(t *testing.T) {
+	a := Object{}
+	testVal := "crash$"
+	a.ID = ObjectID(testVal)
+	if string(*a.GetID()) != testVal {
+		t.Errorf("%T should return %q, Received %q", a.GetID, testVal, *a.GetID())
+	}
+}
+
+func TestObject_GetLink(t *testing.T) {
+	a := Object{}
+	testVal := "crash$"
+	a.ID = ObjectID(testVal)
+	if string(a.GetLink()) != testVal {
+		t.Errorf("%T should return %q, Received %q", a.GetLink, testVal, a.GetLink())
+	}
+}
+
+func TestObject_GetType(t *testing.T) {
+	a := Object{}
+	a.Type = ActorType
+	if a.GetType() != ActorType {
+		t.Errorf("%T should return %q, Received %q", a.GetType, ActorType, a.GetType())
+	}
+}
+
+func TestNaturalLanguageValue_First(t *testing.T) {
+
+}
+
+func TestNaturalLanguageValueNew(t *testing.T) {
+	n := NaturalLanguageValueNew()
+
+	if len(n) != 0 {
+		t.Errorf("Initial %T should have length 0, received %d", n, len(n))
+	}
+}
