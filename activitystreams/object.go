@@ -629,6 +629,9 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 			o.Replies = &r
 		}
 	}
-
+	tag := getAPItemCollection(data, "tag")
+	if tag != nil {
+		o.Tag = tag
+	}
 	return nil
 }

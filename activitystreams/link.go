@@ -122,11 +122,21 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 	l.Name = getAPNaturalLanguageField(data, "name")
 	l.HrefLang = getAPLangRefField(data, "hrefLang")
 	u := getURIField(data, "href")
-	if !u.IsObject() {
+	if u != nil && !u.IsObject() {
 		l.Href = u.GetLink()
 	}
 
 	//fmt.Printf("%s\n %#v", data, l)
 
 	return nil
+}
+
+// UnmarshalJSON
+func (m *Mention) UnmarshalJSON(data []byte) error {
+	l := Link{}
+
+	err := l.UnmarshalJSON(data)
+	*m = Mention(l)
+
+	return err
 }

@@ -234,6 +234,32 @@ var allTests = tests{
 			}},
 		},
 	},
+	"object_with_tags": testPair{
+		expected: true,
+		blank:    &a.Object{},
+		result: &a.Object{
+			Type: a.ObjectType,
+			ID:   a.ObjectID("http://www.test.example/object/1"),
+			Name: a.NaturalLanguageValue{{
+				a.NilLangRef, "A Simple, non-specific object",
+			}},
+			Tag: a.ItemCollection{
+				&a.Object{
+					Name: a.NaturalLanguageValue{{
+						a.NilLangRef, "#my_tag",
+					}},
+					ID: a.ObjectID("http://example.com/tag/my_tag"),
+				},
+				&a.Mention{
+					Name: a.NaturalLanguageValue{{
+						a.NilLangRef, "@ana",
+					}},
+					Type: a.MentionType,
+					ID:   a.ObjectID("http://example.com/users/ana"),
+				},
+			},
+		},
+	},
 	"object_with_replies": testPair{
 		expected: true,
 		blank:    &a.Object{},

@@ -198,6 +198,9 @@ func getAPObjectByType(typ ActivityVocabularyType) (Item, error) {
 		ret = &View{}
 		o := ret.(*View)
 		o.Type = typ
+	case "":
+		// when no type is available use a plain Object
+		ret = &Object{}
 	default:
 		ret = nil
 		err = fmt.Errorf("unrecognized ActivityPub type %q", typ)
