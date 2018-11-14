@@ -216,7 +216,7 @@ type Activity struct {
 	// Tag One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	// while the latter implies associated by reference.
-	Tag Item `jsonld:"tag,omitempty"`
+	Tag ItemCollection `jsonld:"tag,omitempty"`
 	// Updated the date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// URL identifies one or more links to representations of the object
