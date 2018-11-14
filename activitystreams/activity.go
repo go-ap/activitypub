@@ -1682,6 +1682,10 @@ func (a *Activity) UnmarshalJSON(data []byte) error {
 			a.Replies = &r
 		}
 	}
+	tag := getAPItemCollection(data, "tag")
+	if tag != nil {
+		a.Tag = tag
+	}
 	return nil
 }
 
