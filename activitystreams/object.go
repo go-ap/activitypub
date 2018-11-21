@@ -500,9 +500,6 @@ type Tombstone struct {
 	Deleted time.Time
 }
 
-// ContentType represents the content type for a Source object
-type ContentType string
-
 // ValidGenericType validates the type against the valid generic object types
 func ValidGenericType(typ ActivityVocabularyType) bool {
 	for _, v := range validGenericObjectTypes {
@@ -599,8 +596,8 @@ func (i *ObjectID) UnmarshalJSON(data []byte) error {
 }
 
 // UnmarshalJSON
-func (c *ContentType) UnmarshalJSON(data []byte) error {
-	*c = ContentType(strings.Trim(string(data), "\""))
+func (c *MimeType) UnmarshalJSON(data []byte) error {
+	*c = MimeType(strings.Trim(string(data), "\""))
 	return nil
 }
 

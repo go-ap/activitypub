@@ -349,13 +349,13 @@ func TestObject_UnmarshalJSON(t *testing.T) {
 	validateEmptyObject(o, t)
 }
 
-func TestContentType_UnmarshalJSON(t *testing.T) {
-	c := ContentType("")
+func TestMimeType_UnmarshalJSON(t *testing.T) {
+	m := MimeType("")
 	dataEmpty := []byte("")
 
-	c.UnmarshalJSON(dataEmpty)
-	if c != "" {
-		t.Errorf("Unmarshalled object %T should be an empty string, received %q", c, c)
+	m.UnmarshalJSON(dataEmpty)
+	if m != "" {
+		t.Errorf("Unmarshalled object %T should be an empty string, received %q", m, m)
 	}
 }
 
