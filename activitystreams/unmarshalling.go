@@ -282,6 +282,12 @@ func getAPLangRefField(data []byte, prop string) LangRef {
 	return LangRef(val)
 }
 
+// UnmarshalJSON tries to detect the type of the object in the json data and then outputs a matching
+// ActivityStreams object, if possible
+func UnmarshalJSON(data []byte) (Item, error) {
+	return unmarshalToAPObject(data), nil
+}
+
 /*
 func unmarshal(data []byte, a interface{}) (interface{}, error) {
 	ta := make(mockObj, 0)
