@@ -248,8 +248,77 @@ func TestPerson_GetType(t *testing.T) {
 
 }
 
-func TestPerson_UnmarshalJSON(t *testing.T) {
+func validateEmptyPerson(p Person, t *testing.T) {
+	if p.ID != "" {
+		t.Errorf("Unmarshalled object %T should have empty ID, received %q", p, p.ID)
+	}
+	if p.Type != "" {
+		t.Errorf("Unmarshalled object %T should have empty Type, received %q", p, p.Type)
+	}
+	if p.AttributedTo != nil {
+		t.Errorf("Unmarshalled object %T should have empty AttributedTo, received %q", p, p.AttributedTo)
+	}
+	if len(p.Name) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Name, received %q", p, p.Name)
+	}
+	if len(p.Summary) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Summary, received %q", p, p.Summary)
+	}
+	if len(p.Content) != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Content, received %q", p, p.Content)
+	}
+	if p.URL != nil {
+		t.Errorf("Unmarshalled object %T should have empty URL, received %v", p, p.URL)
+	}
+	if !p.Published.IsZero() {
+		t.Errorf("Unmarshalled object %T should have empty Published, received %q", p, p.Published)
+	}
+	if !p.StartTime.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty StartTime, received %q", p, p.StartTime)
+	}
+	if !p.Updated.IsZero() {
+		t.Errorf("Unmarshalled object %T  should have empty Updated, received %q", p, p.Updated)
+	}
+}
 
+func TestPerson_UnmarshalJSON(t *testing.T) {
+	p := Person{}
+
+	dataEmpty := []byte("{}")
+	p.UnmarshalJSON(dataEmpty)
+	validateEmptyPerson(p, t)
+}
+
+func TestApplication_UnmarshalJSON(t *testing.T) {
+	a := Application{}
+
+	dataEmpty := []byte("{}")
+	a.UnmarshalJSON(dataEmpty)
+	validateEmptyPerson(Person(a), t)
+}
+
+func TestGroup_UnmarshalJSON(t *testing.T) {
+	g := Group{}
+
+	dataEmpty := []byte("{}")
+	g.UnmarshalJSON(dataEmpty)
+	validateEmptyPerson(Person(g), t)
+}
+
+func TestOrganization_UnmarshalJSON(t *testing.T) {
+	o := Organization{}
+
+	dataEmpty := []byte("{}")
+	o.UnmarshalJSON(dataEmpty)
+	validateEmptyPerson(Person(o), t)
+}
+
+func TestService_UnmarshalJSON(t *testing.T) {
+	s := Service{}
+
+	dataEmpty := []byte("{}")
+	s.UnmarshalJSON(dataEmpty)
+	validateEmptyPerson(Person(s), t)
 }
 
 func TestService_GetActor(t *testing.T) {

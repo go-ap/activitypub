@@ -439,6 +439,46 @@ func (p *Person) UnmarshalJSON(data []byte) error {
 	return err
 }
 
+// UnmarshalJSON
+func (a *Application) UnmarshalJSON(data []byte) error {
+	act := a.GetActor()
+	err := act.UnmarshalJSON(data)
+
+	*a = Application(act)
+
+	return err
+}
+
+// UnmarshalJSON
+func (g *Group) UnmarshalJSON(data []byte) error {
+	a := g.GetActor()
+	err := a.UnmarshalJSON(data)
+
+	*g = Group(a)
+
+	return err
+}
+
+// UnmarshalJSON
+func (o *Organization) UnmarshalJSON(data []byte) error {
+	a := o.GetActor()
+	err := a.UnmarshalJSON(data)
+
+	*o = Organization(a)
+
+	return err
+}
+
+// UnmarshalJSON
+func (s *Service) UnmarshalJSON(data []byte) error {
+	a := s.GetActor()
+	err := a.UnmarshalJSON(data)
+
+	*s = Service(a)
+
+	return err
+}
+
 // GetActor returns the underlying Actor type
 func (a Actor) GetActor() Actor {
 	return a
