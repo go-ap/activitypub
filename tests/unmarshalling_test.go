@@ -267,8 +267,10 @@ var allTests = tests{
 			Type: a.ObjectType,
 			ID:   a.ObjectID("http://www.test.example/object/1"),
 			Replies: &a.Collection{
-				ID:         a.ObjectID("http://www.test.example/object/1/replies"),
-				Type:       a.CollectionType,
+				Parent: a.Parent{
+					ID:   a.ObjectID("http://www.test.example/object/1/replies"),
+					Type: a.CollectionType,
+				},
 				TotalItems: 1,
 				Items: a.ItemCollection{
 					&a.Object{
@@ -284,11 +286,15 @@ var allTests = tests{
 		expected: true,
 		blank:    &a.Activity{},
 		result: &a.Activity{
-			Type:    a.ActivityType,
-			Summary: a.NaturalLanguageValue{{a.NilLangRef, "Sally did something to a note"}},
+			Parent: a.Parent{
+				Type:    a.ActivityType,
+				Summary: a.NaturalLanguageValue{{a.NilLangRef, "Sally did something to a note"}},
+			},
 			Actor: &a.Person{
-				Type: a.PersonType,
-				Name: a.NaturalLanguageValue{{a.NilLangRef, "Sally"}},
+				Parent: a.Parent{
+					Type: a.PersonType,
+					Name: a.NaturalLanguageValue{{a.NilLangRef, "Sally"}},
+				},
 			},
 			Object: &a.Object{
 				Type: a.NoteType,
@@ -300,15 +306,19 @@ var allTests = tests{
 		expected: true,
 		blank:    &a.Person{},
 		result: &a.Person{
-			ID:                a.ObjectID("http://example.com/accounts/ana"),
-			Type:              a.PersonType,
-			Name:              a.NaturalLanguageValue{{a.NilLangRef, "ana"}},
+			Parent: a.Parent{
+				ID:   a.ObjectID("http://example.com/accounts/ana"),
+				Type: a.PersonType,
+				Name: a.NaturalLanguageValue{{a.NilLangRef, "ana"}},
+				URL:  a.IRI("http://example.com/accounts/ana"),
+			},
 			PreferredUsername: a.NaturalLanguageValue{{a.NilLangRef, "Ana"}},
-			URL:               a.IRI("http://example.com/accounts/ana"),
 			Outbox: &a.OrderedCollection{
-				ID:   a.ObjectID("http://example.com/accounts/ana/outbox"),
-				Type: a.OrderedCollectionType,
-				URL:  a.IRI("http://example.com/outbox"),
+				Parent: a.Parent{
+					ID:   a.ObjectID("http://example.com/accounts/ana/outbox"),
+					Type: a.OrderedCollectionType,
+					URL:  a.IRI("http://example.com/outbox"),
+				},
 			},
 		},
 	},
@@ -316,9 +326,11 @@ var allTests = tests{
 		expected: true,
 		blank:    &a.OrderedCollection{},
 		result: &a.OrderedCollection{
-			ID:         a.ObjectID("http://example.com/outbox"),
-			Type:       a.OrderedCollectionType,
-			URL:        a.IRI("http://example.com/outbox"),
+			Parent: a.Parent{
+				ID:   a.ObjectID("http://example.com/outbox"),
+				Type: a.OrderedCollectionType,
+				URL:  a.IRI("http://example.com/outbox"),
+			},
 			TotalItems: 1,
 			OrderedItems: a.ItemCollection{
 				&a.Object{
@@ -344,9 +356,11 @@ var allTests = tests{
 			Prev:    a.IRI("http://example.com/outbox?page=1"),
 			Current: a.IRI("http://example.com/outbox?page=2"),
 			OrderedCollection: a.OrderedCollection{
-				ID:         a.ObjectID("http://example.com/outbox?page=2"),
-				Type:       a.OrderedCollectionPageType,
-				URL:        a.IRI("http://example.com/outbox?page=2"),
+				Parent: a.Parent{
+					ID:   a.ObjectID("http://example.com/outbox?page=2"),
+					Type: a.OrderedCollectionPageType,
+					URL:  a.IRI("http://example.com/outbox?page=2"),
+				},
 				TotalItems: 1,
 				OrderedItems: a.ItemCollection{
 					&a.Object{
@@ -381,7 +395,9 @@ var allTests = tests{
 		expected: true,
 		blank:    &a.Create{},
 		result: &a.Create{
-			Type:  a.CreateType,
+			Parent: a.Parent{
+				Type: a.CreateType,
+			},
 			Actor: a.IRI("https://littr.git/api/accounts/anonymous"),
 			Object: &a.Object{
 				Type:         a.NoteType,
@@ -397,7 +413,9 @@ var allTests = tests{
 		blank:    &ap.LikeActivity{},
 		result: &ap.LikeActivity{
 			Activity: &a.Like{
-				Type:  a.LikeType,
+				Parent: a.Parent{
+					Type: a.LikeType,
+				},
 				Actor: a.IRI("https://littr.git/api/accounts/24d4b96f"),
 				Object: &a.Object{
 					ID:   a.ObjectID("https://littr.git/api/accounts/ana/liked/7ca154ff"),

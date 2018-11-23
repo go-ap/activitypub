@@ -16,7 +16,7 @@ type (
 func OutboxNew() *Outbox {
 	id := as.ObjectID("outbox")
 
-	i := Outbox{ID: id, Type: as.OrderedCollectionType}
+	i := Outbox{Parent: as.Parent{ID: id, Type: as.CollectionType}}
 	i.Name = as.NaturalLanguageValueNew()
 	i.Content = as.NaturalLanguageValueNew()
 

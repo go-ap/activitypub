@@ -17,7 +17,7 @@ type (
 func LikesNew() *Likes {
 	id := as.ObjectID("likes")
 
-	l := Likes{ID: id, Type: as.OrderedCollectionType}
+	l := Likes{Parent: as.Parent{ID: id, Type: as.CollectionType}}
 	l.Name = as.NaturalLanguageValueNew()
 	l.Content = as.NaturalLanguageValueNew()
 

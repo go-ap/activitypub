@@ -19,7 +19,7 @@ type (
 func FollowingNew() *Following {
 	id := as.ObjectID("following")
 
-	i := Following{ID: id, Type: as.OrderedCollectionType}
+	i := Following{Parent: as.Parent{ID: id, Type: as.CollectionType}}
 	i.Name = as.NaturalLanguageValueNew()
 	i.Content = as.NaturalLanguageValueNew()
 	i.Summary = as.NaturalLanguageValueNew()
