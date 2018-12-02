@@ -17,7 +17,7 @@ type (
 func SharesNew() *Shares {
 	id := as.ObjectID("Shares")
 
-	i := Shares{ID: id, Type: as.OrderedCollectionType}
+	i := Shares{Parent: as.Parent{ID: id, Type: as.CollectionType}}
 	i.Name = as.NaturalLanguageValueNew()
 	i.Content = as.NaturalLanguageValueNew()
 

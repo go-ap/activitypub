@@ -22,7 +22,7 @@ type (
 func InboxNew() *as.OrderedCollection {
 	id := as.ObjectID("inbox")
 
-	i := as.OrderedCollection{ID: id, Type: as.OrderedCollectionType}
+	i := as.OrderedCollection{Parent: as.Parent{ID: id, Type: as.CollectionType}}
 	i.Name = as.NaturalLanguageValueNew()
 	i.Content = as.NaturalLanguageValueNew()
 

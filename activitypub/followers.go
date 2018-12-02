@@ -17,7 +17,7 @@ type (
 func FollowersNew() *Followers {
 	id := as.ObjectID("followers")
 
-	i := Followers{ID: id, Type: as.OrderedCollectionType}
+	i := Followers{Parent: as.Parent{ID: id, Type: as.CollectionType}}
 	i.Name = as.NaturalLanguageValueNew()
 	i.Content = as.NaturalLanguageValueNew()
 	i.Summary = as.NaturalLanguageValueNew()
