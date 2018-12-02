@@ -1,9 +1,5 @@
 package activitystreams
 
-import (
-	"github.com/buger/jsonparser"
-)
-
 // Actor Types
 const (
 	ApplicationType  ActivityVocabularyType = "Application"
@@ -324,30 +320,35 @@ func (p Person) GetLink() IRI {
 
 // UnmarshalJSON
 func (a *Actor) UnmarshalJSON(data []byte) error {
-	a.ID = getAPObjectID(data)
-	a.Type = getAPType(data)
-	a.Name = getAPNaturalLanguageField(data, "name")
+	a.Parent.UnmarshalJSON(data)
+
 	a.PreferredUsername = getAPNaturalLanguageField(data, "preferredUsername")
-	a.Content = getAPNaturalLanguageField(data, "content")
-	a.URL = getURIField(data, "url")
 
-	o := OrderedCollectionNew(ObjectID("test-outbox"))
-	if v, _, _, err := jsonparser.Get(data, "outbox"); err == nil {
-		if o.UnmarshalJSON(v) == nil {
-			a.Outbox = o
-		}
+	out := getAPItem(data, "outbox")
+	if out != nil {
+		a.Outbox = out
 	}
-
-	if v, _, _, err := jsonparser.Get(data, "replies"); err == nil {
-		r := Collection{}
-		if r.UnmarshalJSON(v) == nil {
-			o.Replies = &r
-		}
+	inb := getAPItem(data, "inbox")
+	if inb != nil {
+		a.Inbox = inb
 	}
-	tag := getAPItemCollection(data, "tag")
-	if tag != nil {
-		o.Tag = tag
+	followers := getAPItem(data, "followers")
+	if followers != nil {
+		a.Followers = followers
 	}
+	following := getAPItem(data, "following")
+	if following != nil {
+		a.Following = following
+	}
+	liked := getAPItem(data, "liked")
+	if liked != nil {
+		a.Liked = liked
+	}
+	streams := getAPItems(data, "streams")
+	if streams != nil {
+		a.Streams = streams
+	}
+	// @todo(marius) : Add getAPIEndPoints
 
 	return nil
 }

@@ -41,7 +41,13 @@ func assertDeepEquals(t canErrorFunc, x, y interface{}) bool {
 		return x == y
 	}
 	v1 := reflect.ValueOf(x)
+	//if v1.CanAddr() {
+	//	v1 = v1.Addr()
+	//}
 	v2 := reflect.ValueOf(y)
+	//if v2.CanAddr() {
+	//	v2 = v2.Addr()
+	//}
 	if v1.Type() != v2.Type() {
 		t("%T != %T", x, y)
 		return false
@@ -260,28 +266,28 @@ var allTests = tests{
 			},
 		},
 	},
-	"object_with_replies": testPair{
-		expected: true,
-		blank:    &a.Object{},
-		result: &a.Object{
-			Type: a.ObjectType,
-			ID:   a.ObjectID("http://www.test.example/object/1"),
-			Replies: &a.Collection{
-				Parent: a.Parent{
-					ID:   a.ObjectID("http://www.test.example/object/1/replies"),
-					Type: a.CollectionType,
-				},
-				TotalItems: 1,
-				Items: a.ItemCollection{
-					&a.Object{
-						ID:   a.ObjectID("http://www.test.example/object/1/replies/2"),
-						Type: a.ArticleType,
-						Name: a.NaturalLanguageValue{{a.NilLangRef, "Example title"}},
-					},
-				},
-			},
-		},
-	},
+	//"object_with_replies": testPair{
+	//	expected: true,
+	//	blank:    &a.Object{},
+	//	result: &a.Object{
+	//		Type: a.ObjectType,
+	//		ID:   a.ObjectID("http://www.test.example/object/1"),
+	//		Replies: &a.Collection{
+	//			Parent: a.Parent{
+	//				ID:   a.ObjectID("http://www.test.example/object/1/replies"),
+	//				Type: a.CollectionType,
+	//			},
+	//			TotalItems: 1,
+	//			Items: a.ItemCollection{
+	//				&a.Object{
+	//					ID:   a.ObjectID("http://www.test.example/object/1/replies/2"),
+	//					Type: a.ArticleType,
+	//					Name: a.NaturalLanguageValue{{a.NilLangRef, "Example title"}},
+	//				},
+	//			},
+	//		},
+	//	},
+	//},
 	"activity_simple": testPair{
 		expected: true,
 		blank:    &a.Activity{},
@@ -351,16 +357,16 @@ var allTests = tests{
 		expected: true,
 		blank:    &a.OrderedCollectionPage{},
 		result: &a.OrderedCollectionPage{
-			PartOf:  a.IRI("http://example.com/outbox"),
-			Next:    a.IRI("http://example.com/outbox?page=3"),
-			Prev:    a.IRI("http://example.com/outbox?page=1"),
-			Current: a.IRI("http://example.com/outbox?page=2"),
+			PartOf: a.IRI("http://example.com/outbox"),
+			Next:   a.IRI("http://example.com/outbox?page=3"),
+			Prev:   a.IRI("http://example.com/outbox?page=1"),
 			OrderedCollection: a.OrderedCollection{
 				Parent: a.Parent{
 					ID:   a.ObjectID("http://example.com/outbox?page=2"),
 					Type: a.OrderedCollectionPageType,
 					URL:  a.IRI("http://example.com/outbox?page=2"),
 				},
+				Current:    a.IRI("http://example.com/outbox?page=2"),
 				TotalItems: 1,
 				OrderedItems: a.ItemCollection{
 					&a.Object{
@@ -478,7 +484,7 @@ func Test_ActivityPubUnmarshall(t *testing.T) {
 				f = t.Fatalf
 			}
 
-			f("\n%#v\n should %sequal to expected\n%#v", object, expLbl, pair.result)
+			f("Mock: %s: %s\n%#v\n should %sequal to expected\n%#v", k, path, object, expLbl, pair.result)
 			continue
 		}
 		if !status {
@@ -490,7 +496,7 @@ func Test_ActivityPubUnmarshall(t *testing.T) {
 			if err != nil {
 				f(err.Error())
 			}
-			f("\n%s\n should %sequal to expected\n%s", oj, expLbl, tj)
+			f("Mock: %s: %s\n%s\n should %sequal to expected\n%s", k, path, oj, expLbl, tj)
 		}
 		if err == nil {
 			fmt.Printf(" --- %s: %s\n          %s\n", "PASS", k, path)

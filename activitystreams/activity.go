@@ -2,8 +2,6 @@ package activitystreams
 
 import (
 	"time"
-
-	"github.com/buger/jsonparser"
 )
 
 // Activity Types
@@ -1506,33 +1504,12 @@ func (v View) IsLink() bool {
 
 // UnmarshalJSON
 func (a *Activity) UnmarshalJSON(data []byte) error {
-	a.ID = getAPObjectID(data)
-	a.Type = getAPType(data)
-	a.Name = getAPNaturalLanguageField(data, "name")
-	a.Content = getAPNaturalLanguageField(data, "content")
-	a.Summary = getAPNaturalLanguageField(data, "summary")
-	a.URL = getURIField(data, "url")
+	a.Parent.UnmarshalJSON(data)
 	a.Actor = getAPItem(data, "actor")
 	a.Object = getAPItem(data, "object")
-	a.Generator = getAPItem(data, "generator")
-	a.AttributedTo = getAPItem(data, "attributedTo")
-	a.InReplyTo = getAPItem(data, "inReplyTo")
-	a.Published = getAPTime(data, "published")
-	a.StartTime = getAPTime(data, "startTime")
-	a.Updated = getAPTime(data, "updated")
 	to := getAPItemCollection(data, "to")
 	if to != nil {
 		a.To = to
-	}
-	if v, _, _, err := jsonparser.Get(data, "replies"); err == nil {
-		r := Collection{}
-		if r.UnmarshalJSON(v) == nil {
-			a.Replies = &r
-		}
-	}
-	tag := getAPItemCollection(data, "tag")
-	if tag != nil {
-		a.Tag = tag
 	}
 	return nil
 }

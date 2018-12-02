@@ -530,6 +530,7 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	o.Type = getAPType(data)
 	o.Name = getAPNaturalLanguageField(data, "name")
 	o.Content = getAPNaturalLanguageField(data, "content")
+	o.Summary = getAPNaturalLanguageField(data, "summary")
 	o.Context = getAPItem(data, "context")
 	o.URL = getURIField(data, "url")
 	o.MediaType = MimeType(getAPString(data, "mediaType"))
@@ -543,11 +544,9 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	if to != nil {
 		o.To = to
 	}
-	if v, _, _, err := jsonparser.Get(data, "replies"); err == nil {
-		r := Collection{}
-		if r.UnmarshalJSON(v) == nil {
-			o.Replies = &r
-		}
+	replies := getAPItem(data, "replies")
+	if replies != nil {
+		o.Replies = replies
 	}
 	tag := getAPItemCollection(data, "tag")
 	if tag != nil {

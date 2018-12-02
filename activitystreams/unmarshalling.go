@@ -372,8 +372,16 @@ func getAPObjectByType(typ ActivityVocabularyType) (Item, error) {
 		o := ret.(*Collection)
 		o.Type = typ
 	case OrderedCollectionType:
-		ret = &Link{}
-		o := ret.(*Link)
+		ret = &OrderedCollection{}
+		o := ret.(*OrderedCollection)
+		o.Type = typ
+	case CollectionPageType:
+		ret = &CollectionPage{}
+		o := ret.(*CollectionPage)
+		o.Type = typ
+	case OrderedCollectionPageType:
+		ret = &OrderedCollectionPage{}
+		o := ret.(*OrderedCollectionPage)
 		o.Type = typ
 	case ArticleType:
 		ret = ObjectNew(typ)

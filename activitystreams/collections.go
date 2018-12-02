@@ -57,12 +57,6 @@ type CollectionPage struct {
 	Collection
 	// Identifies the Collection to which a CollectionPage objects items belong.
 	PartOf Item `jsonld:"partOf,omitempty"`
-	// In a paged Collection, indicates the page that contains the most recently updated member items.
-	Current Item `jsonld:"current,omitempty"`
-	// In a paged Collection, indicates the furthest preceeding page of items in the collection.
-	First Item `jsonld:"first,omitempty"`
-	// In a paged Collection, indicates the furthest proceeding page of the collection.
-	Last Item `jsonld:"last,omitempty"`
 	// In a paged Collection, indicates the next page of items.
 	Next Item `jsonld:"next,omitempty"`
 	// In a paged Collection, identifies the previous page of items.
@@ -77,12 +71,6 @@ type OrderedCollectionPage struct {
 	OrderedCollection
 	// Identifies the Collection to which a CollectionPage objects items belong.
 	PartOf Item `jsonld:"partOf,omitempty"`
-	// In a paged Collection, indicates the page that contains the most recently updated member items.
-	Current Item `jsonld:"current,omitempty"`
-	// In a paged Collection, indicates the furthest preceeding page of items in the collection.
-	First Item `jsonld:"first,omitempty"`
-	// In a paged Collection, indicates the furthest proceeding page of the collection.
-	Last Item `jsonld:"last,omitempty"`
 	// In a paged Collection, indicates the next page of items.
 	Next Item `jsonld:"next,omitempty"`
 	// In a paged Collection, identifies the previous page of items.
@@ -223,35 +211,28 @@ func (o OrderedCollection) IsObject() bool {
 
 // UnmarshalJSON
 func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
-	o.ID = getAPObjectID(data)
-	o.Type = getAPType(data)
-	o.Name = getAPNaturalLanguageField(data, "name")
-	o.Content = getAPNaturalLanguageField(data, "content")
-	o.URL = getURIField(data, "url")
+	o.Parent.UnmarshalJSON(data)
+
 	o.TotalItems = uint(getAPInt(data, "totalItems"))
-	it := getAPItems(data, "orderedItems")
-	if it != nil {
-		o.OrderedItems = it
-	}
-	o.Published = getAPTime(data, "published")
-	o.StartTime = getAPTime(data, "startTime")
-	o.Updated = getAPTime(data, "updated")
+	o.OrderedItems = getAPItems(data, "orderedItems")
+
+	o.Current = getAPItem(data, "current")
+	o.First = getAPItem(data, "first")
+	o.Last = getAPItem(data, "last")
 
 	return nil
 }
 
 // UnmarshalJSON
 func (c *Collection) UnmarshalJSON(data []byte) error {
-	c.ID = getAPObjectID(data)
-	c.Type = getAPType(data)
-	c.Name = getAPNaturalLanguageField(data, "name")
-	c.Content = getAPNaturalLanguageField(data, "content")
-	c.URL = getURIField(data, "url")
+	c.Parent.UnmarshalJSON(data)
+
 	c.TotalItems = uint(getAPInt(data, "totalItems"))
 	c.Items = getAPItems(data, "items")
-	c.Published = getAPTime(data, "published")
-	c.StartTime = getAPTime(data, "startTime")
-	c.Updated = getAPTime(data, "updated")
+
+	c.Current = getAPItem(data, "current")
+	c.First = getAPItem(data, "first")
+	c.Last = getAPItem(data, "last")
 
 	return nil
 }
@@ -259,12 +240,11 @@ func (c *Collection) UnmarshalJSON(data []byte) error {
 // UnmarshalJSON
 func (o *OrderedCollectionPage) UnmarshalJSON(data []byte) error {
 	o.OrderedCollection.UnmarshalJSON(data)
-	o.Current = getAPItem(data, "current")
+
 	o.Next = getAPItem(data, "next")
 	o.Prev = getAPItem(data, "prev")
 	o.PartOf = getAPItem(data, "partOf")
-	o.First = getAPItem(data, "first")
-	o.Last = getAPItem(data, "last")
+
 	if si, err := jsonparser.GetInt(data, "startIndex"); err != nil {
 		o.StartIndex = uint(si)
 	}
@@ -274,12 +254,10 @@ func (o *OrderedCollectionPage) UnmarshalJSON(data []byte) error {
 // UnmarshalJSON
 func (c *CollectionPage) UnmarshalJSON(data []byte) error {
 	c.Collection.UnmarshalJSON(data)
-	c.Current = getAPItem(data, "current")
+
 	c.Next = getAPItem(data, "next")
 	c.Prev = getAPItem(data, "prev")
 	c.PartOf = getAPItem(data, "partOf")
-	c.First = getAPItem(data, "first")
-	c.Last = getAPItem(data, "last")
 
 	return nil
 }
