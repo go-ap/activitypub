@@ -266,28 +266,28 @@ var allTests = tests{
 			},
 		},
 	},
-	//"object_with_replies": testPair{
-	//	expected: true,
-	//	blank:    &a.Object{},
-	//	result: &a.Object{
-	//		Type: a.ObjectType,
-	//		ID:   a.ObjectID("http://www.test.example/object/1"),
-	//		Replies: &a.Collection{
-	//			Parent: a.Parent{
-	//				ID:   a.ObjectID("http://www.test.example/object/1/replies"),
-	//				Type: a.CollectionType,
-	//			},
-	//			TotalItems: 1,
-	//			Items: a.ItemCollection{
-	//				&a.Object{
-	//					ID:   a.ObjectID("http://www.test.example/object/1/replies/2"),
-	//					Type: a.ArticleType,
-	//					Name: a.NaturalLanguageValue{{a.NilLangRef, "Example title"}},
-	//				},
-	//			},
-	//		},
-	//	},
-	//},
+	"object_with_replies": testPair{
+		expected: true,
+		blank:    &a.Object{},
+		result: &a.Object{
+			Type: a.ObjectType,
+			ID:   a.ObjectID("http://www.test.example/object/1"),
+			Replies: &a.Collection{
+				Parent: a.Parent{
+					ID:   a.ObjectID("http://www.test.example/object/1/replies"),
+					Type: a.CollectionType,
+				},
+				TotalItems: 1,
+				Items: a.ItemCollection{
+					&a.Object{
+						ID:   a.ObjectID("http://www.test.example/object/1/replies/2"),
+						Type: a.ArticleType,
+						Name: a.NaturalLanguageValue{{a.NilLangRef, "Example title"}},
+					},
+				},
+			},
+		},
+	},
 	"activity_simple": testPair{
 		expected: true,
 		blank:    &a.Activity{},
