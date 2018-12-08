@@ -431,6 +431,27 @@ var allTests = tests{
 			Published: time.Date(2018, time.September, 6, 15, 15, 9, 0, zLoc),
 		},
 	},
+	"object_with_audience": testPair{
+		expected: true,
+		blank:    &a.Object{},
+		result: &a.Object{
+			Type: a.ObjectType,
+			ID:   a.ObjectID("http://www.test.example/object/1"),
+			To:   a.ItemCollection{
+				a.IRI("https://www.w3.org/ns/activitystreams#Public"),
+			},
+			Bto:  a.ItemCollection{
+				a.IRI("http://example.com/sharedInbox"),
+			},
+			CC:   a.ItemCollection{
+				a.IRI("https://example.com/actors/ana"),
+				a.IRI("https://example.com/actors/bob"),
+			},
+			BCC:  a.ItemCollection{
+				a.IRI( "https://darkside.cookie/actors/darthvader"),
+			},
+		},
+	},
 }
 
 func getFileContents(path string) ([]byte, error) {

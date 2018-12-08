@@ -1507,10 +1507,6 @@ func (a *Activity) UnmarshalJSON(data []byte) error {
 	a.Parent.UnmarshalJSON(data)
 	a.Actor = getAPItem(data, "actor")
 	a.Object = getAPItem(data, "object")
-	to := getAPItemCollection(data, "to")
-	if to != nil {
-		a.To = to
-	}
 	return nil
 }
 

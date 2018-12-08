@@ -1,0 +1,18 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Object",
+  "id": "http://www.test.example/object/1",
+  "to": [
+    "https://www.w3.org/ns/activitystreams#Public"
+  ],
+  "bto": [
+    "http://example.com/sharedInbox"
+  ],
+  "cc": [
+    "https://example.com/actors/ana",
+    "https://example.com/actors/bob"
+  ],
+  "bcc": [
+    "https://darkside.cookie/actors/darthvader"
+  ]
+}

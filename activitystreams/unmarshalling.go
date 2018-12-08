@@ -161,31 +161,7 @@ func getAPItems(data []byte, prop string) ItemCollection {
 	switch typ {
 	case jsonparser.Array:
 		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			var i Item
-			switch dataType {
-			case jsonparser.String:
-				if _, err = url.ParseRequestURI(string(val)); err == nil {
-					// try to see if it's an IRI
-					i = IRI(value)
-				}
-			case jsonparser.Object:
-				i = unmarshalToAPObject(value)
-			case jsonparser.Number:
-				fallthrough
-			case jsonparser.Array:
-				fallthrough
-			case jsonparser.Boolean:
-				fallthrough
-			case jsonparser.Null:
-				fallthrough
-			case jsonparser.Unknown:
-				fallthrough
-			default:
-				return
-			}
-			if err != nil {
-				return
-			}
+			i := unmarshalToAPObject(value)
 			if i != nil {
 				it.Append(i)
 			}
@@ -202,40 +178,6 @@ func getAPItems(data []byte, prop string) ItemCollection {
 		s, _ := jsonparser.GetString(val)
 		it.Append(IRI(s))
 	}
-	return it
-}
-
-func getAPItemCollection(data []byte, prop string) ItemCollection {
-	val, typ, _, err := jsonparser.Get(data, prop)
-	if err != nil {
-		return nil
-	}
-
-	var it ItemCollection
-	switch typ {
-	case jsonparser.Array:
-		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			i, err := getAPObjectByType(getAPType(value))
-			if err != nil {
-				return
-			}
-			err = i.(json.Unmarshaler).UnmarshalJSON(value)
-			if err != nil {
-				return
-			}
-			it.Append(i)
-		}, prop)
-	case jsonparser.Object:
-		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
-			i := Object{}
-			err := i.UnmarshalJSON(val)
-			it.Append(i)
-			return err
-		}, prop)
-	case jsonparser.String:
-		it.Append(IRI(val))
-	}
-
 	return it
 }
 

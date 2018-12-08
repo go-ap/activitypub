@@ -540,19 +540,19 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	o.Published = getAPTime(data, "published")
 	o.StartTime = getAPTime(data, "startTime")
 	o.Updated = getAPTime(data, "updated")
-	to := getAPItemCollection(data, "to")
+	to := getAPItems(data, "to")
 	if to != nil {
 		o.To = to
 	}
-	bto := getAPItemCollection(data, "bto")
+	bto := getAPItems(data, "bto")
 	if bto != nil {
 		o.Bto = bto
 	}
-	cc := getAPItemCollection(data, "cc")
+	cc := getAPItems(data, "cc")
 	if cc != nil {
 		o.CC = cc
 	}
-	bcc := getAPItemCollection(data, "bcc")
+	bcc := getAPItems(data, "bcc")
 	if bcc != nil {
 		o.BCC = bcc
 	}
@@ -560,7 +560,7 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	if replies != nil {
 		o.Replies = replies
 	}
-	tag := getAPItemCollection(data, "tag")
+	tag := getAPItems(data, "tag")
 	if tag != nil {
 		o.Tag = tag
 	}
