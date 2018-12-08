@@ -544,6 +544,18 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	if to != nil {
 		o.To = to
 	}
+	bto := getAPItemCollection(data, "bto")
+	if bto != nil {
+		o.Bto = bto
+	}
+	cc := getAPItemCollection(data, "cc")
+	if cc != nil {
+		o.CC = cc
+	}
+	bcc := getAPItemCollection(data, "bcc")
+	if bcc != nil {
+		o.BCC = bcc
+	}
 	replies := getAPItem(data, "replies")
 	if replies != nil {
 		o.Replies = replies
