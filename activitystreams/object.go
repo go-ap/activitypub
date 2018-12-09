@@ -418,9 +418,9 @@ type Relationship struct {
 type Tombstone struct {
 	Parent
 	// FormerType On a Tombstone object, the formerType property identifies the type of the object that was deleted.
-	FormerType ActivityVocabularyType
+	FormerType ActivityVocabularyType  `jsonld:"formerType,omitempty"`
 	// Deleted On a Tombstone object, the deleted property is a timestamp for when the object was deleted.
-	Deleted time.Time
+	Deleted time.Time  `jsonld:"deleted,omitempty"`
 }
 
 // ValidGenericType validates the type against the valid generic object types
