@@ -1,6 +1,8 @@
 package activitypub
 
-import "testing"
+import (
+	"testing"
+)
 
 func validateEmptyObject(o Object, t *testing.T) {
 	if o.ID != "" {
@@ -59,4 +61,17 @@ func TestSource_UnmarshalJSON(t *testing.T) {
 	dataEmpty := []byte("{}")
 	s.UnmarshalJSON(dataEmpty)
 	validateEmptySource(s, t)
+}
+
+func TestGetAPSource(t *testing.T) {
+	data := []byte(`{"source": {"content": "test", "mediaType": "text/plain" }}`)
+
+	a := GetAPSource(data)
+
+	if a.Content.First() != "test" {
+		t.Errorf("Content didn't match test value. Received %q, expecting %q", a.Content, "test")
+	}
+	if a.MediaType != "text/plain" {
+		t.Errorf("Content didn't match test value. Received %q, expecting %q", a.MediaType, "text/plain")
+	}
 }

@@ -227,6 +227,8 @@ func (l *LangRef) UnmarshalText(data []byte) error {
 func (n *NaturalLanguageValue) UnmarshalJSON(data []byte) error {
 	val, typ, _, err := jsonparser.Get(data)
 	if err != nil {
+		// try our luck if data contains an unquoted string
+		n.Append(NilLangRef, string(data))
 		return nil
 	}
 	switch typ {
@@ -418,9 +420,9 @@ type Relationship struct {
 type Tombstone struct {
 	Parent
 	// FormerType On a Tombstone object, the formerType property identifies the type of the object that was deleted.
-	FormerType ActivityVocabularyType  `jsonld:"formerType,omitempty"`
+	FormerType ActivityVocabularyType `jsonld:"formerType,omitempty"`
 	// Deleted On a Tombstone object, the deleted property is a timestamp for when the object was deleted.
-	Deleted time.Time  `jsonld:"deleted,omitempty"`
+	Deleted time.Time `jsonld:"deleted,omitempty"`
 }
 
 // ValidGenericType validates the type against the valid generic object types

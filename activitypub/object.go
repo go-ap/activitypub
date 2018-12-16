@@ -27,12 +27,10 @@ type Object struct {
 func GetAPSource(data []byte) Source {
 	s := Source{}
 
-	contBytes, _, _, err := jsonparser.Get(data, "source", "content")
-	if err == nil {
+	if contBytes, _, _, err := jsonparser.Get(data, "source", "content"); err == nil {
 		s.Content.UnmarshalJSON(contBytes)
 	}
-	mimeBytes, _, _, err := jsonparser.Get(data, "source", "mimeType")
-	if err == nil {
+	if mimeBytes, _, _, err := jsonparser.Get(data, "source", "mediaType"); err == nil {
 		s.MediaType.UnmarshalJSON(mimeBytes)
 	}
 
