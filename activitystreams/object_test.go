@@ -330,6 +330,12 @@ func validateEmptyObject(o Object, t *testing.T) {
 	if o.URL != nil {
 		t.Errorf("Unmarshalled object %T should have empty URL, received %v", o, o.URL)
 	}
+	if o.Icon != nil {
+		t.Errorf("Unmarshalled object %T should have empty Icon, received %v", o, o.Icon)
+	}
+	if o.Image != nil {
+		t.Errorf("Unmarshalled object %T should have empty Image, received %v", o, o.Image)
+	}
 	if !o.Published.IsZero() {
 		t.Errorf("Unmarshalled object %T should have empty Published, received %q", o, o.Published)
 	}
