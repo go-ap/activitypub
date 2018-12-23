@@ -99,6 +99,12 @@ func getAPTime(data []byte, prop string) time.Time {
 	return t
 }
 
+func getAPDuration(data []byte, prop string) time.Duration {
+	str, _ := jsonparser.GetUnsafeString(data, prop)
+	d, _ := time.ParseDuration(str)
+	return d
+}
+
 func unmarshalToAPObject(data []byte) Item {
 	if _, err := url.ParseRequestURI(string(data)); err == nil {
 		// try to see if it's an IRI

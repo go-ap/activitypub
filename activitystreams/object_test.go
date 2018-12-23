@@ -345,6 +345,12 @@ func validateEmptyObject(o Object, t *testing.T) {
 	if !o.Updated.IsZero() {
 		t.Errorf("Unmarshalled object %T should have empty Updated, received %q", o, o.Updated)
 	}
+	if !o.EndTime.IsZero() {
+		t.Errorf("Unmarshalled object %T should have empty EndTime, received %q", o, o.EndTime)
+	}
+	if o.Duration != 0 {
+		t.Errorf("Unmarshalled object %T should have empty Duration, received %q", o, o.Duration)
+	}
 	if len(o.To) > 0 {
 		t.Errorf("Unmarshalled object %T should have empty To, received %q", o, o.To)
 	}

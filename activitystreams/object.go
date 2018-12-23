@@ -541,6 +541,8 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	o.InReplyTo = getAPItem(data, "inReplyTo")
 	o.Published = getAPTime(data, "published")
 	o.StartTime = getAPTime(data, "startTime")
+	o.EndTime = getAPTime(data, "endTime")
+	o.Duration = getAPDuration(data, "duration")
 	o.Icon = getAPItem(data, "icon")
 	o.Image = getAPItem(data, "image")
 	o.Updated = getAPTime(data, "updated")
