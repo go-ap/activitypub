@@ -29,6 +29,7 @@ type Client interface {
 
 // UserAgent value that the client uses when performing requests
 var UserAgent = "activitypub-go-http-client"
+var HeaderAccept = `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`
 
 // ErrorLogger
 var ErrorLogger logFn = func(el ...interface{}) {}
@@ -114,6 +115,7 @@ func (c *client) req(method string, url string, body io.Reader) (*http.Request, 
 		return nil, err
 	}
 	req.Header.Set("User-Agent", UserAgent)
+	req.Header.Set("Accept", HeaderAccept)
 	//req.Header.Set("Cache-Control", "no-cache")
 	if err = Sign(req); err != nil {
 		err := errorf(as.IRI(req.URL.String()), "Unable to sign request (method %q, previous error: %s)", req.Method, err)
