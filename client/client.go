@@ -13,6 +13,20 @@ import (
 type signFn func(*http.Request) error
 type logFn func(...interface{})
 
+type HttpClient interface {
+	Head(string) (*http.Response, error)
+	Get(string) (*http.Response, error)
+	Post(string, string, io.Reader) (*http.Response, error)
+	Put(string, string, io.Reader) (*http.Response, error)
+	Delete(string, string, io.Reader) (*http.Response, error)
+
+	Client
+}
+
+type Client interface {
+	LoadIRI(as.IRI) (as.Item, error)
+}
+
 // UserAgent value that the client uses when performing requests
 var UserAgent = "activitypub-go-http-client"
 
@@ -53,8 +67,8 @@ func (e *err) Error() string {
 
 type client struct{}
 
-func NewClient() client {
-	return client{}
+func NewClient() *client {
+	return &client{}
 }
 
 // LoadIRI tries to dereference an IRI and load the full ActivityPub object it represents
