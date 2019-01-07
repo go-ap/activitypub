@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	as "github.com/mariusor/activitypub.go/activitystreams"
+	as "github.com/go-ap/activitypub.go/activitystreams"
 )
 
 func TestCreateActivityNew(t *testing.T) {

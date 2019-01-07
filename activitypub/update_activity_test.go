@@ -1,7 +1,7 @@
 package activitypub
 
 import (
-	as "github.com/mariusor/activitypub.go/activitystreams"
+	as "github.com/go-ap/activitypub.go/activitystreams"
 	"reflect"
 	"testing"
 	"time"

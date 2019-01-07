@@ -1,6 +1,6 @@
 package activitypub
 
-import as "github.com/mariusor/activitypub.go/activitystreams"
+import as "github.com/go-ap/activitypub.go/activitystreams"
 
 type (
 	// OutboxStream contains activities the user has published,

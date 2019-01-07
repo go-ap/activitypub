@@ -11,9 +11,9 @@ import (
 	"time"
 	"unsafe"
 
-	ap "github.com/mariusor/activitypub.go/activitypub"
-	a "github.com/mariusor/activitypub.go/activitystreams"
-	j "github.com/mariusor/activitypub.go/jsonld"
+	ap "github.com/go-ap/activitypub.go/activitypub"
+	a "github.com/go-ap/activitypub.go/activitystreams"
+	j "github.com/go-ap/activitypub.go/jsonld"
 )
 
 const dir = "./mocks"
@@ -437,18 +437,18 @@ var allTests = tests{
 		result: &a.Object{
 			Type: a.ObjectType,
 			ID:   a.ObjectID("http://www.test.example/object/1"),
-			To:   a.ItemCollection{
+			To: a.ItemCollection{
 				a.IRI("https://www.w3.org/ns/activitystreams#Public"),
 			},
-			Bto:  a.ItemCollection{
+			Bto: a.ItemCollection{
 				a.IRI("http://example.com/sharedInbox"),
 			},
-			CC:   a.ItemCollection{
+			CC: a.ItemCollection{
 				a.IRI("https://example.com/actors/ana"),
 				a.IRI("https://example.com/actors/bob"),
 			},
-			BCC:  a.ItemCollection{
-				a.IRI( "https://darkside.cookie/actors/darthvader"),
+			BCC: a.ItemCollection{
+				a.IRI("https://darkside.cookie/actors/darthvader"),
 			},
 		},
 	},

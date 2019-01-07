@@ -4,7 +4,7 @@ package tests
 
 import (
 	"fmt"
-	a "github.com/mariusor/activitypub.go/activitystreams"
+	a "github.com/go-ap/activitypub.go/activitystreams"
 	"testing"
 )
 

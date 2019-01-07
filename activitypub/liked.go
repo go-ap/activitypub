@@ -1,6 +1,6 @@
 package activitypub
 
-import as "github.com/mariusor/activitypub.go/activitystreams"
+import as "github.com/go-ap/activitypub.go/activitystreams"
 
 type (
 	// LikedCollection is a list of every object from all of the actor's Like activities,
