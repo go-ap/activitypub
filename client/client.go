@@ -10,8 +10,8 @@ import (
 	as "github.com/go-ap/activitypub.go/activitystreams"
 )
 
-type signFn func(*http.Request) error
-type logFn func(...interface{})
+type RequestSignFn func(*http.Request) error
+type LogFn func(...interface{})
 
 type HttpClient interface {
 	Head(string) (*http.Response, error)
@@ -32,10 +32,10 @@ var UserAgent = "activitypub-go-http-client"
 var HeaderAccept = `application/ld+json; profile="https://www.w3.org/ns/activitystreams"`
 
 // ErrorLogger
-var ErrorLogger logFn = func(el ...interface{}) {}
+var ErrorLogger LogFn = func(el ...interface{}) {}
 
 // InfoLogger
-var InfoLogger logFn = func(el ...interface{}) {}
+var InfoLogger LogFn = func(el ...interface{}) {}
 
 // Sign is the default function to use when signing requests
 // Usually this is done using HTTP-Signatures
@@ -43,7 +43,7 @@ var InfoLogger logFn = func(el ...interface{}) {}
 //    var key *rsa.PrivateKey = ...
 //    signer := httpsig.NewSigner("foo", key, httpsig.RSASHA256, nil)
 //    client.Sign = signer.Sign
-var Sign signFn = func(r *http.Request) error { return nil }
+var Sign RequestSignFn = func(r *http.Request) error { return nil }
 
 type err struct {
 	msg string
