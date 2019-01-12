@@ -130,6 +130,7 @@ func (c client) Head(url string) (resp *http.Response, err error) {
 	if err != nil {
 		return nil, err
 	}
+	InfoLogger(http.MethodHead, url)
 	return http.DefaultClient.Do(req)
 }
 
@@ -139,6 +140,7 @@ func (c client) Get(url string) (resp *http.Response, err error) {
 	if err != nil {
 		return nil, err
 	}
+	InfoLogger(http.MethodGet, url)
 	return http.DefaultClient.Do(req)
 }
 
@@ -149,6 +151,7 @@ func (c *client) Post(url, contentType string, body io.Reader) (resp *http.Respo
 		return nil, err
 	}
 	req.Header.Set("Content-Type", contentType)
+	InfoLogger(http.MethodPost, url)
 	return http.DefaultClient.Do(req)
 }
 
@@ -159,6 +162,7 @@ func (c client) Put(url, contentType string, body io.Reader) (resp *http.Respons
 		return nil, err
 	}
 	req.Header.Set("Content-Type", contentType)
+	InfoLogger(http.MethodPut, url)
 	return http.DefaultClient.Do(req)
 }
 
@@ -169,5 +173,6 @@ func (c client) Delete(url, contentType string, body io.Reader) (resp *http.Resp
 		return nil, err
 	}
 	req.Header.Set("Content-Type", contentType)
+	InfoLogger(http.MethodDelete, url)
 	return http.DefaultClient.Do(req)
 }
