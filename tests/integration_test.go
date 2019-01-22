@@ -3,8 +3,8 @@ package tests
 import (
 	"testing"
 
-	a "github.com/go-ap/activitypub.go/activitystreams"
-	j "github.com/go-ap/activitypub.go/jsonld"
+	a "github.com/go-ap/activitystreams"
+	j "github.com/go-ap/jsonld"
 
 	"strings"
 )
