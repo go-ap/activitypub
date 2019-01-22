@@ -2,7 +2,7 @@ package activitypub
 
 import (
 	"github.com/buger/jsonparser"
-	as "github.com/go-ap/activitypub.go/activitystreams"
+	as "github.com/go-ap/activitystreams"
 )
 
 // Source is intended to convey some sort of source from which the content markup was derived,

@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	as "github.com/go-ap/activitypub.go/activitystreams"
+	as "github.com/go-ap/activitystreams"
 )
 
 func TestOutboxNew(t *testing.T) {

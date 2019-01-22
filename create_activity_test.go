@@ -1,42 +1,43 @@
 package activitypub
 
 import (
-	as "github.com/go-ap/activitypub.go/activitystreams"
 	"reflect"
 	"testing"
 	"time"
+
+	as "github.com/go-ap/activitystreams"
 )
 
-func TestUpdateActivityNew(t *testing.T) {
+func TestCreateActivityNew(t *testing.T) {
 	var testValue = as.ObjectID("test")
 	var now time.Time
 
-	c := UpdateActivityNew(testValue, nil, nil)
+	c := CreateActivityNew(testValue, nil, nil)
 	now = time.Now()
 	if c.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c.Activity.ID, testValue)
 	}
-	if c.Activity.Type != as.UpdateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c.Activity.Type, as.UpdateType)
+	if c.Activity.Type != as.CreateType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c.Activity.Type, as.CreateType)
 	}
 	if now.Sub(c.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c.Published, now)
 	}
 }
 
-func TestUpdateActivityNewWithApplication(t *testing.T) {
+func TestCreateActivityNewWithApplication(t *testing.T) {
 	testValue := as.ObjectID("my:note")
 	n := as.ObjectNew(as.NoteType)
 	n.ID = "my:note"
 	a := as.ApplicationNew("some::app::")
 
-	c1 := UpdateActivityNew(testValue, *a, n)
+	c1 := CreateActivityNew(testValue, *a, n)
 	now := time.Now()
 	if c1.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c1.Activity.ID, testValue)
 	}
-	if c1.Activity.Type != as.UpdateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.UpdateType)
+	if c1.Activity.Type != as.CreateType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.CreateType)
 	}
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
@@ -74,19 +75,19 @@ func TestUpdateActivityNewWithApplication(t *testing.T) {
 	}
 }
 
-func TestUpdateActivityNewWithGroup(t *testing.T) {
+func TestCreateActivityNewWithGroup(t *testing.T) {
 	testValue := as.ObjectID("my:note")
 	n := as.ObjectNew(as.NoteType)
 	n.ID = "my:note"
 	g := as.GroupNew("users")
 
-	c1 := UpdateActivityNew(testValue, *g, n)
+	c1 := CreateActivityNew(testValue, *g, n)
 	now := time.Now()
 	if c1.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c1.Activity.ID, testValue)
 	}
-	if c1.Activity.Type != as.UpdateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.UpdateType)
+	if c1.Activity.Type != as.CreateType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.CreateType)
 	}
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
@@ -111,19 +112,19 @@ func TestUpdateActivityNewWithGroup(t *testing.T) {
 	}
 }
 
-func TestUpdateActivityNewWithOrganization(t *testing.T) {
+func TestCreateActivityNewWithOrganization(t *testing.T) {
 	testValue := as.ObjectID("my:note")
 	n := as.ObjectNew(as.NoteType)
 	n.ID = "my:note"
 	o := as.OrganizationNew("users")
 
-	c1 := UpdateActivityNew(testValue, *o, n)
+	c1 := CreateActivityNew(testValue, *o, n)
 	now := time.Now()
 	if c1.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c1.Activity.ID, testValue)
 	}
-	if c1.Activity.Type != as.UpdateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.UpdateType)
+	if c1.Activity.Type != as.CreateType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.CreateType)
 	}
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
@@ -148,19 +149,19 @@ func TestUpdateActivityNewWithOrganization(t *testing.T) {
 	}
 }
 
-func TestUpdateActivityNewWithPerson(t *testing.T) {
+func TestCreateActivityNewWithPerson(t *testing.T) {
 	testValue := as.ObjectID("my:note")
 	n := as.ObjectNew(as.NoteType)
 	n.ID = "my:note"
 	b := as.PersonNew("bob")
 
-	c1 := UpdateActivityNew(testValue, *b, n)
+	c1 := CreateActivityNew(testValue, *b, n)
 	now := time.Now()
 	if c1.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c1.Activity.ID, testValue)
 	}
-	if c1.Activity.Type != as.UpdateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.UpdateType)
+	if c1.Activity.Type != as.CreateType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.CreateType)
 	}
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
@@ -185,19 +186,19 @@ func TestUpdateActivityNewWithPerson(t *testing.T) {
 	}
 }
 
-func TestUpdateActivityNewWithService(t *testing.T) {
+func TestCreateActivityNewWithService(t *testing.T) {
 	testValue := as.ObjectID("my:note")
 	n := as.ObjectNew(as.NoteType)
 	n.ID = "my:note"
 	s := as.ServiceNew("::zz::")
 
-	c1 := UpdateActivityNew(testValue, *s, n)
+	c1 := CreateActivityNew(testValue, *s, n)
 	now := time.Now()
 	if c1.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c1.Activity.ID, testValue)
 	}
-	if c1.Activity.Type != as.UpdateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.UpdateType)
+	if c1.Activity.Type != as.CreateType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.CreateType)
 	}
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
@@ -222,19 +223,19 @@ func TestUpdateActivityNewWithService(t *testing.T) {
 	}
 }
 
-func TestUpdateActivityNewWithActor(t *testing.T) {
+func TestCreateActivityNewWithActor(t *testing.T) {
 	testValue := as.ObjectID("my:note")
 	n := as.ObjectNew(as.NoteType)
 	n.ID = "my:note"
 	a := as.ActorNew("bob", as.ActorType)
 
-	c1 := UpdateActivityNew(testValue, *a, n)
+	c1 := CreateActivityNew(testValue, *a, n)
 	now := time.Now()
 	if c1.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c1.Activity.ID, testValue)
 	}
-	if c1.Activity.Type != as.UpdateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.UpdateType)
+	if c1.Activity.Type != as.CreateType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.CreateType)
 	}
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)

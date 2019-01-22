@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	as "github.com/go-ap/activitypub.go/activitystreams"
+	as "github.com/go-ap/activitystreams"
 )
 
 func TestNewClient(t *testing.T) {

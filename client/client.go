@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	as "github.com/go-ap/activitypub.go/activitystreams"
+	as "github.com/go-ap/activitystreams"
 )
 
 type RequestSignFn func(*http.Request) error

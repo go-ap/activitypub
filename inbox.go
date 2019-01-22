@@ -3,7 +3,7 @@ package activitypub
 import (
 	"fmt"
 
-	as "github.com/go-ap/activitypub.go/activitystreams"
+	as "github.com/go-ap/activitystreams"
 )
 
 type (

@@ -1,6 +1,6 @@
 package activitypub
 
-import as "github.com/go-ap/activitypub.go/activitystreams"
+import as "github.com/go-ap/activitystreams"
 
 type (
 	// SharesCollection is a list of all Announce activities with this object as the object property,

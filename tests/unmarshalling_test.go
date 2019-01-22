@@ -11,9 +11,9 @@ import (
 	"time"
 	"unsafe"
 
-	ap "github.com/go-ap/activitypub.go/activitypub"
-	a "github.com/go-ap/activitypub.go/activitystreams"
-	j "github.com/go-ap/activitypub.go/jsonld"
+	ap "github.com/go-ap/activitypub"
+	a "github.com/go-ap/activitystreams"
+	j "github.com/go-ap/jsonld"
 )
 
 const dir = "./mocks"

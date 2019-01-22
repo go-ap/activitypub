@@ -3,7 +3,7 @@ package activitypub
 import (
 	"time"
 
-	as "github.com/go-ap/activitypub.go/activitystreams"
+	as "github.com/go-ap/activitystreams"
 )
 
 // CreateActivity is the type for a create activity message

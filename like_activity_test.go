@@ -1,43 +1,42 @@
 package activitypub
 
 import (
+	as "github.com/go-ap/activitystreams"
 	"reflect"
 	"testing"
 	"time"
-
-	as "github.com/go-ap/activitypub.go/activitystreams"
 )
 
-func TestCreateActivityNew(t *testing.T) {
+func TestLikeActivityNew(t *testing.T) {
 	var testValue = as.ObjectID("test")
 	var now time.Time
 
-	c := CreateActivityNew(testValue, nil, nil)
+	c := LikeActivityNew(testValue, nil, nil)
 	now = time.Now()
 	if c.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c.Activity.ID, testValue)
 	}
-	if c.Activity.Type != as.CreateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c.Activity.Type, as.CreateType)
+	if c.Activity.Type != as.LikeType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c.Activity.Type, as.LikeType)
 	}
 	if now.Sub(c.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c.Published, now)
 	}
 }
 
-func TestCreateActivityNewWithApplication(t *testing.T) {
+func TestLikeActivityNewWithApplication(t *testing.T) {
 	testValue := as.ObjectID("my:note")
 	n := as.ObjectNew(as.NoteType)
 	n.ID = "my:note"
 	a := as.ApplicationNew("some::app::")
 
-	c1 := CreateActivityNew(testValue, *a, n)
+	c1 := LikeActivityNew(testValue, *a, n)
 	now := time.Now()
 	if c1.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c1.Activity.ID, testValue)
 	}
-	if c1.Activity.Type != as.CreateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.CreateType)
+	if c1.Activity.Type != as.LikeType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.LikeType)
 	}
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
@@ -60,34 +59,34 @@ func TestCreateActivityNewWithApplication(t *testing.T) {
 	if !reflect.DeepEqual(c1.Activity.Object, n) {
 		t.Errorf("GetID %#v different than expected %#v", c1.Activity.Object, n)
 	}
-	in := c1.Activity.Actor.(as.Application).Inbox.(*as.OrderedCollection)
+	in := c1.Activity.Actor.(as.Application).Liked.(*as.OrderedCollection)
 	if in.TotalItems != 1 {
-		t.Errorf("Inbox collection of %q should have exactly one element, not %d", *c1.Activity.Actor.GetID(), in.TotalItems)
+		t.Errorf("Liked collection of %q should have exactly one element, not %d", *c1.Activity.Actor.GetID(), in.TotalItems)
 	}
 	if len(in.OrderedItems) != 1 {
-		t.Errorf("Inbox collection length of %q should have exactly one element, not %d", *c1.Activity.Actor.GetID(), len(in.OrderedItems))
+		t.Errorf("Liked collection length of %q should have exactly one element, not %d", *c1.Activity.Actor.GetID(), len(in.OrderedItems))
 	}
 	if in.TotalItems != uint(len(in.OrderedItems)) {
-		t.Errorf("Inbox collection length of %q should have same size as TotalItems, %d vs %d", *c1.Activity.Actor.GetID(), in.TotalItems, len(in.OrderedItems))
+		t.Errorf("Liked collection length of %q should have same size as TotalItems, %d vs %d", *c1.Activity.Actor.GetID(), in.TotalItems, len(in.OrderedItems))
 	}
 	if !reflect.DeepEqual(in.OrderedItems[0].GetID(), n.GetID()) {
-		t.Errorf("First item in Inbox is does not match %q", *n.GetID())
+		t.Errorf("First item in Liked is does not match %q", *n.GetID())
 	}
 }
 
-func TestCreateActivityNewWithGroup(t *testing.T) {
+func TestLikeActivityNewWithGroup(t *testing.T) {
 	testValue := as.ObjectID("my:note")
 	n := as.ObjectNew(as.NoteType)
 	n.ID = "my:note"
 	g := as.GroupNew("users")
 
-	c1 := CreateActivityNew(testValue, *g, n)
+	c1 := LikeActivityNew(testValue, *g, n)
 	now := time.Now()
 	if c1.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c1.Activity.ID, testValue)
 	}
-	if c1.Activity.Type != as.CreateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.CreateType)
+	if c1.Activity.Type != as.LikeType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.LikeType)
 	}
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
@@ -112,19 +111,18 @@ func TestCreateActivityNewWithGroup(t *testing.T) {
 	}
 }
 
-func TestCreateActivityNewWithOrganization(t *testing.T) {
+func TestLikeActivityNewWithOrganization(t *testing.T) {
 	testValue := as.ObjectID("my:note")
 	n := as.ObjectNew(as.NoteType)
-	n.ID = "my:note"
 	o := as.OrganizationNew("users")
 
-	c1 := CreateActivityNew(testValue, *o, n)
+	c1 := LikeActivityNew(testValue, *o, n)
 	now := time.Now()
 	if c1.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c1.Activity.ID, testValue)
 	}
-	if c1.Activity.Type != as.CreateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.CreateType)
+	if c1.Activity.Type != as.LikeType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.LikeType)
 	}
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
@@ -149,19 +147,19 @@ func TestCreateActivityNewWithOrganization(t *testing.T) {
 	}
 }
 
-func TestCreateActivityNewWithPerson(t *testing.T) {
+func TestLikeActivityNewWithPerson(t *testing.T) {
 	testValue := as.ObjectID("my:note")
 	n := as.ObjectNew(as.NoteType)
 	n.ID = "my:note"
 	b := as.PersonNew("bob")
 
-	c1 := CreateActivityNew(testValue, *b, n)
+	c1 := LikeActivityNew(testValue, *b, n)
 	now := time.Now()
 	if c1.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c1.Activity.ID, testValue)
 	}
-	if c1.Activity.Type != as.CreateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.CreateType)
+	if c1.Activity.Type != as.LikeType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.LikeType)
 	}
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
@@ -186,19 +184,19 @@ func TestCreateActivityNewWithPerson(t *testing.T) {
 	}
 }
 
-func TestCreateActivityNewWithService(t *testing.T) {
+func TestLikeActivityNewWithService(t *testing.T) {
 	testValue := as.ObjectID("my:note")
 	n := as.ObjectNew(as.NoteType)
 	n.ID = "my:note"
 	s := as.ServiceNew("::zz::")
 
-	c1 := CreateActivityNew(testValue, *s, n)
+	c1 := LikeActivityNew(testValue, *s, n)
 	now := time.Now()
 	if c1.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c1.Activity.ID, testValue)
 	}
-	if c1.Activity.Type != as.CreateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.CreateType)
+	if c1.Activity.Type != as.LikeType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.LikeType)
 	}
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)
@@ -223,19 +221,19 @@ func TestCreateActivityNewWithService(t *testing.T) {
 	}
 }
 
-func TestCreateActivityNewWithActor(t *testing.T) {
+func TestLikeActivityNewWithActor(t *testing.T) {
 	testValue := as.ObjectID("my:note")
 	n := as.ObjectNew(as.NoteType)
 	n.ID = "my:note"
 	a := as.ActorNew("bob", as.ActorType)
 
-	c1 := CreateActivityNew(testValue, *a, n)
+	c1 := LikeActivityNew(testValue, *a, n)
 	now := time.Now()
 	if c1.Activity.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", c1.Activity.ID, testValue)
 	}
-	if c1.Activity.Type != as.CreateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.CreateType)
+	if c1.Activity.Type != as.LikeType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", c1.Activity.Type, as.LikeType)
 	}
 	if now.Sub(c1.Published).Round(time.Millisecond) != 0 {
 		t.Errorf("Published time '%v' different than expected '%v'", c1.Published, now)

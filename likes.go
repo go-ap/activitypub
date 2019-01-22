@@ -1,6 +1,6 @@
 package activitypub
 
-import as "github.com/go-ap/activitypub.go/activitystreams"
+import as "github.com/go-ap/activitystreams"
 
 type (
 	// LikesCollection is a list of all Like activities with this object as the object property,
