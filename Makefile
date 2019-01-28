@@ -3,8 +3,6 @@ TEST_FLAGS ?= -v
 TEST_TARGET ?= ./...
 GO111MODULE=on
 
-export GOPATH += $$GOPATH:$(shell pwd)
-
 test:
 	$(TEST) $(TEST_FLAGS) $(TEST_TARGET)
 
