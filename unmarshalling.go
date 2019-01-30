@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
-	"strings"
 	"time"
 
 	"github.com/buger/jsonparser"
@@ -18,19 +17,13 @@ var (
 	textUnmarshalerType = reflect.TypeOf(new(encoding.TextUnmarshaler)).Elem()
 )
 
-type mockObj map[string]json.RawMessage
+// ItemTyperFunc will return an instance of a struct that implements activitystreams.Item
+// The default for this package is JSONGetItemByType but can be overwritten
+var ItemTyperFunc TyperFunction = JSONGetItemByType
 
-func getType(j json.RawMessage) ActivityVocabularyType {
-	mock := make(mockObj, 0)
-	json.Unmarshal([]byte(j), &mock)
-
-	for key, val := range mock {
-		if strings.ToLower(key) == "type" {
-			return ActivityVocabularyType(strings.Trim(string(val), "\""))
-		}
-	}
-	return ""
-}
+// TyperFunction is the type of the function which returns an activitystreams.Item struct instance
+// for a specific ActivityVocabularyType
+type TyperFunction func(ActivityVocabularyType) (Item, error)
 
 func JSONGetObjectID(data []byte) ObjectID {
 	i, err := jsonparser.GetString(data, "id")
@@ -111,7 +104,7 @@ func JSONUnmarshalToItem(data []byte) Item {
 		return IRI(data)
 	}
 
-	i, err := getAPObjectByType(JSONGetType(data))
+	i, err := ItemTyperFunc(JSONGetType(data))
 	if err != nil {
 		return nil
 	}
@@ -203,7 +196,7 @@ func JSONGetURIItem(data []byte, prop string) Item {
 				it.Append(IRI(value))
 				return
 			}
-			i, err := getAPObjectByType(JSONGetType(value))
+			i, err := ItemTyperFunc(JSONGetType(value))
 			if err != nil {
 				return
 			}
@@ -275,7 +268,7 @@ func unmarshal(data []byte, a interface{}) (interface{}, error) {
 					vv = reflect.ValueOf(m)
 				}
 				if cField.Type.Implements(apUnmarshalerType) {
-					o := getAPObjectByType(getType(j))
+					o := JSONGetItemByType(getType(j))
 					if o != nil {
 						jsonld.Unmarshal([]byte(j), o)
 						vv = reflect.ValueOf(o)
@@ -292,7 +285,7 @@ func unmarshal(data []byte, a interface{}) (interface{}, error) {
 }
 */
 
-func getAPObjectByType(typ ActivityVocabularyType) (Item, error) {
+func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
 	var ret Item
 	var err error
 
