@@ -56,19 +56,19 @@ type Actor Item
 
 type (
 	// Application describes a software application.
-	Application Object
+	Application = Object
 
 	// Group represents a formal or informal collective of Actors.
-	Group Object
+	Group = Object
 
 	// Organization represents an organization.
-	Organization Object
+	Organization = Object
 
 	// Person represents an individual person.
-	Person Object
+	Person = Object
 
 	// Service represents a service of any kind.
-	Service Object
+	Service = Object
 )
 
 // ValidActorType validates the passed type against the valid actor types
@@ -128,202 +128,4 @@ func ServiceNew(id ObjectID) *Service {
 	a := ActorNew(id, ServiceType)
 	o := Service(*a)
 	return &o
-}
-
-// IsLink validates if current Application is a Link
-func (a Application) IsLink() bool {
-	return a.Type == LinkType || ValidLinkType(a.Type)
-}
-
-// IsObject validates if current Application is an Object
-func (a Application) IsObject() bool {
-	return a.Type == ObjectType || ValidObjectType(a.Type)
-}
-
-// GetID returns the ObjectID corresponding to the  Application object
-func (a Application) GetID() *ObjectID {
-	return &a.ID
-}
-
-// GetLink returns the IRI corresponding to the Application object
-func (a Application) GetLink() IRI {
-	return IRI(a.ID)
-}
-
-// GetType returns the type corresponding to the Application object
-func (a Application) GetType() ActivityVocabularyType {
-	return a.Type
-}
-
-// IsLink validates if current Group is a Link
-func (g Group) IsLink() bool {
-	return g.Type == LinkType || ValidLinkType(g.Type)
-}
-
-// IsObject validates if current Group is an Object
-func (g Group) IsObject() bool {
-	return g.Type == ObjectType || ValidObjectType(g.Type)
-}
-
-// GetID returns the ObjectID corresponding to the  Group object
-func (g Group) GetID() *ObjectID {
-	return &g.ID
-}
-
-// GetLink returns the IRI corresponding to the Group object
-func (g Group) GetLink() IRI {
-	return IRI(g.ID)
-}
-
-// GetType returns the type corresponding to the Group object
-func (g Group) GetType() ActivityVocabularyType {
-	return g.Type
-}
-
-// IsLink validates if current Organization is a Link
-func (o Organization) IsLink() bool {
-	return o.Type == LinkType || ValidLinkType(o.Type)
-}
-
-// IsObject validates if current Organization is an Object
-func (o Organization) IsObject() bool {
-	return o.Type == ObjectType || ValidObjectType(o.Type)
-}
-
-// GetID returns the ObjectID corresponding to the  Organization object
-func (o Organization) GetID() *ObjectID {
-	return &o.ID
-}
-
-// GetLink returns the IRI corresponding to the Organization object
-func (o Organization) GetLink() IRI {
-	return IRI(o.ID)
-}
-
-// GetType returns the type corresponding to the Organization object
-func (o Organization) GetType() ActivityVocabularyType {
-	return o.Type
-}
-
-// IsLink validates if current Service is a Link
-func (s Service) IsLink() bool {
-	return s.Type == LinkType || ValidLinkType(s.Type)
-}
-
-// IsObject validates if current Service is an Object
-func (s Service) IsObject() bool {
-	return s.Type == ObjectType || ValidObjectType(s.Type)
-}
-
-// GetID returns the ObjectID corresponding to the Service object
-func (s Service) GetID() *ObjectID {
-	return &s.ID
-}
-
-// GetLink returns the IRI corresponding to the Service object
-func (s Service) GetLink() IRI {
-	return IRI(s.ID)
-}
-
-// GetType returns the type corresponding to the Service object
-func (s Service) GetType() ActivityVocabularyType {
-	return s.Type
-}
-
-// IsLink validates if current Person is a Link
-func (p Person) IsLink() bool {
-	return p.Type == LinkType || ValidLinkType(p.Type)
-}
-
-// IsObject validates if current Person is an Object
-func (p Person) IsObject() bool {
-	return p.Type == ObjectType || ValidObjectType(p.Type)
-}
-
-// GetID returns the ObjectID corresponding to the Person object
-func (p Person) GetID() *ObjectID {
-	return &p.ID
-}
-
-// GetType returns the object type for the current Person object
-func (p Person) GetType() ActivityVocabularyType {
-	return p.Type
-}
-
-// GetLink returns the IRI corresponding to the Person object
-func (p Person) GetLink() IRI {
-	return IRI(p.ID)
-}
-
-func (p *Person) UnmarshalJSON(data []byte) error {
-	a := Object(*p)
-	err := a.UnmarshalJSON(data)
-
-	*p = Person(a)
-
-	return err
-}
-
-// UnmarshalJSON
-func (a *Application) UnmarshalJSON(data []byte) error {
-	act := Object(*a)
-	err := act.UnmarshalJSON(data)
-
-	*a = Application(act)
-
-	return err
-}
-
-// UnmarshalJSON
-func (g *Group) UnmarshalJSON(data []byte) error {
-	a := Object(*g)
-	err := a.UnmarshalJSON(data)
-
-	*g = Group(a)
-
-	return err
-}
-
-// UnmarshalJSON
-func (o *Organization) UnmarshalJSON(data []byte) error {
-	a := Object(*o)
-	err := a.UnmarshalJSON(data)
-
-	*o = Organization(a)
-
-	return err
-}
-
-// UnmarshalJSON
-func (s *Service) UnmarshalJSON(data []byte) error {
-	a := Object(*s)
-	err := a.UnmarshalJSON(data)
-
-	*s = Service(a)
-	return err
-}
-
-// GetActor returns the underlying Actor type
-func (a Application) GetActor() Actor {
-	return a
-}
-
-// GetActor returns the underlying Actor type
-func (g Group) GetActor() Actor {
-	return g
-}
-
-// GetActor returns the underlying Actor type
-func (o Organization) GetActor() Actor {
-	return o
-}
-
-// GetActor returns the underlying Actor type
-func (p Person) GetActor() Actor {
-	return p
-}
-
-// GetActor returns the underlying Actor type
-func (s Service) GetActor() Actor {
-	return s
 }

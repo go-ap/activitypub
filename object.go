@@ -346,21 +346,21 @@ type (
 	// including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
 	Object = object
 	// Article represents any kind of multi-paragraph written work.
-	Article Object
+	Article = Object
 	// Audio represents an audio document of any kind.
-	Audio Document
+	Audio = Document
 	// Document represents a document of any kind.
-	Document Object
+	Document = Object
 	// Event represents any kind of event.
-	Event Object
+	Event = Object
 	// Image An image document of any kind
-	Image Document
+	Image = Document
 	// Note represents a short written work typically less than a single paragraph in length.
-	Note Object
+	Note = Object
 	// Page represents a Web Page.
-	Page Document
+	Page = Document
 	// Video represents a video document of any kind
-	Video Document
+	Video = Document
 )
 
 // Place represents a logical or physical location. See 5.3 Representing Places for additional information.
