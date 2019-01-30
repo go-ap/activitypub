@@ -45,7 +45,6 @@ type Endpoints struct {
 }
 
 type WillAct interface {
-	Item
 	GetActor() Actor
 }
 
@@ -53,52 +52,23 @@ type WillAct interface {
 // For example, a Profile object might be used as an actor, or a type from an ActivityStreams extension.
 // Actors are retrieved like any other Object in ActivityPub.
 // Like other ActivityStreams objects, actors have an id, which is a URI.
-type Actor struct {
-	Parent
-	// A reference to an [ActivityStreams] OrderedCollection comprised of all the messages received by the actor;
-	// see 5.2 Inbox.
-	Inbox Item `jsonld:"inbox,omitempty"`
-	// An [ActivityStreams] OrderedCollection comprised of all the messages produced by the actor;
-	// see 5.1 Outbox.
-	Outbox Item `jsonld:"outbox,omitempty"`
-	// A link to an [ActivityStreams] collection of the actors that this actor is following;
-	// see 5.4 Following Collection
-	Following Item `jsonld:"following,omitempty"`
-	// A link to an [ActivityStreams] collection of the actors that follow this actor;
-	// see 5.3 Followers Collection.
-	Followers Item `jsonld:"followers,omitempty"`
-	// A link to an [ActivityStreams] collection of the actors that follow this actor;
-	// see 5.3 Followers Collection.
-	Liked Item `jsonld:"liked,omitempty"`
-	// A short username which may be used to refer to the actor, with no uniqueness guarantees.
-	PreferredUsername NaturalLanguageValue `jsonld:"preferredUsername,omitempty,collapsible"`
-	// A json object which maps additional (typically server/domain-wide) endpoints which may be useful either
-	// for this actor or someone referencing this actor.
-	// This mapping may be nested inside the actor document as the value or may be a link
-	// to a JSON-LD document with these properties.
-	Endpoints Endpoints `jsonld:"endpoints,omitempty"`
-	// A list of supplementary Collections which may be of interest.
-	Streams []Item `jsonld:"streams,omitempty"`
-}
-
-// ActorInterface
-type ActorInterface interface{}
+type Actor Item
 
 type (
 	// Application describes a software application.
-	Application Actor
+	Application Object
 
 	// Group represents a formal or informal collective of Actors.
-	Group Actor
+	Group Object
 
 	// Organization represents an organization.
-	Organization Actor
+	Organization Object
 
 	// Person represents an individual person.
-	Person Actor
+	Person Object
 
 	// Service represents a service of any kind.
-	Service Actor
+	Service Object
 )
 
 // ValidActorType validates the passed type against the valid actor types
@@ -112,23 +82,15 @@ func ValidActorType(typ ActivityVocabularyType) bool {
 }
 
 // ActorNew initializes an Actor type actor
-func ActorNew(id ObjectID, typ ActivityVocabularyType) *Actor {
+func ActorNew(id ObjectID, typ ActivityVocabularyType) *Object {
 	if !ValidActorType(typ) {
 		typ = ActorType
 	}
 
-	a := Actor{Parent: Parent{ID: id, Type: typ}}
+	a := Object{ID: id, Type: typ}
 	a.Name = NaturalLanguageValueNew()
 	a.Content = NaturalLanguageValueNew()
 	a.Summary = NaturalLanguageValueNew()
-	in := OrderedCollectionNew(ObjectID("test-inbox"))
-	out := OrderedCollectionNew(ObjectID("test-outbox"))
-	liked := OrderedCollectionNew(ObjectID("test-liked"))
-
-	a.Inbox = in
-	a.Outbox = out
-	a.Liked = liked
-	a.PreferredUsername = NaturalLanguageValueNew()
 
 	return &a
 }
@@ -168,31 +130,6 @@ func ServiceNew(id ObjectID) *Service {
 	return &o
 }
 
-// IsLink validates if current Actor is a Link
-func (a Actor) IsLink() bool {
-	return a.Type == LinkType || ValidLinkType(a.Type)
-}
-
-// IsObject validates if current Actor is an Object
-func (a Actor) IsObject() bool {
-	return a.Type == ObjectType || ValidObjectType(a.Type)
-}
-
-// GetID returns the ObjectID corresponding to the Actor object
-func (a Actor) GetID() *ObjectID {
-	return &a.ID
-}
-
-// GetLink returns the IRI corresponding to the Actor object
-func (a Actor) GetLink() IRI {
-	return IRI(a.ID)
-}
-
-// GetType returns the type corresponding to the Actor object
-func (a Actor) GetType() ActivityVocabularyType {
-	return a.Type
-}
-
 // IsLink validates if current Application is a Link
 func (a Application) IsLink() bool {
 	return a.Type == LinkType || ValidLinkType(a.Type)
@@ -205,7 +142,7 @@ func (a Application) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the  Application object
 func (a Application) GetID() *ObjectID {
-	return a.GetActor().GetID()
+	return &a.ID
 }
 
 // GetLink returns the IRI corresponding to the Application object
@@ -230,7 +167,7 @@ func (g Group) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the  Group object
 func (g Group) GetID() *ObjectID {
-	return g.GetActor().GetID()
+	return &g.ID
 }
 
 // GetLink returns the IRI corresponding to the Group object
@@ -255,7 +192,7 @@ func (o Organization) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the  Organization object
 func (o Organization) GetID() *ObjectID {
-	return o.GetActor().GetID()
+	return &o.ID
 }
 
 // GetLink returns the IRI corresponding to the Organization object
@@ -280,7 +217,7 @@ func (s Service) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the Service object
 func (s Service) GetID() *ObjectID {
-	return s.GetActor().GetID()
+	return &s.ID
 }
 
 // GetLink returns the IRI corresponding to the Service object
@@ -305,7 +242,7 @@ func (p Person) IsObject() bool {
 
 // GetID returns the ObjectID corresponding to the Person object
 func (p Person) GetID() *ObjectID {
-	return p.GetActor().GetID()
+	return &p.ID
 }
 
 // GetType returns the object type for the current Person object
@@ -318,43 +255,8 @@ func (p Person) GetLink() IRI {
 	return IRI(p.ID)
 }
 
-// UnmarshalJSON
-func (a *Actor) UnmarshalJSON(data []byte) error {
-	a.Parent.UnmarshalJSON(data)
-
-	a.PreferredUsername = getAPNaturalLanguageField(data, "preferredUsername")
-
-	out := getAPItem(data, "outbox")
-	if out != nil {
-		a.Outbox = out
-	}
-	inb := getAPItem(data, "inbox")
-	if inb != nil {
-		a.Inbox = inb
-	}
-	followers := getAPItem(data, "followers")
-	if followers != nil {
-		a.Followers = followers
-	}
-	following := getAPItem(data, "following")
-	if following != nil {
-		a.Following = following
-	}
-	liked := getAPItem(data, "liked")
-	if liked != nil {
-		a.Liked = liked
-	}
-	streams := getAPItems(data, "streams")
-	if streams != nil {
-		a.Streams = streams
-	}
-	// @todo(marius) : Add getAPIEndPoints
-
-	return nil
-}
-
 func (p *Person) UnmarshalJSON(data []byte) error {
-	a := p.GetActor()
+	a := Object(*p)
 	err := a.UnmarshalJSON(data)
 
 	*p = Person(a)
@@ -364,7 +266,7 @@ func (p *Person) UnmarshalJSON(data []byte) error {
 
 // UnmarshalJSON
 func (a *Application) UnmarshalJSON(data []byte) error {
-	act := a.GetActor()
+	act := Object(*a)
 	err := act.UnmarshalJSON(data)
 
 	*a = Application(act)
@@ -374,7 +276,7 @@ func (a *Application) UnmarshalJSON(data []byte) error {
 
 // UnmarshalJSON
 func (g *Group) UnmarshalJSON(data []byte) error {
-	a := g.GetActor()
+	a := Object(*g)
 	err := a.UnmarshalJSON(data)
 
 	*g = Group(a)
@@ -384,7 +286,7 @@ func (g *Group) UnmarshalJSON(data []byte) error {
 
 // UnmarshalJSON
 func (o *Organization) UnmarshalJSON(data []byte) error {
-	a := o.GetActor()
+	a := Object(*o)
 	err := a.UnmarshalJSON(data)
 
 	*o = Organization(a)
@@ -394,40 +296,34 @@ func (o *Organization) UnmarshalJSON(data []byte) error {
 
 // UnmarshalJSON
 func (s *Service) UnmarshalJSON(data []byte) error {
-	a := s.GetActor()
+	a := Object(*s)
 	err := a.UnmarshalJSON(data)
 
 	*s = Service(a)
-
 	return err
 }
 
 // GetActor returns the underlying Actor type
-func (a Actor) GetActor() Actor {
+func (a Application) GetActor() Actor {
 	return a
 }
 
 // GetActor returns the underlying Actor type
-func (a Application) GetActor() Actor {
-	return Actor(a)
-}
-
-// GetActor returns the underlying Actor type
 func (g Group) GetActor() Actor {
-	return Actor(g)
+	return g
 }
 
 // GetActor returns the underlying Actor type
 func (o Organization) GetActor() Actor {
-	return Actor(o)
+	return o
 }
 
 // GetActor returns the underlying Actor type
 func (p Person) GetActor() Actor {
-	return Actor(p)
+	return p
 }
 
 // GetActor returns the underlying Actor type
 func (s Service) GetActor() Actor {
-	return Actor(s)
+	return s
 }
