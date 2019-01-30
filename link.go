@@ -116,12 +116,12 @@ func (m Mention) GetType() ActivityVocabularyType {
 
 // UnmarshalJSON
 func (l *Link) UnmarshalJSON(data []byte) error {
-	l.ID = getAPObjectID(data)
-	l.Type = getAPType(data)
-	l.MediaType = getAPMimeType(data)
-	l.Name = getAPNaturalLanguageField(data, "name")
-	l.HrefLang = getAPLangRefField(data, "hrefLang")
-	u := getURIField(data, "href")
+	l.ID = JSONGetObjectID(data)
+	l.Type = JSONGetType(data)
+	l.MediaType = JSONGetMimeType(data)
+	l.Name = JSONGetNaturalLanguageField(data, "name")
+	l.HrefLang = JSONGetLangRefField(data, "hrefLang")
+	u := JSONGetURIItem(data, "href")
 	if u != nil && !u.IsObject() {
 		l.Href = u.GetLink()
 	}

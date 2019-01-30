@@ -528,45 +528,45 @@ func (c *MimeType) UnmarshalJSON(data []byte) error {
 
 // UnmarshalJSON
 func (o *Object) UnmarshalJSON(data []byte) error {
-	o.ID = getAPObjectID(data)
-	o.Type = getAPType(data)
-	o.Name = getAPNaturalLanguageField(data, "name")
-	o.Content = getAPNaturalLanguageField(data, "content")
-	o.Summary = getAPNaturalLanguageField(data, "summary")
-	o.Context = getAPItem(data, "context")
-	o.URL = getURIField(data, "url")
-	o.MediaType = MimeType(getAPString(data, "mediaType"))
-	o.Generator = getAPItem(data, "generator")
-	o.AttributedTo = getAPItem(data, "attributedTo")
-	o.InReplyTo = getAPItem(data, "inReplyTo")
-	o.Published = getAPTime(data, "published")
-	o.StartTime = getAPTime(data, "startTime")
-	o.EndTime = getAPTime(data, "endTime")
-	o.Duration = getAPDuration(data, "duration")
-	o.Icon = getAPItem(data, "icon")
-	o.Image = getAPItem(data, "image")
-	o.Updated = getAPTime(data, "updated")
-	to := getAPItems(data, "to")
+	o.ID = JSONGetObjectID(data)
+	o.Type = JSONGetType(data)
+	o.Name = JSONGetNaturalLanguageField(data, "name")
+	o.Content = JSONGetNaturalLanguageField(data, "content")
+	o.Summary = JSONGetNaturalLanguageField(data, "summary")
+	o.Context = JSONGetItem(data, "context")
+	o.URL = JSONGetURIItem(data, "url")
+	o.MediaType = MimeType(JSONGetString(data, "mediaType"))
+	o.Generator = JSONGetItem(data, "generator")
+	o.AttributedTo = JSONGetItem(data, "attributedTo")
+	o.InReplyTo = JSONGetItem(data, "inReplyTo")
+	o.Published = JSONGetTime(data, "published")
+	o.StartTime = JSONGetTime(data, "startTime")
+	o.EndTime = JSONGetTime(data, "endTime")
+	o.Duration = JSONGetDuration(data, "duration")
+	o.Icon = JSONGetItem(data, "icon")
+	o.Image = JSONGetItem(data, "image")
+	o.Updated = JSONGetTime(data, "updated")
+	to := JSONGetItems(data, "to")
 	if to != nil {
 		o.To = to
 	}
-	bto := getAPItems(data, "bto")
+	bto := JSONGetItems(data, "bto")
 	if bto != nil {
 		o.Bto = bto
 	}
-	cc := getAPItems(data, "cc")
+	cc := JSONGetItems(data, "cc")
 	if cc != nil {
 		o.CC = cc
 	}
-	bcc := getAPItems(data, "bcc")
+	bcc := JSONGetItems(data, "bcc")
 	if bcc != nil {
 		o.BCC = bcc
 	}
-	replies := getAPItem(data, "replies")
+	replies := JSONGetItem(data, "replies")
 	if replies != nil {
 		o.Replies = replies
 	}
-	tag := getAPItems(data, "tag")
+	tag := JSONGetItems(data, "tag")
 	if tag != nil {
 		o.Tag = tag
 	}

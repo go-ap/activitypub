@@ -1505,8 +1505,8 @@ func (v View) IsLink() bool {
 // UnmarshalJSON
 func (a *Activity) UnmarshalJSON(data []byte) error {
 	a.Parent.UnmarshalJSON(data)
-	a.Actor = getAPItem(data, "actor")
-	a.Object = getAPItem(data, "object")
+	a.Actor = JSONGetItem(data, "actor")
+	a.Object = JSONGetItem(data, "object")
 	return nil
 }
 

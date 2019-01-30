@@ -213,12 +213,12 @@ func (o OrderedCollection) IsObject() bool {
 func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
 	o.Parent.UnmarshalJSON(data)
 
-	o.TotalItems = uint(getAPInt(data, "totalItems"))
-	o.OrderedItems = getAPItems(data, "orderedItems")
+	o.TotalItems = uint(JSONGetInt(data, "totalItems"))
+	o.OrderedItems = JSONGetItems(data, "orderedItems")
 
-	o.Current = getAPItem(data, "current")
-	o.First = getAPItem(data, "first")
-	o.Last = getAPItem(data, "last")
+	o.Current = JSONGetItem(data, "current")
+	o.First = JSONGetItem(data, "first")
+	o.Last = JSONGetItem(data, "last")
 
 	return nil
 }
@@ -227,12 +227,12 @@ func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
 func (c *Collection) UnmarshalJSON(data []byte) error {
 	c.Parent.UnmarshalJSON(data)
 
-	c.TotalItems = uint(getAPInt(data, "totalItems"))
-	c.Items = getAPItems(data, "items")
+	c.TotalItems = uint(JSONGetInt(data, "totalItems"))
+	c.Items = JSONGetItems(data, "items")
 
-	c.Current = getAPItem(data, "current")
-	c.First = getAPItem(data, "first")
-	c.Last = getAPItem(data, "last")
+	c.Current = JSONGetItem(data, "current")
+	c.First = JSONGetItem(data, "first")
+	c.Last = JSONGetItem(data, "last")
 
 	return nil
 }
@@ -241,9 +241,9 @@ func (c *Collection) UnmarshalJSON(data []byte) error {
 func (o *OrderedCollectionPage) UnmarshalJSON(data []byte) error {
 	o.OrderedCollection.UnmarshalJSON(data)
 
-	o.Next = getAPItem(data, "next")
-	o.Prev = getAPItem(data, "prev")
-	o.PartOf = getAPItem(data, "partOf")
+	o.Next = JSONGetItem(data, "next")
+	o.Prev = JSONGetItem(data, "prev")
+	o.PartOf = JSONGetItem(data, "partOf")
 
 	if si, err := jsonparser.GetInt(data, "startIndex"); err != nil {
 		o.StartIndex = uint(si)
@@ -255,9 +255,9 @@ func (o *OrderedCollectionPage) UnmarshalJSON(data []byte) error {
 func (c *CollectionPage) UnmarshalJSON(data []byte) error {
 	c.Collection.UnmarshalJSON(data)
 
-	c.Next = getAPItem(data, "next")
-	c.Prev = getAPItem(data, "prev")
-	c.PartOf = getAPItem(data, "partOf")
+	c.Next = JSONGetItem(data, "next")
+	c.Prev = JSONGetItem(data, "prev")
+	c.PartOf = JSONGetItem(data, "partOf")
 
 	return nil
 }

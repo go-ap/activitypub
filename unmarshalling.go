@@ -32,7 +32,7 @@ func getType(j json.RawMessage) ActivityVocabularyType {
 	return ""
 }
 
-func getAPObjectID(data []byte) ObjectID {
+func JSONGetObjectID(data []byte) ObjectID {
 	i, err := jsonparser.GetString(data, "id")
 	if err != nil {
 		return ObjectID("")
@@ -40,7 +40,7 @@ func getAPObjectID(data []byte) ObjectID {
 	return ObjectID(i)
 }
 
-func getAPType(data []byte) ActivityVocabularyType {
+func JSONGetType(data []byte) ActivityVocabularyType {
 	t, err := jsonparser.GetString(data, "type")
 	typ := ActivityVocabularyType(t)
 	if err != nil {
@@ -49,7 +49,7 @@ func getAPType(data []byte) ActivityVocabularyType {
 	return typ
 }
 
-func getAPMimeType(data []byte) MimeType {
+func JSONGetMimeType(data []byte) MimeType {
 	t, err := jsonparser.GetString(data, "mediaType")
 	if err != nil {
 		return MimeType("")
@@ -57,21 +57,21 @@ func getAPMimeType(data []byte) MimeType {
 	return MimeType(t)
 }
 
-func getAPInt(data []byte, prop string) int64 {
+func JSONGetInt(data []byte, prop string) int64 {
 	val, err := jsonparser.GetInt(data, prop)
 	if err != nil {
 	}
 	return val
 }
 
-func getAPString(data []byte, prop string) string {
+func JSONGetString(data []byte, prop string) string {
 	val, err := jsonparser.GetString(data, prop)
 	if err != nil {
 	}
 	return val
 }
 
-func getAPNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
+func JSONGetNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
 	n := NaturalLanguageValue{}
 	val, typ, _, err := jsonparser.Get(data, prop)
 	if err != nil {
@@ -92,26 +92,26 @@ func getAPNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
 	return n
 }
 
-func getAPTime(data []byte, prop string) time.Time {
+func JSONGetTime(data []byte, prop string) time.Time {
 	t := time.Time{}
 	str, _ := jsonparser.GetUnsafeString(data, prop)
 	t.UnmarshalText([]byte(str))
 	return t
 }
 
-func getAPDuration(data []byte, prop string) time.Duration {
+func JSONGetDuration(data []byte, prop string) time.Duration {
 	str, _ := jsonparser.GetUnsafeString(data, prop)
 	d, _ := time.ParseDuration(str)
 	return d
 }
 
-func unmarshalToAPObject(data []byte) Item {
+func JSONUnmarshalToItem(data []byte) Item {
 	if _, err := url.ParseRequestURI(string(data)); err == nil {
 		// try to see if it's an IRI
 		return IRI(data)
 	}
 
-	i, err := getAPObjectByType(getAPType(data))
+	i, err := getAPObjectByType(JSONGetType(data))
 	if err != nil {
 		return nil
 	}
@@ -128,7 +128,7 @@ func unmarshalToAPObject(data []byte) Item {
 	return i
 }
 
-func getAPItem(data []byte, prop string) Item {
+func JSONGetItem(data []byte, prop string) Item {
 	val, typ, _, err := jsonparser.Get(data, prop)
 	if err != nil {
 		return nil
@@ -140,7 +140,7 @@ func getAPItem(data []byte, prop string) Item {
 			return IRI(val)
 		}
 	case jsonparser.Object:
-		return unmarshalToAPObject(val)
+		return JSONUnmarshalToItem(val)
 	case jsonparser.Number:
 		fallthrough
 	case jsonparser.Array:
@@ -157,7 +157,7 @@ func getAPItem(data []byte, prop string) Item {
 	return nil
 }
 
-func getAPItems(data []byte, prop string) ItemCollection {
+func JSONGetItems(data []byte, prop string) ItemCollection {
 	val, typ, _, err := jsonparser.Get(data, prop)
 	if err != nil {
 		return nil
@@ -167,14 +167,14 @@ func getAPItems(data []byte, prop string) ItemCollection {
 	switch typ {
 	case jsonparser.Array:
 		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			i := unmarshalToAPObject(value)
+			i := JSONUnmarshalToItem(value)
 			if i != nil {
 				it.Append(i)
 			}
 		}, prop)
 	case jsonparser.Object:
 		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
-			i := unmarshalToAPObject(value)
+			i := JSONUnmarshalToItem(value)
 			if i != nil {
 				it.Append(i)
 			}
@@ -187,7 +187,7 @@ func getAPItems(data []byte, prop string) ItemCollection {
 	return it
 }
 
-func getURIField(data []byte, prop string) Item {
+func JSONGetURIItem(data []byte, prop string) Item {
 	val, typ, _, err := jsonparser.Get(data, prop)
 	if err != nil {
 		return nil
@@ -195,7 +195,7 @@ func getURIField(data []byte, prop string) Item {
 
 	switch typ {
 	case jsonparser.Object:
-		return getAPItem(data, prop)
+		return JSONGetItem(data, prop)
 	case jsonparser.Array:
 		var it ItemCollection
 		jsonparser.ArrayEach(val, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
@@ -203,7 +203,7 @@ func getURIField(data []byte, prop string) Item {
 				it.Append(IRI(value))
 				return
 			}
-			i, err := getAPObjectByType(getAPType(value))
+			i, err := getAPObjectByType(JSONGetType(value))
 			if err != nil {
 				return
 			}
@@ -222,7 +222,7 @@ func getURIField(data []byte, prop string) Item {
 	return nil
 }
 
-func getAPLangRefField(data []byte, prop string) LangRef {
+func JSONGetLangRefField(data []byte, prop string) LangRef {
 	val, err := jsonparser.GetString(data, prop)
 	if err != nil {
 		return LangRef("")
@@ -233,7 +233,7 @@ func getAPLangRefField(data []byte, prop string) LangRef {
 // UnmarshalJSON tries to detect the type of the object in the json data and then outputs a matching
 // ActivityStreams object, if possible
 func UnmarshalJSON(data []byte) (Item, error) {
-	return unmarshalToAPObject(data), nil
+	return JSONUnmarshalToItem(data), nil
 }
 
 /*
@@ -312,8 +312,8 @@ func getAPObjectByType(typ ActivityVocabularyType) (Item, error) {
 		o := ret.(*IntransitiveActivity)
 		o.Type = typ
 	case ActorType:
-		ret = &Actor{}
-		o := ret.(*Actor)
+		ret = &Object{}
+		o := ret.(*Object)
 		o.Type = typ
 	case CollectionType:
 		ret = &Collection{}
@@ -499,7 +499,7 @@ func getAPObjectByType(typ ActivityVocabularyType) (Item, error) {
 		ret = &Object{}
 	default:
 		ret = nil
-		err = fmt.Errorf("unrecognized ActivityPub type %q", typ)
+		err = fmt.Errorf("unrecognized ActivityStreams type %s", typ)
 	}
 	return ret, err
 }
