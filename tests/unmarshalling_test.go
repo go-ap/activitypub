@@ -133,14 +133,14 @@ func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool
 			if v1.IsNil() {
 				isNil1 = "is"
 			} else {
-				isNil1 = "isn't"
+				isNil1 = "is not"
 			}
 			if v2.IsNil() {
 				isNil2 = "is"
 			} else {
-				isNil2 = "isn't"
+				isNil2 = "is not"
 			}
-			t("Interface %q %s nil and %q %s nil", v1.Type().Name(), isNil1, v2.Type().Name(), isNil2)
+			t("Interface '%s' %s nil and '%s' %s nil", v1.Type().Name(), isNil1, v2.Type().Name(), isNil2)
 			return false
 		}
 		return deepValueEqual(t, v1.Elem(), v2.Elem(), visited, depth+1)
@@ -152,7 +152,7 @@ func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool
 	case reflect.Struct:
 		for i, n := 0, v1.NumField(); i < n; i++ {
 			if !deepValueEqual(t, v1.Field(i), v2.Field(i), visited, depth+1) {
-				t("Struct fields at pos %d %q:%q and %q:%q are not deeply equal", i, v1.Type().Field(i).Name, v1.Field(i).Type().Name(), v2.Type().Field(i).Name, v2.Field(i).Type().Name())
+				t("Struct fields at pos %d %s[%s] and %s[%s] are not deeply equal", i, v1.Type().Field(i).Name, v1.Field(i).Type().Name(), v2.Type().Field(i).Name, v2.Field(i).Type().Name())
 				if v1.Field(i).CanAddr() && v2.Field(i).CanAddr() {
 					t("  Values: %#v - %#v", v1.Field(i).Interface(), v2.Field(i).Interface())
 				}
@@ -196,122 +196,95 @@ var zLoc, _ = time.LoadLocation("UTC")
 var allTests = tests{
 	"empty": testPair{
 		expected: true,
-		blank:    &a.Object{},
-		result:   &a.Object{},
-	},
-	"link_simple": testPair{
-		expected: true,
-		blank:    &a.Link{},
-		result: &a.Link{
-			Type:      a.LinkType,
-			Href:      a.IRI("http://example.org/abc"),
-			HrefLang:  a.LangRef("en"),
-			MediaType: a.MimeType("text/html"),
-			Name: a.NaturalLanguageValue{{
-				a.NilLangRef, "An example link",
-			}},
-		},
+		blank:    &ap.Object{},
+		result:   &ap.Object{},
 	},
 	"object_with_url": testPair{
 		expected: true,
-		blank:    &a.Object{},
-		result: &a.Object{
-			URL: a.IRI("http://littr.git/api/accounts/system"),
-		},
+		blank:    &ap.Object{},
+		result: &ap.Object{ Parent: a.Object{URL: a.IRI("http://littr.git/api/accounts/system")}},
 	},
 	"object_with_url_collection": testPair{
 		expected: true,
-		blank:    &a.Object{},
-		result: &a.Object{
-			URL: a.ItemCollection{
-				a.IRI("http://littr.git/api/accounts/system"),
-				a.IRI("http://littr.git/~system"),
+		blank:    &ap.Object{},
+		result: &ap.Object{
+			Parent: a.Object{
+				URL: a.ItemCollection{
+					a.IRI("http://littr.git/api/accounts/system"),
+					a.IRI("http://littr.git/~system"),
+				},
 			},
 		},
 	},
 	"object_simple": testPair{
 		expected: true,
-		blank:    &a.Object{},
-		result: &a.Object{
-			Type: a.ObjectType,
-			ID:   a.ObjectID("http://www.test.example/object/1"),
-			Name: a.NaturalLanguageValue{{
-				a.NilLangRef, "A Simple, non-specific object",
-			}},
+		blank:    &ap.Object{},
+		result: &ap.Object{
+			Parent: a.Object{
+				Type: a.ObjectType,
+				ID:   a.ObjectID("http://www.test.example/object/1"),
+				Name: a.NaturalLanguageValue{{
+					a.NilLangRef, "A Simple, non-specific object",
+				}},
+			},
 		},
 	},
 	"object_with_tags": testPair{
 		expected: true,
-		blank:    &a.Object{},
-		result: &a.Object{
-			Type: a.ObjectType,
-			ID:   a.ObjectID("http://www.test.example/object/1"),
-			Name: a.NaturalLanguageValue{{
-				a.NilLangRef, "A Simple, non-specific object",
-			}},
-			Tag: a.ItemCollection{
-				&a.Object{
-					Name: a.NaturalLanguageValue{{
-						a.NilLangRef, "#my_tag",
-					}},
-					ID: a.ObjectID("http://example.com/tag/my_tag"),
-				},
-				&a.Mention{
-					Name: a.NaturalLanguageValue{{
-						a.NilLangRef, "@ana",
-					}},
-					Type: a.MentionType,
-					ID:   a.ObjectID("http://example.com/users/ana"),
+		blank:    &ap.Object{},
+		result: &ap.Object{
+			Parent: a.Object{
+				Type: a.ObjectType,
+				ID:   a.ObjectID("http://www.test.example/object/1"),
+				Name: a.NaturalLanguageValue{{
+					a.NilLangRef, "A Simple, non-specific object",
+				}},
+				Tag: a.ItemCollection{
+					&a.Object{
+						Name: a.NaturalLanguageValue{{
+							a.NilLangRef, "#my_tag",
+						}},
+						ID: a.ObjectID("http://example.com/tag/my_tag"),
+					},
+					&a.Mention{
+						Name: a.NaturalLanguageValue{{
+							a.NilLangRef, "@ana",
+						}},
+						Type: a.MentionType,
+						ID:   a.ObjectID("http://example.com/users/ana"),
+					},
 				},
 			},
 		},
 	},
 	"object_with_replies": testPair{
 		expected: true,
-		blank:    &a.Object{},
-		result: &a.Object{
-			Type: a.ObjectType,
-			ID:   a.ObjectID("http://www.test.example/object/1"),
-			Replies: &a.Collection{
-				Parent: a.Parent{
-					ID:   a.ObjectID("http://www.test.example/object/1/replies"),
-					Type: a.CollectionType,
-				},
-				TotalItems: 1,
-				Items: a.ItemCollection{
-					&a.Object{
-						ID:   a.ObjectID("http://www.test.example/object/1/replies/2"),
-						Type: a.ArticleType,
-						Name: a.NaturalLanguageValue{{a.NilLangRef, "Example title"}},
+		blank:    &ap.Object{},
+		result: &ap.Object{
+			Parent: a.Object{
+				Type: a.ObjectType,
+				ID:   a.ObjectID("http://www.test.example/object/1"),
+				Replies: &a.Collection{
+					Parent: a.Parent{
+						ID:   a.ObjectID("http://www.test.example/object/1/replies"),
+						Type: a.CollectionType,
+					},
+					TotalItems: 1,
+					Items: a.ItemCollection{
+						&a.Object{
+							ID:   a.ObjectID("http://www.test.example/object/1/replies/2"),
+							Type: a.ArticleType,
+							Name: a.NaturalLanguageValue{{a.NilLangRef, "Example title"}},
+						},
 					},
 				},
 			},
 		},
 	},
-	"activity_simple": testPair{
-		expected: true,
-		blank:    &a.Activity{},
-		result: &a.Activity{
-			Parent: a.Parent{
-				Type:    a.ActivityType,
-				Summary: a.NaturalLanguageValue{{a.NilLangRef, "Sally did something to a note"}},
-			},
-			Actor: &a.Person{
-				Parent: a.Parent{
-					Type: a.PersonType,
-					Name: a.NaturalLanguageValue{{a.NilLangRef, "Sally"}},
-				},
-			},
-			Object: &a.Object{
-				Type: a.NoteType,
-				Name: a.NaturalLanguageValue{{a.NilLangRef, "A Note"}},
-			},
-		},
-	},
 	"person_with_outbox": testPair{
 		expected: true,
-		blank:    &a.Person{},
-		result: &a.Person{
+		blank:    &ap.Person{},
+		result: &ap.Person{
 			Parent: a.Parent{
 				ID:   a.ObjectID("http://example.com/accounts/ana"),
 				Type: a.PersonType,
@@ -414,41 +387,43 @@ var allTests = tests{
 			},
 		},
 	},
-	"like_activity_with_iri_actor": {
-		expected: true,
-		blank:    &ap.LikeActivity{},
-		result: &ap.LikeActivity{
-			Activity: &a.Like{
-				Parent: a.Parent{
-					Type: a.LikeType,
-				},
-				Actor: a.IRI("https://littr.git/api/accounts/24d4b96f"),
-				Object: &a.Object{
-					ID:   a.ObjectID("https://littr.git/api/accounts/ana/liked/7ca154ff"),
-					Type: a.ArticleType,
-				},
-			},
-			Published: time.Date(2018, time.September, 6, 15, 15, 9, 0, zLoc),
-		},
-	},
+	//"like_activity_with_iri_actor": {
+	//	expected: true,
+	//	blank:    &ap.Like{},
+	//	result:   &ap.Like{
+	//		Activity: a.Activity{
+	//			Parent: a.Parent{
+	//				Type:      a.LikeType,
+	//				Published: time.Date(2018, time.September, 6, 15, 15, 9, 0, zLoc),
+	//			},
+	//			Actor: a.IRI("https://littr.git/api/accounts/24d4b96f"),
+	//			Object: &a.Article{
+	//				ID:   a.ObjectID("https://littr.git/api/accounts/ana/liked/7ca154ff"),
+	//				Type: a.ArticleType,
+	//			},
+	//		},
+	//	},
+	//},
 	"object_with_audience": testPair{
 		expected: true,
-		blank:    &a.Object{},
-		result: &a.Object{
-			Type: a.ObjectType,
-			ID:   a.ObjectID("http://www.test.example/object/1"),
-			To: a.ItemCollection{
-				a.IRI("https://www.w3.org/ns/activitystreams#Public"),
-			},
-			Bto: a.ItemCollection{
-				a.IRI("http://example.com/sharedInbox"),
-			},
-			CC: a.ItemCollection{
-				a.IRI("https://example.com/actors/ana"),
-				a.IRI("https://example.com/actors/bob"),
-			},
-			BCC: a.ItemCollection{
-				a.IRI("https://darkside.cookie/actors/darthvader"),
+		blank:    &ap.Object{},
+		result:   &ap.Object{
+			Parent: a.Object{
+				Type: a.ObjectType,
+				ID:   a.ObjectID("http://www.test.example/object/1"),
+				To: a.ItemCollection{
+					a.IRI("https://www.w3.org/ns/activitystreams#Public"),
+				},
+				Bto: a.ItemCollection{
+					a.IRI("http://example.com/sharedInbox"),
+				},
+				CC: a.ItemCollection{
+					a.IRI("https://example.com/actors/ana"),
+					a.IRI("https://example.com/actors/bob"),
+				},
+				BCC: a.ItemCollection{
+					a.IRI("https://darkside.cookie/actors/darthvader"),
+				},
 			},
 		},
 	},
