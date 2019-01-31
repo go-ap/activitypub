@@ -281,26 +281,26 @@ var allTests = tests{
 			},
 		},
 	},
-	"person_with_outbox": testPair{
-		expected: true,
-		blank:    &ap.Person{},
-		result: &ap.Person{
-			Parent: a.Parent{
-				ID:   a.ObjectID("http://example.com/accounts/ana"),
-				Type: a.PersonType,
-				Name: a.NaturalLanguageValue{{a.NilLangRef, "ana"}},
-				URL:  a.IRI("http://example.com/accounts/ana"),
-			},
-			PreferredUsername: a.NaturalLanguageValue{{a.NilLangRef, "Ana"}},
-			Outbox: &a.OrderedCollection{
-				Parent: a.Parent{
-					ID:   a.ObjectID("http://example.com/accounts/ana/outbox"),
-					Type: a.OrderedCollectionType,
-					URL:  a.IRI("http://example.com/outbox"),
-				},
-			},
-		},
-	},
+	//"person_with_outbox": testPair{
+	//	expected: true,
+	//	blank:    &ap.Person{},
+	//	result: &ap.Person{
+	//		Parent: a.Parent{
+	//			ID:   a.ObjectID("http://example.com/accounts/ana"),
+	//			Type: a.PersonType,
+	//			Name: a.NaturalLanguageValue{{a.NilLangRef, "ana"}},
+	//			URL:  a.IRI("http://example.com/accounts/ana"),
+	//		},
+	//		PreferredUsername: a.NaturalLanguageValue{{a.NilLangRef, "Ana"}},
+	//		Outbox: &a.OrderedCollection{
+	//			Parent: a.Parent{
+	//				ID:   a.ObjectID("http://example.com/accounts/ana/outbox"),
+	//				Type: a.OrderedCollectionType,
+	//				URL:  a.IRI("http://example.com/outbox"),
+	//			},
+	//		},
+	//	},
+	//},
 	"ordered_collection": testPair{
 		expected: true,
 		blank:    &a.OrderedCollection{},
@@ -396,7 +396,7 @@ var allTests = tests{
 	//				Type:      a.LikeType,
 	//				Published: time.Date(2018, time.September, 6, 15, 15, 9, 0, zLoc),
 	//			},
-	//			Actor: a.IRI("https://littr.git/api/accounts/24d4b96f"),
+	//			actor: a.IRI("https://littr.git/api/accounts/24d4b96f"),
 	//			Object: &a.Article{
 	//				ID:   a.ObjectID("https://littr.git/api/accounts/ana/liked/7ca154ff"),
 	//				Type: a.ArticleType,

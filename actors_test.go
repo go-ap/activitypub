@@ -10,7 +10,7 @@ func TestActorNew(t *testing.T) {
 	var testValue = as.ObjectID("test")
 	var testType = as.ApplicationType
 
-	o := ActorNew(testValue, testType)
+	o := actorNew(testValue, testType)
 
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
@@ -19,7 +19,7 @@ func TestActorNew(t *testing.T) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, testType)
 	}
 
-	n := ActorNew(testValue, "")
+	n := actorNew(testValue, "")
 	if n.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", n.ID, testValue)
 	}
@@ -89,28 +89,28 @@ func TestServiceNew(t *testing.T) {
 }
 
 func TestActor_IsLink(t *testing.T) {
-	m := ActorNew("test", as.ActorType)
+	m := actorNew("test", as.ActorType)
 	if m.IsLink() {
 		t.Errorf("%#v should not be a valid Link", m.Type)
 	}
 }
 
 func TestActor_IsObject(t *testing.T) {
-	m := ActorNew("test", as.ActorType)
+	m := actorNew("test", as.ActorType)
 	if !m.IsObject() {
 		t.Errorf("%#v should be a valid object", m.Type)
 	}
 }
 
 func TestActor_Object(t *testing.T) {
-	m := ActorNew("test", as.ActorType)
+	m := actorNew("test", as.ActorType)
 	if reflect.DeepEqual(as.ObjectID(""), m.GetID()) {
 		t.Errorf("%#v should not be an empty activity pub object", m.GetID())
 	}
 }
 
 func TestActor_Type(t *testing.T) {
-	m := ActorNew("test", as.ActorType)
+	m := actorNew("test", as.ActorType)
 	if m.GetType() != as.ActorType {
 		t.Errorf("%#v should be an empty Link object", m.GetType())
 	}
