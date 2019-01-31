@@ -132,14 +132,14 @@ func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool
 			if v1.IsNil() {
 				isNil1 = "is"
 			} else {
-				isNil1 = "isn't"
+				isNil1 = "is not"
 			}
 			if v2.IsNil() {
 				isNil2 = "is"
 			} else {
-				isNil2 = "isn't"
+				isNil2 = "is not"
 			}
-			t("Interface %q %s nil and %q %s nil", v1.Type().Name(), isNil1, v2.Type().Name(), isNil2)
+			t("Interface '%s' %s nil and '%s' %s nil", v1.Type().Name(), isNil1, v2.Type().Name(), isNil2)
 			return false
 		}
 		return deepValueEqual(t, v1.Elem(), v2.Elem(), visited, depth+1)
@@ -151,7 +151,7 @@ func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool
 	case reflect.Struct:
 		for i, n := 0, v1.NumField(); i < n; i++ {
 			if !deepValueEqual(t, v1.Field(i), v2.Field(i), visited, depth+1) {
-				t("Struct fields at pos %d %q:%q and %q:%q are not deeply equal", i, v1.Type().Field(i).Name, v1.Field(i).Type().Name(), v2.Type().Field(i).Name, v2.Field(i).Type().Name())
+				t("Struct fields at pos %d %s[%s] and %s[%s] are not deeply equal", i, v1.Type().Field(i).Name, v1.Field(i).Type().Name(), v2.Type().Field(i).Name, v2.Field(i).Type().Name())
 				if v1.Field(i).CanAddr() && v2.Field(i).CanAddr() {
 					t("  Values: %#v - %#v", v1.Field(i).Interface(), v2.Field(i).Interface())
 				}
