@@ -456,46 +456,48 @@ func Test_ActivityPubUnmarshall(t *testing.T) {
 	}
 
 	for k, pair := range allTests {
-		var data []byte
 		path := filepath.Join(dir, fmt.Sprintf("%s.json", k))
-		data, err = getFileContents(path)
-		if err != nil {
-			f("Error: %s for %s", err, path)
-			continue
-		}
-		object := pair.blank
-
-		err = j.Unmarshal(data, object)
-		if err != nil {
-			f("Error: %s for %s", err, data)
-			continue
-		}
-		expLbl := ""
-		if !pair.expected {
-			expLbl = "not be "
-		}
-		status := assertDeepEquals(f, object, pair.result)
-		if pair.expected != status {
-			if stopOnFailure {
-				f = t.Fatalf
-			}
-
-			f("Mock: %s: %s\n%#v\n should %sequal to expected\n%#v", k, path, object, expLbl, pair.result)
-			continue
-		}
-		if !status {
-			oj, err := j.Marshal(object)
+		t.Run(path, func(t *testing.T) {
+			var data []byte
+			data, err = getFileContents(path)
 			if err != nil {
-				f(err.Error())
+				f("Error: %s for %s", err, path)
+				return
 			}
-			tj, err := j.Marshal(pair.result)
+			object := pair.blank
+
+			err = j.Unmarshal(data, object)
 			if err != nil {
-				f(err.Error())
+				f("Error: %s for %s", err, data)
+				return
 			}
-			f("Mock: %s: %s\n%s\n should %sequal to expected\n%s", k, path, oj, expLbl, tj)
-		}
-		if err == nil {
-			fmt.Printf(" --- %s: %s\n          %s\n", "PASS", k, path)
-		}
+			expLbl := ""
+			if !pair.expected {
+				expLbl = "not be "
+			}
+			status := assertDeepEquals(f, object, pair.result)
+			if pair.expected != status {
+				if stopOnFailure {
+					f = t.Fatalf
+				}
+
+				f("Mock: %s: %s\n%#v\n should %sequal to expected\n%#v", k, path, object, expLbl, pair.result)
+				return
+			}
+			if !status {
+				oj, err := j.Marshal(object)
+				if err != nil {
+					f(err.Error())
+				}
+				tj, err := j.Marshal(pair.result)
+				if err != nil {
+					f(err.Error())
+				}
+				f("Mock: %s: %s\n%s\n should %sequal to expected\n%s", k, path, oj, expLbl, tj)
+			}
+			//if err == nil {
+			//	fmt.Printf(" --- %s: %s\n          %s\n", "PASS", k, path)
+			//}
+		})
 	}
 }
