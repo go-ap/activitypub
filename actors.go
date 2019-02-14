@@ -134,3 +134,20 @@ func ServiceNew(id as.ObjectID) *Service {
 	o := Service(*a)
 	return &o
 }
+
+func (a *actor)UnmarshalJSON(data []byte) error {
+	as.ItemTyperFunc = JSONGetItemByType
+
+	a.Parent.UnmarshalJSON(data)
+	a.PreferredUsername = as.JSONGetNaturalLanguageField(data, "preferredUsername")
+	a.Followers = as.JSONGetItem(data, "followers")
+	a.Following = as.JSONGetItem(data, "following")
+	a.Inbox = as.JSONGetItem(data, "inbox")
+	a.Outbox = as.JSONGetItem(data, "outbox")
+	a.Liked = as.JSONGetItem(data, "liked")
+	// TODO(marius): Endpoints need their own UnmarshalJSON
+	//a.Endpoints = as.JSONGetItems(data, "endpoints")
+	// TODO(marius): Streams needs custom unmarshalling
+	//a.Streams = as.JSONGetItems(data, "streams")
+	return nil
+}
