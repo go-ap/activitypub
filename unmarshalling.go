@@ -229,62 +229,6 @@ func UnmarshalJSON(data []byte) (Item, error) {
 	return JSONUnmarshalToItem(data), nil
 }
 
-/*
-func unmarshal(data []byte, a interface{}) (interface{}, error) {
-	ta := make(mockObj, 0)
-	err := jsonld.Unmarshal(data, &ta)
-	if err != nil {
-		return nil, err
-	}
-
-	typ := reflect.TypeOf(a)
-	val := reflect.ValueOf(a)
-
-	if typ.Kind() == reflect.Ptr {
-		typ = typ.Elem()
-		val = val.Elem()
-	}
-
-	for i := 0; i < typ.NumField(); i++ {
-		cField := typ.Field(i)
-		cValue := val.Field(i)
-		cTag := cField.Tag
-		tag, _ := jsonld.LoadTag(cTag)
-
-		var vv reflect.Value
-		for key, j := range ta {
-			if j == nil {
-				continue
-			}
-			if key == tag.Name {
-				if cField.Type.Implements(textUnmarshalerType) {
-					m, _ := cValue.Interface().(encoding.TextUnmarshaler)
-					m.UnmarshalText(j)
-					vv = reflect.ValueOf(m)
-				}
-				if cField.Type.Implements(unmarshalerType) {
-					m, _ := cValue.Interface().(json.Unmarshaler)
-					m.UnmarshalJSON(j)
-					vv = reflect.ValueOf(m)
-				}
-				if cField.Type.Implements(apUnmarshalerType) {
-					o := JSONGetItemByType(getType(j))
-					if o != nil {
-						jsonld.Unmarshal([]byte(j), o)
-						vv = reflect.ValueOf(o)
-					}
-				}
-			}
-			if vv.CanAddr() {
-				cValue.Set(vv)
-				fmt.Printf("\n\nReflected %q %q => %#v\n\n%#v\n", cField.Name, cField.Type, vv, tag.Name)
-			}
-		}
-	}
-	return a, nil
-}
-*/
-
 func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
 	var ret Item
 	var err error
@@ -331,12 +275,9 @@ func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
 	case DocumentType:
 		ret = ObjectNew(typ)
 	case EventType:
-		o := Object{}
-		o.Type = typ
+		ret = ObjectNew(typ)
 	case ImageType:
 		ret = ObjectNew(typ)
-		o := ret.(*Object)
-		o.Type = typ
 	case NoteType:
 		ret = ObjectNew(typ)
 	case PageType:
