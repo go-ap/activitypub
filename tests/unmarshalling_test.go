@@ -444,7 +444,7 @@ func getFileContents(path string) ([]byte, error) {
 	return data, nil
 }
 
-func Test_ActivityPubUnmarshall(t *testing.T) {
+func TestUnmarshal(t *testing.T) {
 	var err error
 
 	var f = t.Errorf
