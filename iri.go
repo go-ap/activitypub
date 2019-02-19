@@ -27,7 +27,8 @@ func (i *IRI) UnmarshalJSON(s []byte) error {
 
 // IsObject
 func (i IRI) GetID() *ObjectID {
-	return nil
+	o := ObjectID(i)
+	return &o
 }
 
 // GetType
