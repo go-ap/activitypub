@@ -20,9 +20,9 @@ func FollowingNew() *Following {
 	id := as.ObjectID("following")
 
 	i := Following{Parent: as.Parent{ID: id, Type: as.CollectionType}}
-	i.Name = as.NaturalLanguageValueNew()
-	i.Content = as.NaturalLanguageValueNew()
-	i.Summary = as.NaturalLanguageValueNew()
+	i.Name = as.NaturalLanguageValuesNew()
+	i.Content = as.NaturalLanguageValuesNew()
+	i.Summary = as.NaturalLanguageValuesNew()
 
 	i.TotalItems = 0
 

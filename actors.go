@@ -51,7 +51,7 @@ type actor struct {
 	// see 5.3 Followers Collection.
 	Liked as.Item `jsonld:"liked,omitempty"`
 	// A short username which may be used to refer to the actor, with no uniqueness guarantees.
-	PreferredUsername as.NaturalLanguageValue `jsonld:"preferredUsername,omitempty,collapsible"`
+	PreferredUsername as.NaturalLanguageValues `jsonld:"preferredUsername,omitempty,collapsible"`
 	// A json object which maps additional (typically server/domain-wide) endpoints which may be useful either
 	// for this actor or someone referencing this actor.
 	// This mapping may be nested inside the actor document as the value or may be a link
@@ -85,9 +85,9 @@ func actorNew(id as.ObjectID, typ as.ActivityVocabularyType) *actor {
 	}
 
 	a := actor{Parent: as.Object {ID: id, Type: typ}}
-	a.Name = as.NaturalLanguageValueNew()
-	a.Content = as.NaturalLanguageValueNew()
-	a.Summary = as.NaturalLanguageValueNew()
+	a.Name = as.NaturalLanguageValuesNew()
+	a.Content = as.NaturalLanguageValuesNew()
+	a.Summary = as.NaturalLanguageValuesNew()
 	in := as.OrderedCollectionNew(as.ObjectID("test-inbox"))
 	out := as.OrderedCollectionNew(as.ObjectID("test-outbox"))
 	liked := as.OrderedCollectionNew(as.ObjectID("test-liked"))
@@ -95,7 +95,7 @@ func actorNew(id as.ObjectID, typ as.ActivityVocabularyType) *actor {
 	a.Inbox = in
 	a.Outbox = out
 	a.Liked = liked
-	a.PreferredUsername = as.NaturalLanguageValueNew()
+	a.PreferredUsername = as.NaturalLanguageValuesNew()
 
 	return &a
 }

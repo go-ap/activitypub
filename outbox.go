@@ -17,8 +17,8 @@ func OutboxNew() *Outbox {
 	id := as.ObjectID("outbox")
 
 	i := Outbox{Parent: as.Parent{ID: id, Type: as.CollectionType}}
-	i.Name = as.NaturalLanguageValueNew()
-	i.Content = as.NaturalLanguageValueNew()
+	i.Name = as.NaturalLanguageValuesNew()
+	i.Content = as.NaturalLanguageValuesNew()
 
 	i.TotalItems = 0
 

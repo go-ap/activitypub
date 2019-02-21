@@ -9,7 +9,7 @@ import (
 // as a form of provenance, or to support future editing by clients.
 type Source struct {
 	// Content
-	Content as.NaturalLanguageValue `jsonld:"content"`
+	Content as.NaturalLanguageValues `jsonld:"content"`
 	// MediaType
 	MediaType as.MimeType `jsonld:"mediaType"`
 }

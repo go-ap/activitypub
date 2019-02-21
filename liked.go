@@ -18,8 +18,8 @@ func LikedNew() *as.OrderedCollection {
 	id := as.ObjectID("liked")
 
 	l := as.OrderedCollection{Parent: as.Parent{ID: id, Type: as.CollectionType}}
-	l.Name = as.NaturalLanguageValueNew()
-	l.Content = as.NaturalLanguageValueNew()
+	l.Name = as.NaturalLanguageValuesNew()
+	l.Content = as.NaturalLanguageValuesNew()
 
 	l.TotalItems = 0
 

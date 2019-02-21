@@ -18,8 +18,8 @@ func SharesNew() *Shares {
 	id := as.ObjectID("Shares")
 
 	i := Shares{Parent: as.Parent{ID: id, Type: as.CollectionType}}
-	i.Name = as.NaturalLanguageValueNew()
-	i.Content = as.NaturalLanguageValueNew()
+	i.Name = as.NaturalLanguageValuesNew()
+	i.Content = as.NaturalLanguageValuesNew()
 
 	i.TotalItems = 0
 

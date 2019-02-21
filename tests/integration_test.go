@@ -11,7 +11,7 @@ import (
 
 func TestAcceptSerialization(t *testing.T) {
 	obj := a.AcceptNew("https://localhost/myactivity", nil)
-	obj.Name = make(a.NaturalLanguageValue, 1)
+	obj.Name = make(a.NaturalLanguageValues, 1)
 	obj.Name.Set("en", "test")
 	obj.Name.Set("fr", "teste")
 
