@@ -324,7 +324,7 @@ type Question struct {
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
-	Name NaturalLanguageValue `jsonld:"name,omitempty,collapsible"`
+	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
 	// Attachment identifies a resource attached or related to an object that potentially requires special handling.
 	// The intent is to provide a model that is at least semantically similar to attachments in email.
 	Attachment Item `jsonld:"attachment,omitempty"`
@@ -338,7 +338,7 @@ type Question struct {
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
-	Content NaturalLanguageValue `jsonld:"content,omitempty,collapsible"`
+	Content NaturalLanguageValues `jsonld:"content,omitempty,collapsible"`
 	// Context identifies the context within which the object exists or an activity was performed.
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
@@ -373,7 +373,7 @@ type Question struct {
 	StartTime time.Time `jsonld:"startTime,omitempty"`
 	// Summary a natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
-	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
+	Summary NaturalLanguageValues `jsonld:"summary,omitempty,collapsible"`
 	// Tag One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	// while the latter implies associated by reference.
@@ -617,8 +617,8 @@ func ViewNew(id ObjectID, ob Item) *View {
 // QuestionNew initializes a Question activity
 func QuestionNew(id ObjectID) *Question {
 	q := Question{ID: id, Type: QuestionType}
-	q.Name = NaturalLanguageValueNew()
-	q.Content = NaturalLanguageValueNew()
+	q.Name = NaturalLanguageValuesNew()
+	q.Content = NaturalLanguageValuesNew()
 	return &q
 }
 
@@ -678,8 +678,8 @@ func ActivityNew(id ObjectID, typ ActivityVocabularyType, ob Item) *Activity {
 		typ = ActivityType
 	}
 	a := Activity{Parent: Parent{ID: id, Type: typ}}
-	a.Name = NaturalLanguageValueNew()
-	a.Content = NaturalLanguageValueNew()
+	a.Name = NaturalLanguageValuesNew()
+	a.Content = NaturalLanguageValuesNew()
 
 	a.Object = ob
 
@@ -692,8 +692,8 @@ func IntransitiveActivityNew(id ObjectID, typ ActivityVocabularyType) *Intransit
 		typ = IntransitiveActivityType
 	}
 	i := IntransitiveActivity{Parent: Parent{ID: id, Type: typ}}
-	i.Name = NaturalLanguageValueNew()
-	i.Content = NaturalLanguageValueNew()
+	i.Name = NaturalLanguageValuesNew()
+	i.Content = NaturalLanguageValuesNew()
 
 	return &i
 }

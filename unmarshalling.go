@@ -64,8 +64,8 @@ func JSONGetString(data []byte, prop string) string {
 	return val
 }
 
-func JSONGetNaturalLanguageField(data []byte, prop string) NaturalLanguageValue {
-	n := NaturalLanguageValue{}
+func JSONGetNaturalLanguageField(data []byte, prop string) NaturalLanguageValues {
+	n := NaturalLanguageValues{}
 	val, typ, _, err := jsonparser.Get(data, prop)
 	if err != nil {
 		return nil

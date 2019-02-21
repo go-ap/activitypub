@@ -57,9 +57,9 @@ func ActorNew(id ObjectID, typ ActivityVocabularyType) *Object {
 	}
 
 	a := Object{ID: id, Type: typ}
-	a.Name = NaturalLanguageValueNew()
-	a.Content = NaturalLanguageValueNew()
-	a.Summary = NaturalLanguageValueNew()
+	a.Name = NaturalLanguageValuesNew()
+	a.Content = NaturalLanguageValuesNew()
+	a.Summary = NaturalLanguageValuesNew()
 
 	return &a
 }

@@ -17,7 +17,7 @@ type Link struct {
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
-	Name NaturalLanguageValue `jsonld:"name,omitempty,collapsible"`
+	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
 	// A link relation associated with a Link. The value must conform to both the [HTML5] and
 	// [RFC5988](https://tools.ietf.org/html/rfc5988) "link relation" definitions.
 	// In the [HTML5], any string not containing the "space" U+0020, "tab" (U+0009), "LF" (U+000A),

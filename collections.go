@@ -92,17 +92,17 @@ func ValidCollectionType(typ ActivityVocabularyType) bool {
 // CollectionNew initializes a new Collection
 func CollectionNew(id ObjectID) *Collection {
 	c := Collection{Parent: Parent{ID: id, Type: CollectionType}}
-	c.Name = NaturalLanguageValueNew()
-	c.Content = NaturalLanguageValueNew()
-	c.Summary = NaturalLanguageValueNew()
+	c.Name = NaturalLanguageValuesNew()
+	c.Content = NaturalLanguageValuesNew()
+	c.Summary = NaturalLanguageValuesNew()
 	return &c
 }
 
 // OrderedCollectionNew initializes a new OrderedCollection
 func OrderedCollectionNew(id ObjectID) *OrderedCollection {
 	o := OrderedCollection{Parent: Parent{ID: id, Type: OrderedCollectionType}}
-	o.Name = NaturalLanguageValueNew()
-	o.Content = NaturalLanguageValueNew()
+	o.Name = NaturalLanguageValuesNew()
+	o.Content = NaturalLanguageValuesNew()
 
 	return &o
 }

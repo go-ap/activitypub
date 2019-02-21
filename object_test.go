@@ -52,7 +52,7 @@ func TestValidObjectType(t *testing.T) {
 }
 
 func TestMarshalJSON(t *testing.T) {
-	m := NaturalLanguageValue{
+	m := NaturalLanguageValues{
 		{
 			"en", "test",
 		},
@@ -68,12 +68,12 @@ func TestMarshalJSON(t *testing.T) {
 	if string(result) != mRes {
 		t.Errorf("Different results '%v' vs. '%v'", string(result), mRes)
 	}
-	//n := NaturalLanguageValueNew()
+	//n := NaturalLanguageValuesNew()
 	//result, err := n.MarshalJSON()
 
 	s := make(map[LangRef]string)
 	s["en"] = "test"
-	n1 := NaturalLanguageValue{{
+	n1 := NaturalLanguageValues{{
 		"en", "test",
 	}}
 	result1, err1 := n1.MarshalJSON()
@@ -87,7 +87,7 @@ func TestMarshalJSON(t *testing.T) {
 }
 
 func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
-	p := NaturalLanguageValue{
+	p := NaturalLanguageValues{
 		{
 			"en", "the test",
 		},
@@ -104,7 +104,7 @@ func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
 	if js != string(out) {
 		t.Errorf("Different marshal result '%s', instead of '%s'", out, js)
 	}
-	p1 := NaturalLanguageValue{
+	p1 := NaturalLanguageValues{
 		{
 			"en", "the test",
 		},
@@ -214,7 +214,7 @@ func TestRecipientsDeduplication(t *testing.T) {
 
 func TestNaturalLanguageValue_Get(t *testing.T) {
 	testVal := "test"
-	a := NaturalLanguageValue{{NilLangRef, testVal}}
+	a := NaturalLanguageValues{{NilLangRef, testVal}}
 	if a.Get(NilLangRef) != testVal {
 		t.Errorf("Invalid Get result. Expected %s received %s", testVal, a.Get(NilLangRef))
 	}
@@ -222,7 +222,7 @@ func TestNaturalLanguageValue_Get(t *testing.T) {
 
 func TestNaturalLanguageValue_Set(t *testing.T) {
 	testVal := "test"
-	a := NaturalLanguageValue{{NilLangRef, "ana are mere"}}
+	a := NaturalLanguageValues{{NilLangRef, "ana are mere"}}
 	err := a.Set(LangRef("en"), testVal)
 	if err != nil {
 		t.Errorf("Received error when doing Set %s", err)
@@ -230,7 +230,7 @@ func TestNaturalLanguageValue_Set(t *testing.T) {
 }
 
 func TestNaturalLanguageValue_Append(t *testing.T) {
-	var a NaturalLanguageValue
+	var a NaturalLanguageValues
 
 	if len(a) != 0 {
 		t.Errorf("Invalid initialization of %T. Size %d > 0 ", a, len(a))
@@ -287,7 +287,7 @@ func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
 		"` + langDe + `": "` + valDe + `"
 	}`
 
-	var a NaturalLanguageValue
+	var a NaturalLanguageValues
 	a.Append(LangRef(langEn), valEn)
 	a.Append(LangRef(langDe), valDe)
 	err := a.UnmarshalJSON([]byte(json))
@@ -454,7 +454,7 @@ func TestNaturalLanguageValue_First(t *testing.T) {
 }
 
 func TestNaturalLanguageValueNew(t *testing.T) {
-	n := NaturalLanguageValueNew()
+	n := NaturalLanguageValuesNew()
 
 	if len(n) != 0 {
 		t.Errorf("Initial %T should have length 0, received %d", n, len(n))

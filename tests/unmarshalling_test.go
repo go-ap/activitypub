@@ -206,7 +206,7 @@ var allTests = tests{
 			Href:      a.IRI("http://example.org/abc"),
 			HrefLang:  a.LangRef("en"),
 			MediaType: a.MimeType("text/html"),
-			Name: a.NaturalLanguageValue{{
+			Name: a.NaturalLanguageValues{{
 				a.NilLangRef, "An example link",
 			}},
 		},
@@ -234,7 +234,7 @@ var allTests = tests{
 		result: &a.Object{
 			Type: a.ObjectType,
 			ID:   a.ObjectID("http://www.test.example/object/1"),
-			Name: a.NaturalLanguageValue{{
+			Name: a.NaturalLanguageValues{{
 				a.NilLangRef, "A Simple, non-specific object",
 			}},
 		},
@@ -245,18 +245,18 @@ var allTests = tests{
 		result: &a.Object{
 			Type: a.ObjectType,
 			ID:   a.ObjectID("http://www.test.example/object/1"),
-			Name: a.NaturalLanguageValue{{
+			Name: a.NaturalLanguageValues{{
 				a.NilLangRef, "A Simple, non-specific object",
 			}},
 			Tag: a.ItemCollection{
 				&a.Object{
-					Name: a.NaturalLanguageValue{{
+					Name: a.NaturalLanguageValues{{
 						a.NilLangRef, "#my_tag",
 					}},
 					ID: a.ObjectID("http://example.com/tag/my_tag"),
 				},
 				&a.Mention{
-					Name: a.NaturalLanguageValue{{
+					Name: a.NaturalLanguageValues{{
 						a.NilLangRef, "@ana",
 					}},
 					Type: a.MentionType,
@@ -281,7 +281,7 @@ var allTests = tests{
 					&a.Object{
 						ID:   a.ObjectID("http://www.test.example/object/1/replies/2"),
 						Type: a.ArticleType,
-						Name: a.NaturalLanguageValue{{a.NilLangRef, "Example title"}},
+						Name: a.NaturalLanguageValues{{a.NilLangRef, "Example title"}},
 					},
 				},
 			},
@@ -295,15 +295,15 @@ var allTests = tests{
 		result: &a.Activity{
 			Parent: a.Parent{
 				Type:    a.ActivityType,
-				Summary: a.NaturalLanguageValue{{a.NilLangRef, "Sally did something to a note"}},
+				Summary: a.NaturalLanguageValues{{a.NilLangRef, "Sally did something to a note"}},
 			},
 			Actor: &a.Person{
 				Type: a.PersonType,
-				Name: a.NaturalLanguageValue{{a.NilLangRef, "Sally"}},
+				Name: a.NaturalLanguageValues{{a.NilLangRef, "Sally"}},
 			},
 			Object: &a.Object{
 				Type: a.NoteType,
-				Name: a.NaturalLanguageValue{{a.NilLangRef, "A Note"}},
+				Name: a.NaturalLanguageValues{{a.NilLangRef, "A Note"}},
 			},
 		},
 	},
@@ -313,7 +313,7 @@ var allTests = tests{
 		result: &a.Person{
 			ID:   a.ObjectID("http://example.com/accounts/ana"),
 			Type: a.PersonType,
-			Name: a.NaturalLanguageValue{{a.NilLangRef, "ana"}},
+			Name: a.NaturalLanguageValues{{a.NilLangRef, "ana"}},
 			URL:  a.IRI("http://example.com/accounts/ana"),
 		},
 	},
@@ -331,8 +331,8 @@ var allTests = tests{
 				&a.Object{
 					ID:           a.ObjectID("http://example.com/outbox/53c6fb47"),
 					Type:         a.ArticleType,
-					Name:         a.NaturalLanguageValue{{a.NilLangRef, "Example title"}},
-					Content:      a.NaturalLanguageValue{{a.NilLangRef, "Example content!"}},
+					Name:         a.NaturalLanguageValues{{a.NilLangRef, "Example title"}},
+					Content:      a.NaturalLanguageValues{{a.NilLangRef, "Example content!"}},
 					URL:          a.IRI("http://example.com/53c6fb47"),
 					MediaType:    a.MimeType("text/markdown"),
 					Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
@@ -361,8 +361,8 @@ var allTests = tests{
 					&a.Object{
 						ID:           a.ObjectID("http://example.com/outbox/53c6fb47"),
 						Type:         a.ArticleType,
-						Name:         a.NaturalLanguageValue{{a.NilLangRef, "Example title"}},
-						Content:      a.NaturalLanguageValue{{a.NilLangRef, "Example content!"}},
+						Name:         a.NaturalLanguageValues{{a.NilLangRef, "Example title"}},
+						Content:      a.NaturalLanguageValues{{a.NilLangRef, "Example content!"}},
 						URL:          a.IRI("http://example.com/53c6fb47"),
 						MediaType:    a.MimeType("text/markdown"),
 						Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
@@ -375,8 +375,8 @@ var allTests = tests{
 	},
 	"natural_language_values": {
 		expected: true,
-		blank:    &a.NaturalLanguageValue{},
-		result: &a.NaturalLanguageValue{
+		blank:    &a.NaturalLanguageValues{},
+		result: &a.NaturalLanguageValues{
 			{
 				a.NilLangRef, `
 	
@@ -398,7 +398,7 @@ var allTests = tests{
 				Type:         a.NoteType,
 				AttributedTo: a.IRI("https://littr.git/api/accounts/anonymous"),
 				InReplyTo:    a.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff"),
-				Content:      a.NaturalLanguageValue{{a.NilLangRef, "<p>Hello world</p>"}},
+				Content:      a.NaturalLanguageValues{{a.NilLangRef, "<p>Hello world</p>"}},
 				To:           a.ItemCollection{a.IRI("https://www.w3.org/ns/activitystreams#Public")},
 			},
 		},

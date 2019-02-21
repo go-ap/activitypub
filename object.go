@@ -18,7 +18,7 @@ import (
 // such as some kinds of chat messages or game notifications).
 // These identifiers must fall into one of the following groups:
 //
-// 1. Publicly dereferencable URIs, such as HTTPS URIs, with their authority belonging
+// 1. Publicly dereferenceable URIs, such as HTTPS URIs, with their authority belonging
 // to that of their originating server. (Publicly facing content SHOULD use HTTPS URIs).
 // 2. An ID explicitly specified as the JSON null object, which implies an anonymous object
 // (a part of its parent context)
@@ -95,40 +95,53 @@ type (
 	// ActivityObject is a subtype of Object that describes some form of action that may happen,
 	// is currently happening, or has already happened
 	ActivityObject interface {
+		// GetID returns the dereferenceable ActivityStreams object id
 		GetID() *ObjectID
-	}
-	// Item describes an object of any kind.
-	ObjectOrLink interface {
-		ActivityObject
-		LinkOrURI
-		GetType() ActivityVocabularyType
-		IsLink() bool
-		IsObject() bool
-		//UnmarshalJSON([]byte) error
 	}
 	// LinkOrURI is an interface that Object and Link structs implement, and at the same time
 	// they are kept disjointed
 	LinkOrURI interface {
+		// GetLink returns the object id in IRI type
 		GetLink() IRI
 	}
-	// MimeType is the type for MIME types
+	// Item describes the requirements of an ActivityStreams object
+	ObjectOrLink interface {
+		ActivityObject
+		LinkOrURI
+		// GetType returns the ActivityStreams type
+		GetType() ActivityVocabularyType
+		// IsLink shows if current object represents a link object or an IRI
+		IsLink() bool
+		// IsObject shows if current object represents an ActivityStrems object
+		IsObject() bool
+		//UnmarshalJSON([]byte) error
+	}
+	// Mapper interface allows external objects to implement their own mechanism for loading information
+	// from an ActivityStreams vocabulary object
+	Mapper interface {
+		// FromActivityStreams maps an ActivityStreams object to another struct representation
+		FromActivityStreams(Item) error
+	}
+
+	// MimeType is the type for representing MIME types in certain ActivityStreams properties
 	MimeType string
-	// LangRef is the type for a language reference, should be ISO 639-1 language specifier.
+	// LangRef is the type for a language reference code, should be an ISO639-1 language specifier.
 	LangRef string
 
+	// LangRefValue is a type for storing per language values
 	LangRefValue struct {
 		Ref   LangRef
 		Value string
 	}
-	// NaturalLanguageValue is a mapping for multiple language values
-	NaturalLanguageValue []LangRefValue
+	// NaturalLanguageValues is a mapping for multiple language values
+	NaturalLanguageValues []LangRefValue
 )
 
-func NaturalLanguageValueNew() NaturalLanguageValue {
-	return make(NaturalLanguageValue, 0)
+func NaturalLanguageValuesNew() NaturalLanguageValues {
+	return make(NaturalLanguageValues, 0)
 }
 
-func (n NaturalLanguageValue) Get(ref LangRef) string {
+func (n NaturalLanguageValues) Get(ref LangRef) string {
 	for _, val := range n {
 		if val.Ref == ref {
 			return val.Value
@@ -137,9 +150,18 @@ func (n NaturalLanguageValue) Get(ref LangRef) string {
 	return ""
 }
 
-func (n *NaturalLanguageValue) Set(ref LangRef, v string) error {
-	t := append(*n, LangRefValue{ref, v})
-	*n = t
+// Set sets a language, value pair in a NaturalLanguageValues array
+func (n *NaturalLanguageValues) Set(ref LangRef, v string) error {
+	found := false
+	for k, vv := range *n {
+		if vv.Ref == ref {
+			(*n)[k] = LangRefValue{ref, v}
+			found = true
+		}
+	}
+	if !found {
+		n.Append(ref, v)
+	}
 	return nil
 }
 
@@ -153,8 +175,8 @@ func (o Object) IsObject() bool {
 	return true
 }
 
-// MarshalJSON serializes the NaturalLanguageValue into JSON
-func (n NaturalLanguageValue) MarshalJSON() ([]byte, error) {
+// MarshalJSON serializes the NaturalLanguageValues into JSON
+func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 	if len(n) == 0 {
 		return json.Marshal(nil)
 	}
@@ -171,28 +193,28 @@ func (n NaturalLanguageValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(mm)
 }
 
-// First returns the first element in the map
-func (n NaturalLanguageValue) First() string {
+// First returns the first element in the array
+func (n NaturalLanguageValues) First() string {
 	for _, v := range n {
 		return v.Value
 	}
 	return ""
 }
 
-// MarshalText serializes the NaturalLanguageValue into Text
-func (n NaturalLanguageValue) MarshalText() ([]byte, error) {
+// MarshalText serializes the NaturalLanguageValues into Text
+func (n NaturalLanguageValues) MarshalText() ([]byte, error) {
 	for _, v := range n {
 		return []byte(fmt.Sprintf("%q", v)), nil
 	}
 	return nil, nil
 }
 
-// Append is syntactic sugar for resizing the NaturalLanguageValue map
+// Append is syntactic sugar for resizing the NaturalLanguageValues map
 // and appending an element
-func (n *NaturalLanguageValue) Append(lang LangRef, value string) error {
-	var t NaturalLanguageValue
+func (n *NaturalLanguageValues) Append(lang LangRef, value string) error {
+	var t NaturalLanguageValues
 	if len(*n) == 0 {
-		t = make(NaturalLanguageValue, 1)
+		t = make(NaturalLanguageValues, 0)
 	} else {
 		t = *n
 	}
@@ -224,7 +246,7 @@ func (l *LangRef) UnmarshalText(data []byte) error {
 }
 
 // UnmarshalJSON tries to load the NaturalLanguage array from the incoming json value
-func (n *NaturalLanguageValue) UnmarshalJSON(data []byte) error {
+func (n *NaturalLanguageValues) UnmarshalJSON(data []byte) error {
 	val, typ, _, err := jsonparser.Get(data)
 	if err != nil {
 		// try our luck if data contains an unquoted string
@@ -245,7 +267,7 @@ func (n *NaturalLanguageValue) UnmarshalJSON(data []byte) error {
 }
 
 // UnmarshalText tries to load the NaturalLanguage array from the incoming Text value
-func (n *NaturalLanguageValue) UnmarshalText(data []byte) error {
+func (n *NaturalLanguageValues) UnmarshalText(data []byte) error {
 	if data[0] == '"' {
 		// a quoted string - loading it to c.URL
 		if data[len(data)-1] != '"' {
@@ -263,7 +285,7 @@ type object struct {
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
-	Name NaturalLanguageValue `jsonld:"name,omitempty,collapsible"`
+	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
 	// Attachment identifies a resource attached or related to an object that potentially requires special handling.
 	// The intent is to provide a model that is at least semantically similar to attachments in email.
 	Attachment Item `jsonld:"attachment,omitempty"`
@@ -277,7 +299,7 @@ type object struct {
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
 	// (The content MAY be expressed using multiple language-tagged values.)
-	Content NaturalLanguageValue `jsonld:"content,omitempty,collapsible"`
+	Content NaturalLanguageValues `jsonld:"content,omitempty,collapsible"`
 	// Context identifies the context within which the object exists or an activity was performed.
 	// The notion of "context" used is intentionally vague.
 	// The intended function is to serve as a means of grouping objects and activities that share a
@@ -315,7 +337,7 @@ type object struct {
 	StartTime time.Time `jsonld:"startTime,omitempty"`
 	// Summary a natural language summarization of the object encoded as HTML.
 	// *Multiple language tagged summaries may be provided.)
-	Summary NaturalLanguageValue `jsonld:"summary,omitempty,collapsible"`
+	Summary NaturalLanguageValues `jsonld:"summary,omitempty,collapsible"`
 	// Tag one or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
 	// The key difference between attachment and tag is that the former implies association by inclusion,
 	// while the latter implies associated by reference.
@@ -451,8 +473,8 @@ func ObjectNew(typ ActivityVocabularyType) *Object {
 		typ = ObjectType
 	}
 	o := Object{Type: typ}
-	o.Name = NaturalLanguageValueNew()
-	o.Content = NaturalLanguageValueNew()
+	o.Name = NaturalLanguageValuesNew()
+	o.Content = NaturalLanguageValuesNew()
 	return &o
 }
 
