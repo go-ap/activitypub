@@ -202,7 +202,7 @@ var allTests = tests{
 	"object_with_url": testPair{
 		expected: true,
 		blank:    &ap.Object{},
-		result: &ap.Object{ Parent: a.Object{URL: a.IRI("http://littr.git/api/accounts/system")}},
+		result:   &ap.Object{Parent: a.Object{URL: a.IRI("http://littr.git/api/accounts/system")}},
 	},
 	"object_with_url_collection": testPair{
 		expected: true,
@@ -407,7 +407,7 @@ var allTests = tests{
 	"object_with_audience": testPair{
 		expected: true,
 		blank:    &ap.Object{},
-		result:   &ap.Object{
+		result: &ap.Object{
 			Parent: a.Object{
 				Type: a.ObjectType,
 				ID:   a.ObjectID("http://www.test.example/object/1"),
