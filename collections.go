@@ -28,7 +28,7 @@ type Collection struct {
 	Last ObjectOrLink `jsonld:"last,omitempty"`
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
-	TotalItems uint `jsonld:"totalItems,omitempty"`
+	TotalItems uint `jsonld:"totalItems"`
 	// Identifies the items contained in a collection. The items might be ordered or unordered.
 	Items ItemCollection `jsonld:"items,omitempty"`
 }
@@ -45,7 +45,7 @@ type OrderedCollection struct {
 	Last ObjectOrLink `jsonld:"last,omitempty"`
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
-	TotalItems uint `jsonld:"totalItems,omitempty"`
+	TotalItems uint `jsonld:"totalItems"`
 	// Identifies the items contained in a collection. The items might be ordered or unordered.
 	OrderedItems ItemCollection `jsonld:"orderedItems,omitempty"`
 }
