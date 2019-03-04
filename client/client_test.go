@@ -8,10 +8,10 @@ import (
 )
 
 func TestNewClient(t *testing.T) {
-	c := client{}
+	c := NewClient()
 
-	if c != *NewClient() {
-		t.Errorf("NewClient didn't return a valid client")
+	if c.signFn == nil {
+		t.Errorf("NewClient didn't return a valid client, nil Sign function")
 	}
 }
 

@@ -14,13 +14,19 @@ type RequestSignFn func(*http.Request) error
 type LogFn func(...interface{})
 
 type HttpClient interface {
+	Client
+
+	CanSign
+
 	Head(string) (*http.Response, error)
 	Get(string) (*http.Response, error)
 	Post(string, string, io.Reader) (*http.Response, error)
 	Put(string, string, io.Reader) (*http.Response, error)
 	Delete(string, string, io.Reader) (*http.Response, error)
+}
 
-	Client
+type CanSign interface {
+	SignFn(fn RequestSignFn)
 }
 
 type Client interface {
@@ -37,13 +43,7 @@ var ErrorLogger LogFn = func(el ...interface{}) {}
 // InfoLogger
 var InfoLogger LogFn = func(el ...interface{}) {}
 
-// Sign is the default function to use when signing requests
-// Usually this is done using HTTP-Signatures
-// See https://github.com/spacemonkeygo/httpsig
-//    var key *rsa.PrivateKey = ...
-//    signer := httpsig.NewSigner("foo", key, httpsig.RSASHA256, nil)
-//    client.Sign = signer.Sign
-var Sign RequestSignFn = func(r *http.Request) error { return nil }
+var defaultSign RequestSignFn = func(r *http.Request) error { return nil }
 
 type err struct {
 	msg string
@@ -66,10 +66,18 @@ func (e *err) Error() string {
 	}
 }
 
-type client struct{}
+type client struct {
+	signFn RequestSignFn
+}
 
 func NewClient() *client {
-	return &client{}
+	return &client{
+		signFn: defaultSign,
+	}
+}
+
+func (c *client) SignFn(fn RequestSignFn) {
+	c.signFn = fn
 }
 
 // LoadIRI tries to dereference an IRI and load the full ActivityPub object it represents
@@ -117,7 +125,7 @@ func (c *client) req(method string, url string, body io.Reader) (*http.Request, 
 	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Set("Accept", HeaderAccept)
 	//req.Header.Set("Cache-Control", "no-cache")
-	if err = Sign(req); err != nil {
+	if err = c.signFn(req); err != nil {
 		err := errorf(as.IRI(req.URL.String()), "Unable to sign request (method %q, previous error: %s)", req.Method, err)
 		return req, err
 	}
