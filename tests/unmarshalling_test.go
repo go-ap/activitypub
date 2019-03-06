@@ -289,7 +289,7 @@ var allTests = tests{
 	},
 	"activity_simple": testPair{
 		expected: true,
-		blank:    &a.Activity{
+		blank: &a.Activity{
 			Actor: &a.Person{},
 		},
 		result: &a.Activity{
