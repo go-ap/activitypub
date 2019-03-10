@@ -33,6 +33,8 @@ type Collection struct {
 	Items ItemCollection `jsonld:"items,omitempty"`
 }
 
+type ParentCollection = Collection
+
 // OrderedCollection is a subtype of Collection in which members of the logical
 // collection are assumed to always be strictly ordered.
 type OrderedCollection struct {
@@ -54,7 +56,7 @@ type OrderedCollection struct {
 // for an implementation to serialize every item contained by a Collection using the items (or orderedItems)
 // property alone. In such cases, the items within a Collection can be divided into distinct subsets or "pages".
 type CollectionPage struct {
-	Collection
+	ParentCollection
 	// Identifies the Collection to which a CollectionPage objects items belong.
 	PartOf Item `jsonld:"partOf,omitempty"`
 	// In a paged Collection, indicates the next page of items.
@@ -113,7 +115,7 @@ func CollectionPageNew(parent CollectionInterface) *CollectionPage {
 		PartOf: parent.GetLink(),
 	}
 	if pc, ok := parent.(*Collection); ok {
-		p.Collection = *pc
+		p.ParentCollection = *pc
 	}
 	p.Type = CollectionPageType
 	return &p
@@ -253,7 +255,7 @@ func (o *OrderedCollectionPage) UnmarshalJSON(data []byte) error {
 
 // UnmarshalJSON
 func (c *CollectionPage) UnmarshalJSON(data []byte) error {
-	c.Collection.UnmarshalJSON(data)
+	c.ParentCollection.UnmarshalJSON(data)
 
 	c.Next = JSONGetItem(data, "next")
 	c.Prev = JSONGetItem(data, "prev")
@@ -279,5 +281,15 @@ func (c *Collection) Collection() CollectionInterface {
 
 // Collection returns the underlying Collection type
 func (o *OrderedCollection) Collection() CollectionInterface {
+	return o
+}
+
+// Collection returns the underlying Collection type
+func (c *CollectionPage) Collection() CollectionInterface {
+	return c
+}
+
+// Collection returns the underlying Collection type
+func (o *OrderedCollectionPage) Collection() CollectionInterface {
 	return o
 }
