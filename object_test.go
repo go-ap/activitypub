@@ -450,7 +450,7 @@ func TestObject_GetType(t *testing.T) {
 }
 
 func TestNaturalLanguageValue_First(t *testing.T) {
-
+	t.Skipf("TODO")
 }
 
 func TestNaturalLanguageValueNew(t *testing.T) {
@@ -462,5 +462,49 @@ func TestNaturalLanguageValueNew(t *testing.T) {
 }
 
 func TestNaturalLanguageValue_MarshalText(t *testing.T) {
+	t.Skipf("TODO")
+}
 
+func TestNaturalLanguageValues_Append(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestNaturalLanguageValues_First(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestNaturalLanguageValues_Get(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestNaturalLanguageValues_MarshalText(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestNaturalLanguageValues_Set(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestNaturalLanguageValues_UnmarshalJSON(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestNaturalLanguageValues_UnmarshalText(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestNaturalLanguageValuesNew(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestCollectionPage_Collection(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestToObject(t *testing.T) {
+	t.Skipf("TODO")
 }

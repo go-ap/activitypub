@@ -2352,3 +2352,7 @@ func TestUpdate_UnmarshalJSON(t *testing.T) {
 		t.Errorf("Unmarshalled object %T  should have empty Updated, received %q", u, u.Updated)
 	}
 }
+
+func TestToActivity(t *testing.T) {
+	t.Skipf("TODO")
+}

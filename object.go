@@ -601,3 +601,14 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	}
 	return nil
 }
+
+// ToObject
+func ToObject(it Item) *Object {
+	switch i := it.(type) {
+	case *Object:
+		return i
+	case Object:
+		return &i
+	}
+	return nil
+}

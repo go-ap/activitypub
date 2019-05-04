@@ -1553,3 +1553,22 @@ func (c *Create) UnmarshalJSON(data []byte) error {
 
 	return err
 }
+
+// ToActivity
+func ToActivity(it Item) *Activity {
+	switch i := it.(type) {
+	case *Activity:
+		return i
+	case Activity:
+		return &i
+	case *Create:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Create:
+		var a Activity
+		a = Activity(i)
+		return &a
+	}
+	return nil
+}
