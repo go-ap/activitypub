@@ -223,6 +223,14 @@ func JSONGetLangRefField(data []byte, prop string) LangRef {
 	return LangRef(val)
 }
 
+func JSONGetIRI(data []byte, prop string) IRI {
+	val, err := jsonparser.GetString(data, prop)
+	if err != nil {
+		return IRI("")
+	}
+	return IRI(val)
+}
+
 // UnmarshalJSON tries to detect the type of the object in the json data and then outputs a matching
 // ActivityStreams object, if possible
 func UnmarshalJSON(data []byte) (Item, error) {

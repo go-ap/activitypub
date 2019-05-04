@@ -22,7 +22,7 @@ type Link struct {
 	// [RFC5988](https://tools.ietf.org/html/rfc5988) "link relation" definitions.
 	// In the [HTML5], any string not containing the "space" U+0020, "tab" (U+0009), "LF" (U+000A),
 	// "FF" (U+000C), "CR" (U+000D) or "," (U+002C) characters can be used as a valid link relation.
-	Rel *Link `jsonld:"rel,omitempty"`
+	Rel IRI `jsonld:"rel,omitempty"`
 	// When used on a Link, identifies the MIME media type of the referenced resource.
 	MediaType MimeType `jsonld:"mediaType,omitempty"`
 	// On a Link, specifies a hint as to the rendering height in device-independent pixels of the linked resource.
@@ -119,11 +119,18 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 	l.ID = JSONGetObjectID(data)
 	l.Type = JSONGetType(data)
 	l.MediaType = JSONGetMimeType(data)
+	l.Preview = JSONGetItem(data, "preview")
+	l.Height = uint(JSONGetInt(data, "height"))
+	l.Width = uint(JSONGetInt(data, "width"))
 	l.Name = JSONGetNaturalLanguageField(data, "name")
 	l.HrefLang = JSONGetLangRefField(data, "hrefLang")
-	u := JSONGetURIItem(data, "href")
-	if u != nil && !u.IsObject() {
-		l.Href = u.GetLink()
+	href := JSONGetURIItem(data, "href")
+	if href != nil && !href.IsObject() {
+		l.Href = href.GetLink()
+	}
+	rel := JSONGetURIItem(data, "rel")
+	if rel != nil && !rel.IsObject() {
+		l.Rel = rel.GetLink()
 	}
 
 	//fmt.Printf("%s\n %#v", data, l)

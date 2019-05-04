@@ -294,7 +294,7 @@ type object struct {
 	AttributedTo Item `jsonld:"attributedTo,omitempty"`
 	// Audience identifies one or more entities that represent the total population of entities
 	// for which the object can considered to be relevant.
-	Audience Item `jsonld:"audience,omitempty"`
+	Audience ItemCollection `jsonld:"audience,omitempty"`
 	// Content or textual representation of the Activity Pub Object encoded as a JSON string.
 	// By default, the value of content is HTML.
 	// The mediaType property can be used in the object to indicate a different content type.
@@ -561,16 +561,23 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	o.Generator = JSONGetItem(data, "generator")
 	o.AttributedTo = JSONGetItem(data, "attributedTo")
 	o.InReplyTo = JSONGetItem(data, "inReplyTo")
+	o.Attachment = JSONGetItem(data, "attachment")
+	o.Location = JSONGetItem(data, "location")
 	o.Published = JSONGetTime(data, "published")
 	o.StartTime = JSONGetTime(data, "startTime")
 	o.EndTime = JSONGetTime(data, "endTime")
 	o.Duration = JSONGetDuration(data, "duration")
 	o.Icon = JSONGetItem(data, "icon")
+	o.Preview = JSONGetItem(data, "preview")
 	o.Image = JSONGetItem(data, "image")
 	o.Updated = JSONGetTime(data, "updated")
 	to := JSONGetItems(data, "to")
 	if to != nil {
 		o.To = to
+	}
+	audience := JSONGetItems(data, "audience")
+	if audience != nil {
+		o.Audience = audience
 	}
 	bto := JSONGetItems(data, "bto")
 	if bto != nil {

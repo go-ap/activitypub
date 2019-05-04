@@ -1507,6 +1507,10 @@ func (a *Activity) UnmarshalJSON(data []byte) error {
 	a.Parent.UnmarshalJSON(data)
 	a.Actor = JSONGetItem(data, "actor")
 	a.Object = JSONGetItem(data, "object")
+	a.Target = JSONGetItem(data, "target")
+	a.Instrument = JSONGetItem(data, "instrument")
+	a.Origin = JSONGetItem(data, "origin")
+	a.Result = JSONGetItem(data, "result")
 	return nil
 }
 
