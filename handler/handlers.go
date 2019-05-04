@@ -32,9 +32,10 @@ func (a ActivityHandlerFn) ValidateRequest(r *http.Request) error {
 // ServeHTTP implements the http.Handler interface for the ActivityHandlerFn type
 func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var dat []byte
-	var status int
 	var iri as.IRI
 	var err error
+
+	var status = http.StatusOK
 
 	if !a.ValidMethod(r) {
 		status = http.StatusNotAcceptable
@@ -80,7 +81,8 @@ func (c CollectionHandlerFn) ValidateRequest(r *http.Request) error {
 // ServeHTTP implements the http.Handler interface for the CollectionHandlerFn type
 func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var dat []byte
-	var status int
+
+	var status = http.StatusOK
 
 	if c.ValidMethod(r) {
 		status = http.StatusNotAcceptable
@@ -93,8 +95,6 @@ func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if dat, err = j.WithContext(j.IRI(as.ActivityBaseURI)).Marshal(col); err != nil {
 			status = http.StatusInternalServerError
 			dat = []byte(err.Error())
-		} else {
-			status = http.StatusOK
 		}
 	}
 
@@ -124,7 +124,7 @@ func (i ItemHandlerFn) ValidateRequest(r *http.Request) error {
 // ServeHTTP implements the http.Handler interface for the ItemHandlerFn type
 func (i ItemHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var dat []byte
-	var status int
+	var status = http.StatusOK
 
 	if i.ValidMethod(r) {
 		status = http.StatusNotAcceptable
@@ -138,8 +138,6 @@ func (i ItemHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if dat, err = j.WithContext(j.IRI(as.ActivityBaseURI)).Marshal(it); err != nil {
 			status = http.StatusInternalServerError
 			dat = []byte(err.Error())
-		} else {
-			status = http.StatusOK
 		}
 	}
 
