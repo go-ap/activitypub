@@ -146,7 +146,6 @@ var validActivityTypes = [...]ActivityVocabularyType{
 	UndoType,
 	UpdateType,
 	ViewType,
-	// Actor Types
 }
 
 // Activity is a subtype of Object that describes some form of action that may happen,
@@ -1561,11 +1560,203 @@ func ToActivity(it Item) *Activity {
 		return i
 	case Activity:
 		return &i
+	case *Accept:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Accept:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Add:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Add:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Announce:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Announce:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Block:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Block:
+		var a Activity
+		a = Activity(i)
+		return &a
 	case *Create:
 		var a Activity
 		a = Activity(*i)
 		return &a
 	case Create:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Delete:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Delete:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Dislike:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Dislike:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Flag:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Flag:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Follow:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Follow:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Ignore:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Ignore:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Invite:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Invite:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Join:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Join:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Leave:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Leave:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Like:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Like:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Listen:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Listen:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Move:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Move:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Offer:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Offer:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Reject:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Reject:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Read:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Read:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Remove:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Remove:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *TentativeAccept:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case TentativeAccept:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *TentativeReject:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case TentativeReject:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Undo:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Undo:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *Update:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case Update:
+		var a Activity
+		a = Activity(i)
+		return &a
+	case *View:
+		var a Activity
+		a = Activity(*i)
+		return &a
+	case View:
 		var a Activity
 		a = Activity(i)
 		return &a
