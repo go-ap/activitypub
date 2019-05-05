@@ -609,6 +609,22 @@ func ToObject(it Item) *Object {
 		return i
 	case Object:
 		return &i
+	case *Place:
+		return &i.Parent
+	case Place:
+		return &i.Parent
+	case *Profile:
+		return &i.Parent
+	case Profile:
+		return &i.Parent
+	case *Relationship:
+		return &i.Parent
+	case Relationship:
+		return &i.Parent
+	case *Tombstone:
+		return &i.Parent
+	case Tombstone:
+		return &i.Parent
 	}
 	return nil
 }
