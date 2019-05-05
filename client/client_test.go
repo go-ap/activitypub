@@ -51,21 +51,21 @@ func TestClient_LoadIRI(t *testing.T) {
 }
 
 func TestClient_Get(t *testing.T) {
-
+	t.Skipf("TODO")
 }
 
 func TestClient_Head(t *testing.T) {
-
+	t.Skipf("TODO")
 }
 
 func TestClient_Post(t *testing.T) {
-
+	t.Skipf("TODO")
 }
 
 func TestClient_Put(t *testing.T) {
-
+	t.Skipf("TODO")
 }
 
 func TestClient_Delete(t *testing.T) {
-
+	t.Skipf("TODO")
 }
