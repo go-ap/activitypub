@@ -79,33 +79,33 @@ func TestMention_Object(t *testing.T) {
 }
 
 func TestLink_GetID(t *testing.T) {
-
+	t.Skipf("TODO")
 }
 
 func TestLink_GetLink(t *testing.T) {
-
+	t.Skipf("TODO")
 }
 
 func TestLink_GetType(t *testing.T) {
-
+	t.Skipf("TODO")
 }
 
 func TestLink_UnmarshalJSON(t *testing.T) {
-
+	t.Skipf("TODO")
 }
 
 func TestMention_GetID(t *testing.T) {
-
+	t.Skipf("TODO")
 }
 
 func TestMention_GetLink(t *testing.T) {
-
+	t.Skipf("TODO")
 }
 
 func TestMention_GetType(t *testing.T) {
-
+	t.Skipf("TODO")
 }
 
 func TestMentionNew(t *testing.T) {
-
+	t.Skipf("TODO")
 }
