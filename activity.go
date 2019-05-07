@@ -1,6 +1,7 @@
 package activitystreams
 
 import (
+	"errors"
 	"time"
 )
 
@@ -1554,212 +1555,212 @@ func (c *Create) UnmarshalJSON(data []byte) error {
 }
 
 // ToActivity
-func ToActivity(it Item) *Activity {
+func ToActivity(it Item) (*Activity, error) {
 	switch i := it.(type) {
 	case *Activity:
-		return i
+		return i, nil
 	case Activity:
-		return &i
+		return &i, nil
 	case *Accept:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Accept:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Add:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Add:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Announce:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Announce:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Block:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Block:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Create:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Create:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Delete:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Delete:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Dislike:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Dislike:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Flag:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Flag:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Follow:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Follow:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Ignore:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Ignore:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Invite:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Invite:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Join:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Join:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Leave:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Leave:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Like:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Like:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Listen:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Listen:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Move:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Move:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Offer:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Offer:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Reject:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Reject:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Read:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Read:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Remove:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Remove:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *TentativeAccept:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case TentativeAccept:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *TentativeReject:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case TentativeReject:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Undo:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Undo:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *Update:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case Update:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	case *View:
 		var a Activity
 		a = Activity(*i)
-		return &a
+		return &a, nil
 	case View:
 		var a Activity
 		a = Activity(i)
-		return &a
+		return &a, nil
 	}
-	return nil
+	return nil, errors.New("unable to convert activity")
 }

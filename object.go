@@ -2,6 +2,7 @@ package activitystreams
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -603,28 +604,28 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 }
 
 // ToObject
-func ToObject(it Item) *Object {
+func ToObject(it Item) (*Object, error) {
 	switch i := it.(type) {
 	case *Object:
-		return i
+		return i, nil
 	case Object:
-		return &i
+		return &i, nil
 	case *Place:
-		return &i.Parent
+		return &i.Parent, nil
 	case Place:
-		return &i.Parent
+		return &i.Parent, nil
 	case *Profile:
-		return &i.Parent
+		return &i.Parent, nil
 	case Profile:
-		return &i.Parent
+		return &i.Parent, nil
 	case *Relationship:
-		return &i.Parent
+		return &i.Parent, nil
 	case Relationship:
-		return &i.Parent
+		return &i.Parent, nil
 	case *Tombstone:
-		return &i.Parent
+		return &i.Parent, nil
 	case Tombstone:
-		return &i.Parent
+		return &i.Parent, nil
 	}
-	return nil
+	return nil, errors.New("unable to convert object")
 }
