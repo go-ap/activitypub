@@ -629,3 +629,43 @@ func ToObject(it Item) (*Object, error) {
 	}
 	return nil, errors.New("unable to convert object")
 }
+
+// FoldObjectProperties
+func FoldObjectProperties(o Object) Object {
+	if o.Replies != nil && o.Replies.IsObject() {
+		if len(o.Replies.GetLink()) > 0 {
+			o.Replies = o.Replies.GetLink()
+		} else {
+			o.Replies = IRI(fmt.Sprintf("%s/replies", o.GetLink()))
+		}
+	}
+	o.AttributedTo = FoldToIRI(o.AttributedTo)
+	o.InReplyTo = FoldToIRI(o.InReplyTo)
+
+	o.To = FoldItemCollection(o.To)
+	o.Bto = FoldItemCollection(o.Bto)
+	o.CC = FoldItemCollection(o.CC)
+	o.BCC = FoldItemCollection(o.BCC)
+	o.Audience = FoldItemCollection(o.Audience)
+
+	o.Tag = FoldItemCollection(o.Tag)
+
+	return o
+}
+
+// FoldProperties
+func FoldProperties(it Item) Item {
+	if ValidActivityType(it.GetType()) {
+		act, err := ToActivity(it)
+		if err == nil {
+			return FoldActivityProperties(*act)
+		}
+	}
+	if ValidActorType(it.GetType()) || ValidObjectType(it.GetType()) {
+		ob, err := ToObject(it)
+		if err == nil {
+			return FoldObjectProperties(*ob)
+		}
+	}
+	return it
+}

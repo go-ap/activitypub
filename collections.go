@@ -293,3 +293,13 @@ func (c *CollectionPage) Collection() CollectionInterface {
 func (o *OrderedCollectionPage) Collection() CollectionInterface {
 	return o
 }
+
+// FoldItemCollection
+func FoldItemCollection(c ItemCollection) ItemCollection {
+	if c != nil && len(c) > 0 {
+		for i, it := range c {
+			c[i] = FoldToIRI(it)
+		}
+	}
+	return c
+}

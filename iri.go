@@ -45,3 +45,11 @@ func (i IRI) IsLink() bool {
 func (i IRI) IsObject() bool {
 	return false
 }
+
+// FoldToIRI
+func FoldToIRI(it Item) Item {
+	if it!= nil && it.IsObject() && len(it.GetLink()) > 0 {
+		return it.GetLink()
+	}
+	return it
+}

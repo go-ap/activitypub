@@ -58,3 +58,7 @@ func TestIRI_UnmarshalJSON(t *testing.T) {
 		t.Errorf("%T invalid value after Unmarshal %q, expected %q", i, i, val)
 	}
 }
+
+func TestFoldToIRI(t *testing.T) {
+	t.Skipf("TODO")
+}

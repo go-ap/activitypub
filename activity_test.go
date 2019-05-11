@@ -2356,3 +2356,11 @@ func TestUpdate_UnmarshalJSON(t *testing.T) {
 func TestToActivity(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestFoldActivityProperties(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestFoldIntransitiveActivityProperties(t *testing.T) {
+	t.Skipf("TODO")
+}

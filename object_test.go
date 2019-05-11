@@ -508,3 +508,11 @@ func TestCollectionPage_Collection(t *testing.T) {
 func TestToObject(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestFoldObjectProperties(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestFoldProperties(t *testing.T) {
+	t.Skipf("TODO")
+}

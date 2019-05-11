@@ -1764,3 +1764,26 @@ func ToActivity(it Item) (*Activity, error) {
 	}
 	return nil, errors.New("unable to convert activity")
 }
+
+// FoldIntransitiveActivityProperties
+func FoldIntransitiveActivityProperties(act IntransitiveActivity) IntransitiveActivity{
+	act.Actor = FoldToIRI(act.Actor)
+	act.Target = FoldToIRI(act.Target)
+	act.Result = FoldToIRI(act.Result)
+	act.Origin = FoldToIRI(act.Origin)
+	act.Result = FoldToIRI(act.Result)
+	act.Instrument = FoldToIRI(act.Instrument)
+	return act
+}
+
+// FoldActivityProperties
+func FoldActivityProperties(act Activity) Activity {
+	act.Object = FoldToIRI(act.Object)
+	act.Actor = FoldToIRI(act.Actor)
+	act.Target = FoldToIRI(act.Target)
+	act.Result = FoldToIRI(act.Result)
+	act.Origin = FoldToIRI(act.Origin)
+	act.Result = FoldToIRI(act.Result)
+	act.Instrument = FoldToIRI(act.Instrument)
+	return act
+}

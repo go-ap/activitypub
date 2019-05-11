@@ -489,3 +489,11 @@ func TestOrderedCollectionPage_Append(t *testing.T) {
 		t.Errorf("First item in Inbox is does not match %q", val.ID)
 	}
 }
+
+func TestOrderedCollectionPage_Collection(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestFoldItemCollection(t *testing.T) {
+	t.Skipf("TODO")
+}
