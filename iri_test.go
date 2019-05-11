@@ -59,6 +59,6 @@ func TestIRI_UnmarshalJSON(t *testing.T) {
 	}
 }
 
-func TestFoldToIRI(t *testing.T) {
+func TestFlattenToIRI(t *testing.T) {
 	t.Skipf("TODO")
 }

@@ -509,10 +509,10 @@ func TestToObject(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestFoldObjectProperties(t *testing.T) {
+func TestFlattenObjectProperties(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestFoldProperties(t *testing.T) {
+func TestFlattenProperties(t *testing.T) {
 	t.Skipf("TODO")
 }

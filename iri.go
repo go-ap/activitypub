@@ -46,8 +46,8 @@ func (i IRI) IsObject() bool {
 	return false
 }
 
-// FoldToIRI
-func FoldToIRI(it Item) Item {
+// FlattenToIRI checks if Item can be flatten to an IRI and returns it if so
+func FlattenToIRI(it Item) Item {
 	if it!= nil && it.IsObject() && len(it.GetLink()) > 0 {
 		return it.GetLink()
 	}

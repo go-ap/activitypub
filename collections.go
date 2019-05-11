@@ -294,11 +294,11 @@ func (o *OrderedCollectionPage) Collection() CollectionInterface {
 	return o
 }
 
-// FoldItemCollection
-func FoldItemCollection(c ItemCollection) ItemCollection {
+// FlattenItemCollection flattens the Collection's properties from Object type to IRI
+func FlattenItemCollection(c ItemCollection) ItemCollection {
 	if c != nil && len(c) > 0 {
 		for i, it := range c {
-			c[i] = FoldToIRI(it)
+			c[i] = FlattenToIRI(it)
 		}
 	}
 	return c

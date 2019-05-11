@@ -494,6 +494,6 @@ func TestOrderedCollectionPage_Collection(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestFoldItemCollection(t *testing.T) {
+func TestFlattenItemCollection(t *testing.T) {
 	t.Skipf("TODO")
 }

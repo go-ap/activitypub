@@ -2357,10 +2357,10 @@ func TestToActivity(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestFoldActivityProperties(t *testing.T) {
+func TestFlattenActivityProperties(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestFoldIntransitiveActivityProperties(t *testing.T) {
+func TestFlattenIntransitiveActivityProperties(t *testing.T) {
 	t.Skipf("TODO")
 }

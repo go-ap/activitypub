@@ -1765,25 +1765,25 @@ func ToActivity(it Item) (*Activity, error) {
 	return nil, errors.New("unable to convert activity")
 }
 
-// FoldIntransitiveActivityProperties
-func FoldIntransitiveActivityProperties(act IntransitiveActivity) IntransitiveActivity{
-	act.Actor = FoldToIRI(act.Actor)
-	act.Target = FoldToIRI(act.Target)
-	act.Result = FoldToIRI(act.Result)
-	act.Origin = FoldToIRI(act.Origin)
-	act.Result = FoldToIRI(act.Result)
-	act.Instrument = FoldToIRI(act.Instrument)
+// FlattenIntransitiveActivityProperties flattens the IntransitiveActivity's properties from Object type to IRI
+func FlattenIntransitiveActivityProperties(act IntransitiveActivity) IntransitiveActivity{
+	act.Actor = FlattenToIRI(act.Actor)
+	act.Target = FlattenToIRI(act.Target)
+	act.Result = FlattenToIRI(act.Result)
+	act.Origin = FlattenToIRI(act.Origin)
+	act.Result = FlattenToIRI(act.Result)
+	act.Instrument = FlattenToIRI(act.Instrument)
 	return act
 }
 
-// FoldActivityProperties
-func FoldActivityProperties(act Activity) Activity {
-	act.Object = FoldToIRI(act.Object)
-	act.Actor = FoldToIRI(act.Actor)
-	act.Target = FoldToIRI(act.Target)
-	act.Result = FoldToIRI(act.Result)
-	act.Origin = FoldToIRI(act.Origin)
-	act.Result = FoldToIRI(act.Result)
-	act.Instrument = FoldToIRI(act.Instrument)
+// FlattenActivityProperties flattens the Activity's properties from Object type to IRI
+func FlattenActivityProperties(act Activity) Activity {
+	act.Object = FlattenToIRI(act.Object)
+	act.Actor = FlattenToIRI(act.Actor)
+	act.Target = FlattenToIRI(act.Target)
+	act.Result = FlattenToIRI(act.Result)
+	act.Origin = FlattenToIRI(act.Origin)
+	act.Result = FlattenToIRI(act.Result)
+	act.Instrument = FlattenToIRI(act.Instrument)
 	return act
 }

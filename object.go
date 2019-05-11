@@ -630,8 +630,8 @@ func ToObject(it Item) (*Object, error) {
 	return nil, errors.New("unable to convert object")
 }
 
-// FoldObjectProperties
-func FoldObjectProperties(o Object) Object {
+// FlattenObjectProperties flattens the Object's properties from Object types to IRI
+func FlattenObjectProperties(o Object) Object {
 	if o.Replies != nil && o.Replies.IsObject() {
 		if len(o.Replies.GetLink()) > 0 {
 			o.Replies = o.Replies.GetLink()
@@ -639,32 +639,32 @@ func FoldObjectProperties(o Object) Object {
 			o.Replies = IRI(fmt.Sprintf("%s/replies", o.GetLink()))
 		}
 	}
-	o.AttributedTo = FoldToIRI(o.AttributedTo)
-	o.InReplyTo = FoldToIRI(o.InReplyTo)
+	o.AttributedTo = FlattenToIRI(o.AttributedTo)
+	o.InReplyTo = FlattenToIRI(o.InReplyTo)
 
-	o.To = FoldItemCollection(o.To)
-	o.Bto = FoldItemCollection(o.Bto)
-	o.CC = FoldItemCollection(o.CC)
-	o.BCC = FoldItemCollection(o.BCC)
-	o.Audience = FoldItemCollection(o.Audience)
+	o.To = FlattenItemCollection(o.To)
+	o.Bto = FlattenItemCollection(o.Bto)
+	o.CC = FlattenItemCollection(o.CC)
+	o.BCC = FlattenItemCollection(o.BCC)
+	o.Audience = FlattenItemCollection(o.Audience)
 
-	o.Tag = FoldItemCollection(o.Tag)
+	o.Tag = FlattenItemCollection(o.Tag)
 
 	return o
 }
 
-// FoldProperties
-func FoldProperties(it Item) Item {
+// FlattenProperties flattens the Item's properties from Object types to IRI
+func FlattenProperties(it Item) Item {
 	if ValidActivityType(it.GetType()) {
 		act, err := ToActivity(it)
 		if err == nil {
-			return FoldActivityProperties(*act)
+			return FlattenActivityProperties(*act)
 		}
 	}
 	if ValidActorType(it.GetType()) || ValidObjectType(it.GetType()) {
 		ob, err := ToObject(it)
 		if err == nil {
-			return FoldObjectProperties(*ob)
+			return FlattenObjectProperties(*ob)
 		}
 	}
 	return it
