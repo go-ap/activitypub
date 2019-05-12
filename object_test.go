@@ -516,3 +516,7 @@ func TestFlattenObjectProperties(t *testing.T) {
 func TestFlattenProperties(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestTombstone_UnmarshalJSON(t *testing.T) {
+	t.Skipf("TODO")
+}

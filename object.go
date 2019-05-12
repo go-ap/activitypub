@@ -669,3 +669,11 @@ func FlattenProperties(it Item) Item {
 	}
 	return it
 }
+
+// UnmarshalJSON
+func (t *Tombstone) UnmarshalJSON(data []byte) error {
+	t.Parent.UnmarshalJSON(data)
+	t.FormerType = ActivityVocabularyType(JSONGetString(data, "formerType"))
+	t.Deleted = JSONGetTime(data, "deleted")
+	return nil
+}
