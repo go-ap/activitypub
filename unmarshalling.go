@@ -291,19 +291,19 @@ func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
 	case PageType:
 		ret = ObjectNew(typ)
 	case PlaceType:
-		p := Place{}
+		p := &Place{}
 		p.Type = typ
 		ret = p
 	case ProfileType:
-		p := Profile{}
+		p := &Profile{}
 		p.Type = typ
 		ret = p
 	case RelationshipType:
-		r := Relationship{}
+		r := &Relationship{}
 		r.Type = typ
 		ret = r
 	case TombstoneType:
-		t := Tombstone{}
+		t := &Tombstone{}
 		t.Type = typ
 		ret = t
 	case VideoType:
