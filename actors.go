@@ -1,6 +1,9 @@
 package activitypub
 
-import as "github.com/go-ap/activitystreams"
+import (
+	"errors"
+	as "github.com/go-ap/activitystreams"
+)
 
 // Endpoints a json object which maps additional (typically server/domain-wide)
 // endpoints which may be useful either for this actor or someone referencing this actor.
@@ -150,4 +153,16 @@ func (a *actor)UnmarshalJSON(data []byte) error {
 	// TODO(marius): Streams needs custom unmarshalling
 	//a.Streams = as.JSONGetItems(data, "streams")
 	return nil
+}
+
+
+// ToObject
+func ToPerson(it as.Item) (*Person, error) {
+	switch i := it.(type) {
+	case *actor:
+		return i, nil
+	case actor:
+		return &i, nil
+	}
+	return nil, errors.New("unable to convert object")
 }

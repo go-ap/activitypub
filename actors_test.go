@@ -333,3 +333,7 @@ func TestService_IsLink(t *testing.T) {
 func TestService_IsObject(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestToPerson(t *testing.T) {
+	t.Skipf("TODO")
+}
