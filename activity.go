@@ -89,9 +89,9 @@ var GroupManagementActivityTypes = ActivityVocabularyTypes{
 }
 
 var ContentExperienceActivityTypes = ActivityVocabularyTypes{
-	ArriveType,
-	LeaveType,
-	TravelType,
+	ListenType,
+	ReadType,
+	ViewType,
 }
 
 var GeoSocialEventsActivityTypes = ActivityVocabularyTypes{
