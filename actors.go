@@ -83,7 +83,7 @@ type (
 
 // actorNew initializes an actor type actor
 func actorNew(id as.ObjectID, typ as.ActivityVocabularyType) *actor {
-	if !as.ValidActorType(typ) {
+	if !as.ActorTypes.Contains(typ) {
 		typ = as.ActorType
 	}
 
