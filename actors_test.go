@@ -87,19 +87,6 @@ func TestServiceNew(t *testing.T) {
 	}
 }
 
-func TestValidActorType(t *testing.T) {
-	var invalidType ActivityVocabularyType = "RandomType"
-
-	if ValidActorType(invalidType) {
-		t.Errorf("APObject Type '%v' should not be valid", invalidType)
-	}
-	for _, validType := range validActorTypes {
-		if !ValidActorType(validType) {
-			t.Errorf("APObject Type '%v' should be valid", validType)
-		}
-	}
-}
-
 func TestActor_IsLink(t *testing.T) {
 	m := ActorNew("test", ActorType)
 	if m.IsLink() {

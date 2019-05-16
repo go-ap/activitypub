@@ -37,19 +37,30 @@ const (
 	ViewType            ActivityVocabularyType = "View"
 )
 
-var validContentManagementActivityTypes = [...]ActivityVocabularyType{
+type ActivityVocabularyTypes []ActivityVocabularyType
+
+func (a ActivityVocabularyTypes) Contains(typ ActivityVocabularyType) bool {
+	for _, v := range a {
+		if v == typ {
+			return true
+		}
+	}
+	return false
+}
+
+var ContentManagementActivityTypes = ActivityVocabularyTypes{
 	CreateType,
 	DeleteType,
 	UpdateType,
 }
 
-var validCollectionManagementActivityTypes = [...]ActivityVocabularyType{
+var CollectionManagementActivityTypes = ActivityVocabularyTypes{
 	AddType,
 	MoveType,
 	RemoveType,
 }
 
-var validReactionsActivityTypes = [...]ActivityVocabularyType{
+var ReactionsActivityTypes = ActivityVocabularyTypes{
 	AcceptType,
 	BlockType,
 	DislikeType,
@@ -61,7 +72,7 @@ var validReactionsActivityTypes = [...]ActivityVocabularyType{
 	TentativeRejectType,
 }
 
-var validEventRSVPActivityTypes = [...]ActivityVocabularyType{
+var EventRSVPActivityTypes = ActivityVocabularyTypes{
 	AcceptType,
 	IgnoreType,
 	InviteType,
@@ -70,34 +81,34 @@ var validEventRSVPActivityTypes = [...]ActivityVocabularyType{
 	TentativeRejectType,
 }
 
-var validGroupManagementActivityTypes = [...]ActivityVocabularyType{
+var GroupManagementActivityTypes = ActivityVocabularyTypes{
 	AddType,
 	JoinType,
 	LeaveType,
 	RemoveType,
 }
 
-var validContentExperienceActivityTypes = [...]ActivityVocabularyType{
+var ContentExperienceActivityTypes = ActivityVocabularyTypes{
 	ArriveType,
 	LeaveType,
 	TravelType,
 }
 
-var validGeoSocialEventsActivityTypes = [...]ActivityVocabularyType{
+var GeoSocialEventsActivityTypes = ActivityVocabularyTypes{
 	ArriveType,
 	LeaveType,
 	TravelType,
 }
 
-var validNotificationActivityTypes = [...]ActivityVocabularyType{
+var NotificationActivityTypes = ActivityVocabularyTypes{
 	AnnounceType,
 }
 
-var validQuestionActivityTypes = [...]ActivityVocabularyType{
+var QuestionActivityTypes = ActivityVocabularyTypes{
 	QuestionType,
 }
 
-var validRelationshipManagementActivityTypes = [...]ActivityVocabularyType{
+var RelationshipManagementActivityTypes = ActivityVocabularyTypes{
 	AcceptType,
 	AddType,
 	BlockType,
@@ -109,19 +120,19 @@ var validRelationshipManagementActivityTypes = [...]ActivityVocabularyType{
 	RejectType,
 }
 
-var validNegatingActivityTypes = [...]ActivityVocabularyType{
+var NegatingActivityTypes = ActivityVocabularyTypes{
 	UndoType,
 }
 
-var validOffersActivityTypes = [...]ActivityVocabularyType{
+var OffersActivityTypes = ActivityVocabularyTypes{
 	OfferType,
 }
-var validIntransitiveActivityTypes = [...]ActivityVocabularyType{
+var IntransitiveActivityTypes = ActivityVocabularyTypes{
 	ArriveType,
 	TravelType,
 	QuestionType,
 }
-var validActivityTypes = [...]ActivityVocabularyType{
+var ActivityTypes = ActivityVocabularyTypes{
 	AcceptType,
 	AddType,
 	AnnounceType,
@@ -622,59 +633,9 @@ func QuestionNew(id ObjectID) *Question {
 	return &q
 }
 
-// ValidContentManagementType is a validation function for content management Activity objects
-func ValidContentManagementType(typ ActivityVocabularyType) bool {
-	for _, v := range validContentManagementActivityTypes {
-		if v == typ {
-			return true
-		}
-	}
-	return false
-}
-
-// ValidCollectionManagementType is a validation function for collection management Activity objects
-func ValidCollectionManagementType(typ ActivityVocabularyType) bool {
-	for _, v := range validCollectionManagementActivityTypes {
-		if v == typ {
-			return true
-		}
-	}
-	return false
-}
-
-// ValidReactionsType is a validation function for reactions Activity objects
-func ValidReactionsType(typ ActivityVocabularyType) bool {
-	for _, v := range validReactionsActivityTypes {
-		if v == typ {
-			return true
-		}
-	}
-	return false
-}
-
-// ValidActivityType is a validation function for Activity objects
-func ValidActivityType(typ ActivityVocabularyType) bool {
-	for _, v := range validActivityTypes {
-		if v == typ {
-			return true
-		}
-	}
-	return false
-}
-
-// ValidIntransitiveActivityType is a validation function for IntransitiveActivity objects
-func ValidIntransitiveActivityType(typ ActivityVocabularyType) bool {
-	for _, v := range validIntransitiveActivityTypes {
-		if v == typ {
-			return true
-		}
-	}
-	return false
-}
-
 // ActivityNew initializes a basic activity
 func ActivityNew(id ObjectID, typ ActivityVocabularyType, ob Item) *Activity {
-	if !ValidActivityType(typ) {
+	if !ActivityTypes.Contains(typ) {
 		typ = ActivityType
 	}
 	a := Activity{Parent: Parent{ID: id, Type: typ}}
@@ -688,7 +649,7 @@ func ActivityNew(id ObjectID, typ ActivityVocabularyType, ob Item) *Activity {
 
 // IntransitiveActivityNew initializes a intransitive activity
 func IntransitiveActivityNew(id ObjectID, typ ActivityVocabularyType) *IntransitiveActivity {
-	if !ValidIntransitiveActivityType(typ) {
+	if !IntransitiveActivityTypes.Contains(typ) {
 		typ = IntransitiveActivityType
 	}
 	i := IntransitiveActivity{Parent: Parent{ID: id, Type: typ}}
@@ -1766,7 +1727,7 @@ func ToActivity(it Item) (*Activity, error) {
 }
 
 // FlattenIntransitiveActivityProperties flattens the IntransitiveActivity's properties from Object type to IRI
-func FlattenIntransitiveActivityProperties(act IntransitiveActivity) IntransitiveActivity{
+func FlattenIntransitiveActivityProperties(act IntransitiveActivity) IntransitiveActivity {
 	act.Actor = FlattenToIRI(act.Actor)
 	act.Target = FlattenToIRI(act.Target)
 	act.Result = FlattenToIRI(act.Result)

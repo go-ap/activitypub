@@ -57,14 +57,6 @@ func TestOrderedCollectionPageNew(t *testing.T) {
 	}
 }
 
-func TestValidCollectionType(t *testing.T) {
-	for _, validType := range validCollectionTypes {
-		if !ValidCollectionType(validType) {
-			t.Errorf("Generic Type '%#v' should be valid", validType)
-		}
-	}
-}
-
 func Test_OrderedCollection_Append(t *testing.T) {
 	id := ObjectID("test")
 

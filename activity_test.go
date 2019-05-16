@@ -50,125 +50,6 @@ func TestIntransitiveActivityNew(t *testing.T) {
 	}
 }
 
-func TestValidActivityType(t *testing.T) {
-	var invalidType ActivityVocabularyType = "RandomType"
-
-	if ValidActivityType(ActivityType) {
-		t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
-	}
-	for _, inValidType := range validObjectTypes {
-		if ValidActivityType(inValidType) {
-			t.Errorf("APObject Type '%v' should be invalid", inValidType)
-		}
-	}
-	if ValidActivityType(invalidType) {
-		t.Errorf("Activity Type '%v' should not be valid", invalidType)
-	}
-	for _, validType := range validActivityTypes {
-		if !ValidActivityType(validType) {
-			t.Errorf("Activity Type '%v' should be valid", validType)
-		}
-	}
-}
-
-func TestValidIntransitiveActivityType(t *testing.T) {
-	var invalidType ActivityVocabularyType = "RandomType"
-
-	if ValidIntransitiveActivityType(ActivityType) {
-		t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
-	}
-	for _, inValidType := range validActivityTypes {
-		if ValidIntransitiveActivityType(inValidType) {
-			t.Errorf("APObject Type '%v' should be invalid", inValidType)
-		}
-	}
-	if ValidIntransitiveActivityType(invalidType) {
-		t.Errorf("Activity Type '%v' should not be valid", invalidType)
-	}
-	for _, validType := range validIntransitiveActivityTypes {
-		if !ValidIntransitiveActivityType(validType) {
-			t.Errorf("Activity Type '%v' should be valid", validType)
-		}
-	}
-}
-func TestValidCollectionManagementType(t *testing.T) {
-	var invalidType ActivityVocabularyType = "RandomType"
-
-	if ValidActivityType(ActivityType) {
-		t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
-	}
-	for _, inValidType := range validCollectionManagementActivityTypes {
-		if !ValidCollectionManagementType(inValidType) {
-			t.Errorf("APObject Type '%v' should be valid", inValidType)
-		}
-	}
-	if ValidCollectionManagementType(invalidType) {
-		t.Errorf("Activity Type '%v' should not be valid", invalidType)
-	}
-	for _, validType := range validContentManagementActivityTypes {
-		if ValidCollectionManagementType(validType) {
-			t.Errorf("Activity Type '%v' should not be valid", validType)
-		}
-	}
-	for _, validType := range validReactionsActivityTypes {
-		if ValidCollectionManagementType(validType) {
-			t.Errorf("Activity Type '%v' should not be valid", validType)
-		}
-	}
-}
-
-func TestValidContentManagementType(t *testing.T) {
-	var invalidType ActivityVocabularyType = "RandomType"
-
-	if ValidActivityType(ActivityType) {
-		t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
-	}
-	for _, inValidType := range validContentManagementActivityTypes {
-		if !ValidContentManagementType(inValidType) {
-			t.Errorf("APObject Type '%v' should be valid", inValidType)
-		}
-	}
-	if ValidContentManagementType(invalidType) {
-		t.Errorf("Activity Type '%v' should not be valid", invalidType)
-	}
-	for _, validType := range validCollectionManagementActivityTypes {
-		if ValidContentManagementType(validType) {
-			t.Errorf("Activity Type '%v' should not be valid", validType)
-		}
-	}
-	for _, validType := range validReactionsActivityTypes {
-		if ValidContentManagementType(validType) {
-			t.Errorf("Activity Type '%v' should not be valid", validType)
-		}
-	}
-}
-
-func TestValidReactionsType(t *testing.T) {
-	var invalidType ActivityVocabularyType = "RandomType"
-
-	if ValidReactionsType(ActivityType) {
-		t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
-	}
-	for _, inValidType := range validReactionsActivityTypes {
-		if !ValidReactionsType(inValidType) {
-			t.Errorf("APObject Type '%v' should be valid", inValidType)
-		}
-	}
-	if ValidReactionsType(invalidType) {
-		t.Errorf("Activity Type '%v' should not be valid", invalidType)
-	}
-	for _, validType := range validCollectionManagementActivityTypes {
-		if ValidReactionsType(validType) {
-			t.Errorf("Activity Type '%v' should not be valid", validType)
-		}
-	}
-	for _, validType := range validContentManagementActivityTypes {
-		if ValidReactionsType(validType) {
-			t.Errorf("Activity Type '%v' should not be valid", validType)
-		}
-	}
-}
-
 func TestAcceptNew(t *testing.T) {
 	var testValue = ObjectID("test")
 
@@ -2362,5 +2243,12 @@ func TestFlattenActivityProperties(t *testing.T) {
 }
 
 func TestFlattenIntransitiveActivityProperties(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestValidEventRSVPActivityType(t *testing.T) {
+	t.Skipf("TODO")
+}
+func TestValidGroupManagementActivityType(t *testing.T) {
 	t.Skipf("TODO")
 }

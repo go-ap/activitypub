@@ -71,7 +71,7 @@ func (l Link) IsLink() bool {
 
 // IsObject validates if current Link is an GetID
 func (l Link) IsObject() bool {
-	return l.Type == ObjectType || ValidObjectType(l.Type)
+	return l.Type == ObjectType || ObjectTypes.Contains(l.Type)
 }
 
 // GetID returns the ObjectID corresponding to the Link object
@@ -96,7 +96,7 @@ func (m Mention) IsLink() bool {
 
 // IsObject validates if current Mention is an GetID
 func (m Mention) IsObject() bool {
-	return m.Type == ObjectType || ValidObjectType(m.Type)
+	return m.Type == ObjectType || ObjectTypes.Contains(m.Type)
 }
 
 // GetID returns the ObjectID corresponding to the Mention object

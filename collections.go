@@ -4,7 +4,7 @@ import (
 	"github.com/buger/jsonparser"
 )
 
-var validCollectionTypes = [...]ActivityVocabularyType{
+var CollectionTypes = ActivityVocabularyTypes{
 	CollectionType,
 	OrderedCollectionType,
 	CollectionPageType,
@@ -79,16 +79,6 @@ type OrderedCollectionPage struct {
 	Prev Item `jsonld:"prev,omitempty"`
 	// A non-negative integer value identifying the relative position within the logical view of a strictly ordered collection.
 	StartIndex uint `jsonld:"startIndex,omitempty"`
-}
-
-// ValidCollectionType validates against the valid collection types
-func ValidCollectionType(typ ActivityVocabularyType) bool {
-	for _, v := range validCollectionTypes {
-		if v == typ {
-			return true
-		}
-	}
-	return false
 }
 
 // CollectionNew initializes a new Collection

@@ -9,7 +9,7 @@ const (
 	ServiceType      ActivityVocabularyType = "Service"
 )
 
-var validActorTypes = [...]ActivityVocabularyType{
+var ActorTypes = ActivityVocabularyTypes{
 	ApplicationType,
 	GroupType,
 	OrganizationType,
@@ -40,19 +40,9 @@ type (
 	Service = Object
 )
 
-// ValidActorType validates the passed type against the valid actor types
-func ValidActorType(typ ActivityVocabularyType) bool {
-	for _, v := range validActorTypes {
-		if v == typ {
-			return true
-		}
-	}
-	return false
-}
-
 // ActorNew initializes an Actor type actor
 func ActorNew(id ObjectID, typ ActivityVocabularyType) *Object {
-	if !ValidActorType(typ) {
+	if !ActorTypes.Contains(typ) {
 		typ = ActorType
 	}
 

@@ -30,26 +30,164 @@ func TestObjectNew(t *testing.T) {
 
 }
 
-func TestValidGenericType(t *testing.T) {
-	for _, validType := range validGenericObjectTypes {
-		if !ValidObjectType(validType) {
-			t.Errorf("Generic Type '%v' should be valid", validType)
+
+func TestActivityVocabularyTypes_Contains(t *testing.T) {
+	{
+		var invalidType ActivityVocabularyType = "RandomType"
+
+		if ActivityTypes.Contains(ActivityType) {
+			t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
+		}
+		for _, inValidType := range ObjectTypes {
+			if ActivityTypes.Contains(inValidType) {
+				t.Errorf("APObject Type '%v' should be invalid", inValidType)
+			}
+		}
+		if ActivityTypes.Contains(invalidType) {
+			t.Errorf("Activity Type '%v' should not be valid", invalidType)
+		}
+		for _, validType := range ActivityTypes {
+			if !ActivityTypes.Contains(validType) {
+				t.Errorf("Activity Type '%v' should be valid", validType)
+			}
+		}
+	}
+	{
+		var invalidType ActivityVocabularyType = "RandomType"
+
+		if IntransitiveActivityTypes.Contains(ActivityType) {
+			t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
+		}
+		for _, inValidType := range ActivityTypes {
+			if IntransitiveActivityTypes.Contains(inValidType) {
+				t.Errorf("APObject Type '%v' should be invalid", inValidType)
+			}
+		}
+		if IntransitiveActivityTypes.Contains(invalidType) {
+			t.Errorf("Activity Type '%v' should not be valid", invalidType)
+		}
+		for _, validType := range IntransitiveActivityTypes {
+			if !IntransitiveActivityTypes.Contains(validType) {
+				t.Errorf("Activity Type '%v' should be valid", validType)
+			}
+		}
+	}
+	{
+		var invalidType ActivityVocabularyType = "RandomType"
+
+		if ActivityTypes.Contains(ActivityType) {
+			t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
+		}
+		for _, inValidType := range CollectionManagementActivityTypes {
+			if !CollectionManagementActivityTypes.Contains(inValidType) {
+				t.Errorf("APObject Type '%v' should be valid", inValidType)
+			}
+		}
+		if CollectionManagementActivityTypes.Contains(invalidType) {
+			t.Errorf("Activity Type '%v' should not be valid", invalidType)
+		}
+		for _, validType := range ContentManagementActivityTypes {
+			if CollectionManagementActivityTypes.Contains(validType) {
+				t.Errorf("Activity Type '%v' should not be valid", validType)
+			}
+		}
+		for _, validType := range ReactionsActivityTypes {
+			if CollectionManagementActivityTypes.Contains(validType) {
+				t.Errorf("Activity Type '%v' should not be valid", validType)
+			}
+		}
+	}
+
+	{
+		var invalidType ActivityVocabularyType = "RandomType"
+
+		if ActivityTypes.Contains(ActivityType) {
+			t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
+		}
+		for _, inValidType := range ContentManagementActivityTypes {
+			if !ContentManagementActivityTypes.Contains(inValidType) {
+				t.Errorf("APObject Type '%v' should be valid", inValidType)
+			}
+		}
+		if ContentManagementActivityTypes.Contains(invalidType) {
+			t.Errorf("Activity Type '%v' should not be valid", invalidType)
+		}
+		for _, validType := range CollectionManagementActivityTypes {
+			if ContentManagementActivityTypes.Contains(validType) {
+				t.Errorf("Activity Type '%v' should not be valid", validType)
+			}
+		}
+		for _, validType := range ReactionsActivityTypes {
+			if ContentManagementActivityTypes.Contains(validType) {
+				t.Errorf("Activity Type '%v' should not be valid", validType)
+			}
+		}
+	}
+	{
+		var invalidType ActivityVocabularyType = "RandomType"
+
+		if ReactionsActivityTypes.Contains(ActivityType) {
+			t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
+		}
+		for _, inValidType := range ReactionsActivityTypes {
+			if !ReactionsActivityTypes.Contains(inValidType) {
+				t.Errorf("APObject Type '%v' should be valid", inValidType)
+			}
+		}
+		if ReactionsActivityTypes.Contains(invalidType) {
+			t.Errorf("Activity Type '%v' should not be valid", invalidType)
+		}
+		for _, validType := range CollectionManagementActivityTypes {
+			if ReactionsActivityTypes.Contains(validType) {
+				t.Errorf("Activity Type '%v' should not be valid", validType)
+			}
+		}
+		for _, validType := range ContentManagementActivityTypes {
+			if ReactionsActivityTypes.Contains(validType) {
+				t.Errorf("Activity Type '%v' should not be valid", validType)
+			}
+		}
+	}
+	{
+		for _, validType := range CollectionTypes {
+			if !CollectionTypes.Contains(validType) {
+				t.Errorf("Generic Type '%#v' should be valid", validType)
+			}
+		}
+	}
+	{
+		var invalidType ActivityVocabularyType = "RandomType"
+
+		if ActorTypes.Contains(invalidType) {
+			t.Errorf("APObject Type '%v' should not be valid", invalidType)
+		}
+		for _, validType := range ActorTypes {
+			if !ActorTypes.Contains(validType) {
+				t.Errorf("APObject Type '%v' should be valid", validType)
+			}
+		}
+	}
+	{
+		for _, validType := range GenericObjectTypes {
+			if !GenericObjectTypes.Contains(validType) {
+				t.Errorf("Generic Type '%v' should be valid", validType)
+			}
+		}
+	}
+	{
+		var invalidType ActivityVocabularyType = "RandomType"
+
+		if ObjectTypes.Contains(invalidType) {
+			t.Errorf("APObject Type '%v' should not be valid", invalidType)
+		}
+		for _, validType := range ObjectTypes {
+			if !ObjectTypes.Contains(validType) {
+				t.Errorf("APObject Type '%v' should be valid", validType)
+			}
 		}
 	}
 }
 
-func TestValidObjectType(t *testing.T) {
-	var invalidType ActivityVocabularyType = "RandomType"
-
-	if ValidObjectType(invalidType) {
-		t.Errorf("APObject Type '%v' should not be valid", invalidType)
-	}
-	for _, validType := range validObjectTypes {
-		if !ValidObjectType(validType) {
-			t.Errorf("APObject Type '%v' should be valid", validType)
-		}
-	}
-}
 
 func TestMarshalJSON(t *testing.T) {
 	m := NaturalLanguageValues{

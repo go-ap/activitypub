@@ -60,7 +60,7 @@ const (
 	NilLangRef LangRef = "-"
 )
 
-var validGenericObjectTypes = [...]ActivityVocabularyType{
+var GenericObjectTypes = ActivityVocabularyTypes{
 	ActivityType,
 	IntransitiveActivityType,
 	ObjectType,
@@ -69,13 +69,13 @@ var validGenericObjectTypes = [...]ActivityVocabularyType{
 	OrderedCollectionType,
 }
 
-var validGenericLinkTypes = [...]ActivityVocabularyType{
+var GenericLinkTypes = ActivityVocabularyTypes{
 	LinkType,
 }
 
-var validGenericTypes = append(validGenericObjectTypes[:], validGenericLinkTypes[:]...)
+var GenericTypes = append(GenericObjectTypes[:], GenericLinkTypes[:]...)
 
-var validObjectTypes = [...]ActivityVocabularyType{
+var ObjectTypes = ActivityVocabularyTypes{
 	ArticleType,
 	AudioType,
 	DocumentType,
@@ -448,29 +448,9 @@ type Tombstone struct {
 	Deleted time.Time `jsonld:"deleted,omitempty"`
 }
 
-// ValidGenericType validates the type against the valid generic object types
-func ValidGenericType(typ ActivityVocabularyType) bool {
-	for _, v := range validGenericObjectTypes {
-		if v == typ {
-			return true
-		}
-	}
-	return false
-}
-
-// ValidObjectType validates the type against the valid object types
-func ValidObjectType(typ ActivityVocabularyType) bool {
-	for _, v := range validObjectTypes {
-		if v == typ {
-			return true
-		}
-	}
-	return ValidActivityType(typ) || ValidActorType(typ) || ValidCollectionType(typ) || ValidGenericType(typ)
-}
-
 // ObjectNew initializes a new Object
 func ObjectNew(typ ActivityVocabularyType) *Object {
-	if !(ValidObjectType(typ)) {
+	if !(ObjectTypes.Contains(typ)) {
 		typ = ObjectType
 	}
 	o := Object{Type: typ}
@@ -655,13 +635,13 @@ func FlattenObjectProperties(o Object) Object {
 
 // FlattenProperties flattens the Item's properties from Object types to IRI
 func FlattenProperties(it Item) Item {
-	if ValidActivityType(it.GetType()) {
+	if ActivityTypes.Contains(it.GetType()) {
 		act, err := ToActivity(it)
 		if err == nil {
 			return FlattenActivityProperties(*act)
 		}
 	}
-	if ValidActorType(it.GetType()) || ValidObjectType(it.GetType()) {
+	if ActorTypes.Contains(it.GetType()) || ObjectTypes.Contains(it.GetType()) {
 		ob, err := ToObject(it)
 		if err == nil {
 			return FlattenObjectProperties(*ob)
