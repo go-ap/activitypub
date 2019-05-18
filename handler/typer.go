@@ -30,6 +30,7 @@ type CollectionTyper interface {
 }
 
 type pathTyper struct{}
+
 func (d pathTyper) Type(r *http.Request) CollectionType {
 	if r.URL == nil || len(r.URL.Path) == 0 {
 		return Unknown
@@ -104,4 +105,3 @@ func getValidCollection(typ string) CollectionType {
 func ValidCollection(typ string) bool {
 	return getValidCollection(typ) != Unknown
 }
-

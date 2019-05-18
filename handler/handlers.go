@@ -106,7 +106,7 @@ func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 type ItemHandlerFn func(http.ResponseWriter, *http.Request) (as.Item, error)
 
 // ValidMethod validates if the current handler can process the current request
-func (i ItemHandlerFn) ValidMethod( r *http.Request) bool {
+func (i ItemHandlerFn) ValidMethod(r *http.Request) bool {
 	return r.Method != http.MethodGet && r.Method != http.MethodHead
 }
 

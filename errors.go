@@ -13,8 +13,8 @@ type causer interface {
 // Error is an local error type
 // It should contain the ActivityPub object that generated the error
 type Error struct {
-	on  as.Item
-	msg string
+	on     as.Item
+	msg    string
 	parent error
 }
 
