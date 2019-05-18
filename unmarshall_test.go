@@ -18,7 +18,7 @@ var organizationPtrType = reflect.TypeOf(new(*Organization)).Elem()
 
 var tests = testPairs{
 	as.ObjectType:       objectPtrType,
-	as.ActorType:        objectPtrType,
+	as.ActorType:        actorPtrType,
 	as.ApplicationType:  applicationPtrType,
 	as.ServiceType:      servicePtrType,
 	as.PersonType:       personPtrType,

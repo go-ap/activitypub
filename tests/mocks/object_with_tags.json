@@ -6,12 +6,12 @@
   "tag": [
     {
       "name": "#my_tag",
-      "ID":  "http://example.com/tag/my_tag"
+      "id":  "http://example.com/tag/my_tag"
     },
     {
       "name": "@ana",
       "type": "Mention",
-      "ID":  "http://example.com/users/ana"
+      "id":  "http://example.com/users/ana"
     }
   ]
 }

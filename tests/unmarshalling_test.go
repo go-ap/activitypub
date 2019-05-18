@@ -233,18 +233,20 @@ var allTests = tests{
 		expected: true,
 		blank:    &ap.Object{},
 		result: &ap.Object{
-			Parent: a.Object{
+			Parent: a.Parent{
 				Type: a.ObjectType,
 				ID:   a.ObjectID("http://www.test.example/object/1"),
 				Name: a.NaturalLanguageValues{{
 					a.NilLangRef, "A Simple, non-specific object",
 				}},
 				Tag: a.ItemCollection{
-					&a.Object{
-						Name: a.NaturalLanguageValues{{
-							a.NilLangRef, "#my_tag",
-						}},
-						ID: a.ObjectID("http://example.com/tag/my_tag"),
+					&ap.Object{
+						Parent: a.Parent {
+							Name: a.NaturalLanguageValues{{
+								a.NilLangRef, "#my_tag",
+							}},
+							ID: a.ObjectID("http://example.com/tag/my_tag"),
+						},
 					},
 					&a.Mention{
 						Name: a.NaturalLanguageValues{{
@@ -281,26 +283,26 @@ var allTests = tests{
 			},
 		},
 	},
-	//"person_with_outbox": testPair{
-	//	expected: true,
-	//	blank:    &ap.Person{},
-	//	result: &ap.Person{
-	//		Parent: a.Parent{
-	//			ID:   a.ObjectID("http://example.com/accounts/ana"),
-	//			Type: a.PersonType,
-	//			Name: a.NaturalLanguageValues{{a.NilLangRef, "ana"}},
-	//			URL:  a.IRI("http://example.com/accounts/ana"),
-	//		},
-	//		PreferredUsername: a.NaturalLanguageValues{{a.NilLangRef, "Ana"}},
-	//		Outbox: &a.OrderedCollection{
-	//			Parent: a.Parent{
-	//				ID:   a.ObjectID("http://example.com/accounts/ana/outbox"),
-	//				Type: a.OrderedCollectionType,
-	//				URL:  a.IRI("http://example.com/outbox"),
-	//			},
-	//		},
-	//	},
-	//},
+	"person_with_outbox": testPair{
+		expected: true,
+		blank:    &ap.Person{},
+		result: &ap.Person{
+			Parent: a.Parent{
+				ID:   a.ObjectID("http://example.com/accounts/ana"),
+				Type: a.PersonType,
+				Name: a.NaturalLanguageValues{{a.NilLangRef, "ana"}},
+				URL:  a.IRI("http://example.com/accounts/ana"),
+			},
+			PreferredUsername: a.NaturalLanguageValues{{a.NilLangRef, "Ana"}},
+			Outbox: &a.OrderedCollection{
+				Parent: a.Parent{
+					ID:   a.ObjectID("http://example.com/accounts/ana/outbox"),
+					Type: a.OrderedCollectionType,
+					URL:  a.IRI("http://example.com/outbox"),
+				},
+			},
+		},
+	},
 	"ordered_collection": testPair{
 		expected: true,
 		blank:    &a.OrderedCollection{},
@@ -387,23 +389,21 @@ var allTests = tests{
 			},
 		},
 	},
-	//"like_activity_with_iri_actor": {
-	//	expected: true,
-	//	blank:    &ap.Like{},
-	//	result:   &ap.Like{
-	//		Activity: a.Activity{
-	//			Parent: a.Parent{
-	//				Type:      a.LikeType,
-	//				Published: time.Date(2018, time.September, 6, 15, 15, 9, 0, zLoc),
-	//			},
-	//			actor: a.IRI("https://littr.git/api/accounts/24d4b96f"),
-	//			Object: &a.Article{
-	//				ID:   a.ObjectID("https://littr.git/api/accounts/ana/liked/7ca154ff"),
-	//				Type: a.ArticleType,
-	//			},
-	//		},
-	//	},
-	//},
+	"like_activity_with_iri_actor": {
+		expected: true,
+		blank:    &a.Like{},
+		result:   &a.Like{
+			Parent: a.Parent{
+				Type:      a.LikeType,
+				Published: time.Date(2018, time.September, 6, 15, 15, 9, 0, zLoc),
+			},
+			Actor: a.IRI("https://littr.git/api/accounts/24d4b96f"),
+			Object: &a.Article{
+				ID:   a.ObjectID("https://littr.git/api/accounts/ana/liked/7ca154ff"),
+				Type: a.ArticleType,
+			},
+		},
+	},
 	"object_with_audience": testPair{
 		expected: true,
 		blank:    &ap.Object{},

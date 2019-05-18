@@ -1,13 +1,11 @@
 {
-  "activity":{
-    "type":"Like",
-    "actor":"https://littr.git/api/accounts/24d4b96f",
-    "object":{
-      "id":"https://littr.git/api/accounts/ana/liked/7ca154ff",
-      "type":"Article"
-    }
+  "type": "Like",
+  "actor": "https://littr.git/api/accounts/24d4b96f",
+  "object": {
+    "id": "https://littr.git/api/accounts/ana/liked/7ca154ff",
+    "type": "Article"
   },
-  "published":"2018-09-06T15:15:09Z",
-  "to":null,
-  "cc":null
+  "published": "2018-09-06T15:15:09Z",
+  "to": null,
+  "cc": null
 }
