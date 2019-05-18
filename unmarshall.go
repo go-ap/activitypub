@@ -10,33 +10,33 @@ func JSONGetItemByType(typ as.ActivityVocabularyType) (as.Item, error) {
 
 	switch typ {
 	case as.ObjectType:
-		o := Object{}
+		o := &Object{}
 		o.Type = typ
-		ret = &o
+		ret = o
 	case as.ActorType:
-		ret = &Object{}
-		o := ret.(*Object)
+		o := &actor{}
 		o.Type = typ
+		ret = o
 	case as.ApplicationType:
-		ret = &Application{}
-		o := ret.(*Application)
-		o.Type = typ
+		a := &Application{}
+		a.Type = typ
+		ret = a
 	case as.GroupType:
-		ret = &Group{}
-		o := ret.(*Group)
-		o.Type = typ
+		g := &Group{}
+		g.Type = typ
+		ret = g
 	case as.OrganizationType:
-		ret = &Organization{}
-		o := ret.(*Organization)
+		o := &Organization{}
 		o.Type = typ
+		ret = o
 	case as.PersonType:
-		ret = &Person{}
-		o := ret.(*Person)
-		o.Type = typ
+		p := &Person{}
+		p.Type = typ
+		ret = p
 	case as.ServiceType:
-		ret = &Service{}
-		o := ret.(*Service)
-		o.Type = typ
+		s := &Service{}
+		s.Type = typ
+		ret = s
 	case "":
 		// when no type is available use a plain Object
 		ret = &Object{}

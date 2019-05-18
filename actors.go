@@ -87,7 +87,7 @@ func actorNew(id as.ObjectID, typ as.ActivityVocabularyType) *actor {
 		typ = as.ActorType
 	}
 
-	a := actor{Parent: as.Object {ID: id, Type: typ}}
+	a := actor{Parent: as.Object{ID: id, Type: typ}}
 	a.Name = as.NaturalLanguageValuesNew()
 	a.Content = as.NaturalLanguageValuesNew()
 	a.Summary = as.NaturalLanguageValuesNew()
@@ -138,9 +138,10 @@ func ServiceNew(id as.ObjectID) *Service {
 	return &o
 }
 
-func (a *actor)UnmarshalJSON(data []byte) error {
-	as.ItemTyperFunc = JSONGetItemByType
-
+func (a *actor) UnmarshalJSON(data []byte) error {
+	if as.ItemTyperFunc == nil {
+		as.ItemTyperFunc = JSONGetItemByType
+	}
 	a.Parent.UnmarshalJSON(data)
 	a.PreferredUsername = as.JSONGetNaturalLanguageField(data, "preferredUsername")
 	a.Followers = as.JSONGetItem(data, "followers")
@@ -154,7 +155,6 @@ func (a *actor)UnmarshalJSON(data []byte) error {
 	//a.Streams = as.JSONGetItems(data, "streams")
 	return nil
 }
-
 
 // ToObject
 func ToPerson(it as.Item) (*Person, error) {

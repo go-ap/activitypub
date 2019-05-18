@@ -1,9 +1,9 @@
 package activitypub
 
 import (
+	as "github.com/go-ap/activitystreams"
 	"reflect"
 	"testing"
-	as "github.com/go-ap/activitystreams"
 )
 
 func TestActorNew(t *testing.T) {
@@ -60,7 +60,7 @@ func TestGroupNew(t *testing.T) {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
 	if o.Type != as.GroupType {
-		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type,as. GroupType)
+		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, as.GroupType)
 	}
 }
 

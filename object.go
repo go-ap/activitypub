@@ -47,6 +47,9 @@ func (s *Source) UnmarshalJSON(data []byte) error {
 
 // UnmarshalJSON
 func (o *Object) UnmarshalJSON(data []byte) error {
+	if as.ItemTyperFunc == nil {
+		as.ItemTyperFunc = JSONGetItemByType
+	}
 	o.Parent.UnmarshalJSON(data)
 	o.Source = GetAPSource(data)
 	return nil
