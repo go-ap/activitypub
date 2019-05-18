@@ -8,6 +8,10 @@ import (
 type testPairs map[ActivityVocabularyType]reflect.Type
 
 var objectPtrType = reflect.TypeOf(new(*Object)).Elem()
+var tombstoneType = reflect.TypeOf(new(*Tombstone)).Elem()
+var profileType = reflect.TypeOf(new(*Profile)).Elem()
+var placeType = reflect.TypeOf(new(*Place)).Elem()
+var relationshipType = reflect.TypeOf(new(*Relationship)).Elem()
 var linkPtrType = reflect.TypeOf(new(*Link)).Elem()
 var mentionPtrType = reflect.TypeOf(new(*Mention)).Elem()
 var activityPtrType = reflect.TypeOf(new(*Activity)).Elem()
@@ -58,10 +62,10 @@ var tests = testPairs{
 	ImageType:                 objectPtrType,
 	NoteType:                  objectPtrType,
 	PageType:                  objectPtrType,
-	PlaceType:                 objectPtrType,
-	ProfileType:               objectPtrType,
-	RelationshipType:          objectPtrType,
-	TombstoneType:             objectPtrType,
+	PlaceType:                 placeType,
+	ProfileType:               profileType,
+	RelationshipType:          relationshipType,
+	TombstoneType:             tombstoneType,
 	VideoType:                 objectPtrType,
 	LinkType:                  linkPtrType,
 	MentionType:               mentionPtrType,
