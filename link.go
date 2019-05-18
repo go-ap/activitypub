@@ -116,6 +116,9 @@ func (m Mention) GetType() ActivityVocabularyType {
 
 // UnmarshalJSON
 func (l *Link) UnmarshalJSON(data []byte) error {
+	if ItemTyperFunc == nil {
+		ItemTyperFunc = JSONGetItemByType
+	}
 	l.ID = JSONGetObjectID(data)
 	l.Type = JSONGetType(data)
 	l.MediaType = JSONGetMimeType(data)

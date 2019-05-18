@@ -203,6 +203,9 @@ func (o OrderedCollection) IsObject() bool {
 
 // UnmarshalJSON
 func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
+	if ItemTyperFunc == nil {
+		ItemTyperFunc = JSONGetItemByType
+	}
 	o.Parent.UnmarshalJSON(data)
 
 	o.TotalItems = uint(JSONGetInt(data, "totalItems"))

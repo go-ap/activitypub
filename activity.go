@@ -1532,6 +1532,9 @@ func (u *Update) UnmarshalJSON(data []byte) error {
 
 // UnmarshalJSON
 func (c *Create) UnmarshalJSON(data []byte) error {
+	if ItemTyperFunc == nil {
+		ItemTyperFunc = JSONGetItemByType
+	}
 	a := Activity(*c)
 	err := a.UnmarshalJSON(data)
 

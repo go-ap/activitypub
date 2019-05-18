@@ -19,7 +19,7 @@ var (
 
 // ItemTyperFunc will return an instance of a struct that implements activitystreams.Item
 // The default for this package is JSONGetItemByType but can be overwritten
-var ItemTyperFunc TyperFunction = JSONGetItemByType
+var ItemTyperFunc TyperFunction
 
 // TyperFunction is the type of the function which returns an activitystreams.Item struct instance
 // for a specific ActivityVocabularyType
@@ -234,6 +234,9 @@ func JSONGetIRI(data []byte, prop string) IRI {
 // UnmarshalJSON tries to detect the type of the object in the json data and then outputs a matching
 // ActivityStreams object, if possible
 func UnmarshalJSON(data []byte) (Item, error) {
+	if ItemTyperFunc == nil {
+		ItemTyperFunc = JSONGetItemByType
+	}
 	return JSONUnmarshalToItem(data), nil
 }
 
