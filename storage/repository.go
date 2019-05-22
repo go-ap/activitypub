@@ -24,6 +24,11 @@ type ObjectLoader interface {
 	LoadObjects(f Filterable) (as.ItemCollection, int, error)
 }
 
+// CollectionLoader
+type CollectionLoader interface {
+	LoadCollection(f Filterable) (as.CollectionInterface, int, error)
+}
+
 // ActivitySaver
 type ActivitySaver interface {
 	SaveActivity(as.Item) (as.Item, error)
