@@ -658,3 +658,19 @@ func TestFlattenProperties(t *testing.T) {
 func TestTombstone_UnmarshalJSON(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestToTombstone(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestToPlace(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestToProfile(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestToRelationship(t *testing.T) {
+	t.Skipf("TODO")
+}

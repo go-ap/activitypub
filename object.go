@@ -586,6 +586,50 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// ToProfile
+func ToProfile(it Item) (*Profile, error) {
+	switch i := it.(type) {
+	case *Profile:
+		return i, nil
+	case Profile:
+		return &i, nil
+	}
+	return nil, errors.New("unable to convert place")
+}
+
+// ToRelationship
+func ToRelationship(it Item) (*Relationship, error) {
+	switch i := it.(type) {
+	case *Relationship:
+		return i, nil
+	case Relationship:
+		return &i, nil
+	}
+	return nil, errors.New("unable to convert place")
+}
+
+// ToPlace
+func ToPlace(it Item) (*Place, error) {
+	switch i := it.(type) {
+	case *Place:
+		return i, nil
+	case Place:
+		return &i, nil
+	}
+	return nil, errors.New("unable to convert place")
+}
+
+// ToTombstone
+func ToTombstone(it Item) (*Tombstone, error) {
+	switch i := it.(type) {
+	case *Tombstone:
+		return i, nil
+	case Tombstone:
+		return &i, nil
+	}
+	return nil, errors.New("unable to convert tombstone")
+}
+
 // ToObject
 func ToObject(it Item) (*Object, error) {
 	switch i := it.(type) {
