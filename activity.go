@@ -185,6 +185,14 @@ var ActivityTypes = ActivityVocabularyTypes{
 	ViewType,
 }
 
+// HasRecipients is an interface implemented by activities to return their audience
+// for further propagation
+type HasRecipients interface {
+	// Recipients is a method that should do a recipients de-duplication step and then return
+	// the remaining recipients
+	Recipients() ItemCollection
+}
+
 // Activity is a subtype of Object that describes some form of action that may happen,
 // is currently happening, or has already happened.
 // The Activity type itself serves as an abstract base type for all types of activities.
@@ -684,58 +692,65 @@ func IntransitiveActivityNew(id ObjectID, typ ActivityVocabularyType) *Intransit
 	return &i
 }
 
-// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (a *Activity) RecipientsDeduplication() {
+// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
+func (a *Activity) Recipients() ItemCollection {
 	var actor ItemCollection
 	actor.Append(a.Actor)
-	recipientsDeduplication(&actor, &a.To, &a.Bto, &a.CC, &a.BCC)
+	rec, _ := recipientsDeduplication(&actor, &a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
+	return rec
 }
 
-// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (i *IntransitiveActivity) RecipientsDeduplication() {
+// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
+func (i *IntransitiveActivity) Recipients() ItemCollection {
 	var actor ItemCollection
 	actor.Append(i.Actor)
-	recipientsDeduplication(&actor, &i.To, &i.Bto, &i.CC, &i.BCC)
+	rec, _ := recipientsDeduplication(&actor, &i.To, &i.Bto, &i.CC, &i.BCC, &i.Audience)
+	return rec
 }
 
-// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (b *Block) RecipientsDeduplication() {
+// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
+func (b *Block) Recipients() ItemCollection {
 	var dedupObjects ItemCollection
 	dedupObjects.Append(b.Actor)
 	dedupObjects.Append(b.Object)
-	recipientsDeduplication(&dedupObjects, &b.To, &b.Bto, &b.CC, &b.BCC)
+	rec, _ := recipientsDeduplication(&dedupObjects, &b.To, &b.Bto, &b.CC, &b.BCC, &b.Audience)
+	return rec
 }
 
-// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (c *Create) RecipientsDeduplication() {
+// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
+func (c *Create) Recipients() ItemCollection {
 	var dedupObjects ItemCollection
 	dedupObjects.Append(c.Actor)
 	dedupObjects.Append(c.Object)
-	recipientsDeduplication(&dedupObjects, &c.To, &c.Bto, &c.CC, &c.BCC)
+	rec, _ := recipientsDeduplication(&dedupObjects, &c.To, &c.Bto, &c.CC, &c.BCC, &c.Audience)
+	return rec
 }
 
-// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (l *Like) RecipientsDeduplication() {
+// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
+func (l *Like) Recipients() ItemCollection {
 	var dedupObjects ItemCollection
 	dedupObjects.Append(l.Actor)
 	dedupObjects.Append(l.Object)
-	recipientsDeduplication(&dedupObjects, &l.To, &l.Bto, &l.CC, &l.BCC)
+	rec, _ := recipientsDeduplication(&dedupObjects, &l.To, &l.Bto, &l.CC, &l.BCC, &l.Audience)
+	return rec
 }
 
-// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (d *Dislike) RecipientsDeduplication() {
+// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
+func (d *Dislike) Recipients() ItemCollection {
 	var dedupObjects ItemCollection
 	dedupObjects.Append(d.Actor)
 	dedupObjects.Append(d.Object)
-	recipientsDeduplication(&dedupObjects, &d.To, &d.Bto, &d.CC, &d.BCC)
+	rec, _ := recipientsDeduplication(&dedupObjects, &d.To, &d.Bto, &d.CC, &d.BCC, &d.Audience)
+	return rec
 }
 
-// RecipientsDeduplication performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (u *Update) RecipientsDeduplication() {
+// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
+func (u *Update) Recipients() ItemCollection {
 	var dedupObjects ItemCollection
 	dedupObjects.Append(u.Actor)
 	dedupObjects.Append(u.Object)
-	recipientsDeduplication(&dedupObjects, &u.To, &u.Bto, &u.CC, &u.BCC)
+	rec, _ := recipientsDeduplication(&dedupObjects, &u.To, &u.Bto, &u.CC, &u.BCC, &u.Audience)
+	return rec
 }
 
 // GetType returns the ActivityVocabulary type of the current Intransitive Activity

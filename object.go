@@ -475,46 +475,46 @@ func (o Object) GetType() ActivityVocabularyType {
 }
 
 // recipientsDeduplication normalizes the received arguments lists
-func recipientsDeduplication(recArgs ...*ItemCollection) error {
-	recIds := make([]ObjectID, 0)
+func recipientsDeduplication(recCols ...*ItemCollection) (ItemCollection, error) {
+	rec := make(ItemCollection, 0)
 
-	for _, recList := range recArgs {
-		if recList == nil {
+	for _, recCol := range recCols {
+		if recCol == nil {
 			continue
 		}
 
 		toRemove := make([]int, 0)
-		for i, rec := range *recList {
+		for i, cur := range *recCol {
 			save := true
-			if rec == nil {
+			if cur == nil {
 				continue
 			}
-			var testId ObjectID
-			if rec.IsObject() {
-				testId = *rec.GetID()
-			} else if rec.IsLink() {
-				testId = ObjectID(rec.(IRI))
+			var testIt Item
+			if cur.IsObject() {
+				testIt = cur
+			} else if cur.IsLink() {
+				testIt = cur.GetLink()
 			} else {
 				continue
 			}
-			for _, id := range recIds {
-				if testId == id {
+			for _, it := range rec {
+				if testIt == it {
 					// mark the element for removal
 					toRemove = append(toRemove, i)
 					save = false
 				}
 			}
 			if save {
-				recIds = append(recIds, testId)
+				rec = append(rec, testIt)
 			}
 		}
 
 		sort.Sort(sort.Reverse(sort.IntSlice(toRemove)))
 		for _, idx := range toRemove {
-			*recList = append((*recList)[:idx], (*recList)[idx+1:]...)
+			*recCol = append((*recCol)[:idx], (*recCol)[idx+1:]...)
 		}
 	}
-	return nil
+	return rec, nil
 }
 
 // UnmarshalJSON

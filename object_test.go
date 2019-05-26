@@ -300,7 +300,7 @@ func TestObjectsArr_Append(t *testing.T) {
 	}
 }
 
-func TestRecipientsDeduplication(t *testing.T) {
+func TestRecipients(t *testing.T) {
 	bob := PersonNew("bob")
 	alice := PersonNew("alice")
 	foo := OrganizationNew("foo")
@@ -344,7 +344,7 @@ func TestRecipientsDeduplication(t *testing.T) {
 		t.Errorf("Second Objects array should have exactly 0(zero) elements, not %d", len(second))
 	}
 
-	err := recipientsDeduplication(&first, &second, nil)
+	_, err := recipientsDeduplication(&first, &second, nil)
 	if err != nil {
 		t.Errorf("Deduplication with empty array failed")
 	}

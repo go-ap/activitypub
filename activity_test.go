@@ -414,7 +414,7 @@ func TestViewNew(t *testing.T) {
 	}
 }
 
-func TestActivityRecipientsDeduplication(t *testing.T) {
+func TestActivityRecipients(t *testing.T) {
 	bob := PersonNew("bob")
 	alice := PersonNew("alice")
 	foo := OrganizationNew("foo")
@@ -438,7 +438,7 @@ func TestActivityRecipientsDeduplication(t *testing.T) {
 		t.Errorf("%T.To should have exactly 8(eight) elements, not %d", a, len(a.To))
 	}
 
-	a.RecipientsDeduplication()
+	a.Recipients()
 	if len(a.To) != 4 {
 		t.Errorf("%T.To should have exactly 4(four) elements, not %d", a, len(a.To))
 	}
@@ -462,7 +462,7 @@ func TestActivityRecipientsDeduplication(t *testing.T) {
 	b.BCC.Append(foo)
 	b.BCC.Append(bob)
 
-	b.RecipientsDeduplication()
+	b.Recipients()
 	if len(b.To) != 4 {
 		t.Errorf("%T.To should have exactly 4(four) elements, not %d", b, len(b.To))
 	}
@@ -477,7 +477,7 @@ func TestActivityRecipientsDeduplication(t *testing.T) {
 	}
 }
 
-func TestBlockRecipientsDeduplication(t *testing.T) {
+func TestBlockRecipients(t *testing.T) {
 	bob := PersonNew("bob")
 	alice := PersonNew("alice")
 	foo := OrganizationNew("foo")
@@ -501,7 +501,7 @@ func TestBlockRecipientsDeduplication(t *testing.T) {
 		t.Errorf("%T.To should have exactly 8(eight) elements, not %d", a, len(a.To))
 	}
 
-	a.RecipientsDeduplication()
+	a.Recipients()
 	if len(a.To) != 3 {
 		t.Errorf("%T.To should have exactly 3(four) elements, not %d", a, len(a.To))
 	}
@@ -525,7 +525,7 @@ func TestBlockRecipientsDeduplication(t *testing.T) {
 	b.BCC.Append(foo)
 	b.BCC.Append(bob)
 
-	b.RecipientsDeduplication()
+	b.Recipients()
 	if len(b.To) != 3 {
 		t.Errorf("%T.To should have exactly 4(four) elements, not %d", b, len(b.To))
 	}
@@ -558,7 +558,7 @@ func TestBlockRecipientsDeduplication(t *testing.T) {
 	}
 }
 
-func TestIntransitiveActivityRecipientsDeduplication(t *testing.T) {
+func TestIntransitiveActivityRecipients(t *testing.T) {
 	bob := PersonNew("bob")
 	alice := PersonNew("alice")
 	foo := OrganizationNew("foo")
@@ -582,7 +582,7 @@ func TestIntransitiveActivityRecipientsDeduplication(t *testing.T) {
 		t.Errorf("%T.To should have exactly 8(eight) elements, not %d", a, len(a.To))
 	}
 
-	a.RecipientsDeduplication()
+	a.Recipients()
 	if len(a.To) != 4 {
 		t.Errorf("%T.To should have exactly 4(four) elements, not %d", a, len(a.To))
 	}
@@ -606,7 +606,7 @@ func TestIntransitiveActivityRecipientsDeduplication(t *testing.T) {
 	b.BCC.Append(foo)
 	b.BCC.Append(bob)
 
-	b.RecipientsDeduplication()
+	b.Recipients()
 	if len(b.To) != 4 {
 		t.Errorf("%T.To should have exactly 4(four) elements, not %d", b, len(b.To))
 	}
@@ -639,7 +639,7 @@ func TestIntransitiveActivityRecipientsDeduplication(t *testing.T) {
 	}
 }
 
-func TestCreate_RecipientsDeduplication(t *testing.T) {
+func TestCreate_Recipients(t *testing.T) {
 	to := PersonNew("bob")
 	o := ObjectNew(ArticleType)
 	cc := PersonNew("alice")
@@ -651,7 +651,7 @@ func TestCreate_RecipientsDeduplication(t *testing.T) {
 	c.CC.Append(cc)
 	c.BCC.Append(cc)
 
-	c.RecipientsDeduplication()
+	c.Recipients()
 
 	var err error
 	recIds := make([]ObjectID, 0)
@@ -673,7 +673,7 @@ func TestCreate_RecipientsDeduplication(t *testing.T) {
 	}
 }
 
-func TestDislike_RecipientsDeduplication(t *testing.T) {
+func TestDislike_Recipients(t *testing.T) {
 	to := PersonNew("bob")
 	o := ObjectNew(ArticleType)
 	cc := PersonNew("alice")
@@ -685,7 +685,7 @@ func TestDislike_RecipientsDeduplication(t *testing.T) {
 	d.CC.Append(cc)
 	d.BCC.Append(cc)
 
-	d.RecipientsDeduplication()
+	d.Recipients()
 
 	var err error
 	recIds := make([]ObjectID, 0)
@@ -707,7 +707,7 @@ func TestDislike_RecipientsDeduplication(t *testing.T) {
 	}
 }
 
-func TestLike_RecipientsDeduplication(t *testing.T) {
+func TestLike_Recipients(t *testing.T) {
 	to := PersonNew("bob")
 	o := ObjectNew(ArticleType)
 	cc := PersonNew("alice")
@@ -719,7 +719,7 @@ func TestLike_RecipientsDeduplication(t *testing.T) {
 	l.CC.Append(cc)
 	l.BCC.Append(cc)
 
-	l.RecipientsDeduplication()
+	l.Recipients()
 
 	var err error
 	recIds := make([]ObjectID, 0)
@@ -741,7 +741,7 @@ func TestLike_RecipientsDeduplication(t *testing.T) {
 	}
 }
 
-func TestUpdate_RecipientsDeduplication(t *testing.T) {
+func TestUpdate_Recipients(t *testing.T) {
 	to := PersonNew("bob")
 	o := ObjectNew(ArticleType)
 	cc := PersonNew("alice")
@@ -753,7 +753,7 @@ func TestUpdate_RecipientsDeduplication(t *testing.T) {
 	u.CC.Append(cc)
 	u.BCC.Append(cc)
 
-	u.RecipientsDeduplication()
+	u.Recipients()
 
 	var err error
 	recIds := make([]ObjectID, 0)
@@ -844,7 +844,7 @@ func checkDedup(list ItemCollection, recIds *[]ObjectID) error {
 	return nil
 }
 
-func TestActivity_RecipientsDeduplication(t *testing.T) {
+func TestActivity_Recipients(t *testing.T) {
 	to := PersonNew("bob")
 	o := ObjectNew(ArticleType)
 	cc := PersonNew("alice")
@@ -856,7 +856,7 @@ func TestActivity_RecipientsDeduplication(t *testing.T) {
 	c.CC.Append(cc)
 	c.BCC.Append(cc)
 
-	c.RecipientsDeduplication()
+	c.Recipients()
 
 	var err error
 	recIds := make([]ObjectID, 0)
@@ -877,7 +877,7 @@ func TestActivity_RecipientsDeduplication(t *testing.T) {
 		t.Error(err)
 	}
 }
-func TestIntransitiveActivity_RecipientsDeduplication(t *testing.T) {
+func TestIntransitiveActivity_Recipients(t *testing.T) {
 	to := PersonNew("bob")
 	o := ObjectNew(ArticleType)
 	cc := PersonNew("alice")
@@ -889,7 +889,7 @@ func TestIntransitiveActivity_RecipientsDeduplication(t *testing.T) {
 	c.CC.Append(cc)
 	c.BCC.Append(cc)
 
-	c.RecipientsDeduplication()
+	c.Recipients()
 
 	var err error
 	recIds := make([]ObjectID, 0)
@@ -910,7 +910,7 @@ func TestIntransitiveActivity_RecipientsDeduplication(t *testing.T) {
 		t.Error(err)
 	}
 }
-func TestBlock_RecipientsDeduplication(t *testing.T) {
+func TestBlock_Recipients(t *testing.T) {
 	to := PersonNew("bob")
 	o := ObjectNew(ArticleType)
 	cc := PersonNew("alice")
@@ -922,7 +922,7 @@ func TestBlock_RecipientsDeduplication(t *testing.T) {
 	b.CC.Append(cc)
 	b.BCC.Append(cc)
 
-	b.RecipientsDeduplication()
+	b.Recipients()
 
 	var err error
 	recIds := make([]ObjectID, 0)
