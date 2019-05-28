@@ -704,3 +704,48 @@ func (t *Tombstone) UnmarshalJSON(data []byte) error {
 	t.Deleted = JSONGetTime(data, "deleted")
 	return nil
 }
+
+// Recipients performs recipient de-duplication on the Object's To, Bto, CC and BCC properties
+func (o *object) Recipients() ItemCollection {
+	var aud ItemCollection
+	rec, _ := recipientsDeduplication(&aud, &o.To, &o.Bto, &o.CC, &o.BCC, &o.Audience)
+	o.BCC = o.BCC[:0]
+	o.Bto = o.Bto[:0]
+	return rec
+}
+
+// Recipients performs recipient de-duplication on the Place object's To, Bto, CC and BCC properties
+func (p *Place) Recipients() ItemCollection {
+	var aud ItemCollection
+	rec, _ := recipientsDeduplication(&aud, &p.To, &p.Bto, &p.CC, &p.BCC, &p.Audience)
+	p.BCC = p.BCC[:0]
+	p.Bto = p.Bto[:0]
+	return rec
+}
+
+// Recipients performs recipient de-duplication on the Profile object's To, Bto, CC and BCC properties
+func (p *Profile) Recipients() ItemCollection {
+	var aud ItemCollection
+	rec, _ := recipientsDeduplication(&aud, &p.To, &p.Bto, &p.CC, &p.BCC, &p.Audience)
+	p.BCC = p.BCC[:0]
+	p.Bto = p.Bto[:0]
+	return rec
+}
+
+// Recipients performs recipient de-duplication on the Relationship object's To, Bto, CC and BCC properties
+func (r *Relationship) Recipients() ItemCollection {
+	var aud ItemCollection
+	rec, _ := recipientsDeduplication(&aud, &r.To, &r.Bto, &r.CC, &r.BCC, &r.Audience)
+	r.BCC = r.BCC[:0]
+	r.Bto = r.Bto[:0]
+	return rec
+}
+
+// Recipients performs recipient de-duplication on the Tombstone object's To, Bto, CC and BCC properties
+func (t *Tombstone) Recipients() ItemCollection {
+	var aud ItemCollection
+	rec, _ := recipientsDeduplication(&aud, &t.To, &t.Bto, &t.CC, &t.BCC, &t.Audience)
+	t.BCC = t.BCC[:0]
+	t.Bto = t.Bto[:0]
+	return rec
+}
