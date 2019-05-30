@@ -644,7 +644,28 @@ func TestCollectionPage_Collection(t *testing.T) {
 }
 
 func TestToObject(t *testing.T) {
-	t.Skipf("TODO")
+	var it Item
+	ob := ObjectNew(ArticleType)
+	it = ob
+
+	o, err := ToObject(it)
+	if err != nil {
+		t.Error(err)
+	}
+	if o != ob {
+		t.Errorf("Invalid activity returned by ToObject #%v", ob)
+	}
+
+	act := ActivityNew(ObjectID("test"), CreateType, nil)
+	it = act
+
+	a, err := ToObject(it)
+	if err == nil {
+		t.Errorf("Error returned when calling ToObject with activity should not be nil")
+	}
+	if a != nil {
+		t.Errorf("Invalid return by ToObject #%v, should have been nil", a)
+	}
 }
 
 func TestFlattenObjectProperties(t *testing.T) {
