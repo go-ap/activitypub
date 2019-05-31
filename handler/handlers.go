@@ -9,6 +9,23 @@ import (
 	"net/http"
 )
 
+// CtxtKey type alias for the key under which we're storing the Collection Storage in the Request's context
+type CtxtKey string
+
+var RepositoryKey = CtxtKey("__repo")
+
+// MethodValidator is the interface need to be implemented to specify if an HTTP request's method
+// is supported by the implementor object
+type MethodValidator interface {
+	ValidMethod(r *http.Request) bool
+}
+
+// RequestValidator is the interface need to be implemented to specify if the whole HTTP request
+// is valid in the context of the implementor object
+type RequestValidator interface {
+	ValidateRequest(r *http.Request) (int, error)
+}
+
 // ActivityHandlerFn is the type that we're using to represent handlers that process requests containing
 // an ActivityStreams Activity. It needs to implement the http.Handler interface.
 //
@@ -86,21 +103,18 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write(dat)
 }
 
-// MethodValidator is the interface need to be implemented to specify if an HTTP request's method
-// is supported by the implementor object
-type MethodValidator interface {
-	ValidMethod(r *http.Request) bool
-}
-
-// RequestValidator is the interface need to be implemented to specify if the whole HTTP request
-// is valid in the context of the implementor object
-type RequestValidator interface {
-	ValidateRequest(r *http.Request) (int, error)
-}
-
 // CollectionHandlerFn is the type that we're using to represent handlers that will return ActivityStreams
 // Collection or OrderedCollection objects. It needs to implement the http.Handler interface.
 type CollectionHandlerFn func(CollectionType, *http.Request, storage.CollectionLoader) (as.CollectionInterface, error)
+
+func (c CollectionHandlerFn) Storage(r *http.Request) (storage.CollectionLoader, error) {
+	ctxVal := r.Context().Value(RepositoryKey)
+	repo, ok := ctxVal.(storage.CollectionLoader)
+	if !ok {
+		return nil, errors.New("unable to load storage from context")
+	}
+	return repo, nil
+}
 
 // ValidMethod validates if the current handler can process the current request
 func (c CollectionHandlerFn) ValidMethod(r *http.Request) bool {
@@ -113,20 +127,6 @@ func (c CollectionHandlerFn) ValidateRequest(r *http.Request) (int, error) {
 		return http.StatusMethodNotAllowed, fmt.Errorf("invalid HTTP method %s", r.Method)
 	}
 	return http.StatusOK, nil
-}
-
-// CtxtKey type alias for the key under which we're storing the Collection Storage in the Request's context
-type CtxtKey string
-
-var RepositoryKey = CtxtKey("__repo")
-
-func (c CollectionHandlerFn) Storage(r *http.Request) (storage.CollectionLoader, error) {
-	ctxVal := r.Context().Value(RepositoryKey)
-	repo, ok := ctxVal.(storage.CollectionLoader)
-	if !ok {
-		return nil, errors.New("unable to load storage from context")
-	}
-	return repo, nil
 }
 
 // ServeHTTP implements the http.Handler interface for the CollectionHandlerFn type
@@ -175,11 +175,11 @@ func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // ItemHandlerFn is the type that we're using to represent handlers that return ActivityStreams
 // objects. It needs to implement the http.Handler interface
-type ItemHandlerFn func(*http.Request, storage.ObjectSaver) (as.Item, error)
+type ItemHandlerFn func(*http.Request, storage.ObjectLoader) (as.Item, error)
 
-func (i ItemHandlerFn) Storage(r *http.Request) (storage.ObjectSaver, error) {
+func (i ItemHandlerFn) Storage(r *http.Request) (storage.ObjectLoader, error) {
 	ctxVal := r.Context().Value(RepositoryKey)
-	st, ok := ctxVal.(storage.ObjectSaver)
+	st, ok := ctxVal.(storage.ObjectLoader)
 	if !ok {
 		return nil, errors.New("unable to load storage from context")
 	}
