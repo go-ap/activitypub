@@ -1,0 +1,13 @@
+image: archlinux
+packages:
+  - go
+sources:
+  - https://github.com/go-ap/handlers
+environment:
+  GO111MODULE: 'on'
+tasks:
+  - setup: |
+      cd handlers && go mod download
+  - tests: |
+      cd storage
+      go test -v ./...

@@ -1,0 +1,14 @@
+# Gogland 
+.idea/
+
+# Binaries for programs and plugins
+*.so
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tools
+*.out
+*.coverprofile
+
+*pkg
