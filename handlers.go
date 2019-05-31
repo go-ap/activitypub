@@ -188,7 +188,7 @@ func (i ItemHandlerFn) Storage(r *http.Request) (storage.ObjectLoader, error) {
 
 // ValidMethod validates if the current handler can process the current request
 func (i ItemHandlerFn) ValidMethod(r *http.Request) bool {
-	return r.Method != http.MethodGet && r.Method != http.MethodHead
+	return r.Method == http.MethodGet || r.Method == http.MethodHead
 }
 
 // ValidateRequest validates if the current handler can process the current request
