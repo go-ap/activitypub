@@ -64,20 +64,20 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var status = http.StatusInternalServerError
 
 	if status, err = a.ValidateRequest(r); err != nil {
-		errors.HandleError(err)
+		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
 
 	st, err := a.Storage(r)
 	if err != nil {
 		dat = []byte(err.Error())
-		errors.HandleError(err)
+		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
 
 	if iri, status, err = a(Typer.Type(r), r, st); err != nil {
 		dat = []byte(err.Error())
-		errors.HandleError(err)
+		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
 
@@ -129,23 +129,23 @@ func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	status, err = c.ValidateRequest(r)
 	if err != nil {
-		errors.HandleError(err)
+		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
 
 	st, err := c.Storage(r)
 	if err != nil {
-		errors.HandleError(err)
+		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
 
 	col, err := c(Typer.Type(r), r, st)
 	if err != nil {
-		errors.HandleError(err)
+		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
 	if dat, err = json.WithContext(json.IRI(as.ActivityBaseURI)).Marshal(col); err != nil {
-		errors.HandleError(err)
+		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
 
@@ -190,23 +190,23 @@ func (i ItemHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	status, err = i.ValidateRequest(r)
 	if err != nil {
-		errors.HandleError(err)
+		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
 
 	st, err := i.Storage(r)
 	if err != nil {
-		errors.HandleError(err)
+		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
 
 	it, err := i(r, st)
 	if err != nil {
-		errors.HandleError(err)
+		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
 	if dat, err = json.WithContext(json.IRI(as.ActivityBaseURI)).Marshal(it); err != nil {
-		errors.HandleError(err)
+		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
 
