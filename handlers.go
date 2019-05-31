@@ -1,10 +1,9 @@
 package handlers
 
 import (
-	"errors"
-	"fmt"
 	as "github.com/go-ap/activitystreams"
-	j "github.com/go-ap/jsonld"
+	"github.com/go-ap/errors"
+	json "github.com/go-ap/jsonld"
 	"github.com/go-ap/storage"
 	"net/http"
 )
@@ -39,7 +38,7 @@ func (a ActivityHandlerFn) Storage(r *http.Request) (storage.ActivitySaver, erro
 	ctxVal := r.Context().Value(RepositoryKey)
 	st, ok := ctxVal.(storage.ActivitySaver)
 	if !ok {
-		return nil, errors.New("unable to load storage from context")
+		return nil, errors.Newf("Unable to find Activity storage")
 	}
 	return st, nil
 }
@@ -52,7 +51,7 @@ func (a ActivityHandlerFn) ValidMethod(r *http.Request) bool {
 // ValidateRequest validates if the current handler can process the current request
 func (a ActivityHandlerFn) ValidateRequest(r *http.Request) (int, error) {
 	if !a.ValidMethod(r) {
-		return http.StatusNotAcceptable, fmt.Errorf("invalid HTTP method %s", r.Method)
+		return http.StatusNotAcceptable, errors.MethodNotAllowedf("Invalid HTTP method %s", r.Method)
 	}
 	return http.StatusOK, nil
 }
@@ -64,41 +63,33 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var status = http.StatusInternalServerError
 
-	writeResponse := func(status int, dat []byte) {
-		w.WriteHeader(status)
-		if r.Method == http.MethodGet {
-			w.Write(dat)
-		}
-	}
-
 	if status, err = a.ValidateRequest(r); err != nil {
-		dat = []byte(err.Error())
-		writeResponse(status, dat)
+		errors.HandleError(err)
 		return
 	}
 
 	st, err := a.Storage(r)
 	if err != nil {
 		dat = []byte(err.Error())
-		writeResponse(status, dat)
+		errors.HandleError(err)
 		return
 	}
 
 	if iri, status, err = a(Typer.Type(r), r, st); err != nil {
 		dat = []byte(err.Error())
-		writeResponse(status, dat)
+		errors.HandleError(err)
 		return
 	}
 
 	w.WriteHeader(status)
 	switch status {
 	case http.StatusCreated:
-		dat = []byte("CREATED")
+		dat, _ = json.Marshal("CREATED")
 		w.Header().Set("Location", iri.String())
 	case http.StatusGone:
-		dat = []byte("DELETED")
+		dat, _ = json.Marshal("DELETED")
 	default:
-		dat = []byte("OK")
+		dat, _ = json.Marshal("OK")
 	}
 	w.Write(dat)
 }
@@ -111,7 +102,7 @@ func (c CollectionHandlerFn) Storage(r *http.Request) (storage.CollectionLoader,
 	ctxVal := r.Context().Value(RepositoryKey)
 	repo, ok := ctxVal.(storage.CollectionLoader)
 	if !ok {
-		return nil, errors.New("unable to load storage from context")
+		return nil, errors.Newf("Unable to find Collection storage")
 	}
 	return repo, nil
 }
@@ -124,7 +115,7 @@ func (c CollectionHandlerFn) ValidMethod(r *http.Request) bool {
 // ValidateRequest validates if the current handler can process the current request
 func (c CollectionHandlerFn) ValidateRequest(r *http.Request) (int, error) {
 	if !c.ValidMethod(r) {
-		return http.StatusMethodNotAllowed, fmt.Errorf("invalid HTTP method %s", r.Method)
+		return http.StatusMethodNotAllowed, errors.MethodNotAllowedf("Invalid HTTP method %s", r.Method)
 	}
 	return http.StatusOK, nil
 }
@@ -136,41 +127,33 @@ func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var status = http.StatusInternalServerError
 	var err error
 
-	writeResponse := func(status int, dat []byte) {
-		w.WriteHeader(status)
-		if r.Method == http.MethodGet {
-			w.Write(dat)
-		}
-	}
-
 	status, err = c.ValidateRequest(r)
 	if err != nil {
-		dat = []byte(err.Error())
-		writeResponse(status, dat)
+		errors.HandleError(err)
 		return
 	}
 
 	st, err := c.Storage(r)
 	if err != nil {
-		dat = []byte(err.Error())
-		writeResponse(status, dat)
+		errors.HandleError(err)
 		return
 	}
 
 	col, err := c(Typer.Type(r), r, st)
 	if err != nil {
-		dat = []byte(err.Error())
-		writeResponse(status, dat)
+		errors.HandleError(err)
 		return
 	}
-	if dat, err = j.WithContext(j.IRI(as.ActivityBaseURI)).Marshal(col); err != nil {
-		dat = []byte(err.Error())
-		writeResponse(status, dat)
+	if dat, err = json.WithContext(json.IRI(as.ActivityBaseURI)).Marshal(col); err != nil {
+		errors.HandleError(err)
 		return
 	}
 
 	status = http.StatusOK
-	writeResponse(status, dat)
+	w.WriteHeader(status)
+	if r.Method == http.MethodGet {
+		w.Write(dat)
+	}
 }
 
 // ItemHandlerFn is the type that we're using to represent handlers that return ActivityStreams
@@ -181,7 +164,7 @@ func (i ItemHandlerFn) Storage(r *http.Request) (storage.ObjectLoader, error) {
 	ctxVal := r.Context().Value(RepositoryKey)
 	st, ok := ctxVal.(storage.ObjectLoader)
 	if !ok {
-		return nil, errors.New("unable to load storage from context")
+		return nil, errors.Newf("Unable to find Object storage")
 	}
 	return st, nil
 }
@@ -194,7 +177,7 @@ func (i ItemHandlerFn) ValidMethod(r *http.Request) bool {
 // ValidateRequest validates if the current handler can process the current request
 func (i ItemHandlerFn) ValidateRequest(r *http.Request) (int, error) {
 	if !i.ValidMethod(r) {
-		return http.StatusMethodNotAllowed, fmt.Errorf("invalid HTTP method %s", r.Method)
+		return http.StatusMethodNotAllowed, errors.MethodNotAllowedf("Invalid HTTP method %s", r.Method)
 	}
 	return http.StatusOK, nil
 }
@@ -205,39 +188,31 @@ func (i ItemHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var err error
 	status := http.StatusInternalServerError
 
-	writeResponse := func(status int, dat []byte) {
-		w.WriteHeader(status)
-		if r.Method == http.MethodGet {
-			w.Write(dat)
-		}
-	}
-
 	status, err = i.ValidateRequest(r)
 	if err != nil {
-		dat = []byte(err.Error())
-		writeResponse(status, dat)
+		errors.HandleError(err)
 		return
 	}
 
 	st, err := i.Storage(r)
 	if err != nil {
-		dat = []byte(err.Error())
-		writeResponse(status, dat)
+		errors.HandleError(err)
 		return
 	}
 
 	it, err := i(r, st)
 	if err != nil {
-		dat = []byte(err.Error())
-		writeResponse(status, dat)
+		errors.HandleError(err)
 		return
 	}
-	if dat, err = j.WithContext(j.IRI(as.ActivityBaseURI)).Marshal(it); err != nil {
-		dat = []byte(err.Error())
-		writeResponse(status, dat)
+	if dat, err = json.WithContext(json.IRI(as.ActivityBaseURI)).Marshal(it); err != nil {
+		errors.HandleError(err)
 		return
 	}
 
 	status = http.StatusOK
-	writeResponse(status, dat)
+	w.WriteHeader(status)
+	if r.Method == http.MethodGet {
+		w.Write(dat)
+	}
 }
