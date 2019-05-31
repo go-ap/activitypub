@@ -151,7 +151,7 @@ S2S Server: Deduplication of recipient list
 	c.CC.Append(cc)
 	c.BCC.Append(cc)
 
-	c.RecipientsDeduplication()
+	c.Recipients()
 
 	checkDedup := func(list a.ItemCollection, recIds *[]a.ObjectID) error {
 		for _, rec := range list {
@@ -214,7 +214,7 @@ Activity being notified about
 	c.BCC.Append(cc)
 	c.BCC.Append(p)
 
-	c.RecipientsDeduplication()
+	c.Recipients()
 
 	checkActor := func(list a.ItemCollection, actor a.Item) error {
 		for _, rec := range list {
@@ -266,7 +266,7 @@ S2S Server: Do-not-deliver considerations
 	b.To.Append(p)
 	b.To.Append(bob)
 
-	b.RecipientsDeduplication()
+	b.Recipients()
 
 	checkActor := func(list a.ItemCollection, ob a.Item) error {
 		for _, rec := range list {
