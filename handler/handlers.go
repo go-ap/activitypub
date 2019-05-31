@@ -3,9 +3,9 @@ package handler
 import (
 	"errors"
 	"fmt"
-	"github.com/go-ap/storage"
 	as "github.com/go-ap/activitystreams"
 	j "github.com/go-ap/jsonld"
+	"github.com/go-ap/storage"
 	"net/http"
 )
 
@@ -165,6 +165,8 @@ func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	if dat, err = j.WithContext(j.IRI(as.ActivityBaseURI)).Marshal(col); err != nil {
 		dat = []byte(err.Error())
+		writeResponse(status, dat)
+		return
 	}
 
 	status = http.StatusOK
