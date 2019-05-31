@@ -22,6 +22,7 @@ const (
 
 // Typer is the static package variable that determines a collection type for a particular request
 // It can be overloaded from outside packages.
+// TODO(marius): This should be moved as a property on an instantiable package object, instead of keeping it here
 var Typer CollectionTyper = pathTyper{}
 
 // CollectionTyper allows external packages to tell us which collection the current HTTP request addresses
