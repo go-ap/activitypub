@@ -81,7 +81,6 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(status)
 	switch status {
 	case http.StatusCreated:
 		dat, _ = json.Marshal("CREATED")
@@ -91,6 +90,7 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	default:
 		dat, _ = json.Marshal("OK")
 	}
+	w.WriteHeader(status)
 	w.Write(dat)
 }
 
