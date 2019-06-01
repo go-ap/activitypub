@@ -45,7 +45,7 @@ func (a ActivityHandlerFn) Storage(r *http.Request) (storage.ActivitySaver, erro
 
 // ValidMethod validates if the current handler can process the current request
 func (a ActivityHandlerFn) ValidMethod(r *http.Request) bool {
-	return r.Method != http.MethodPost
+	return r.Method == http.MethodPost
 }
 
 // ValidateRequest validates if the current handler can process the current request
