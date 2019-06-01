@@ -90,6 +90,7 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	default:
 		dat, _ = json.Marshal("OK")
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	w.Write(dat)
 }
@@ -150,6 +151,7 @@ func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	status = http.StatusOK
+	w.Header().Set("Content-Type", "application/activity+json")
 	w.WriteHeader(status)
 	if r.Method == http.MethodGet {
 		w.Write(dat)
@@ -211,6 +213,7 @@ func (i ItemHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	status = http.StatusOK
+	w.Header().Set("Content-Type", "application/activity+json")
 	w.WriteHeader(status)
 	if r.Method == http.MethodGet {
 		w.Write(dat)
