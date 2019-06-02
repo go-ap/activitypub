@@ -1,6 +1,7 @@
 package activitystreams
 
 import (
+	"net/url"
 	"strings"
 )
 
@@ -17,6 +18,11 @@ func (i IRI) String() string {
 // GetLink
 func (i IRI) GetLink() IRI {
 	return i
+}
+
+// URL
+func (i IRI) URL() (*url.URL, error) {
+	return url.Parse(i.String())
 }
 
 // UnmarshalJSON

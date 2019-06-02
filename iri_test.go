@@ -62,3 +62,7 @@ func TestIRI_UnmarshalJSON(t *testing.T) {
 func TestFlattenToIRI(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestIRI_URL(t *testing.T) {
+	t.Skipf("TODO")
+}
