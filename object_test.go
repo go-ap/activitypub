@@ -425,9 +425,9 @@ func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
 		"` + langDe + `": "` + valDe + `"
 	}`
 
-	var a NaturalLanguageValues
-	a.Append(LangRef(langEn), valEn)
-	a.Append(LangRef(langDe), valDe)
+	a := make(NaturalLanguageValues, 0)
+	_ = a.Append(LangRef(langEn), valEn)
+	_ = a.Append(LangRef(langDe), valDe)
 	err := a.UnmarshalJSON([]byte(json))
 	if err != nil {
 		t.Error(err)
@@ -713,5 +713,9 @@ func TestRelationship_Recipients(t *testing.T) {
 }
 
 func TestTombstone_Recipients(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestNaturalLanguageValues_Count(t *testing.T) {
 	t.Skipf("TODO")
 }

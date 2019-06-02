@@ -15,6 +15,7 @@ type CollectionInterface interface {
 	ObjectOrLink
 	Collection() CollectionInterface
 	Append(ob Item) error
+	Count() uint
 }
 
 // Collection is a subtype of Activity Pub Object that represents ordered or unordered sets of Activity Pub Object or Link instances.
@@ -129,10 +130,26 @@ func (o *OrderedCollection) Append(ob Item) error {
 	return nil
 }
 
+// Count returns the maximum between the length of Items in collection and its TotalItems property
+func (o *OrderedCollection) Count() uint {
+	if o.TotalItems > 0 {
+		return o.TotalItems
+	}
+	return uint(len(o.OrderedItems))
+}
+
 // Append adds an element to a Collection
 func (c *Collection) Append(ob Item) error {
 	c.Items = append(c.Items, ob)
 	return nil
+}
+
+// Count returns the maximum between the length of Items in collection and its TotalItems property
+func (c *Collection) Count() uint {
+	if c.TotalItems > 0 {
+		return c.TotalItems
+	}
+	return uint(len(c.Items))
 }
 
 // Append adds an element to an OrderedCollectionPage
@@ -141,10 +158,26 @@ func (o *OrderedCollectionPage) Append(ob Item) error {
 	return nil
 }
 
+// Count returns the maximum between the length of Items in the collection page and its TotalItems property
+func (o *OrderedCollectionPage) Count() uint {
+	if o.TotalItems > 0 {
+		return o.TotalItems
+	}
+	return uint(len(o.OrderedItems))
+}
+
 // Append adds an element to a CollectionPage
 func (c *CollectionPage) Append(ob Item) error {
 	c.Items = append(c.Items, ob)
 	return nil
+}
+
+// Count returns the maximum between the length of Items in the collection page and its TotalItems property
+func (c *CollectionPage) Count() uint {
+	if c.TotalItems > 0 {
+		return c.TotalItems
+	}
+	return uint(len(c.Items))
 }
 
 // GetType returns the Collection's type

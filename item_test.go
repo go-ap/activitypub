@@ -33,3 +33,11 @@ func TestItemCollection_IsObject(t *testing.T) {
 func TestItemCollection_First(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestFlattenItemCollection(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestItemCollection_Count(t *testing.T) {
+	t.Skipf("TODO")
+}

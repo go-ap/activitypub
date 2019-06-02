@@ -225,6 +225,11 @@ func (n *NaturalLanguageValues) Append(lang LangRef, value string) error {
 	return nil
 }
 
+// Count returns the length of Items in the item collection
+func (n *NaturalLanguageValues) Count() uint {
+	return uint(len(*n))
+}
+
 // UnmarshalJSON tries to load the NaturalLanguage array from the incoming json value
 func (l *LangRef) UnmarshalJSON(data []byte) error {
 	return l.UnmarshalText(data)

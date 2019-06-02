@@ -44,6 +44,11 @@ func (i *ItemCollection) Append(o Item) error {
 	return nil
 }
 
+// Count returns the length of Items in the item collection
+func (i *ItemCollection) Count() uint {
+	return uint(len(*i))
+}
+
 // First returns the ObjectID corresponding to ItemCollection
 func (i ItemCollection) First() Item {
 	if len(i) == 0 {
