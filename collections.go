@@ -126,28 +126,24 @@ func OrderedCollectionPageNew(parent CollectionInterface) *OrderedCollectionPage
 // Append adds an element to an OrderedCollection
 func (o *OrderedCollection) Append(ob Item) error {
 	o.OrderedItems = append(o.OrderedItems, ob)
-	o.TotalItems++
 	return nil
 }
 
 // Append adds an element to a Collection
 func (c *Collection) Append(ob Item) error {
 	c.Items = append(c.Items, ob)
-	c.TotalItems++
 	return nil
 }
 
 // Append adds an element to an OrderedCollectionPage
 func (o *OrderedCollectionPage) Append(ob Item) error {
 	o.OrderedItems = append(o.OrderedItems, ob)
-	o.TotalItems++
 	return nil
 }
 
 // Append adds an element to a CollectionPage
 func (c *CollectionPage) Append(ob Item) error {
 	c.Items = append(c.Items, ob)
-	c.TotalItems++
 	return nil
 }
 
