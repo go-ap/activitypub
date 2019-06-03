@@ -32,13 +32,13 @@ type RequestValidator interface {
 //  an IRI representing a new Object - in the case of transitive activities that had a side effect, or
 //  an error.
 // In the case of intransitive activities the iri will always be empty.
-type ActivityHandlerFn func(CollectionType, *http.Request, storage.ActivitySaver) (as.IRI, int, error)
+type ActivityHandlerFn func(CollectionType, *http.Request, storage.Repository) (as.IRI, int, error)
 
-func (a ActivityHandlerFn) Storage(r *http.Request) (storage.ActivitySaver, error) {
+func (a ActivityHandlerFn) Storage(r *http.Request) (storage.Repository, error) {
 	ctxVal := r.Context().Value(RepositoryKey)
-	st, ok := ctxVal.(storage.ActivitySaver)
+	st, ok := ctxVal.(storage.Repository)
 	if !ok {
-		return nil, errors.Newf("Unable to find Activity storage")
+		return nil, errors.Newf("Unable to find storage repository")
 	}
 	return st, nil
 }
@@ -68,6 +68,7 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO(marius): we need a better mechanism than loading it from the Request Context
 	st, err := a.Storage(r)
 	if err != nil {
 		dat = []byte(err.Error())
