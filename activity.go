@@ -1784,7 +1784,7 @@ func ToActivity(it Item) (*Activity, error) {
 }
 
 // FlattenIntransitiveActivityProperties flattens the IntransitiveActivity's properties from Object type to IRI
-func FlattenIntransitiveActivityProperties(act IntransitiveActivity) IntransitiveActivity {
+func FlattenIntransitiveActivityProperties(act *IntransitiveActivity) *IntransitiveActivity {
 	act.Actor = FlattenToIRI(act.Actor)
 	act.Target = FlattenToIRI(act.Target)
 	act.Result = FlattenToIRI(act.Result)
@@ -1795,7 +1795,7 @@ func FlattenIntransitiveActivityProperties(act IntransitiveActivity) Intransitiv
 }
 
 // FlattenActivityProperties flattens the Activity's properties from Object type to IRI
-func FlattenActivityProperties(act Activity) Activity {
+func FlattenActivityProperties(act *Activity) *Activity {
 	act.Object = FlattenToIRI(act.Object)
 	act.Actor = FlattenToIRI(act.Actor)
 	act.Target = FlattenToIRI(act.Target)

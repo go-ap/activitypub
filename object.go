@@ -663,7 +663,7 @@ func ToObject(it Item) (*Object, error) {
 }
 
 // FlattenObjectProperties flattens the Object's properties from Object types to IRI
-func FlattenObjectProperties(o Object) Object {
+func FlattenObjectProperties(o *Object) *Object {
 	if o.Replies != nil && o.Replies.IsObject() {
 		if len(o.Replies.GetLink()) > 0 {
 			o.Replies = o.Replies.GetLink()
@@ -690,13 +690,13 @@ func FlattenProperties(it Item) Item {
 	if ActivityTypes.Contains(it.GetType()) {
 		act, err := ToActivity(it)
 		if err == nil {
-			return FlattenActivityProperties(*act)
+			return FlattenActivityProperties(act)
 		}
 	}
 	if ActorTypes.Contains(it.GetType()) || ObjectTypes.Contains(it.GetType()) {
 		ob, err := ToObject(it)
 		if err == nil {
-			return FlattenObjectProperties(*ob)
+			return FlattenObjectProperties(ob)
 		}
 	}
 	return it
