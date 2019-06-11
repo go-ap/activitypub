@@ -11,15 +11,13 @@ tasks:
   - setup: |
       cd activitystreams && go mod download
   - tests: |
-      cd activitystreams
-      go test -v ./...
+      cd activitystreams && make test
   - coverage: |
       set -a +x
-      source ~/.code-cov.sh
-      cd activitystreams
-      go test -cover -coverprofile activitystreams.coverprofile ./...
+      cd activitystreams && make coverage
       GIT_SHA=$(git rev-parse --verify HEAD)
       GIT_BRANCH=$(git name-rev --name-only HEAD)
+      source ~/.code-cov.sh
       curl -X POST \
           --data-binary @activitystreams.coverprofile \
            -H 'Accept: application/json' \
