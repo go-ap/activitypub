@@ -11,7 +11,7 @@ tasks:
   - setup: |
       cd handlers && go mod download
   - tests: |
-      cd storage && make test
+      cd handlers && make test
   - coverage: |
       set -a +x
       cd handlers && make coverage
