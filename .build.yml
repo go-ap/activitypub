@@ -11,15 +11,13 @@ tasks:
   - setup: |
       cd activitypub && go mod download
   - tests: |
-      cd activitypub
-      go test -v ./...
+      cd activitypub && make test
   - coverage: |
       set -a +x
-      source ~/.code-cov.sh
-      cd activitypub
-      go test -cover -coverprofile activitypub.coverprofile ./...
+      cd activitypub && make coverage
       GIT_SHA=$(git rev-parse --verify HEAD)
       GIT_BRANCH=$(git name-rev --name-only HEAD)
+      source ~/.code-cov.sh
       curl -X POST \
           --data-binary @activitypub.coverprofile \
            -H 'Accept: application/json' \
