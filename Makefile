@@ -4,6 +4,8 @@ TEST_TARGET ?= ./...
 GO111MODULE = on
 PROJECT_NAME := $(shell basename $(PWD))
 
+.PHONY: test coverage clean
+
 test:
 	$(TEST) $(TEST_FLAGS) $(TEST_TARGET)
 
