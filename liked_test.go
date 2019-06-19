@@ -72,7 +72,7 @@ func TestLiked_Append(t *testing.T) {
 	val := as.Object{ID: as.ObjectID("grrr")}
 
 	l.Append(val)
-	if l.TotalItems != 1 {
+	if l.TotalItems != 0 {
 		t.Errorf("%T should have exactly an element, found %d", l, l.TotalItems)
 	}
 	if !reflect.DeepEqual(l.OrderedItems[0], val) {

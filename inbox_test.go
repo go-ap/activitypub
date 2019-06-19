@@ -71,7 +71,7 @@ func TestInbox_Append(t *testing.T) {
 	val := as.Object{ID: as.ObjectID("grrr")}
 
 	i.Append(val)
-	if i.TotalItems != 1 {
+	if i.TotalItems != 0 {
 		t.Errorf("%T should have exactly an element, found %d", i, i.TotalItems)
 	}
 	if !reflect.DeepEqual(i.OrderedItems[0], val) {
