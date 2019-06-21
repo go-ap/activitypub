@@ -111,37 +111,27 @@ func actorNew(id as.ObjectID, typ as.ActivityVocabularyType) *actor {
 
 // ApplicationNew initializes an Application type actor
 func ApplicationNew(id as.ObjectID) *Application {
-	a := actorNew(id, as.ApplicationType)
-	o := Application(*a)
-	return &o
+	return actorNew(id, as.ApplicationType)
 }
 
 // GroupNew initializes a Group type actor
 func GroupNew(id as.ObjectID) *Group {
-	a := actorNew(id, as.GroupType)
-	o := Group(*a)
-	return &o
+	return actorNew(id, as.GroupType)
 }
 
 // OrganizationNew initializes an Organization type actor
 func OrganizationNew(id as.ObjectID) *Organization {
-	a := actorNew(id, as.OrganizationType)
-	o := Organization(*a)
-	return &o
+	return actorNew(id, as.OrganizationType)
 }
 
 // PersonNew initializes a Person type actor
 func PersonNew(id as.ObjectID) *Person {
-	a := actorNew(id, as.PersonType)
-	o := Person(*a)
-	return &o
+	return actorNew(id, as.PersonType)
 }
 
 // ServiceNew initializes a Service type actor
 func ServiceNew(id as.ObjectID) *Service {
-	a := actorNew(id, as.ServiceType)
-	o := Service(*a)
-	return &o
+	return actorNew(id, as.ServiceType)
 }
 
 func (a *actor) UnmarshalJSON(data []byte) error {
