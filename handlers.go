@@ -32,7 +32,7 @@ type RequestValidator interface {
 //  an IRI representing a new Object - in the case of transitive activities that had a side effect, or
 //  an error.
 // In the case of intransitive activities the iri will always be empty.
-type ActivityHandlerFn func(CollectionType, *http.Request, storage.Repository) (as.IRI, int, error)
+type ActivityHandlerFn func(CollectionType, *http.Request, storage.Repository) (as.Item, int, error)
 
 func (a ActivityHandlerFn) Storage(r *http.Request) (storage.Repository, error) {
 	ctxVal := r.Context().Value(RepositoryKey)
@@ -59,7 +59,7 @@ func (a ActivityHandlerFn) ValidateRequest(r *http.Request) (int, error) {
 // ServeHTTP implements the http.Handler interface for the ActivityHandlerFn type
 func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var dat []byte
-	var iri as.IRI
+	var it as.Item
 	var err error
 	var status = http.StatusInternalServerError
 
@@ -76,22 +76,35 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if iri, status, err = a(Typer.Type(r), r, st); err != nil {
+	if it, status, err = a(Typer.Type(r), r, st); err != nil {
 		dat = []byte(err.Error())
 		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
 
+	contentType := json.ContentType
+	if act, err := as.ToActivity(it); err == nil {
+		if dat, err = json.Marshal(act.Object); err != nil {
+			dat = dat[:]
+			contentType = "application/json"
+		}
+	}
+
 	switch status {
 	case http.StatusCreated:
-		dat, _ = json.Marshal("CREATED")
-		w.Header().Set("Location", iri.String())
+		if len(dat) == 0 {
+			dat, _ = json.Marshal("CREATED")
+		}
+		w.Header().Set("Location", it.GetLink().String())
 	case http.StatusGone:
-		dat, _ = json.Marshal("DELETED")
+		if len(dat) == 0 {
+			dat, _ = json.Marshal("DELETED")
+		}
 	default:
-		dat, _ = json.Marshal("OK")
+		contentType = json.ContentType
+		dat, _ = json.Marshal(it)
 	}
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", contentType)
 	w.WriteHeader(status)
 	w.Write(dat)
 }
