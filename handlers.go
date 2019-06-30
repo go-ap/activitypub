@@ -84,8 +84,8 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	
 	contentType := json.ContentType
 	if act, err := as.ToActivity(it); err == nil {
-		if len(it.GetType()) == 0 && len(it.GetLink()) > 0 {
-			col, cnt, err := st.LoadObjects(it)
+		if act.Object.IsLink() {
+			col, cnt, err := st.LoadObjects(act.Object)
 			if err == nil && cnt == 1 {
 				act.Object = col[0]
 			}
