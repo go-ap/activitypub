@@ -521,6 +521,18 @@ func TestMimeType_UnmarshalJSON(t *testing.T) {
 	}
 }
 
+func TestLangRefValue_String(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestLangRefValue_UnmarshalJSON(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestLangRefValue_UnmarshalText(t *testing.T) {
+	t.Skipf("TODO")
+}
+
 func TestLangRef_UnmarshalText(t *testing.T) {
 	l := LangRef("")
 	dataEmpty := []byte("")
@@ -713,6 +725,10 @@ func TestRelationship_Recipients(t *testing.T) {
 }
 
 func TestTombstone_Recipients(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestNaturalLanguageValues_String(t *testing.T) {
 	t.Skipf("TODO")
 }
 

@@ -142,6 +142,23 @@ func NaturalLanguageValuesNew() NaturalLanguageValues {
 	return make(NaturalLanguageValues, 0)
 }
 
+func (n NaturalLanguageValues) String() string {
+	cnt := len(n)
+	if cnt == 1 {
+		return n[0].String()
+	}
+	s := strings.Builder{}
+	s.Write([]byte{'['})
+	for k, v := range n {
+		s.WriteString(v.String())
+		if k != cnt - 1 {
+			s.Write([]byte{','})
+		}
+	}
+	s.Write([]byte{']'})
+	return s.String()
+}
+
 func (n NaturalLanguageValues) Get(ref LangRef) string {
 	for _, val := range n {
 		if val.Ref == ref {
@@ -195,11 +212,11 @@ func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 }
 
 // First returns the first element in the array
-func (n NaturalLanguageValues) First() string {
+func (n NaturalLanguageValues) First() LangRefValue {
 	for _, v := range n {
-		return v.Value
+		return v
 	}
-	return ""
+	return LangRefValue{}
 }
 
 // MarshalText serializes the NaturalLanguageValues into Text
@@ -230,12 +247,31 @@ func (n *NaturalLanguageValues) Count() uint {
 	return uint(len(*n))
 }
 
-// UnmarshalJSON tries to load the NaturalLanguage array from the incoming json value
+// String adds support for Stringer interface. It returns the Value[LangRef] text or just Value if LangRef is NIL
+func (l *LangRefValue) String() string {
+	if l.Ref == NilLangRef {
+		return l.Value
+	}
+	return fmt.Sprintf("%s[%s]", l.Value, l.Ref)
+}
+
+
+// UnmarshalJSON implements the JsonEncoder interface
+func (l *LangRefValue) UnmarshalJSON(data []byte) error {
+	return nil
+}
+
+// UnmarshalText implements the TextEncoder interface
+func (l *LangRefValue) UnmarshalText(data []byte) error {
+	return nil
+}
+
+// UnmarshalJSON implements the JsonEncoder interface
 func (l *LangRef) UnmarshalJSON(data []byte) error {
 	return l.UnmarshalText(data)
 }
 
-// UnmarshalText tries to load the NaturalLanguage array from the incoming Text value
+// UnmarshalText implements the TextEncoder interface
 func (l *LangRef) UnmarshalText(data []byte) error {
 	*l = LangRef("")
 	if len(data) == 0 {
