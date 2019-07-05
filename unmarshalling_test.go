@@ -135,3 +135,59 @@ func TestUnmarshalJSON(t *testing.T) {
 	o := *i.(*Object)
 	validateEmptyObject(o, t)
 }
+
+func TestJSONGetDuration(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetInt(t *testing.T) {
+
+}
+
+func TestJSONGetIRI(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetItem(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetItems(t *testing.T) {
+
+}
+
+func TestJSONGetLangRefField(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetMimeType(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetObjectID(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetNaturalLanguageField(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetString(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetTime(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetType(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetURIItem(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONUnmarshalToItem(t *testing.T) {
+	t.Skipf("TODO")
+}
