@@ -68,7 +68,7 @@ func TestGetAPSource(t *testing.T) {
 
 	a := GetAPSource(data)
 
-	if a.Content.First() != "test" {
+	if a.Content.First().String() != "test" {
 		t.Errorf("Content didn't match test value. Received %q, expecting %q", a.Content, "test")
 	}
 	if a.MediaType != "text/plain" {
