@@ -1,6 +1,6 @@
 image: archlinux
 secrets:
-- 36f65f02-9e26-497e-94d7-f1cd8ba3ef7a
+- b64778ba-0b5e-49b2-9f75-0d9a79d34fbf
 packages:
   - go
 sources:
