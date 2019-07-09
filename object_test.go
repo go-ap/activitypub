@@ -651,10 +651,6 @@ func TestNaturalLanguageValuesNew(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestCollectionPage_Collection(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestToObject(t *testing.T) {
 	var it Item
 	ob := ObjectNew(ArticleType)

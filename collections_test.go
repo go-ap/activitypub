@@ -483,21 +483,121 @@ func TestOrderedCollectionPage_Append(t *testing.T) {
 }
 
 func TestOrderedCollectionPage_Collection(t *testing.T) {
-	t.Skipf("TODO")
+	id := ObjectID("test")
+
+	c := OrderedCollectionNew(id)
+	p := OrderedCollectionPageNew(c)
+
+	if p.Collection() != p {
+		t.Errorf("Collection should return itself %q", *p.GetID())
+	}
+}
+
+func TestCollectionPage_Collection(t *testing.T) {
+	id := ObjectID("test")
+
+	c := CollectionNew(id)
+	p := CollectionPageNew(c)
+
+	if p.Collection() != p {
+		t.Errorf("Collection should return itself %q", *p.GetID())
+	}
 }
 
 func TestCollection_Count(t *testing.T) {
-	t.Skipf("TODO")
+	id := ObjectID("test")
+
+	c := CollectionNew(id)
+
+	if c.TotalItems != 0 {
+		t.Errorf("Empty object should have empty TotalItems, received %d", c.TotalItems)
+	}
+	if len(c.Items) > 0 {
+		t.Errorf("Empty object should have empty Items, received %v", c.Items)
+	}
+	if c.Count() != uint(len(c.Items)) {
+		t.Errorf("%T.Count() returned %d, expected %d", c, c.Count(), len(c.Items))
+	}
+
+	c.Append(IRI("test"))
+	if c.TotalItems != 0 {
+		t.Errorf("Empty object should have empty TotalItems, received %d", c.TotalItems)
+	}
+	if c.Count() != uint(len(c.Items)) {
+		t.Errorf("%T.Count() returned %d, expected %d", c, c.Count(), len(c.Items))
+	}
 }
 
 func TestCollectionPage_Count(t *testing.T) {
-	t.Skipf("TODO")
+	id := ObjectID("test")
+
+	c := CollectionNew(id)
+	p := CollectionPageNew(c)
+
+	if p.TotalItems != 0 {
+		t.Errorf("Empty object should have empty TotalItems, received %d", p.TotalItems)
+	}
+	if len(p.Items) > 0 {
+		t.Errorf("Empty object should have empty Items, received %v", p.Items)
+	}
+	if p.Count() != uint(len(p.Items)) {
+		t.Errorf("%T.Count() returned %d, expected %d", c, p.Count(), len(p.Items))
+	}
+
+	p.Append(IRI("test"))
+	if p.TotalItems != 0 {
+		t.Errorf("Empty object should have empty TotalItems, received %d", p.TotalItems)
+	}
+	if p.Count() != uint(len(p.Items)) {
+		t.Errorf("%T.Count() returned %d, expected %d", c, p.Count(), len(p.Items))
+	}
 }
 
 func TestOrderedCollection_Count(t *testing.T) {
-	t.Skipf("TODO")
+	id := ObjectID("test")
+
+	c := OrderedCollectionNew(id)
+
+	if c.TotalItems != 0 {
+		t.Errorf("Empty object should have empty TotalItems, received %d", c.TotalItems)
+	}
+	if len(c.OrderedItems) > 0 {
+		t.Errorf("Empty object should have empty Items, received %v", c.OrderedItems)
+	}
+	if c.Count() != uint(len(c.OrderedItems)) {
+		t.Errorf("%T.Count() returned %d, expected %d", c, c.Count(), len(c.OrderedItems))
+	}
+
+	c.Append(IRI("test"))
+	if c.TotalItems != 0 {
+		t.Errorf("Empty object should have empty TotalItems, received %d", c.TotalItems)
+	}
+	if c.Count() != uint(len(c.OrderedItems)) {
+		t.Errorf("%T.Count() returned %d, expected %d", c, c.Count(), len(c.OrderedItems))
+	}
 }
 
 func TestOrderedCollectionPage_Count(t *testing.T) {
-	t.Skipf("TODO")
+	id := ObjectID("test")
+
+	c := OrderedCollectionNew(id)
+	p := OrderedCollectionPageNew(c)
+
+	if p.TotalItems != 0 {
+		t.Errorf("Empty object should have empty TotalItems, received %d", p.TotalItems)
+	}
+	if len(p.OrderedItems) > 0 {
+		t.Errorf("Empty object should have empty Items, received %v", p.OrderedItems)
+	}
+	if p.Count() != uint(len(p.OrderedItems)) {
+		t.Errorf("%T.Count() returned %d, expected %d", c, p.Count(), len(p.OrderedItems))
+	}
+
+	p.Append(IRI("test"))
+	if p.TotalItems != 0 {
+		t.Errorf("Empty object should have empty TotalItems, received %d", p.TotalItems)
+	}
+	if p.Count() != uint(len(p.OrderedItems)) {
+		t.Errorf("%T.Count() returned %d, expected %d", c, p.Count(), len(p.OrderedItems))
+	}
 }
