@@ -65,7 +65,7 @@ type actor struct {
 	// for this actor or someone referencing this actor.
 	// This mapping may be nested inside the actor document as the value or may be a link
 	// to a JSON-LD document with these properties.
-	Endpoints Endpoints `jsonld:"endpoints,omitempty"`
+	Endpoints *Endpoints `jsonld:"endpoints,omitempty"`
 	// A list of supplementary Collections which may be of interest.
 	Streams []as.ItemCollection `jsonld:"streams,omitempty"`
 }
@@ -145,8 +145,7 @@ func (a *actor) UnmarshalJSON(data []byte) error {
 	a.Inbox = as.JSONGetItem(data, "inbox")
 	a.Outbox = as.JSONGetItem(data, "outbox")
 	a.Liked = as.JSONGetItem(data, "liked")
-	// TODO(marius): Endpoints need their own UnmarshalJSON
-	//a.Endpoints = as.JSONGetItems(data, "endpoints")
+	a.Endpoints = JSONGetActorEndpoints(data, "endpoints")
 	// TODO(marius): Streams needs custom unmarshalling
 	//a.Streams = as.JSONGetItems(data, "streams")
 	return nil
@@ -161,4 +160,15 @@ func ToPerson(it as.Item) (*Person, error) {
 		return &i, nil
 	}
 	return nil, errors.New("unable to convert object")
+}
+
+// UnmarshalJSON
+func (e *Endpoints) UnmarshalJSON(data []byte) error {
+	e.OauthAuthorizationEndpoint = as.JSONGetItem(data, "oauthAuthorizationEndpoint")
+	e.OauthTokenEndpoint = as.JSONGetItem(data, "oauthTokenEndpoint")
+	e.UploadMedia = as.JSONGetItem(data, "uploadMedia")
+	e.ProvideClientKey = as.JSONGetItem(data, "provideClientKey")
+	e.SignClientKey = as.JSONGetItem(data, "signClientKey")
+	e.SharedInbox = as.JSONGetItem(data, "sharedInbox")
+	return nil
 }

@@ -39,3 +39,7 @@ func TestJSONGetItemByType(t *testing.T) {
 		})
 	}
 }
+
+func TestJSONGetActorEndpoints(t *testing.T) {
+	t.Skipf("TODO")
+}

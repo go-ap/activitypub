@@ -191,3 +191,7 @@ func TestService_IsObject(t *testing.T) {
 func TestToPerson(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestEndpoints_UnmarshalJSON(t *testing.T) {
+	t.Skipf("TODO")
+}

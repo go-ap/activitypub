@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"github.com/buger/jsonparser"
 	as "github.com/go-ap/activitystreams"
 )
 
@@ -44,4 +45,16 @@ func JSONGetItemByType(typ as.ActivityVocabularyType) (as.Item, error) {
 		return as.JSONGetItemByType(typ)
 	}
 	return ret, err
+}
+
+func JSONGetActorEndpoints(data []byte, prop string) *Endpoints {
+	str, _ := jsonparser.GetUnsafeString(data, prop)
+
+	var e *Endpoints
+	if len(str) > 0 {
+		e = &Endpoints{}
+		e.UnmarshalJSON([]byte(str))
+	}
+
+	return e
 }
