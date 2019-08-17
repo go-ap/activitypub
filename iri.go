@@ -8,6 +8,7 @@ import (
 type (
 	// IRI is a Internationalized Resource Identifiers (IRIs) RFC3987
 	IRI string
+	IRIs []IRI
 )
 
 // String returns the String value of the IRI object
@@ -58,4 +59,17 @@ func FlattenToIRI(it Item) Item {
 		return it.GetLink()
 	}
 	return it
+}
+
+// Contains verifies if IRIs array contains the received one
+func(i IRIs) Contains(r IRI) bool {
+	if len(i) == 0 {
+		return true
+	}
+	for _, iri := range i {
+		if strings.ToLower(r.String()) == strings.ToLower(iri.String()) {
+			return true
+		}
+	}
+	return false
 }

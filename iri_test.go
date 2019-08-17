@@ -66,3 +66,7 @@ func TestFlattenToIRI(t *testing.T) {
 func TestIRI_URL(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestIRIs_Contains(t *testing.T) {
+	t.Skipf("TODO")
+}
