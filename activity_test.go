@@ -2259,6 +2259,31 @@ func TestToActivity(t *testing.T) {
 	}
 }
 
+func TestToIntransitiveActivity(t *testing.T) {
+	var it Item
+	act := IntransitiveActivityNew("test", TravelType)
+	it = act
+
+	a, err := ToIntransitiveActivity(it)
+	if err != nil {
+		t.Error(err)
+	}
+	if a != act {
+		t.Errorf("Invalid activity returned by ToActivity #%v", a)
+	}
+
+	ob := ObjectNew(ArticleType)
+	it = ob
+
+	o, err := ToIntransitiveActivity(it)
+	if err == nil {
+		t.Errorf("Error returned when calling ToActivity with object should not be nil")
+	}
+	if o != nil {
+		t.Errorf("Invalid return by ToActivity #%v, should have been nil", o)
+	}
+}
+
 func TestFlattenActivityProperties(t *testing.T) {
 	t.Skipf("TODO")
 }
