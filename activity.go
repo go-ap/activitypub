@@ -1783,8 +1783,18 @@ func ToActivity(it Item) (*Activity, error) {
 	return nil, errors.New("unable to convert activity")
 }
 
+// ToQuestion
+func ToQuestion(it Item) (*Question, error) {
+	switch i := it.(type) {
+	case *Question:
+		return i, nil
+	case Question:
+		return &i, nil
+	}
+	return nil, errors.New("unable to convert to question activity")
+}
 
-// ToActivity
+// ToIntransitiveActivity
 func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
 	switch i := it.(type) {
 	case *IntransitiveActivity:
@@ -1808,7 +1818,7 @@ func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
 		it = IntransitiveActivity(i)
 		return &it, nil
 	}
-	return nil, errors.New("unable to convert activity")
+	return nil, errors.New("unable to convert to intransitive activity")
 }
 
 // FlattenIntransitiveActivityProperties flattens the IntransitiveActivity's properties from Object type to IRI
