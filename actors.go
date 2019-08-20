@@ -154,6 +154,10 @@ func (a *actor) UnmarshalJSON(data []byte) error {
 // ToObject
 func ToPerson(it as.Item) (*Person, error) {
 	switch i := it.(type) {
+	case *as.Object:
+		return &Person{Parent: *i}, nil
+	case as.Object:
+		return &Person{Parent: i}, nil
 	case *actor:
 		return i, nil
 	case actor:
