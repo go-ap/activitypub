@@ -1,6 +1,7 @@
 package activitystreams
 
 import (
+	"errors"
 	"github.com/buger/jsonparser"
 )
 
@@ -324,4 +325,48 @@ func FlattenItemCollection(c ItemCollection) ItemCollection {
 		}
 	}
 	return c
+}
+
+// ToCollection
+func ToCollection(it Item) (*Collection, error) {
+	switch i := it.(type) {
+	case *Collection:
+		return i, nil
+	case Collection:
+		return &i, nil
+	}
+	return nil, errors.New("unable to convert to collection")
+}
+
+// ToCollectionPage
+func ToCollectionPage(it Item) (*CollectionPage, error) {
+	switch i := it.(type) {
+	case *CollectionPage:
+		return i, nil
+	case CollectionPage:
+		return &i, nil
+	}
+	return nil, errors.New("unable to convert to collection page")
+}
+
+// ToOrderedCollection
+func ToOrderedCollection(it Item) (*OrderedCollection, error) {
+	switch i := it.(type) {
+	case *OrderedCollection:
+		return i, nil
+	case OrderedCollection:
+		return &i, nil
+	}
+	return nil, errors.New("unable to convert to ordered collection")
+}
+
+// ToOrderedCollectionPage
+func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
+	switch i := it.(type) {
+	case *OrderedCollectionPage:
+		return i, nil
+	case OrderedCollectionPage:
+		return &i, nil
+	}
+	return nil, errors.New("unable to convert to ordered collection page")
 }

@@ -601,3 +601,19 @@ func TestOrderedCollectionPage_Count(t *testing.T) {
 		t.Errorf("%T.Count() returned %d, expected %d", c, p.Count(), len(p.OrderedItems))
 	}
 }
+
+func TestToCollection(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestToCollectionPage(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestToOrderedCollection(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestToOrderedCollectionPage(t *testing.T) {
+	t.Skipf("TODO")
+}
