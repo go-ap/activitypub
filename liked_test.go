@@ -79,3 +79,43 @@ func TestLiked_Append(t *testing.T) {
 		t.Errorf("First item in %T.%T does not match %q", l, l.OrderedItems, val.ID)
 	}
 }
+
+func TestLiked_Collection(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestLiked_GetID(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestLiked_GetLink(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestLiked_GetType(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestLiked_IsLink(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestLiked_IsObject(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestLikedCollection_Collection(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestLikedCollection_GetLink(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestLikedCollection_IsLink(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestLikedCollection_IsObject(t *testing.T) {
+	t.Skipf("TODO")
+}

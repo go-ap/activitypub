@@ -80,3 +80,31 @@ func TestOutbox_Append(t *testing.T) {
 		t.Errorf("First item in %T.%T does not match %q", o, o.OrderedItems, val.ID)
 	}
 }
+
+func TestOutbox_Collection(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOutbox_GetID(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOutbox_GetLink(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOutbox_GetType(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOutbox_IsLink(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOutbox_IsObject(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOutbox_UnmarshalJSON(t *testing.T) {
+	t.Skipf("TODO")
+}
