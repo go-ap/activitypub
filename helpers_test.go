@@ -129,3 +129,19 @@ func TestOnPerson(t *testing.T) {
 		t.Errorf("Unexpected error returned %s", err)
 	}
 }
+
+func TestOnCollection(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOnCollectionPage(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOnOrderedCollection(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOnOrderedCollectionPage(t *testing.T) {
+	t.Skipf("TODO")
+}

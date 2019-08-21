@@ -11,6 +11,10 @@ type withActivityFn func (*activitystreams.Activity) error
 type withIntransitiveActivityFn func (*activitystreams.IntransitiveActivity) error
 type withQuestionFn func (*activitystreams.Question) error
 type withPersonFn func (*Person) error
+type withCollectionFn func (*activitystreams.Collection) error
+type withCollectionPageFn func (*activitystreams.CollectionPage) error
+type withOrderedCollectionFn func (*activitystreams.OrderedCollection) error
+type withOrderedCollectionPageFn func (*activitystreams.OrderedCollectionPage) error
 
 // OnObject
 func OnObject(it activitystreams.Item, fn withObjectFn) error {
@@ -73,4 +77,52 @@ func OnPerson(it activitystreams.Item, fn withPersonFn) error {
 		return err
 	}
 	return fn(pers)
+}
+
+// OnCollection
+func OnCollection(it activitystreams.Item, fn withCollectionFn) error {
+	if it.GetType() != activitystreams.CollectionType {
+		return errors.New(fmt.Sprintf("%T[%s] can't be converted to Collection", it, it.GetType()))
+	}
+	col, err  := activitystreams.ToCollection(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
+}
+
+// OnCollectionPage
+func OnCollectionPage(it activitystreams.Item, fn withCollectionPageFn) error {
+	if it.GetType() != activitystreams.CollectionPageType {
+		return errors.New(fmt.Sprintf("%T[%s] can't be converted to Collection Page", it, it.GetType()))
+	}
+	col, err  := activitystreams.ToCollectionPage(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
+}
+
+// OnOrderedCollection
+func OnOrderedCollection(it activitystreams.Item, fn withOrderedCollectionFn) error {
+	if it.GetType() != activitystreams.OrderedCollectionType {
+		return errors.New(fmt.Sprintf("%T[%s] can't be converted to OrderedCollection", it, it.GetType()))
+	}
+	col, err  := activitystreams.ToOrderedCollection(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
+}
+
+// OnOrderedCollectionPage
+func OnOrderedCollectionPage(it activitystreams.Item, fn withOrderedCollectionPageFn) error {
+	if it.GetType() != activitystreams.OrderedCollectionPageType {
+		return errors.New(fmt.Sprintf("%T[%s] can't be converted to OrderedCollection Page", it, it.GetType()))
+	}
+	col, err  := activitystreams.ToOrderedCollectionPage(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
 }
