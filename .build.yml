@@ -21,4 +21,4 @@ tasks:
       curl -X POST \
           --data-binary @activitystreams.coverprofile \
            -H 'Accept: application/json' \
-          "https://codecov.io/upload/v2?commit=${GIT_SHA}&token=${STREAMS_TOKEN}&branch=${GIT_BRANCH}&service=custom"
+          "https://codecov.io/upload/v2?commit=${GIT_SHA}&token=${STREAMS_TOKEN}&branch=${GIT_BRANCH}&service=custom" || true
