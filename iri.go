@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+const PublicNS = IRI("https://www.w3.org/ns/activitystreams#Public")
+
 type (
 	// IRI is a Internationalized Resource Identifiers (IRIs) RFC3987
 	IRI string
