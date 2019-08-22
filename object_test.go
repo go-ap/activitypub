@@ -327,7 +327,7 @@ func TestRecipients(t *testing.T) {
 		t.Errorf("Objects array should have exactly 8(eight) elements, not %d", len(first))
 	}
 
-	recipientsDeduplication(&first)
+	ItemCollectionDeduplication(&first)
 	if len(first) != 4 {
 		t.Errorf("Objects array should have exactly 4(four) elements, not %d", len(first))
 	}
@@ -336,7 +336,7 @@ func TestRecipients(t *testing.T) {
 	second.Append(bar)
 	second.Append(foo)
 
-	recipientsDeduplication(&first, &second)
+	ItemCollectionDeduplication(&first, &second)
 	if len(first) != 4 {
 		t.Errorf("First Objects array should have exactly 8(eight) elements, not %d", len(first))
 	}
@@ -344,7 +344,7 @@ func TestRecipients(t *testing.T) {
 		t.Errorf("Second Objects array should have exactly 0(zero) elements, not %d", len(second))
 	}
 
-	_, err := recipientsDeduplication(&first, &second, nil)
+	_, err := ItemCollectionDeduplication(&first, &second, nil)
 	if err != nil {
 		t.Errorf("Deduplication with empty array failed")
 	}
@@ -729,5 +729,9 @@ func TestNaturalLanguageValues_String(t *testing.T) {
 }
 
 func TestNaturalLanguageValues_Count(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestItemCollectionDeduplication(t *testing.T) {
 	t.Skipf("TODO")
 }
