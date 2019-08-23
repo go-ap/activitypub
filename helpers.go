@@ -18,9 +18,6 @@ type withOrderedCollectionPageFn func (*activitystreams.OrderedCollectionPage) e
 
 // OnObject
 func OnObject(it activitystreams.Item, fn withObjectFn) error {
-	if !activitystreams.ObjectTypes.Contains(it.GetType()) {
-		return errors.New(fmt.Sprintf("%T[%s] can't be converted to Object", it, it.GetType()))
-	}
 	ob, err  := activitystreams.ToObject(it)
 	if err != nil {
 		return err
