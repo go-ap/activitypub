@@ -376,7 +376,7 @@ func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
 // Contains verifies if Collection array contains the received one
 func(c Collection) Contains(r IRI) bool {
 	if len(c.Items) == 0 {
-		return true
+		return false
 	}
 	for _, iri := range c.Items {
 		if strings.ToLower(r.String()) == strings.ToLower(iri.GetLink().String()) {
@@ -389,7 +389,7 @@ func(c Collection) Contains(r IRI) bool {
 // Contains verifies if OrderedCollection array contains the received one
 func(o OrderedCollection) Contains(r IRI) bool {
 	if len(o.OrderedItems) == 0 {
-		return true
+		return false
 	}
 	for _, iri := range o.OrderedItems {
 		if strings.ToLower(r.String()) == strings.ToLower(iri.GetLink().String()) {
@@ -402,7 +402,7 @@ func(o OrderedCollection) Contains(r IRI) bool {
 // Contains verifies if CollectionPage array contains the received one
 func(c CollectionPage) Contains(r IRI) bool {
 	if len(c.Items) == 0 {
-		return true
+		return false
 	}
 	for _, iri := range c.Items {
 		if strings.ToLower(r.String()) == strings.ToLower(iri.GetLink().String()) {
@@ -415,7 +415,7 @@ func(c CollectionPage) Contains(r IRI) bool {
 // Contains verifies if OrderedCollectionPage array contains the received one
 func(o OrderedCollectionPage) Contains(r IRI) bool {
 	if len(o.OrderedItems) == 0 {
-		return true
+		return false
 	}
 	for _, iri := range o.OrderedItems {
 		if strings.ToLower(r.String()) == strings.ToLower(iri.GetLink().String()) {

@@ -67,7 +67,7 @@ func (i *ItemCollection) Collection() CollectionInterface {
 // Contains verifies if IRIs array contains the received one
 func(i ItemCollection) Contains(r IRI) bool {
 	if len(i) == 0 {
-		return true
+		return false
 	}
 	for _, iri := range i {
 		if strings.ToLower(r.String()) == strings.ToLower(iri.GetLink().String()) {
