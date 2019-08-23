@@ -1,5 +1,7 @@
 package activitystreams
 
+import "strings"
+
 // ItemCollection represents an array of items
 type ItemCollection []Item
 
@@ -60,4 +62,17 @@ func (i ItemCollection) First() Item {
 // Collection returns the current object as collection interface
 func (i *ItemCollection) Collection() CollectionInterface {
 	return i
+}
+
+// Contains verifies if IRIs array contains the received one
+func(i ItemCollection) Contains(r IRI) bool {
+	if len(i) == 0 {
+		return true
+	}
+	for _, iri := range i {
+		if strings.ToLower(r.String()) == strings.ToLower(iri.GetLink().String()) {
+			return true
+		}
+	}
+	return false
 }

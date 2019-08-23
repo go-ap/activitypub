@@ -617,3 +617,19 @@ func TestToOrderedCollection(t *testing.T) {
 func TestToOrderedCollectionPage(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestCollection_Contains(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestCollectionPage_Contains(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOrderedCollection_Contains(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOrderedCollectionPage_Contains(t *testing.T) {
+	t.Skipf("TODO")
+}

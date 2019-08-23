@@ -41,3 +41,7 @@ func TestFlattenItemCollection(t *testing.T) {
 func TestItemCollection_Count(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestItemCollection_Contains(t *testing.T) {
+	t.Skipf("TODO")
+}
