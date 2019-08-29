@@ -78,14 +78,24 @@ func OnPerson(it activitystreams.Item, fn withPersonFn) error {
 
 // OnCollection
 func OnCollection(it activitystreams.Item, fn withCollectionFn) error {
-	if it.GetType() != activitystreams.CollectionType {
+	switch it.GetType() {
+	case activitystreams.CollectionType:
+		col, err := activitystreams.ToCollection(it)
+		if err != nil {
+			return err
+		}
+		return fn(col)
+	case activitystreams.CollectionPageType:
+		return OnCollectionPage(it, func(p *activitystreams.CollectionPage) error {
+			col, err := activitystreams.ToCollection(&p.ParentCollection)
+			if err != nil {
+				return err
+			}
+			return fn(col)
+		})
+	default:
 		return errors.New(fmt.Sprintf("%T[%s] can't be converted to Collection", it, it.GetType()))
 	}
-	col, err  := activitystreams.ToCollection(it)
-	if err != nil {
-		return err
-	}
-	return fn(col)
 }
 
 // OnCollectionPage
@@ -102,14 +112,24 @@ func OnCollectionPage(it activitystreams.Item, fn withCollectionPageFn) error {
 
 // OnOrderedCollection
 func OnOrderedCollection(it activitystreams.Item, fn withOrderedCollectionFn) error {
-	if it.GetType() != activitystreams.OrderedCollectionType {
+	switch it.GetType() {
+	case activitystreams.OrderedCollectionType:
+		col, err := activitystreams.ToOrderedCollection(it)
+		if err != nil {
+			return err
+		}
+		return fn(col)
+	case activitystreams.OrderedCollectionPageType:
+		return OnOrderedCollectionPage(it, func(p *activitystreams.OrderedCollectionPage) error {
+			col, err := activitystreams.ToOrderedCollection(&p.OrderedCollection)
+			if err != nil {
+				return err
+			}
+			return fn(col)
+		})
+	default:
 		return errors.New(fmt.Sprintf("%T[%s] can't be converted to OrderedCollection", it, it.GetType()))
 	}
-	col, err  := activitystreams.ToOrderedCollection(it)
-	if err != nil {
-		return err
-	}
-	return fn(col)
 }
 
 // OnOrderedCollectionPage
