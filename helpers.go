@@ -18,11 +18,29 @@ type withOrderedCollectionPageFn func (*activitystreams.OrderedCollectionPage) e
 
 // OnObject
 func OnObject(it activitystreams.Item, fn withObjectFn) error {
-	ob, err  := activitystreams.ToObject(it)
-	if err != nil {
-		return err
+	if activitystreams.ActivityTypes.Contains(it.GetType()) {
+		return OnActivity(it, func(a *activitystreams.Activity) error {
+			ob, err := activitystreams.ToObject(&a.Parent)
+			if err != nil {
+				return err
+			}
+			return fn(ob)
+		})
+	} else if activitystreams.ActorTypes.Contains(it.GetType()) {
+		return OnPerson(it, func(p *Person) error {
+			ob, err := activitystreams.ToObject(&p.Parent)
+			if err != nil {
+				return err
+			}
+			return fn(ob)
+		})
+	} else {
+		ob, err  := activitystreams.ToObject(it)
+		if err != nil {
+			return err
+		}
+		return fn(ob)
 	}
-	return fn(ob)
 }
 
 // OnActivity
