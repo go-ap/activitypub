@@ -151,7 +151,7 @@ func (a *actor) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// ToObject
+// ToPerson
 func ToPerson(it as.Item) (*Person, error) {
 	switch i := it.(type) {
 	case *as.Object:
