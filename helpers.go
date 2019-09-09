@@ -6,7 +6,7 @@ import (
 	"github.com/go-ap/activitystreams"
 )
 
-type withObjectFn func (*activitystreams.Object) error
+type withObjectFn func (*Object) error
 type withActivityFn func (*activitystreams.Activity) error
 type withIntransitiveActivityFn func (*activitystreams.IntransitiveActivity) error
 type withQuestionFn func (*activitystreams.Question) error
@@ -20,7 +20,7 @@ type withOrderedCollectionPageFn func (*activitystreams.OrderedCollectionPage) e
 func OnObject(it activitystreams.Item, fn withObjectFn) error {
 	if activitystreams.ActivityTypes.Contains(it.GetType()) {
 		return OnActivity(it, func(a *activitystreams.Activity) error {
-			ob, err := activitystreams.ToObject(&a.Parent)
+			ob, err := ToObject(&a.Parent)
 			if err != nil {
 				return err
 			}
@@ -28,14 +28,14 @@ func OnObject(it activitystreams.Item, fn withObjectFn) error {
 		})
 	} else if activitystreams.ActorTypes.Contains(it.GetType()) {
 		return OnPerson(it, func(p *Person) error {
-			ob, err := activitystreams.ToObject(&p.Parent)
+			ob, err := ToObject(&p.Parent)
 			if err != nil {
 				return err
 			}
 			return fn(ob)
 		})
 	} else {
-		ob, err  := activitystreams.ToObject(it)
+		ob, err  := ToObject(it)
 		if err != nil {
 			return err
 		}

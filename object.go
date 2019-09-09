@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"errors"
 	"github.com/buger/jsonparser"
 	as "github.com/go-ap/activitystreams"
 )
@@ -53,4 +54,19 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	o.Parent.UnmarshalJSON(data)
 	o.Source = GetAPSource(data)
 	return nil
+}
+
+// ToObject
+func ToObject(it as.Item) (*Object, error) {
+	switch i := it.(type) {
+	case *as.Object:
+		return &Object{Parent: *i}, nil
+	case as.Object:
+		return &Object{Parent: i}, nil
+	case *Object:
+		return i, nil
+	case Object:
+		return &i, nil
+	}
+	return nil, errors.New("unable to convert object")
 }
