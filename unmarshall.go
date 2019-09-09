@@ -6,45 +6,13 @@ import (
 )
 
 func JSONGetItemByType(typ as.ActivityVocabularyType) (as.Item, error) {
-	var ret as.Item
-	var err error
-
-	switch typ {
-	case as.ObjectType:
-		o := &Object{}
-		o.Type = typ
-		ret = o
-	case as.ActorType:
-		o := &actor{}
-		o.Type = typ
-		ret = o
-	case as.ApplicationType:
-		a := &Application{}
-		a.Type = typ
-		ret = a
-	case as.GroupType:
-		g := &Group{}
-		g.Type = typ
-		ret = g
-	case as.OrganizationType:
-		o := &Organization{}
-		o.Type = typ
-		ret = o
-	case as.PersonType:
-		p := &Person{}
-		p.Type = typ
-		ret = p
-	case as.ServiceType:
-		s := &Service{}
-		s.Type = typ
-		ret = s
-	case "":
-		// when no type is available use a plain Object
-		ret = &Object{}
-	default:
-		return as.JSONGetItemByType(typ)
+	if as.ObjectTypes.Contains(typ) {
+		return &Object{Parent: Parent{Type: typ}}, nil
 	}
-	return ret, err
+	if as.ActorTypes.Contains(typ) {
+		return &actor{Parent: Parent{Type: typ}}, nil
+	}
+	return as.JSONGetItemByType(typ)
 }
 
 func JSONGetActorEndpoints(data []byte, prop string) *Endpoints {
