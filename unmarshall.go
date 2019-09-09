@@ -241,218 +241,120 @@ func UnmarshalJSON(data []byte) (Item, error) {
 }
 
 func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
-	var ret Item
-	var err error
-
 	switch typ {
 	case ObjectType:
-		ret = ObjectNew(typ)
+		return ObjectNew(typ), nil
 	case LinkType:
-		ret = &Link{}
-		o := ret.(*Link)
-		o.Type = typ
+		return &Link{Type: typ}, nil
 	case ActivityType:
-		ret = &Activity{}
-		o := ret.(*Activity)
-		o.Type = typ
+		return &Activity{Parent: Parent{Type: typ}}, nil
 	case IntransitiveActivityType:
-		ret = &IntransitiveActivity{}
-		o := ret.(*IntransitiveActivity)
-		o.Type = typ
+		return &IntransitiveActivity{Parent: Parent{Type: typ}}, nil
 	case ActorType:
-		ret = &Object{}
-		o := ret.(*Object)
-		o.Type = typ
+		return ObjectNew(typ), nil
 	case CollectionType:
-		ret = &Collection{}
-		o := ret.(*Collection)
-		o.Type = typ
+		return &Collection{Parent: Parent{Type: typ}}, nil
 	case OrderedCollectionType:
-		ret = &OrderedCollection{}
-		o := ret.(*OrderedCollection)
-		o.Type = typ
+		return &OrderedCollection{Parent: Parent{Type: typ}}, nil
 	case CollectionPageType:
-		ret = &CollectionPage{}
-		o := ret.(*CollectionPage)
-		o.Type = typ
+		return &CollectionPage{ParentCollection: ParentCollection{Parent: Parent{Type: typ}}}, nil
 	case OrderedCollectionPageType:
-		ret = &OrderedCollectionPage{}
-		o := ret.(*OrderedCollectionPage)
-		o.Type = typ
+		return &OrderedCollectionPage{OrderedCollection: OrderedCollection{Parent: Parent{Type: typ}}}, nil
 	case ArticleType:
-		ret = ObjectNew(typ)
+		return ObjectNew(typ), nil
 	case AudioType:
-		ret = ObjectNew(typ)
+		return ObjectNew(typ), nil
 	case DocumentType:
-		ret = ObjectNew(typ)
+		return ObjectNew(typ), nil
 	case EventType:
-		ret = ObjectNew(typ)
+		return ObjectNew(typ), nil
 	case ImageType:
-		ret = ObjectNew(typ)
+		return ObjectNew(typ), nil
 	case NoteType:
-		ret = ObjectNew(typ)
+		return ObjectNew(typ), nil
 	case PageType:
-		ret = ObjectNew(typ)
+		return ObjectNew(typ), nil
 	case PlaceType:
-		p := &Place{}
-		p.Type = typ
-		ret = p
+		return &Place{Parent: Parent{Type: typ}}, nil
 	case ProfileType:
-		p := &Profile{}
-		p.Type = typ
-		ret = p
+		return &Profile{Parent: Parent{Type: typ}}, nil
 	case RelationshipType:
-		r := &Relationship{}
-		r.Type = typ
-		ret = r
+		return &Relationship{Parent: Parent{Type: typ}}, nil
 	case TombstoneType:
-		t := &Tombstone{}
-		t.Type = typ
-		ret = t
+		return &Tombstone{Parent: Parent{Type: typ}}, nil
 	case VideoType:
-		ret = ObjectNew(typ)
+		return ObjectNew(typ), nil
 	case MentionType:
-		ret = &Mention{}
-		o := ret.(*Mention)
-		o.Type = typ
+		return &Mention{Type:typ}, nil
 	case ApplicationType:
-		ret = &Application{}
-		o := ret.(*Application)
-		o.Type = typ
+		return ObjectNew(typ), nil
 	case GroupType:
-		ret = &Group{}
-		o := ret.(*Group)
-		o.Type = typ
+		return ObjectNew(typ), nil
 	case OrganizationType:
-		ret = &Organization{}
-		o := ret.(*Organization)
-		o.Type = typ
+		return ObjectNew(typ), nil
 	case PersonType:
-		ret = &Person{}
-		o := ret.(*Person)
-		o.Type = typ
+		return ObjectNew(typ), nil
 	case ServiceType:
-		ret = &Service{}
-		o := ret.(*Service)
-		o.Type = typ
+		return ObjectNew(typ), nil
 	case AcceptType:
-		ret = &Accept{}
-		o := ret.(*Accept)
-		o.Type = typ
+		return &Accept{Parent:Parent{Type: typ}}, nil
 	case AddType:
-		ret = &Add{}
-		o := ret.(*Add)
-		o.Type = typ
+		return &Add{Parent:Parent{Type: typ}}, nil
 	case AnnounceType:
-		ret = &Announce{}
-		o := ret.(*Announce)
-		o.Type = typ
+		return &Announce{Parent:Parent{Type: typ}}, nil
 	case ArriveType:
-		ret = &Arrive{}
-		o := ret.(*Arrive)
-		o.Type = typ
+		return &Arrive{Parent:Parent{Type: typ}}, nil
 	case BlockType:
-		ret = &Block{}
-		o := ret.(*Block)
-		o.Type = typ
+		return &Block{Parent:Parent{Type: typ}}, nil
 	case CreateType:
-		ret = &Create{}
-		o := ret.(*Create)
-		o.Type = typ
+		return &Create{Parent:Parent{Type: typ}}, nil
 	case DeleteType:
-		ret = &Delete{}
-		o := ret.(*Delete)
-		o.Type = typ
+		return &Delete{Parent:Parent{Type: typ}}, nil
 	case DislikeType:
-		ret = &Dislike{}
-		o := ret.(*Dislike)
-		o.Type = typ
+		return &Dislike{Parent:Parent{Type: typ}}, nil
 	case FlagType:
-		ret = &Flag{}
-		o := ret.(*Flag)
-		o.Type = typ
+		return &Flag{Parent:Parent{Type: typ}}, nil
 	case FollowType:
-		ret = &Follow{}
-		o := ret.(*Follow)
-		o.Type = typ
+		return &Follow{Parent:Parent{Type: typ}}, nil
 	case IgnoreType:
-		ret = &Ignore{}
-		o := ret.(*Ignore)
-		o.Type = typ
+		return &Ignore{Parent:Parent{Type: typ}}, nil
 	case InviteType:
-		ret = &Invite{}
-		o := ret.(*Invite)
-		o.Type = typ
+		return &Invite{Parent:Parent{Type: typ}}, nil
 	case JoinType:
-		ret = &Join{}
-		o := ret.(*Join)
-		o.Type = typ
+		return &Join{Parent:Parent{Type: typ}}, nil
 	case LeaveType:
-		ret = &Leave{}
-		o := ret.(*Leave)
-		o.Type = typ
+		return &Leave{Parent:Parent{Type: typ}}, nil
 	case LikeType:
-		ret = &Like{}
-		o := ret.(*Like)
-		o.Type = typ
+		return &Like{Parent:Parent{Type: typ}}, nil
 	case ListenType:
-		ret = &Listen{}
-		o := ret.(*Listen)
-		o.Type = typ
+		return &Listen{Parent:Parent{Type: typ}}, nil
 	case MoveType:
-		ret = &Move{}
-		o := ret.(*Move)
-		o.Type = typ
+		return &Move{Parent:Parent{Type: typ}}, nil
 	case OfferType:
-		ret = &Offer{}
-		o := ret.(*Offer)
-		o.Type = typ
+		return &Offer{Parent:Parent{Type: typ}}, nil
 	case QuestionType:
-		ret = &Question{}
-		o := ret.(*Question)
-		o.Type = typ
+		return &Question{Type: typ}, nil
 	case RejectType:
-		ret = &Reject{}
-		o := ret.(*Reject)
-		o.Type = typ
+		return &Reject{Parent:Parent{Type: typ}}, nil
 	case ReadType:
-		ret = &Read{}
-		o := ret.(*Read)
-		o.Type = typ
+		return &Read{Parent:Parent{Type: typ}}, nil
 	case RemoveType:
-		ret = &Remove{}
-		o := ret.(*Remove)
-		o.Type = typ
+		return &Remove{Parent:Parent{Type: typ}}, nil
 	case TentativeRejectType:
-		ret = &TentativeReject{}
-		o := ret.(*TentativeReject)
-		o.Type = typ
+		return &TentativeReject{Parent:Parent{Type: typ}}, nil
 	case TentativeAcceptType:
-		ret = &TentativeAccept{}
-		o := ret.(*TentativeAccept)
-		o.Type = typ
+		return &TentativeAccept{Parent:Parent{Type: typ}}, nil
 	case TravelType:
-		ret = &Travel{}
-		o := ret.(*Travel)
-		o.Type = typ
+		return &Travel{Parent:Parent{Type: typ}}, nil
 	case UndoType:
-		ret = &Undo{}
-		o := ret.(*Undo)
-		o.Type = typ
+		return &Undo{Parent:Parent{Type: typ}}, nil
 	case UpdateType:
-		ret = &Update{}
-		o := ret.(*Update)
-		o.Type = typ
+		return &Update{Parent:Parent{Type: typ}}, nil
 	case ViewType:
-		ret = &View{}
-		o := ret.(*View)
-		o.Type = typ
+		return &View{Parent:Parent{Type: typ}}, nil
 	case "":
 		// when no type is available use a plain Object
-		ret = &Object{}
-	default:
-		ret = nil
-		err = fmt.Errorf("unrecognized ActivityStreams type %s", typ)
+		return &Object{}, nil
 	}
-	return ret, err
+	return nil, fmt.Errorf("unrecognized ActivityStreams type %s", typ)
 }
