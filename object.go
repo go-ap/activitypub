@@ -151,7 +151,7 @@ func (n NaturalLanguageValues) String() string {
 	s.Write([]byte{'['})
 	for k, v := range n {
 		s.WriteString(v.String())
-		if k != cnt - 1 {
+		if k != cnt-1 {
 			s.Write([]byte{','})
 		}
 	}
@@ -254,7 +254,6 @@ func (l LangRefValue) String() string {
 	}
 	return fmt.Sprintf("%s[%s]", l.Value, l.Ref)
 }
-
 
 // UnmarshalJSON implements the JsonEncoder interface
 func (l *LangRefValue) UnmarshalJSON(data []byte) error {
