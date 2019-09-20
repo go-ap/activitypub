@@ -397,7 +397,7 @@ var allTests = tests{
 			Object: &a.Object{
 				Type:         a.NoteType,
 				AttributedTo: a.IRI("https://littr.git/api/accounts/anonymous"),
-				InReplyTo:    a.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff"),
+				InReplyTo:    a.ItemCollection{a.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff")},
 				Content:      a.NaturalLanguageValues{{a.NilLangRef, "<p>Hello world</p>"}},
 				To:           a.ItemCollection{a.IRI("https://www.w3.org/ns/activitystreams#Public")},
 			},

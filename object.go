@@ -1,14 +1,12 @@
 package activitystreams
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/buger/jsonparser"
+	json "github.com/go-ap/jsonld"
 	"sort"
 	"strings"
 	"time"
-
-	"github.com/buger/jsonparser"
 )
 
 // ObjectID designates an unique global identifier.
@@ -363,7 +361,7 @@ type object struct {
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
 	Image Item `jsonld:"image,omitempty"`
 	// InReplyTo indicates one or more entities for which this object is considered a response.
-	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
+	InReplyTo ItemCollection `jsonld:"inReplyTo,omitempty"`
 	// Location indicates one or more physical or logical locations associated with the object.
 	Location Item `jsonld:"location,omitempty"`
 	// Preview identifies an entity that provides a preview of this object.
@@ -584,7 +582,6 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	o.MediaType = MimeType(JSONGetString(data, "mediaType"))
 	o.Generator = JSONGetItem(data, "generator")
 	o.AttributedTo = JSONGetItem(data, "attributedTo")
-	o.InReplyTo = JSONGetItem(data, "inReplyTo")
 	o.Attachment = JSONGetItem(data, "attachment")
 	o.Location = JSONGetItem(data, "location")
 	o.Published = JSONGetTime(data, "published")
@@ -595,16 +592,20 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	o.Preview = JSONGetItem(data, "preview")
 	o.Image = JSONGetItem(data, "image")
 	o.Updated = JSONGetTime(data, "updated")
+	inReplyTo := JSONGetItems(data, "inReplyTo")
+	if len(inReplyTo) > 0 {
+		o.InReplyTo = inReplyTo
+	}
 	to := JSONGetItems(data, "to")
-	if to != nil {
+	if len(to) > 0 {
 		o.To = to
 	}
 	audience := JSONGetItems(data, "audience")
-	if audience != nil {
+	if len(audience) > 0 {
 		o.Audience = audience
 	}
 	bto := JSONGetItems(data, "bto")
-	if bto != nil {
+	if len(bto) > 0 {
 		o.Bto = bto
 	}
 	cc := JSONGetItems(data, "cc")
@@ -633,8 +634,12 @@ func ToProfile(it Item) (*Profile, error) {
 		return i, nil
 	case Profile:
 		return &i, nil
+	case *Object:
+		return &Profile{Parent: *i}, nil
+	case Object:
+		return &Profile{Parent: i}, nil
 	}
-	return nil, errors.New("unable to convert place")
+	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
 
 // ToRelationship
@@ -644,8 +649,12 @@ func ToRelationship(it Item) (*Relationship, error) {
 		return i, nil
 	case Relationship:
 		return &i, nil
+	case *Object:
+		return &Relationship{Parent: *i}, nil
+	case Object:
+		return &Relationship{Parent: i}, nil
 	}
-	return nil, errors.New("unable to convert place")
+	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
 
 // ToPlace
@@ -655,8 +664,12 @@ func ToPlace(it Item) (*Place, error) {
 		return i, nil
 	case Place:
 		return &i, nil
+	case *Object:
+		return &Place{Parent: *i}, nil
+	case Object:
+		return &Place{Parent: i}, nil
 	}
-	return nil, errors.New("unable to convert place")
+	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
 
 // ToTombstone
@@ -666,8 +679,12 @@ func ToTombstone(it Item) (*Tombstone, error) {
 		return i, nil
 	case Tombstone:
 		return &i, nil
+	case *Object:
+		return &Tombstone{Parent: *i}, nil
+	case Object:
+		return &Tombstone{Parent: i}, nil
 	}
-	return nil, errors.New("unable to convert tombstone")
+	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
 
 // ToObject
@@ -694,7 +711,7 @@ func ToObject(it Item) (*Object, error) {
 	case Tombstone:
 		return &i.Parent, nil
 	}
-	return nil, errors.New("unable to convert object")
+	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
 
 // FlattenObjectProperties flattens the Object's properties from Object types to IRI
@@ -707,7 +724,7 @@ func FlattenObjectProperties(o *Object) *Object {
 		}
 	}
 	o.AttributedTo = FlattenToIRI(o.AttributedTo)
-	o.InReplyTo = FlattenToIRI(o.InReplyTo)
+	o.InReplyTo = FlattenItemCollection(o.InReplyTo)
 
 	o.To = FlattenItemCollection(o.To)
 	o.Bto = FlattenItemCollection(o.Bto)

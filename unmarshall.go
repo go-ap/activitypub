@@ -156,7 +156,7 @@ func JSONGetItems(data []byte, prop string) ItemCollection {
 		return nil
 	}
 
-	var it ItemCollection
+	it := make(ItemCollection, 0)
 	switch typ {
 	case jsonparser.Array:
 		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
@@ -190,7 +190,7 @@ func JSONGetURIItem(data []byte, prop string) Item {
 	case jsonparser.Object:
 		return JSONGetItem(data, prop)
 	case jsonparser.Array:
-		var it ItemCollection
+		it := make(ItemCollection, 0)
 		jsonparser.ArrayEach(val, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 			if _, err := url.Parse(string(value)); err == nil {
 				it.Append(IRI(value))
