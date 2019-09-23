@@ -1,6 +1,7 @@
 package activitystreams
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -29,7 +30,6 @@ func TestObjectNew(t *testing.T) {
 	}
 
 }
-
 
 func TestActivityVocabularyTypes_Contains(t *testing.T) {
 	{
@@ -187,7 +187,6 @@ func TestActivityVocabularyTypes_Contains(t *testing.T) {
 		}
 	}
 }
-
 
 func TestMarshalJSON(t *testing.T) {
 	m := NaturalLanguageValues{
@@ -640,7 +639,27 @@ func TestNaturalLanguageValues_Set(t *testing.T) {
 }
 
 func TestNaturalLanguageValues_UnmarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
+	{
+		lang := []byte{'e', 'n'}
+		val := []byte{'a', 'n', 'a', ' ', 'a', 'r', 'e', ' ', 'm', 'e', 'r', 'e', '\n'}
+		js := fmt.Sprintf(`[{"%s": "%s"}]`, lang, val)
+		n := NaturalLanguageValues{}
+		err := n.UnmarshalJSON([]byte(js))
+		if err != nil {
+			t.Errorf("Unexpected error when unmarshalling %T: %s", n, err)
+		}
+
+		if n.Count() != 1 {
+			t.Errorf("Invalid number of elements %d, expected %d", n.Count(), 1)
+		}
+		l := n.First()
+		if l.Value != "ana are mere\n" {
+			t.Errorf("Invalid %T value %q, expected %q", l, l.Value, "ana are mere\n")
+		}
+		if l.Ref != "en" {
+			t.Errorf("Invalid %T ref %q, expected %q", l, l.Ref, "en")
+		}
+	}
 }
 
 func TestNaturalLanguageValues_UnmarshalText(t *testing.T) {

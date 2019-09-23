@@ -1,6 +1,7 @@
 package activitystreams
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/buger/jsonparser"
 	json "github.com/go-ap/jsonld"
@@ -255,6 +256,27 @@ func (l LangRefValue) String() string {
 
 // UnmarshalJSON implements the JsonEncoder interface
 func (l *LangRefValue) UnmarshalJSON(data []byte) error {
+	val, typ, _, err := jsonparser.Get(data)
+	if err != nil {
+		l.Ref = NilLangRef
+		val = bytes.Replace(val, []byte("\\\\"), []byte("\\"), -1)
+		l.Value = string(val)
+		return nil
+	}
+	switch typ {
+	case jsonparser.Object:
+		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
+			l.Ref = LangRef(key)
+			value = bytes.Replace(value, []byte("\\\\"), []byte("\\"), -1)
+			l.Value = string(value)
+			return err
+		})
+	case jsonparser.String:
+		l.Ref = NilLangRef
+		data = bytes.Replace(data, []byte("\\\\"), []byte("\\"), -1)
+		l.Value = string(data)
+	}
+
 	return nil
 }
 
@@ -295,11 +317,19 @@ func (n *NaturalLanguageValues) UnmarshalJSON(data []byte) error {
 	switch typ {
 	case jsonparser.Object:
 		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
+			value = bytes.Replace(value, []byte("\\\\"), []byte("\\"), -1)
 			n.Append(LangRef(key), string(value))
 			return err
 		})
 	case jsonparser.String:
+		val = bytes.Replace(val, []byte("\\\\"), []byte("\\"), -1)
 		n.Append(NilLangRef, string(val))
+	case jsonparser.Array:
+		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			l := LangRefValue{}
+			l.UnmarshalJSON(value)
+			n.Append(l.Ref, l.Value)
+		})
 	}
 
 	return nil
