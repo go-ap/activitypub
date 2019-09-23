@@ -694,7 +694,7 @@ func IntransitiveActivityNew(id ObjectID, typ ActivityVocabularyType) *Intransit
 
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (a *Activity) Recipients() ItemCollection {
-	var actor ItemCollection
+	actor := make(ItemCollection, 0)
 	actor.Append(a.Actor)
 	rec, _ := ItemCollectionDeduplication(&actor, &a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
 	a.BCC = a.BCC[:0]
@@ -704,7 +704,7 @@ func (a *Activity) Recipients() ItemCollection {
 
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (i *IntransitiveActivity) Recipients() ItemCollection {
-	var actor ItemCollection
+	actor := make(ItemCollection, 0)
 	actor.Append(i.Actor)
 	rec, _ := ItemCollectionDeduplication(&actor, &i.To, &i.Bto, &i.CC, &i.BCC, &i.Audience)
 	i.BCC = i.BCC[:0]
@@ -714,7 +714,7 @@ func (i *IntransitiveActivity) Recipients() ItemCollection {
 
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (b *Block) Recipients() ItemCollection {
-	var dedupObjects ItemCollection
+	dedupObjects := make(ItemCollection, 0)
 	dedupObjects.Append(b.Actor)
 	dedupObjects.Append(b.Object)
 	rec, _ := ItemCollectionDeduplication(&dedupObjects, &b.To, &b.Bto, &b.CC, &b.BCC, &b.Audience)
@@ -725,7 +725,7 @@ func (b *Block) Recipients() ItemCollection {
 
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (c *Create) Recipients() ItemCollection {
-	var dedupObjects ItemCollection
+	dedupObjects := make(ItemCollection, 0)
 	dedupObjects.Append(c.Actor)
 	dedupObjects.Append(c.Object)
 	rec, _ := ItemCollectionDeduplication(&dedupObjects, &c.To, &c.Bto, &c.CC, &c.BCC, &c.Audience)
@@ -736,7 +736,7 @@ func (c *Create) Recipients() ItemCollection {
 
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (l *Like) Recipients() ItemCollection {
-	var dedupObjects ItemCollection
+	dedupObjects := make(ItemCollection, 0)
 	dedupObjects.Append(l.Actor)
 	dedupObjects.Append(l.Object)
 	rec, _ := ItemCollectionDeduplication(&dedupObjects, &l.To, &l.Bto, &l.CC, &l.BCC, &l.Audience)
@@ -747,7 +747,7 @@ func (l *Like) Recipients() ItemCollection {
 
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (d *Dislike) Recipients() ItemCollection {
-	var dedupObjects ItemCollection
+	dedupObjects := make(ItemCollection, 0)
 	dedupObjects.Append(d.Actor)
 	dedupObjects.Append(d.Object)
 	rec, _ := ItemCollectionDeduplication(&dedupObjects, &d.To, &d.Bto, &d.CC, &d.BCC, &d.Audience)
@@ -758,7 +758,7 @@ func (d *Dislike) Recipients() ItemCollection {
 
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (u *Update) Recipients() ItemCollection {
-	var dedupObjects ItemCollection
+	dedupObjects := make(ItemCollection, 0)
 	dedupObjects.Append(u.Actor)
 	dedupObjects.Append(u.Object)
 	rec, _ := ItemCollectionDeduplication(&dedupObjects, &u.To, &u.Bto, &u.CC, &u.BCC, &u.Audience)
