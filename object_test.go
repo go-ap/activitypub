@@ -414,7 +414,7 @@ func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
 	langEn := "en-US"
 	valEn := "random"
 	langDe := "de-DE"
-	valDe := "zufällig\\n"
+	valDe := "zufällig\n"
 
 	//m := make(map[string]string)
 	//m[langEn] = valEn
