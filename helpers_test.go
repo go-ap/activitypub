@@ -8,7 +8,7 @@ import (
 func TestOnObject(t *testing.T) {
 	ob := activitystreams.ObjectNew(activitystreams.ArticleType)
 
-	err := OnObject(ob, func(o *activitystreams.Object) error {
+	err := OnObject(ob, func(o *Object) error {
 		return nil
 	})
 
@@ -16,7 +16,7 @@ func TestOnObject(t *testing.T) {
 		t.Errorf("Unexpected error returned %s", err)
 	}
 
-	err = OnObject(ob, func(o *activitystreams.Object) error {
+	err = OnObject(ob, func(o *Object) error {
 		if o.Type != ob.Type {
 			t.Errorf("In function type %s different than expected, %s", o.Type, ob.Type)
 		}
