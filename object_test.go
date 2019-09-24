@@ -1,6 +1,7 @@
 package activitystreams
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"testing"
@@ -645,6 +646,30 @@ func TestNaturalLanguageValues_UnmarshalJSON(t *testing.T) {
 		js := fmt.Sprintf(`[{"%s": "%s"}]`, lang, val)
 		n := NaturalLanguageValues{}
 		err := n.UnmarshalJSON([]byte(js))
+		if err != nil {
+			t.Errorf("Unexpected error when unmarshalling %T: %s", n, err)
+		}
+
+		if n.Count() != 1 {
+			t.Errorf("Invalid number of elements %d, expected %d", n.Count(), 1)
+		}
+		l := n.First()
+		if l.Value != "ana are mere\n" {
+			t.Errorf("Invalid %T value %q, expected %q", l, l.Value, "ana are mere\n")
+		}
+		if l.Ref != "en" {
+			t.Errorf("Invalid %T ref %q, expected %q", l, l.Ref, "en")
+		}
+	}
+	{
+		ob := make(map[string]string)
+		ob["en"] = "ana are mere\n"
+		js, err := json.Marshal(ob)
+		if err != nil {
+			t.Errorf("Unexpected error when marshalling %T: %s", ob, err)
+		}
+		n := NaturalLanguageValues{}
+		err = n.UnmarshalJSON(js)
 		if err != nil {
 			t.Errorf("Unexpected error when unmarshalling %T: %s", n, err)
 		}

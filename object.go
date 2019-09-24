@@ -259,22 +259,19 @@ func (l *LangRefValue) UnmarshalJSON(data []byte) error {
 	val, typ, _, err := jsonparser.Get(data)
 	if err != nil {
 		l.Ref = NilLangRef
-		val = bytes.Replace(val, []byte("\\\\"), []byte("\\"), -1)
-		l.Value = string(val)
+		l.Value = string(unescape(val))
 		return nil
 	}
 	switch typ {
 	case jsonparser.Object:
 		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
 			l.Ref = LangRef(key)
-			value = bytes.Replace(value, []byte("\\\\"), []byte("\\"), -1)
-			l.Value = string(value)
+			l.Value = string(unescape(value))
 			return err
 		})
 	case jsonparser.String:
 		l.Ref = NilLangRef
-		data = bytes.Replace(data, []byte("\\\\"), []byte("\\"), -1)
-		l.Value = string(data)
+		l.Value = string(unescape(data))
 	}
 
 	return nil
@@ -306,24 +303,35 @@ func (l *LangRef) UnmarshalText(data []byte) error {
 	return nil
 }
 
+func unescape(b []byte) []byte {
+	// FIMXE(marius): I feel like I'm missing something really obvious about encoding/decoding from Json regarding
+	//    escape characters, and that this function is just a hack. Be better future Marius, find the real problem!
+	b = bytes.Replace(b, []byte("\\a"), []byte("\a"), -1)
+	b = bytes.Replace(b, []byte("\\f"), []byte("\f"), -1)
+	b = bytes.Replace(b, []byte("\\n"), []byte("\n"), -1)
+	b = bytes.Replace(b, []byte("\\r"), []byte("\r"), -1)
+	b = bytes.Replace(b, []byte("\\t"), []byte("\t"), -1)
+	b = bytes.Replace(b, []byte("\\v"), []byte("\v"), -1)
+	b = bytes.Replace(b, []byte("\\\\"), []byte("\\"), -1)
+	return b
+}
+
 // UnmarshalJSON tries to load the NaturalLanguage array from the incoming json value
 func (n *NaturalLanguageValues) UnmarshalJSON(data []byte) error {
 	val, typ, _, err := jsonparser.Get(data)
 	if err != nil {
 		// try our luck if data contains an unquoted string
-		n.Append(NilLangRef, string(data))
+		n.Append(NilLangRef, string(unescape(data)))
 		return nil
 	}
 	switch typ {
 	case jsonparser.Object:
 		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
-			value = bytes.Replace(value, []byte("\\\\"), []byte("\\"), -1)
-			n.Append(LangRef(key), string(value))
+			n.Append(LangRef(key), string(unescape(value)))
 			return err
 		})
 	case jsonparser.String:
-		val = bytes.Replace(val, []byte("\\\\"), []byte("\\"), -1)
-		n.Append(NilLangRef, string(val))
+		n.Append(NilLangRef, string(unescape(val)))
 	case jsonparser.Array:
 		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 			l := LangRefValue{}
