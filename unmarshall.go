@@ -6,10 +6,12 @@ import (
 )
 
 func JSONGetItemByType(typ as.ActivityVocabularyType) (as.Item, error) {
-	if as.ObjectTypes.Contains(typ) {
+	obTyp := as.ActivityVocabularyTypes{as.ObjectType,}
+	if as.ObjectTypes.Contains(typ)  || obTyp.Contains(typ) {
 		return &Object{Parent: Parent{Type: typ}}, nil
 	}
-	if as.ActorTypes.Contains(typ) {
+	actTyp := as.ActivityVocabularyTypes{as.ActorType,}
+	if as.ActorTypes.Contains(typ) || actTyp.Contains(typ) {
 		return &actor{Parent: Parent{Type: typ}}, nil
 	}
 	return as.JSONGetItemByType(typ)
