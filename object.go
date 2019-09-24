@@ -306,13 +306,13 @@ func (l *LangRef) UnmarshalText(data []byte) error {
 func unescape(b []byte) []byte {
 	// FIMXE(marius): I feel like I'm missing something really obvious about encoding/decoding from Json regarding
 	//    escape characters, and that this function is just a hack. Be better future Marius, find the real problem!
-	b = bytes.Replace(b, []byte("\\a"), []byte("\a"), -1)
-	b = bytes.Replace(b, []byte("\\f"), []byte("\f"), -1)
-	b = bytes.Replace(b, []byte("\\n"), []byte("\n"), -1)
-	b = bytes.Replace(b, []byte("\\r"), []byte("\r"), -1)
-	b = bytes.Replace(b, []byte("\\t"), []byte("\t"), -1)
-	b = bytes.Replace(b, []byte("\\v"), []byte("\v"), -1)
-	b = bytes.Replace(b, []byte("\\\\"), []byte("\\"), -1)
+	b = bytes.ReplaceAll(b, []byte{'\\', 'a'}, []byte{'\a'})
+	b = bytes.ReplaceAll(b, []byte{'\\', 'f'}, []byte{'\f'})
+	b = bytes.ReplaceAll(b, []byte{'\\', 'n'}, []byte{'\n'})
+	b = bytes.ReplaceAll(b, []byte{'\\', 'r'}, []byte{'\r'})
+	b = bytes.ReplaceAll(b, []byte{'\\', 't'}, []byte{'\t'})
+	b = bytes.ReplaceAll(b, []byte{'\\', 'v'}, []byte{'\v'})
+	b = bytes.ReplaceAll(b, []byte{'\\', '\\'}, []byte{'\\'})
 	return b
 }
 
