@@ -202,13 +202,13 @@ var allTests = tests{
 	"object_with_url": testPair{
 		expected: true,
 		blank:    &ap.Object{},
-		result:   &ap.Object{Parent: a.Object{URL: a.IRI("http://littr.git/api/accounts/system")}},
+		result:   &ap.Object{Parent: a.Parent{URL: a.IRI("http://littr.git/api/accounts/system")}},
 	},
 	"object_with_url_collection": testPair{
 		expected: true,
 		blank:    &ap.Object{},
 		result: &ap.Object{
-			Parent: a.Object{
+			Parent: a.Parent{
 				URL: a.ItemCollection{
 					a.IRI("http://littr.git/api/accounts/system"),
 					a.IRI("http://littr.git/~system"),
@@ -220,12 +220,13 @@ var allTests = tests{
 		expected: true,
 		blank:    &ap.Object{},
 		result: &ap.Object{
-			Parent: a.Object{
+			Parent: a.Parent{
 				Type: a.ObjectType,
 				ID:   a.ObjectID("http://www.test.example/object/1"),
 				Name: a.NaturalLanguageValues{{
 					a.NilLangRef, "A Simple, non-specific object",
-				}},
+				},
+				},
 			},
 		},
 	},
@@ -240,13 +241,11 @@ var allTests = tests{
 					a.NilLangRef, "A Simple, non-specific object",
 				}},
 				Tag: a.ItemCollection{
-					&ap.Object{
-						Parent: a.Parent {
-							Name: a.NaturalLanguageValues{{
-								a.NilLangRef, "#my_tag",
-							}},
-							ID: a.ObjectID("http://example.com/tag/my_tag"),
-						},
+					&a.Object{
+						Name: a.NaturalLanguageValues{{
+							a.NilLangRef, "#my_tag",
+						}},
+						ID: a.ObjectID("http://example.com/tag/my_tag"),
 					},
 					&a.Mention{
 						Name: a.NaturalLanguageValues{{
@@ -263,7 +262,7 @@ var allTests = tests{
 		expected: true,
 		blank:    &ap.Object{},
 		result: &ap.Object{
-			Parent: a.Object{
+			Parent: a.Parent{
 				Type: a.ObjectType,
 				ID:   a.ObjectID("http://www.test.example/object/1"),
 				Replies: &a.Collection{
@@ -273,10 +272,12 @@ var allTests = tests{
 					},
 					TotalItems: 1,
 					Items: a.ItemCollection{
-						&a.Object{
-							ID:   a.ObjectID("http://www.test.example/object/1/replies/2"),
-							Type: a.ArticleType,
-							Name: a.NaturalLanguageValues{{a.NilLangRef, "Example title"}},
+						&ap.Object{
+							Parent: a.Parent{
+								ID:   a.ObjectID("http://www.test.example/object/1/replies/2"),
+								Type: a.ArticleType,
+								Name: a.NaturalLanguageValues{{a.NilLangRef, "Example title"}},
+							},
 						},
 					},
 				},
@@ -314,16 +315,18 @@ var allTests = tests{
 			},
 			TotalItems: 1,
 			OrderedItems: a.ItemCollection{
-				&a.Object{
-					ID:           a.ObjectID("http://example.com/outbox/53c6fb47"),
-					Type:         a.ArticleType,
-					Name:         a.NaturalLanguageValues{{a.NilLangRef, "Example title"}},
-					Content:      a.NaturalLanguageValues{{a.NilLangRef, "Example content!"}},
-					URL:          a.IRI("http://example.com/53c6fb47"),
-					MediaType:    a.MimeType("text/markdown"),
-					Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
-					Generator:    a.IRI("http://example.com"),
-					AttributedTo: a.IRI("http://example.com/accounts/alice"),
+				&ap.Object{
+					Parent: a.Parent{
+						ID:           a.ObjectID("http://example.com/outbox/53c6fb47"),
+						Type:         a.ArticleType,
+						Name:         a.NaturalLanguageValues{{a.NilLangRef, "Example title"}},
+						Content:      a.NaturalLanguageValues{{a.NilLangRef, "Example content!"}},
+						URL:          a.IRI("http://example.com/53c6fb47"),
+						MediaType:    a.MimeType("text/markdown"),
+						Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
+						Generator:    a.IRI("http://example.com"),
+						AttributedTo: a.IRI("http://example.com/accounts/alice"),
+					},
 				},
 			},
 		},
@@ -344,16 +347,18 @@ var allTests = tests{
 				Current:    a.IRI("http://example.com/outbox?page=2"),
 				TotalItems: 1,
 				OrderedItems: a.ItemCollection{
-					&a.Object{
-						ID:           a.ObjectID("http://example.com/outbox/53c6fb47"),
-						Type:         a.ArticleType,
-						Name:         a.NaturalLanguageValues{{a.NilLangRef, "Example title"}},
-						Content:      a.NaturalLanguageValues{{a.NilLangRef, "Example content!"}},
-						URL:          a.IRI("http://example.com/53c6fb47"),
-						MediaType:    a.MimeType("text/markdown"),
-						Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
-						Generator:    a.IRI("http://example.com"),
-						AttributedTo: a.IRI("http://example.com/accounts/alice"),
+					&ap.Object{
+						Parent: a.Parent{
+							ID:           a.ObjectID("http://example.com/outbox/53c6fb47"),
+							Type:         a.ArticleType,
+							Name:         a.NaturalLanguageValues{{a.NilLangRef, "Example title"}},
+							Content:      a.NaturalLanguageValues{{a.NilLangRef, "Example content!"}},
+							URL:          a.IRI("http://example.com/53c6fb47"),
+							MediaType:    a.MimeType("text/markdown"),
+							Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
+							Generator:    a.IRI("http://example.com"),
+							AttributedTo: a.IRI("http://example.com/accounts/alice"),
+						},
 					},
 				},
 			},
@@ -380,27 +385,31 @@ var allTests = tests{
 				Type: a.CreateType,
 			},
 			Actor: a.IRI("https://littr.git/api/accounts/anonymous"),
-			Object: &a.Object{
-				Type:         a.NoteType,
-				AttributedTo: a.IRI("https://littr.git/api/accounts/anonymous"),
-				InReplyTo:    a.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff"),
-				Content:      a.NaturalLanguageValues{{a.NilLangRef, "<p>Hello world</p>"}},
-				To:           a.ItemCollection{a.IRI("https://www.w3.org/ns/activitystreams#Public")},
+			Object: &ap.Object{
+				Parent: a.Parent{
+					Type:         a.NoteType,
+					AttributedTo: a.IRI("https://littr.git/api/accounts/anonymous"),
+					InReplyTo:    a.ItemCollection{a.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff")},
+					Content:      a.NaturalLanguageValues{{a.NilLangRef, "<p>Hello world</p>"}},
+					To:           a.ItemCollection{a.IRI("https://www.w3.org/ns/activitystreams#Public")},
+				},
 			},
 		},
 	},
 	"like_activity_with_iri_actor": {
 		expected: true,
 		blank:    &a.Like{},
-		result:   &a.Like{
+		result: &a.Like{
 			Parent: a.Parent{
 				Type:      a.LikeType,
 				Published: time.Date(2018, time.September, 6, 15, 15, 9, 0, zLoc),
 			},
 			Actor: a.IRI("https://littr.git/api/accounts/24d4b96f"),
-			Object: &a.Article{
-				ID:   a.ObjectID("https://littr.git/api/accounts/ana/liked/7ca154ff"),
-				Type: a.ArticleType,
+			Object: &ap.Object{
+				Parent: a.Article{
+					ID:   a.ObjectID("https://littr.git/api/accounts/ana/liked/7ca154ff"),
+					Type: a.ArticleType,
+				},
 			},
 		},
 	},
@@ -408,7 +417,7 @@ var allTests = tests{
 		expected: true,
 		blank:    &ap.Object{},
 		result: &ap.Object{
-			Parent: a.Object{
+			Parent: a.Parent{
 				Type: a.ObjectType,
 				ID:   a.ObjectID("http://www.test.example/object/1"),
 				To: a.ItemCollection{
@@ -447,7 +456,7 @@ func getFileContents(path string) ([]byte, error) {
 	return data, nil
 }
 
-func Test_ActivityPubUnmarshall(t *testing.T) {
+func Test_ActivityPubUnmarshal(t *testing.T) {
 	var err error
 
 	var f = t.Errorf
