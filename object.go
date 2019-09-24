@@ -647,11 +647,11 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 		o.Bto = bto
 	}
 	cc := JSONGetItems(data, "cc")
-	if cc != nil {
+	if len(cc) > 0 {
 		o.CC = cc
 	}
 	bcc := JSONGetItems(data, "bcc")
-	if bcc != nil {
+	if len(bcc) > 0 {
 		o.BCC = bcc
 	}
 	replies := JSONGetItem(data, "replies")
@@ -659,7 +659,7 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 		o.Replies = replies
 	}
 	tag := JSONGetItems(data, "tag")
-	if tag != nil {
+	if len(tag) > 0 {
 		o.Tag = tag
 	}
 	return nil
