@@ -288,11 +288,13 @@ var allTests = tests{
 		expected: true,
 		blank:    &ap.Person{},
 		result: &ap.Person{
-			Parent: a.Parent{
-				ID:   a.ObjectID("http://example.com/accounts/ana"),
-				Type: a.PersonType,
-				Name: a.NaturalLanguageValues{{a.NilLangRef, "ana"}},
-				URL:  a.IRI("http://example.com/accounts/ana"),
+			Parent: ap.Parent{
+				Parent: a.Parent{
+					ID:   a.ObjectID("http://example.com/accounts/ana"),
+					Type: a.PersonType,
+					Name: a.NaturalLanguageValues{{a.NilLangRef, "ana"}},
+					URL:  a.IRI("http://example.com/accounts/ana"),
+				},
 			},
 			PreferredUsername: a.NaturalLanguageValues{{a.NilLangRef, "Ana"}},
 			Outbox: &a.OrderedCollection{

@@ -15,11 +15,11 @@ type Source struct {
 	MediaType as.MimeType `jsonld:"mediaType"`
 }
 
-type Parent = as.Object
+type Parent = Object
 
 // Object
 type Object struct {
-	Parent
+	as.Parent
 	// Source property is intended to convey some sort of source from which the content markup was derived,
 	// as a form of provenance, or to support future editing by clients.
 	// In general, clients do the conversion from source to content, not the other way around.

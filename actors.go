@@ -37,7 +37,7 @@ type Endpoints struct {
 // Actors are retrieved like any other Object in ActivityPub.
 // Like other ActivityStreams objects, actors have an id, which is a URI.
 type actor struct {
-	as.Parent
+	Parent
 	// A reference to an [ActivityStreams] OrderedCollection comprised of all the messages received by the actor;
 	// see 5.2 Inbox.
 	Inbox as.Item `jsonld:"inbox,omitempty"`
@@ -93,7 +93,7 @@ func actorNew(id as.ObjectID, typ as.ActivityVocabularyType) *actor {
 		typ = as.ActorType
 	}
 
-	a := actor{Parent: as.Object{ID: id, Type: typ}}
+	a := actor{Parent: Object{Parent: as.Parent{ID: id, Type: typ}}}
 	a.Name = as.NaturalLanguageValuesNew()
 	a.Content = as.NaturalLanguageValuesNew()
 	a.Summary = as.NaturalLanguageValuesNew()
@@ -155,8 +155,12 @@ func (a *actor) UnmarshalJSON(data []byte) error {
 func ToPerson(it as.Item) (*Person, error) {
 	switch i := it.(type) {
 	case *as.Object:
-		return &Person{Parent: *i}, nil
+		return &Person{Parent: Object{Parent: *i}}, nil
 	case as.Object:
+		return &Person{Parent: Object{Parent: i}}, nil
+	case *Object:
+		return &Person{Parent: *i}, nil
+	case Object:
 		return &Person{Parent: i}, nil
 	case *actor:
 		return i, nil
