@@ -50,15 +50,9 @@ type actor struct {
 	// A link to an [ActivityStreams] collection of the actors that follow this actor;
 	// see 5.3 Followers Collection.
 	Followers as.Item `jsonld:"followers,omitempty"`
-	// A link to an [ActivityStreams] collection of the actors that follow this actor;
+	// A link to an [ActivityStreams] collection of objects this actor has liked;
 	// see 5.5 Liked Collection.
 	Liked as.Item `jsonld:"liked,omitempty"`
-	// A link to an [ActivityStreams] collection of the actors that follow this actor;
-	// see 5.7 Likes Collection.
-	Likes as.Item `jsonld:"likes,omitempty"`
-	// A link to an [ActivityStreams] collection of the actors that follow this actor;
-	// see 5.8 Shares Collection
-	Shares as.Item `jsonld:"shares,omitempty"`
 	// A short username which may be used to refer to the actor, with no uniqueness guarantees.
 	PreferredUsername as.NaturalLanguageValues `jsonld:"preferredUsername,omitempty,collapsible"`
 	// A json object which maps additional (typically server/domain-wide) endpoints which may be useful either

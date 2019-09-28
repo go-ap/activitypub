@@ -20,6 +20,14 @@ type Parent = Object
 // Object
 type Object struct {
 	as.Parent
+	// This is a list of all Like activities with this object as the object property, added as a side effect.
+	// The likes collection MUST be either an OrderedCollection or a Collection and MAY be filtered on privileges
+	// of an authenticated user or as appropriate when no authentication is given.
+	Likes as.Item `jsonld:"likes,omitempty"`
+	// This is a list of all Announce activities with this object as the object property, added as a side effect.
+	// The shares collection MUST be either an OrderedCollection or a Collection and MAY be filtered on privileges
+	// of an authenticated user or as appropriate when no authentication is given.
+	Shares as.Item `jsonld:"shares,omitempty"`
 	// Source property is intended to convey some sort of source from which the content markup was derived,
 	// as a form of provenance, or to support future editing by clients.
 	// In general, clients do the conversion from source to content, not the other way around.
@@ -52,6 +60,8 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 		as.ItemTyperFunc = JSONGetItemByType
 	}
 	o.Parent.UnmarshalJSON(data)
+	o.Likes = as.JSONGetItem(data, "likes")
+	o.Shares = as.JSONGetItem(data, "shares")
 	o.Source = GetAPSource(data)
 	return nil
 }
