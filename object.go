@@ -6,6 +6,7 @@ import (
 	"github.com/buger/jsonparser"
 	json "github.com/go-ap/jsonld"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -200,7 +201,7 @@ func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 	if len(n) == 1 {
 		v := n[0]
 		if v.Ref == NilLangRef {
-			return json.Marshal(v.Value)
+			return v.MarshalJSON()
 		}
 	}
 	mm := make(map[LangRef]string)
@@ -257,10 +258,10 @@ func (l LangRefValue) String() string {
 
 // UnmarshalJSON implements the JsonEncoder interface
 func (l *LangRefValue) UnmarshalJSON(data []byte) error {
-	val, typ, _, err := jsonparser.Get(data)
+	_, typ, _, err := jsonparser.Get(data)
 	if err != nil {
 		l.Ref = NilLangRef
-		l.Value = string(unescape(val))
+		l.Value = string(unescape(data))
 		return nil
 	}
 	switch typ {
@@ -281,6 +282,36 @@ func (l *LangRefValue) UnmarshalJSON(data []byte) error {
 // UnmarshalText implements the TextEncoder interface
 func (l *LangRefValue) UnmarshalText(data []byte) error {
 	return nil
+}
+
+// MarshalJSON serializes the LangRefValue into JSON
+func (l LangRefValue) MarshalJSON() ([]byte, error) {
+	buf := bytes.Buffer{}
+	if l.Ref != NilLangRef {
+		if l.Value == "" {
+			return nil, nil
+		}
+		buf.WriteByte('"')
+		buf.WriteString(string(l.Ref))
+		buf.Write([]byte{'"', ':'})
+	}
+	buf.WriteString(strconv.Quote(l.Value))
+	return buf.Bytes(), nil
+}
+
+// MarshalText serializes the LangRefValue into JSON
+func (l LangRefValue) MarshalText() ([]byte, error) {
+	if l.Ref != NilLangRef && l.Value == "" {
+		return nil, nil
+	}
+	buf := bytes.Buffer{}
+	buf.WriteString(l.Value)
+	if l.Ref != NilLangRef {
+		buf.WriteByte('[')
+		buf.WriteString(string(l.Ref))
+		buf.WriteByte(']')
+	}
+	return buf.Bytes(), nil
 }
 
 // UnmarshalJSON implements the JsonEncoder interface
@@ -322,7 +353,7 @@ func (n *NaturalLanguageValues) UnmarshalJSON(data []byte) error {
 	val, typ, _, err := jsonparser.Get(data)
 	if err != nil {
 		// try our luck if data contains an unquoted string
-		n.Append(NilLangRef, string(unescape(data)))
+		n.Append(NilLangRef, string(data))
 		return nil
 	}
 	switch typ {

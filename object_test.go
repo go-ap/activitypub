@@ -190,41 +190,6 @@ func TestActivityVocabularyTypes_Contains(t *testing.T) {
 	}
 }
 
-func TestMarshalJSON(t *testing.T) {
-	m := NaturalLanguageValues{
-		{
-			"en", "test",
-		},
-		{
-			"de", "test",
-		},
-	}
-	result, err := m.MarshalJSON()
-	if err != nil {
-		t.Errorf("Failed marshaling '%v'", err)
-	}
-	mRes := "{\"de\":\"test\",\"en\":\"test\"}"
-	if string(result) != mRes {
-		t.Errorf("Different results '%v' vs. '%v'", string(result), mRes)
-	}
-	//n := NaturalLanguageValuesNew()
-	//result, err := n.MarshalJSON()
-
-	s := make(map[LangRef]string)
-	s["en"] = "test"
-	n1 := NaturalLanguageValues{{
-		"en", "test",
-	}}
-	result1, err1 := n1.MarshalJSON()
-	if err1 != nil {
-		t.Errorf("Failed marshaling '%v'", err1)
-	}
-	mRes1 := "\"test\""
-	if string(result1) != mRes1 {
-		t.Errorf("Different results '%v' vs. '%v'", string(result1), mRes1)
-	}
-}
-
 func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
 	p := NaturalLanguageValues{
 		{
@@ -254,9 +219,85 @@ func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
 	if err1 != nil {
 		t.Errorf("Error: '%s'", err1)
 	}
-	txt := "\"the test\""
+	txt := `{"en":"the test"}`
 	if txt != string(out1) {
 		t.Errorf("Different marshal result '%s', instead of '%s'", out1, txt)
+	}
+}
+
+func TestLangRefValue_MarshalJSON(t *testing.T) {
+	{
+		tst := LangRefValue{
+			Ref:   NilLangRef,
+			Value: "test",
+		}
+		j, err := tst.MarshalJSON()
+		if err != nil {
+			t.Errorf("Error: %s", err)
+		}
+		expected := `"test"`
+		if string(j) != expected {
+			t.Errorf("Different marshal result '%s', expected '%s'", j, expected)
+		}
+	}
+	{
+		tst := LangRefValue{
+			Ref:   "en",
+			Value: "test",
+		}
+		j, err := tst.MarshalJSON()
+		if err != nil {
+			t.Errorf("Error: %s", err)
+		}
+		expected := `"en":"test"`
+		if string(j) != expected {
+			t.Errorf("Different marshal result '%s', expected '%s'", j, expected)
+		}
+	}
+	{
+		tst := LangRefValue{
+			Ref:   "en",
+			Value: "test\nwith characters\tneeding escaping\r\n",
+		}
+		j, err := tst.MarshalJSON()
+		if err != nil {
+			t.Errorf("Error: %s", err)
+		}
+		expected := `"en":"test\nwith characters\tneeding escaping\r\n"`
+		if string(j) != expected {
+			t.Errorf("Different marshal result '%s', expected '%s'", j, expected)
+		}
+	}
+}
+
+func TestLangRefValue_MarshalText(t *testing.T) {
+	{
+		tst := LangRefValue{
+			Ref:   NilLangRef,
+			Value: "test",
+		}
+		j, err := tst.MarshalText()
+		if err != nil {
+			t.Errorf("Error: %s", err)
+		}
+		expected := "test"
+		if string(j) != expected {
+			t.Errorf("Different marshal result '%s', expected '%s'", j, expected)
+		}
+	}
+	{
+		tst := LangRefValue{
+			Ref:   "en",
+			Value: "test",
+		}
+		j, err := tst.MarshalText()
+		if err != nil {
+			t.Errorf("Error: %s", err)
+		}
+		expected := "test[en]"
+		if string(j) != expected {
+			t.Errorf("Different marshal result '%s', expected '%s'", j, expected)
+		}
 	}
 }
 
@@ -644,6 +685,40 @@ func TestNaturalLanguageValues_Get(t *testing.T) {
 }
 
 func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
+	{
+		m := NaturalLanguageValues{
+			{
+				"en", "test",
+			},
+			{
+				"de", "test",
+			},
+		}
+		result, err := m.MarshalJSON()
+		if err != nil {
+			t.Errorf("Failed marshaling '%v'", err)
+		}
+		mRes := "{\"de\":\"test\",\"en\":\"test\"}"
+		if string(result) != mRes {
+			t.Errorf("Different results '%v' vs. '%v'", string(result), mRes)
+		}
+		//n := NaturalLanguageValuesNew()
+		//result, err := n.MarshalJSON()
+
+		s := make(map[LangRef]string)
+		s["en"] = "test"
+		n1 := NaturalLanguageValues{{
+			"en", "test",
+		}}
+		result1, err1 := n1.MarshalJSON()
+		if err1 != nil {
+			t.Errorf("Failed marshaling '%v'", err1)
+		}
+		mRes1 := `{"en":"test"}`
+		if string(result1) != mRes1 {
+			t.Errorf("Different results '%v' vs. '%v'", string(result1), mRes1)
+		}
+	}
 	{
 		nlv := LangRefValue{
 			Ref:   NilLangRef,
