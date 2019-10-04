@@ -198,7 +198,8 @@ func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 		return json.Marshal(nil)
 	}
 	if len(n) == 1 {
-		for _, v := range n {
+		v := n[0]
+		if v.Ref == NilLangRef {
 			return json.Marshal(v.Value)
 		}
 	}
@@ -312,7 +313,7 @@ func unescape(b []byte) []byte {
 	b = bytes.ReplaceAll(b, []byte{'\\', 'r'}, []byte{'\r'})
 	b = bytes.ReplaceAll(b, []byte{'\\', 't'}, []byte{'\t'})
 	b = bytes.ReplaceAll(b, []byte{'\\', 'v'}, []byte{'\v'})
-	b = bytes.ReplaceAll(b, []byte{'\\', '\\'}, []byte{'\\'})
+	b = bytes.ReplaceAll(b, []byte{'\\', '\\'}, []byte{'\\'}) // this should cover the case of \\u -> \u
 	return b
 }
 

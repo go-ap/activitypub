@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strconv"
 	"testing"
 )
 
@@ -612,7 +613,22 @@ func TestNaturalLanguageValueNew(t *testing.T) {
 }
 
 func TestNaturalLanguageValue_MarshalText(t *testing.T) {
-	t.Skipf("TODO")
+	nlv := LangRefValue{
+		Ref:   "en",
+		Value: "test",
+	}
+	tst := NaturalLanguageValues{nlv}
+	j, err := tst.MarshalText()
+	if err != nil {
+		t.Errorf("Error marshalling: %s", err)
+	}
+	if j == nil {
+		t.Errorf("Error marshalling: nil value returned")
+	}
+	expected := fmt.Sprintf("\"%s[%s]\"", nlv.Value, nlv.Ref)
+	if string(j) != expected {
+		t.Errorf("Wrong value: %s, expected %s", j, expected)
+	}
 }
 
 func TestNaturalLanguageValues_Append(t *testing.T) {
@@ -628,7 +644,86 @@ func TestNaturalLanguageValues_Get(t *testing.T) {
 }
 
 func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
+	{
+		nlv := LangRefValue{
+			Ref:   NilLangRef,
+			Value: "test",
+		}
+		tst := NaturalLanguageValues{nlv}
+		j, err := tst.MarshalJSON()
+		if err != nil {
+			t.Errorf("Error marshalling: %s", err)
+		}
+		if j == nil {
+			t.Errorf("Error marshalling: nil value returned")
+		}
+		expected := fmt.Sprintf("\"%s\"", nlv.Value)
+		if string(j) != expected {
+			t.Errorf("Wrong value: %s, expected %s", j, expected)
+		}
+	}
+	{
+		nlv := LangRefValue{
+			Ref:   "en",
+			Value: "test",
+		}
+		tst := NaturalLanguageValues{nlv}
+		j, err := tst.MarshalJSON()
+		if err != nil {
+			t.Errorf("Error marshalling: %s", err)
+		}
+		if j == nil {
+			t.Errorf("Error marshalling: nil value returned")
+		}
+		expected := fmt.Sprintf("{\"%s\":\"%s\"}", nlv.Ref, nlv.Value)
+		if string(j) != expected {
+			t.Errorf("Wrong value: %s, expected %s", j, expected)
+		}
+	}
+	{
+		nlvEn := LangRefValue{
+			Ref:   "en",
+			Value: "test",
+		}
+		nlvFr := LangRefValue{
+			Ref:   "fr",
+			Value: "teste",
+		}
+		tst := NaturalLanguageValues{nlvEn, nlvFr}
+		j, err := tst.MarshalJSON()
+		if err != nil {
+			t.Errorf("Error marshalling: %s", err)
+		}
+		if j == nil {
+			t.Errorf("Error marshalling: nil value returned")
+		}
+		expected := fmt.Sprintf("{\"%s\":\"%s\",\"%s\":\"%s\"}", nlvEn.Ref, nlvEn.Value, nlvFr.Ref, nlvFr.Value)
+		if string(j) != expected {
+			t.Errorf("Wrong value: %s, expected %s", j, expected)
+		}
+	}
+	{
+		nlvEn := LangRefValue{
+			Ref:   "en",
+			Value: "test\nwith new line",
+		}
+		nlvFr := LangRefValue{
+			Ref:   "fr",
+			Value: "teste\navec une ligne nouvelle",
+		}
+		tst := NaturalLanguageValues{nlvEn, nlvFr}
+		j, err := tst.MarshalJSON()
+		if err != nil {
+			t.Errorf("Error marshalling: %s", err)
+		}
+		if j == nil {
+			t.Errorf("Error marshalling: nil value returned")
+		}
+		expected := fmt.Sprintf("{\"%s\":%s,\"%s\":%s}", nlvEn.Ref, strconv.Quote(nlvEn.Value), nlvFr.Ref, strconv.Quote(nlvFr.Value))
+		if string(j) != expected {
+			t.Errorf("Wrong value: %s, expected %s", j, expected)
+		}
+	}
 }
 
 func TestNaturalLanguageValues_MarshalText(t *testing.T) {
