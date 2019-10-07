@@ -67,16 +67,18 @@ func JSONGetString(data []byte, prop string) string {
 func JSONGetNaturalLanguageField(data []byte, prop string) NaturalLanguageValues {
 	n := NaturalLanguageValues{}
 	val, typ, _, err := jsonparser.Get(data, prop)
-	if err != nil {
+	if err != nil || val == nil {
 		return nil
 	}
 	switch typ {
 	case jsonparser.Object:
-		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
+		jsonparser.ObjectEach(val, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
 			if dataType == jsonparser.String {
 				l := LangRefValue{}
 				if err := l.UnmarshalJSON(value); err == nil {
-					n = append(n, l)
+					if l.Ref != NilLangRef || len(l.Value) > 0 {
+						n = append(n, l)
+					}
 				}
 			}
 			return err
