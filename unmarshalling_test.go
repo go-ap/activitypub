@@ -131,9 +131,9 @@ func TestUnmarshalJSON(t *testing.T) {
 	if err != nil {
 		t.Errorf("invalid unmarshalling %s", err)
 	}
-
-	o := *i.(*Object)
-	validateEmptyObject(o, t)
+	if i != nil {
+		t.Errorf("invalid unmarshalling, expected nil")
+	}
 }
 
 func TestJSONGetDuration(t *testing.T) {

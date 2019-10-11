@@ -6,6 +6,7 @@
   "tag": [
     {
       "name": "#my_tag",
+      "type": "Mention",
       "ID":  "http://example.com/tag/my_tag"
     },
     {

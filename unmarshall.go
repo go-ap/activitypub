@@ -37,7 +37,7 @@ func JSONGetType(data []byte) ActivityVocabularyType {
 	t, err := jsonparser.GetString(data, "type")
 	typ := ActivityVocabularyType(t)
 	if err != nil {
-		return ActivityVocabularyType("")
+		return ""
 	}
 	return typ
 }
@@ -111,9 +111,12 @@ func JSONUnmarshalToItem(data []byte) Item {
 		// try to see if it's an IRI
 		return IRI(data)
 	}
+	if ItemTyperFunc == nil {
+		return nil
+	}
 
 	i, err := ItemTyperFunc(JSONGetType(data))
-	if err != nil {
+	if err != nil || i == nil {
 		return nil
 	}
 	p := reflect.PtrTo(reflect.TypeOf(i))
@@ -362,7 +365,7 @@ func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
 		return &View{Parent:Parent{Type: typ}}, nil
 	case "":
 		// when no type is available use a plain Object
-		return &Object{}, nil
+		return nil, nil
 	}
 	return nil, fmt.Errorf("unrecognized ActivityStreams type %s", typ)
 }
