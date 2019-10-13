@@ -1128,14 +1128,6 @@ func TestTravel_GetID(t *testing.T) {
 	}
 }
 
-func TestUndo_GetID(t *testing.T) {
-	a := UndoNew("test", Object{})
-
-	if *a.GetID() != "test" {
-		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
-	}
-}
-
 func TestUpdate_GetID(t *testing.T) {
 	a := UpdateNew("test", Object{})
 
@@ -1343,13 +1335,7 @@ func TestTravel_IsObject(t *testing.T) {
 		t.Errorf("%T should respond true to IsObject", a)
 	}
 }
-func TestUndo_IsObject(t *testing.T) {
-	a := UndoNew("test", Object{})
 
-	if !a.IsObject() {
-		t.Errorf("%T should respond true to IsObject", a)
-	}
-}
 func TestUpdate_IsObject(t *testing.T) {
 	a := UpdateNew("test", Object{})
 
@@ -1549,13 +1535,7 @@ func TestTravel_IsLink(t *testing.T) {
 		t.Errorf("%T should respond false to IsLink", a)
 	}
 }
-func TestUndo_IsLink(t *testing.T) {
-	a := UndoNew("test", Object{})
 
-	if a.IsLink() {
-		t.Errorf("%T should respond false to IsLink", a)
-	}
-}
 func TestUpdate_IsLink(t *testing.T) {
 	a := UpdateNew("test", Object{})
 
@@ -1755,13 +1735,7 @@ func TestTravel_GetLink(t *testing.T) {
 		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
 	}
 }
-func TestUndo_GetLink(t *testing.T) {
-	a := UndoNew("test", Object{})
 
-	if a.GetLink() != "test" {
-		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
-	}
-}
 func TestUpdate_GetLink(t *testing.T) {
 	a := UpdateNew("test", Object{})
 
@@ -1961,13 +1935,7 @@ func TestTravel_GetType(t *testing.T) {
 		t.Errorf("GetType should return %q for %T, received %q", TravelType, a, a.GetType())
 	}
 }
-func TestUndo_GetType(t *testing.T) {
-	a := UndoNew("test", Object{})
 
-	if a.GetType() != UndoType {
-		t.Errorf("GetType should return %q for %T, received %q", UndoType, a, a.GetType())
-	}
-}
 func TestUpdate_GetType(t *testing.T) {
 	a := UpdateNew("test", Object{})
 

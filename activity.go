@@ -345,7 +345,7 @@ type (
 	// some previously performed action (for instance, a person may have previously "liked" an article but,
 	// for whatever reason, might choose to undo that like at some later point in time).
 	// The target and origin typically have no defined meaning.
-	Undo Activity
+	Undo = Activity
 
 	// Update indicates that the actor has updated the object. Note, however, that this vocabulary does not define a mechanism
 	// for describing the actual set of modifications made to object.
@@ -1442,31 +1442,6 @@ func (t Travel) IsLink() bool {
 	return false
 }
 
-// GetID returns the ObjectID corresponding to the Undo object
-func (u Undo) GetID() *ObjectID {
-	return Activity(u).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Unto object
-func (u Undo) GetLink() IRI {
-	return IRI(u.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (u Undo) GetType() ActivityVocabularyType {
-	return u.Type
-}
-
-// IsObject returns true for Undo objects
-func (u Undo) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Undo objects
-func (u Undo) IsLink() bool {
-	return false
-}
-
 // GetID returns the ObjectID corresponding to the Update object
 func (u Update) GetID() *ObjectID {
 	return Activity(u).GetID()
@@ -1752,14 +1727,6 @@ func ToActivity(it Item) (*Activity, error) {
 		a = Activity(*i)
 		return &a, nil
 	case TentativeReject:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Undo:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Undo:
 		var a Activity
 		a = Activity(i)
 		return &a, nil
