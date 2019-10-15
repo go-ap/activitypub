@@ -6,7 +6,8 @@
   "tag": [
     {
       "name": "#my_tag",
-      "id":  "http://example.com/tag/my_tag"
+      "id":  "http://example.com/tag/my_tag",
+      "type": "Mention"
     },
     {
       "name": "@ana",

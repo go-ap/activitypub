@@ -241,11 +241,12 @@ var allTests = tests{
 					a.NilLangRef, "A Simple, non-specific object",
 				}},
 				Tag: a.ItemCollection{
-					&a.Object{
+					&a.Mention{
 						Name: a.NaturalLanguageValues{{
 							a.NilLangRef, "#my_tag",
 						}},
 						ID: a.ObjectID("http://example.com/tag/my_tag"),
+						Type: a.MentionType,
 					},
 					&a.Mention{
 						Name: a.NaturalLanguageValues{{
@@ -511,4 +512,9 @@ func Test_ActivityPubUnmarshal(t *testing.T) {
 			//}
 		})
 	}
+}
+
+func TestMain (m *testing.M) {
+	a.ItemTyperFunc = ap.JSONGetItemByType
+	m.Run()
 }
