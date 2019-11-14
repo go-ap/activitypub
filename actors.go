@@ -26,9 +26,9 @@ type Endpoints struct {
 	// this endpoint specifies a URI at which browser-authenticated users may authorize a client's public
 	// key for client to server interactions.
 	SignClientKey as.Item `jsonld:"signClientKey,omitempty"`
-	// SharedInbox If Linked Data Signatures and HTTP Signatures are being used for authentication and authorization,
-	// this endpoint specifies a URI at which a client key may be signed by the actor's key for a time window to
-	// act on behalf of the actor in interacting with foreign servers.
+	// SharedInbox An optional endpoint used for wide delivery of publicly addressed activities and activities sent to followers.
+	// SharedInbox endpoints SHOULD also be publicly readable OrderedCollection objects containing objects addressed to the
+	// Public special collection. Reading from the sharedInbox endpoint MUST NOT present objects which are not addressed to the Public endpoint.
 	SharedInbox as.Item `jsonld:"sharedInbox,omitempty"`
 }
 
