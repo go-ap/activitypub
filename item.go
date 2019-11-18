@@ -1,7 +1,5 @@
 package activitystreams
 
-import "strings"
-
 // ItemCollection represents an array of items
 type ItemCollection []Item
 
@@ -70,7 +68,7 @@ func(i ItemCollection) Contains(r IRI) bool {
 		return false
 	}
 	for _, iri := range i {
-		if strings.ToLower(r.String()) == strings.ToLower(iri.GetLink().String()) {
+		if r.Equals(iri.GetLink(), false) {
 			return true
 		}
 	}

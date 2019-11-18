@@ -3,7 +3,6 @@ package activitystreams
 import (
 	"errors"
 	"github.com/buger/jsonparser"
-	"strings"
 )
 
 var CollectionTypes = ActivityVocabularyTypes{
@@ -379,7 +378,7 @@ func(c Collection) Contains(r IRI) bool {
 		return false
 	}
 	for _, iri := range c.Items {
-		if strings.ToLower(r.String()) == strings.ToLower(iri.GetLink().String()) {
+		if r.Equals(iri.GetLink(), false) {
 			return true
 		}
 	}
@@ -392,7 +391,7 @@ func(o OrderedCollection) Contains(r IRI) bool {
 		return false
 	}
 	for _, iri := range o.OrderedItems {
-		if strings.ToLower(r.String()) == strings.ToLower(iri.GetLink().String()) {
+		if r.Equals(iri.GetLink(), false) {
 			return true
 		}
 	}
@@ -405,7 +404,7 @@ func(c CollectionPage) Contains(r IRI) bool {
 		return false
 	}
 	for _, iri := range c.Items {
-		if strings.ToLower(r.String()) == strings.ToLower(iri.GetLink().String()) {
+		if r.Equals(iri.GetLink(), false) {
 			return true
 		}
 	}
@@ -418,7 +417,7 @@ func(o OrderedCollectionPage) Contains(r IRI) bool {
 		return false
 	}
 	for _, iri := range o.OrderedItems {
-		if strings.ToLower(r.String()) == strings.ToLower(iri.GetLink().String()) {
+		if r.Equals(iri.GetLink(), false) {
 			return true
 		}
 	}
