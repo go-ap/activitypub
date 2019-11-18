@@ -295,6 +295,7 @@ func (l LangRefValue) MarshalJSON() ([]byte, error) {
 		buf.WriteString(string(l.Ref))
 		buf.Write([]byte{'"', ':'})
 	}
+	l.Value = string(unescape([]byte(l.Value)))
 	buf.WriteString(strconv.Quote(l.Value))
 	return buf.Bytes(), nil
 }
@@ -344,6 +345,7 @@ func unescape(b []byte) []byte {
 	b = bytes.ReplaceAll(b, []byte{'\\', 'r'}, []byte{'\r'})
 	b = bytes.ReplaceAll(b, []byte{'\\', 't'}, []byte{'\t'})
 	b = bytes.ReplaceAll(b, []byte{'\\', 'v'}, []byte{'\v'})
+	b = bytes.ReplaceAll(b, []byte{'\\', '"'}, []byte{'"'})
 	b = bytes.ReplaceAll(b, []byte{'\\', '\\'}, []byte{'\\'}) // this should cover the case of \\u -> \u
 	return b
 }
@@ -353,13 +355,13 @@ func (n *NaturalLanguageValues) UnmarshalJSON(data []byte) error {
 	val, typ, _, err := jsonparser.Get(data)
 	if err != nil {
 		// try our luck if data contains an unquoted string
-		n.Append(NilLangRef, string(data))
+		n.Append(NilLangRef, string(unescape(data)))
 		return nil
 	}
 	switch typ {
 	case jsonparser.Object:
-		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
-			n.Append(LangRef(key), string(unescape(value)))
+		jsonparser.ObjectEach(data, func(key []byte, val []byte, dataType jsonparser.ValueType, offset int) error {
+			n.Append(LangRef(key), string(unescape(val)))
 			return err
 		})
 	case jsonparser.String:
