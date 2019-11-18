@@ -69,7 +69,7 @@ func (i IRIs) Contains(r IRI) bool {
 		return false
 	}
 	for _, iri := range i {
-		if strings.ToLower(r.String()) == strings.ToLower(iri.String()) {
+		if r.Equals(iri, false) {
 			return true
 		}
 	}
