@@ -2,6 +2,7 @@ package activitystreams
 
 import (
 	"net/url"
+	"path"
 	"strings"
 )
 
@@ -94,7 +95,7 @@ func (i IRI) Equals(with IRI, checkScheme bool) bool {
 	if strings.ToLower(u.Host) != strings.ToLower(uw.Host) {
 		return false
 	}
-	if u.Path != uw.Path {
+	if path.Clean(u.Path) != path.Clean(uw.Path) {
 		return false
 	}
 	uq := u.Query()
@@ -124,4 +125,29 @@ func (i IRI) Equals(with IRI, checkScheme bool) bool {
 		}
 	}
 	return true
+}
+
+func (i IRI) Contains(what IRI, checkScheme bool) bool {
+	u, e := i.URL()
+	uw, ew := what.URL()
+	if e != nil || ew != nil {
+		return strings.Contains(i.String(), what.String())
+	}
+	if checkScheme {
+		if u.Scheme != uw.Scheme {
+			return false
+		}
+	}
+	if u.Host != uw.Host {
+		return false
+	}
+	p := u.Path
+	if p != "" {
+		p = path.Clean(p)
+	}
+	pw := uw.Path
+	if pw != "" {
+		pw = path.Clean(pw)
+	}
+	return strings.Contains(p, pw)
 }
