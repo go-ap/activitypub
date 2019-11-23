@@ -382,7 +382,7 @@ func (n *NaturalLanguageValues) UnmarshalText(data []byte) error {
 	if data[0] == '"' {
 		// a quoted string - loading it to c.URL
 		if data[len(data)-1] != '"' {
-			return fmt.Errorf("invalid string value when unmarshalling %T value", n)
+			return fmt.Errorf("invalid string value when unmarshaling %T value", n)
 		}
 		n.Append(LangRef(NilLangRef), string(data[1:len(data)-1]))
 	}
@@ -460,11 +460,11 @@ type object struct {
 	// To identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ItemCollection `jsonld:"to,omitempty"`
 	// Bto identifies anActivity Pub Object that is part of the private primary audience of this Activity Pub Object.
-	Bto ItemCollection `jsonld:"bto,omitempty"`
+	Bto ItemCollection `jsonld:"bto,omitempty,nomarshal"`
 	// CC identifies anActivity Pub Object that is part of the public secondary audience of this Activity Pub Object.
 	CC ItemCollection `jsonld:"cc,omitempty"`
 	// BCC identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
-	BCC ItemCollection `jsonld:"bcc,omitempty"`
+	BCC ItemCollection `jsonld:"bcc,omitempty,nomarshal"`
 	// Duration when the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	// the duration property indicates the object's approximate duration.
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],

@@ -239,34 +239,34 @@ func TestPerson_GetType(t *testing.T) {
 
 func validateEmptyPerson(p Person, t *testing.T) {
 	if p.ID != "" {
-		t.Errorf("Unmarshalled object %T should have empty ID, received %q", p, p.ID)
+		t.Errorf("Unmarshaled object %T should have empty ID, received %q", p, p.ID)
 	}
 	if p.Type != "" {
-		t.Errorf("Unmarshalled object %T should have empty Type, received %q", p, p.Type)
+		t.Errorf("Unmarshaled object %T should have empty Type, received %q", p, p.Type)
 	}
 	if p.AttributedTo != nil {
-		t.Errorf("Unmarshalled object %T should have empty AttributedTo, received %q", p, p.AttributedTo)
+		t.Errorf("Unmarshaled object %T should have empty AttributedTo, received %q", p, p.AttributedTo)
 	}
 	if len(p.Name) != 0 {
-		t.Errorf("Unmarshalled object %T should have empty Name, received %q", p, p.Name)
+		t.Errorf("Unmarshaled object %T should have empty Name, received %q", p, p.Name)
 	}
 	if len(p.Summary) != 0 {
-		t.Errorf("Unmarshalled object %T should have empty Summary, received %q", p, p.Summary)
+		t.Errorf("Unmarshaled object %T should have empty Summary, received %q", p, p.Summary)
 	}
 	if len(p.Content) != 0 {
-		t.Errorf("Unmarshalled object %T should have empty Content, received %q", p, p.Content)
+		t.Errorf("Unmarshaled object %T should have empty Content, received %q", p, p.Content)
 	}
 	if p.URL != nil {
-		t.Errorf("Unmarshalled object %T should have empty URL, received %v", p, p.URL)
+		t.Errorf("Unmarshaled object %T should have empty URL, received %v", p, p.URL)
 	}
 	if !p.Published.IsZero() {
-		t.Errorf("Unmarshalled object %T should have empty Published, received %q", p, p.Published)
+		t.Errorf("Unmarshaled object %T should have empty Published, received %q", p, p.Published)
 	}
 	if !p.StartTime.IsZero() {
-		t.Errorf("Unmarshalled object %T  should have empty StartTime, received %q", p, p.StartTime)
+		t.Errorf("Unmarshaled object %T  should have empty StartTime, received %q", p, p.StartTime)
 	}
 	if !p.Updated.IsZero() {
-		t.Errorf("Unmarshalled object %T  should have empty Updated, received %q", p, p.Updated)
+		t.Errorf("Unmarshaled object %T  should have empty Updated, received %q", p, p.Updated)
 	}
 }
 

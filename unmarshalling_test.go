@@ -129,10 +129,10 @@ func TestUnmarshalJSON(t *testing.T) {
 	dataEmpty := []byte("{}")
 	i, err := UnmarshalJSON(dataEmpty)
 	if err != nil {
-		t.Errorf("invalid unmarshalling %s", err)
+		t.Errorf("invalid unmarshaling %s", err)
 	}
 	if i != nil {
-		t.Errorf("invalid unmarshalling, expected nil")
+		t.Errorf("invalid unmarshaling, expected nil")
 	}
 }
 

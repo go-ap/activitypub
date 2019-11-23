@@ -490,58 +490,58 @@ func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
 
 func validateEmptyObject(o Object, t *testing.T) {
 	if o.ID != "" {
-		t.Errorf("Unmarshalled object %T should have empty ID, received %q", o, o.ID)
+		t.Errorf("Unmarshaled object %T should have empty ID, received %q", o, o.ID)
 	}
 	if o.Type != "" {
-		t.Errorf("Unmarshalled object %T should have empty Type, received %q", o, o.Type)
+		t.Errorf("Unmarshaled object %T should have empty Type, received %q", o, o.Type)
 	}
 	if o.AttributedTo != nil {
-		t.Errorf("Unmarshalled object %T should have empty AttributedTo, received %q", o, o.AttributedTo)
+		t.Errorf("Unmarshaled object %T should have empty AttributedTo, received %q", o, o.AttributedTo)
 	}
 	if len(o.Name) != 0 {
-		t.Errorf("Unmarshalled object %T should have empty Name, received %q", o, o.Name)
+		t.Errorf("Unmarshaled object %T should have empty Name, received %q", o, o.Name)
 	}
 	if len(o.Summary) != 0 {
-		t.Errorf("Unmarshalled object %T should have empty Summary, received %q", o, o.Summary)
+		t.Errorf("Unmarshaled object %T should have empty Summary, received %q", o, o.Summary)
 	}
 	if len(o.Content) != 0 {
-		t.Errorf("Unmarshalled object %T should have empty Content, received %q", o, o.Content)
+		t.Errorf("Unmarshaled object %T should have empty Content, received %q", o, o.Content)
 	}
 	if o.URL != nil {
-		t.Errorf("Unmarshalled object %T should have empty URL, received %v", o, o.URL)
+		t.Errorf("Unmarshaled object %T should have empty URL, received %v", o, o.URL)
 	}
 	if o.Icon != nil {
-		t.Errorf("Unmarshalled object %T should have empty Icon, received %v", o, o.Icon)
+		t.Errorf("Unmarshaled object %T should have empty Icon, received %v", o, o.Icon)
 	}
 	if o.Image != nil {
-		t.Errorf("Unmarshalled object %T should have empty Image, received %v", o, o.Image)
+		t.Errorf("Unmarshaled object %T should have empty Image, received %v", o, o.Image)
 	}
 	if !o.Published.IsZero() {
-		t.Errorf("Unmarshalled object %T should have empty Published, received %q", o, o.Published)
+		t.Errorf("Unmarshaled object %T should have empty Published, received %q", o, o.Published)
 	}
 	if !o.StartTime.IsZero() {
-		t.Errorf("Unmarshalled object %T should have empty StartTime, received %q", o, o.StartTime)
+		t.Errorf("Unmarshaled object %T should have empty StartTime, received %q", o, o.StartTime)
 	}
 	if !o.Updated.IsZero() {
-		t.Errorf("Unmarshalled object %T should have empty Updated, received %q", o, o.Updated)
+		t.Errorf("Unmarshaled object %T should have empty Updated, received %q", o, o.Updated)
 	}
 	if !o.EndTime.IsZero() {
-		t.Errorf("Unmarshalled object %T should have empty EndTime, received %q", o, o.EndTime)
+		t.Errorf("Unmarshaled object %T should have empty EndTime, received %q", o, o.EndTime)
 	}
 	if o.Duration != 0 {
-		t.Errorf("Unmarshalled object %T should have empty Duration, received %q", o, o.Duration)
+		t.Errorf("Unmarshaled object %T should have empty Duration, received %q", o, o.Duration)
 	}
 	if len(o.To) > 0 {
-		t.Errorf("Unmarshalled object %T should have empty To, received %q", o, o.To)
+		t.Errorf("Unmarshaled object %T should have empty To, received %q", o, o.To)
 	}
 	if len(o.Bto) > 0 {
-		t.Errorf("Unmarshalled object %T should have empty Bto, received %q", o, o.Bto)
+		t.Errorf("Unmarshaled object %T should have empty Bto, received %q", o, o.Bto)
 	}
 	if len(o.CC) > 0 {
-		t.Errorf("Unmarshalled object %T should have empty CC, received %q", o, o.CC)
+		t.Errorf("Unmarshaled object %T should have empty CC, received %q", o, o.CC)
 	}
 	if len(o.BCC) > 0 {
-		t.Errorf("Unmarshalled object %T should have empty BCC, received %q", o, o.BCC)
+		t.Errorf("Unmarshaled object %T should have empty BCC, received %q", o, o.BCC)
 	}
 }
 
@@ -559,7 +559,7 @@ func TestMimeType_UnmarshalJSON(t *testing.T) {
 
 	m.UnmarshalJSON(dataEmpty)
 	if m != "" {
-		t.Errorf("Unmarshalled object %T should be an empty string, received %q", m, m)
+		t.Errorf("Unmarshaled object %T should be an empty string, received %q", m, m)
 	}
 }
 
@@ -581,7 +581,7 @@ func TestLangRef_UnmarshalText(t *testing.T) {
 
 	l.UnmarshalText(dataEmpty)
 	if l != "" {
-		t.Errorf("Unmarshalled object %T should be an empty string, received %q", l, l)
+		t.Errorf("Unmarshaled object %T should be an empty string, received %q", l, l)
 	}
 }
 
@@ -591,7 +591,7 @@ func TestObjectID_UnmarshalJSON(t *testing.T) {
 
 	o.UnmarshalJSON(dataEmpty)
 	if o != "" {
-		t.Errorf("Unmarshalled object %T should be an empty string, received %q", o, o)
+		t.Errorf("Unmarshaled object %T should be an empty string, received %q", o, o)
 	}
 }
 
@@ -601,7 +601,7 @@ func TestNaturalLanguageValue_UnmarshalJSON(t *testing.T) {
 
 	l.UnmarshalJSON(dataEmpty)
 	if l != "" {
-		t.Errorf("Unmarshalled object %T should be an empty string, received %q", l, l)
+		t.Errorf("Unmarshaled object %T should be an empty string, received %q", l, l)
 	}
 }
 
@@ -611,7 +611,7 @@ func TestNaturalLanguageValue_UnmarshalText(t *testing.T) {
 
 	l.UnmarshalText(dataEmpty)
 	if l != "" {
-		t.Errorf("Unmarshalled object %T should be an empty string, received %q", l, l)
+		t.Errorf("Unmarshaled object %T should be an empty string, received %q", l, l)
 	}
 }
 
@@ -661,10 +661,10 @@ func TestNaturalLanguageValue_MarshalText(t *testing.T) {
 	tst := NaturalLanguageValues{nlv}
 	j, err := tst.MarshalText()
 	if err != nil {
-		t.Errorf("Error marshalling: %s", err)
+		t.Errorf("Error marshaling: %s", err)
 	}
 	if j == nil {
-		t.Errorf("Error marshalling: nil value returned")
+		t.Errorf("Error marshaling: nil value returned")
 	}
 	expected := fmt.Sprintf("\"%s[%s]\"", nlv.Value, nlv.Ref)
 	if string(j) != expected {
@@ -727,10 +727,10 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		tst := NaturalLanguageValues{nlv}
 		j, err := tst.MarshalJSON()
 		if err != nil {
-			t.Errorf("Error marshalling: %s", err)
+			t.Errorf("Error marshaling: %s", err)
 		}
 		if j == nil {
-			t.Errorf("Error marshalling: nil value returned")
+			t.Errorf("Error marshaling: nil value returned")
 		}
 		expected := fmt.Sprintf("\"%s\"", nlv.Value)
 		if string(j) != expected {
@@ -745,10 +745,10 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		tst := NaturalLanguageValues{nlv}
 		j, err := tst.MarshalJSON()
 		if err != nil {
-			t.Errorf("Error marshalling: %s", err)
+			t.Errorf("Error marshaling: %s", err)
 		}
 		if j == nil {
-			t.Errorf("Error marshalling: nil value returned")
+			t.Errorf("Error marshaling: nil value returned")
 		}
 		expected := fmt.Sprintf("{\"%s\":\"%s\"}", nlv.Ref, nlv.Value)
 		if string(j) != expected {
@@ -767,10 +767,10 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		tst := NaturalLanguageValues{nlvEn, nlvFr}
 		j, err := tst.MarshalJSON()
 		if err != nil {
-			t.Errorf("Error marshalling: %s", err)
+			t.Errorf("Error marshaling: %s", err)
 		}
 		if j == nil {
-			t.Errorf("Error marshalling: nil value returned")
+			t.Errorf("Error marshaling: nil value returned")
 		}
 		expected := fmt.Sprintf("{\"%s\":\"%s\",\"%s\":\"%s\"}", nlvEn.Ref, nlvEn.Value, nlvFr.Ref, nlvFr.Value)
 		if string(j) != expected {
@@ -789,10 +789,10 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		tst := NaturalLanguageValues{nlvEn, nlvFr}
 		j, err := tst.MarshalJSON()
 		if err != nil {
-			t.Errorf("Error marshalling: %s", err)
+			t.Errorf("Error marshaling: %s", err)
 		}
 		if j == nil {
-			t.Errorf("Error marshalling: nil value returned")
+			t.Errorf("Error marshaling: nil value returned")
 		}
 		expected := fmt.Sprintf("{\"%s\":%s,\"%s\":%s}", nlvEn.Ref, strconv.Quote(nlvEn.Value), nlvFr.Ref, strconv.Quote(nlvFr.Value))
 		if string(j) != expected {
@@ -817,7 +817,7 @@ func TestNaturalLanguageValues_UnmarshalJSON(t *testing.T) {
 		n := NaturalLanguageValues{}
 		err := n.UnmarshalJSON([]byte(js))
 		if err != nil {
-			t.Errorf("Unexpected error when unmarshalling %T: %s", n, err)
+			t.Errorf("Unexpected error when unmarshaling %T: %s", n, err)
 		}
 
 		if n.Count() != 1 {
@@ -836,12 +836,12 @@ func TestNaturalLanguageValues_UnmarshalJSON(t *testing.T) {
 		ob["en"] = "ana are mere\n"
 		js, err := json.Marshal(ob)
 		if err != nil {
-			t.Errorf("Unexpected error when marshalling %T: %s", ob, err)
+			t.Errorf("Unexpected error when marshaling %T: %s", ob, err)
 		}
 		n := NaturalLanguageValues{}
 		err = n.UnmarshalJSON(js)
 		if err != nil {
-			t.Errorf("Unexpected error when unmarshalling %T: %s", n, err)
+			t.Errorf("Unexpected error when unmarshaling %T: %s", n, err)
 		}
 
 		if n.Count() != 1 {
