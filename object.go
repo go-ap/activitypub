@@ -838,8 +838,6 @@ func (t *Tombstone) UnmarshalJSON(data []byte) error {
 func (o *object) Recipients() ItemCollection {
 	var aud ItemCollection
 	rec, _ := ItemCollectionDeduplication(&aud, &o.To, &o.Bto, &o.CC, &o.BCC, &o.Audience)
-	o.BCC = o.BCC[:0]
-	o.Bto = o.Bto[:0]
 	return rec
 }
 
@@ -847,8 +845,6 @@ func (o *object) Recipients() ItemCollection {
 func (p *Place) Recipients() ItemCollection {
 	var aud ItemCollection
 	rec, _ := ItemCollectionDeduplication(&aud, &p.To, &p.Bto, &p.CC, &p.BCC, &p.Audience)
-	p.BCC = p.BCC[:0]
-	p.Bto = p.Bto[:0]
 	return rec
 }
 
@@ -856,8 +852,6 @@ func (p *Place) Recipients() ItemCollection {
 func (p *Profile) Recipients() ItemCollection {
 	var aud ItemCollection
 	rec, _ := ItemCollectionDeduplication(&aud, &p.To, &p.Bto, &p.CC, &p.BCC, &p.Audience)
-	p.BCC = p.BCC[:0]
-	p.Bto = p.Bto[:0]
 	return rec
 }
 
@@ -865,8 +859,6 @@ func (p *Profile) Recipients() ItemCollection {
 func (r *Relationship) Recipients() ItemCollection {
 	var aud ItemCollection
 	rec, _ := ItemCollectionDeduplication(&aud, &r.To, &r.Bto, &r.CC, &r.BCC, &r.Audience)
-	r.BCC = r.BCC[:0]
-	r.Bto = r.Bto[:0]
 	return rec
 }
 
@@ -874,7 +866,5 @@ func (r *Relationship) Recipients() ItemCollection {
 func (t *Tombstone) Recipients() ItemCollection {
 	var aud ItemCollection
 	rec, _ := ItemCollectionDeduplication(&aud, &t.To, &t.Bto, &t.CC, &t.BCC, &t.Audience)
-	t.BCC = t.BCC[:0]
-	t.Bto = t.Bto[:0]
 	return rec
 }

@@ -697,8 +697,6 @@ func (a *Activity) Recipients() ItemCollection {
 	actor := make(ItemCollection, 0)
 	actor.Append(a.Actor)
 	rec, _ := ItemCollectionDeduplication(&actor, &a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
-	a.BCC = a.BCC[:0]
-	a.Bto = a.Bto[:0]
 	return rec
 }
 
@@ -707,8 +705,6 @@ func (i *IntransitiveActivity) Recipients() ItemCollection {
 	actor := make(ItemCollection, 0)
 	actor.Append(i.Actor)
 	rec, _ := ItemCollectionDeduplication(&actor, &i.To, &i.Bto, &i.CC, &i.BCC, &i.Audience)
-	i.BCC = i.BCC[:0]
-	i.Bto = i.Bto[:0]
 	return rec
 }
 
@@ -718,8 +714,6 @@ func (b *Block) Recipients() ItemCollection {
 	dedupObjects.Append(b.Actor)
 	dedupObjects.Append(b.Object)
 	rec, _ := ItemCollectionDeduplication(&dedupObjects, &b.To, &b.Bto, &b.CC, &b.BCC, &b.Audience)
-	b.BCC = b.BCC[:0]
-	b.Bto = b.Bto[:0]
 	return rec
 }
 
@@ -729,8 +723,6 @@ func (c *Create) Recipients() ItemCollection {
 	dedupObjects.Append(c.Actor)
 	dedupObjects.Append(c.Object)
 	rec, _ := ItemCollectionDeduplication(&dedupObjects, &c.To, &c.Bto, &c.CC, &c.BCC, &c.Audience)
-	c.BCC = c.BCC[:0]
-	c.Bto = c.Bto[:0]
 	return rec
 }
 
@@ -740,8 +732,6 @@ func (l *Like) Recipients() ItemCollection {
 	dedupObjects.Append(l.Actor)
 	dedupObjects.Append(l.Object)
 	rec, _ := ItemCollectionDeduplication(&dedupObjects, &l.To, &l.Bto, &l.CC, &l.BCC, &l.Audience)
-	l.BCC = l.BCC[:0]
-	l.Bto = l.Bto[:0]
 	return rec
 }
 
@@ -751,8 +741,6 @@ func (d *Dislike) Recipients() ItemCollection {
 	dedupObjects.Append(d.Actor)
 	dedupObjects.Append(d.Object)
 	rec, _ := ItemCollectionDeduplication(&dedupObjects, &d.To, &d.Bto, &d.CC, &d.BCC, &d.Audience)
-	d.BCC = d.BCC[:0]
-	d.Bto = d.Bto[:0]
 	return rec
 }
 
@@ -762,8 +750,6 @@ func (u *Update) Recipients() ItemCollection {
 	dedupObjects.Append(u.Actor)
 	dedupObjects.Append(u.Object)
 	rec, _ := ItemCollectionDeduplication(&dedupObjects, &u.To, &u.Bto, &u.CC, &u.BCC, &u.Audience)
-	u.BCC = u.BCC[:0]
-	u.Bto = u.Bto[:0]
 	return rec
 }
 
