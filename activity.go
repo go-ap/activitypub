@@ -429,11 +429,11 @@ type Question struct {
 	// To identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ItemCollection `jsonld:"to,omitempty"`
 	// Bto identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
-	Bto ItemCollection `jsonld:"bto,omitempty,nomarshal"`
+	Bto ItemCollection `jsonld:"bto,omitempty"`
 	// CC identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
 	CC ItemCollection `jsonld:"cc,omitempty"`
 	// BCC identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
-	BCC ItemCollection `jsonld:"bcc,omitempty,nomarshal"`
+	BCC ItemCollection `jsonld:"bcc,omitempty"`
 	// Duration When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
 	// the duration property indicates the object's approximate duration.
 	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
