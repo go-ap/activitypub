@@ -191,6 +191,7 @@ type HasRecipients interface {
 	// Recipients is a method that should do a recipients de-duplication step and then return
 	// the remaining recipients
 	Recipients() ItemCollection
+	Clean()
 }
 
 // Activity is a subtype of Object that describes some form of action that may happen,
@@ -700,12 +701,24 @@ func (a *Activity) Recipients() ItemCollection {
 	return rec
 }
 
+// Clean removes Bto and BCC properties
+func (a *Activity) Clean(){
+	a.BCC = nil
+	a.Bto = nil
+}
+
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (i *IntransitiveActivity) Recipients() ItemCollection {
 	actor := make(ItemCollection, 0)
 	actor.Append(i.Actor)
 	rec, _ := ItemCollectionDeduplication(&actor, &i.To, &i.Bto, &i.CC, &i.BCC, &i.Audience)
 	return rec
+}
+
+// Clean removes Bto and BCC properties
+func (i *IntransitiveActivity) Clean(){
+	i.BCC = nil
+	i.Bto = nil
 }
 
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
@@ -717,6 +730,12 @@ func (b *Block) Recipients() ItemCollection {
 	return rec
 }
 
+// Clean removes Bto and BCC properties
+func (b *Block) Clean(){
+	b.BCC = nil
+	b.Bto = nil
+}
+
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (c *Create) Recipients() ItemCollection {
 	dedupObjects := make(ItemCollection, 0)
@@ -724,6 +743,12 @@ func (c *Create) Recipients() ItemCollection {
 	dedupObjects.Append(c.Object)
 	rec, _ := ItemCollectionDeduplication(&dedupObjects, &c.To, &c.Bto, &c.CC, &c.BCC, &c.Audience)
 	return rec
+}
+
+// Clean removes Bto and BCC properties
+func (c *Create) Clean(){
+	c.BCC = nil
+	c.Bto = nil
 }
 
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
@@ -735,6 +760,12 @@ func (l *Like) Recipients() ItemCollection {
 	return rec
 }
 
+// Clean removes Bto and BCC properties
+func (l *Like) Clean(){
+	l.BCC = nil
+	l.Bto = nil
+}
+
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (d *Dislike) Recipients() ItemCollection {
 	dedupObjects := make(ItemCollection, 0)
@@ -744,6 +775,12 @@ func (d *Dislike) Recipients() ItemCollection {
 	return rec
 }
 
+// Clean removes Bto and BCC properties
+func (d *Dislike) Clean(){
+	d.BCC = nil
+	d.Bto = nil
+}
+
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (u *Update) Recipients() ItemCollection {
 	dedupObjects := make(ItemCollection, 0)
@@ -751,6 +788,12 @@ func (u *Update) Recipients() ItemCollection {
 	dedupObjects.Append(u.Object)
 	rec, _ := ItemCollectionDeduplication(&dedupObjects, &u.To, &u.Bto, &u.CC, &u.BCC, &u.Audience)
 	return rec
+}
+
+// Clean removes Bto and BCC properties
+func (u *Update) Clean(){
+	u.BCC = nil
+	u.Bto = nil
 }
 
 // GetType returns the ActivityVocabulary type of the current Intransitive Activity

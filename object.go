@@ -841,11 +841,23 @@ func (o *object) Recipients() ItemCollection {
 	return rec
 }
 
+// Clean removes Bto and BCC properties
+func (o *object) Clean(){
+	o.BCC = nil
+	o.Bto = nil
+}
+
 // Recipients performs recipient de-duplication on the Place object's To, Bto, CC and BCC properties
 func (p *Place) Recipients() ItemCollection {
 	var aud ItemCollection
 	rec, _ := ItemCollectionDeduplication(&aud, &p.To, &p.Bto, &p.CC, &p.BCC, &p.Audience)
 	return rec
+}
+
+// Clean removes Bto and BCC properties
+func (p *Place) Clean(){
+	p.BCC = nil
+	p.Bto = nil
 }
 
 // Recipients performs recipient de-duplication on the Profile object's To, Bto, CC and BCC properties
@@ -855,6 +867,12 @@ func (p *Profile) Recipients() ItemCollection {
 	return rec
 }
 
+// Clean removes Bto and BCC properties
+func (p *Profile) Clean(){
+	p.BCC = nil
+	p.Bto = nil
+}
+
 // Recipients performs recipient de-duplication on the Relationship object's To, Bto, CC and BCC properties
 func (r *Relationship) Recipients() ItemCollection {
 	var aud ItemCollection
@@ -862,9 +880,21 @@ func (r *Relationship) Recipients() ItemCollection {
 	return rec
 }
 
+// Clean removes Bto and BCC properties
+func (r *Relationship) Clean(){
+	r.BCC = nil
+	r.Bto = nil
+}
+
 // Recipients performs recipient de-duplication on the Tombstone object's To, Bto, CC and BCC properties
 func (t *Tombstone) Recipients() ItemCollection {
 	var aud ItemCollection
 	rec, _ := ItemCollectionDeduplication(&aud, &t.To, &t.Bto, &t.CC, &t.BCC, &t.Audience)
 	return rec
+}
+
+// Clean removes Bto and BCC properties
+func (t *Tombstone) Clean(){
+	t.BCC = nil
+	t.Bto = nil
 }
