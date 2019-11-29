@@ -106,25 +106,65 @@ func JSONGetDuration(data []byte, prop string) time.Duration {
 	return d
 }
 
-func JSONUnmarshalToItem(data []byte) Item {
-	if _, err := url.ParseRequestURI(string(data)); err == nil {
-		// try to see if it's an IRI
-		return IRI(data)
-	}
-	if ItemTyperFunc == nil {
-		return nil
+func itemFn(data []byte) (Item, error) {
+	if len(data) == 0 {
+		return nil, nil
 	}
 
 	i, err := ItemTyperFunc(JSONGetType(data))
 	if err != nil || i == nil {
-		return nil
+		if _, err := url.ParseRequestURI(string(data)); err == nil {
+			// try to see if it's an IRI
+			return IRI(data), nil
+		}
+		return nil, nil
 	}
+
 	p := reflect.PtrTo(reflect.TypeOf(i))
 	if reflect.TypeOf(i).Implements(unmarshalerType) || p.Implements(unmarshalerType) {
 		err = i.(json.Unmarshaler).UnmarshalJSON(data)
 	}
 	if reflect.TypeOf(i).Implements(textUnmarshalerType) || p.Implements(textUnmarshalerType) {
 		err = i.(encoding.TextUnmarshaler).UnmarshalText(data)
+	}
+	return i, err
+}
+
+func JSONUnmarshalToItem(data []byte) Item {
+	if len(data) == 0 {
+		return nil
+	}
+	if ItemTyperFunc == nil {
+		return nil
+	}
+	val, typ, _, err := jsonparser.Get(data)
+	if err != nil || len(val) == 0 {
+		return nil
+	}
+
+	var i Item
+	switch typ {
+	case jsonparser.Array:
+		items := make(ItemCollection, 0)
+		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			var it Item
+			it, err = itemFn(value)
+			if i != nil {
+				items.Append(it)
+			}
+		})
+		if len(items) == 1 {
+			i = items[0]
+		} else if len(items) > 0 {
+			i = items
+		}
+	case jsonparser.Object:
+		i, err = itemFn(data)
+	case jsonparser.String:
+		if _, err := url.ParseRequestURI(string(data)); err == nil {
+			// try to see if it's an IRI
+			i = IRI(data)
+		}
 	}
 	if err != nil {
 		return nil
@@ -159,36 +199,6 @@ func JSONGetItem(data []byte, prop string) Item {
 		return nil
 	}
 	return nil
-}
-
-func JSONGetItems(data []byte, prop string) ItemCollection {
-	val, typ, _, err := jsonparser.Get(data, prop)
-	if err != nil {
-		return nil
-	}
-
-	it := make(ItemCollection, 0)
-	switch typ {
-	case jsonparser.Array:
-		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			i := JSONUnmarshalToItem(value)
-			if i != nil {
-				it.Append(i)
-			}
-		}, prop)
-	case jsonparser.Object:
-		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
-			i := JSONUnmarshalToItem(value)
-			if i != nil {
-				it.Append(i)
-			}
-			return err
-		}, prop)
-	case jsonparser.String:
-		s, _ := jsonparser.GetString(val)
-		it.Append(IRI(s))
-	}
-	return it
 }
 
 func JSONGetURIItem(data []byte, prop string) Item {
@@ -226,10 +236,37 @@ func JSONGetURIItem(data []byte, prop string) Item {
 	return nil
 }
 
+func JSONGetItems(data []byte, prop string) ItemCollection {
+	if len(data) == 0 {
+		return nil
+	}
+	val, typ, _, err := jsonparser.Get(data, prop)
+	if err != nil || len(val) == 0 {
+		return nil
+	}
+
+	it := make(ItemCollection, 0)
+	switch typ {
+	case jsonparser.Array:
+		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			i, err := itemFn(value)
+			if i != nil && err == nil {
+				it.Append(i)
+			}
+		}, prop)
+	case jsonparser.Object:
+		// this should never happen :)
+	case jsonparser.String:
+		s, _ := jsonparser.GetString(val)
+		it.Append(IRI(s))
+	}
+	return it
+}
+
 func JSONGetLangRefField(data []byte, prop string) LangRef {
 	val, err := jsonparser.GetString(data, prop)
 	if err != nil {
-		return LangRef("")
+		return LangRef(err.Error())
 	}
 	return LangRef(val)
 }
@@ -296,7 +333,7 @@ func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
 	case VideoType:
 		return ObjectNew(typ), nil
 	case MentionType:
-		return &Mention{Type:typ}, nil
+		return &Mention{Type: typ}, nil
 	case ApplicationType:
 		return ObjectNew(typ), nil
 	case GroupType:
@@ -308,61 +345,61 @@ func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
 	case ServiceType:
 		return ObjectNew(typ), nil
 	case AcceptType:
-		return &Accept{Parent:Parent{Type: typ}}, nil
+		return &Accept{Parent: Parent{Type: typ}}, nil
 	case AddType:
-		return &Add{Parent:Parent{Type: typ}}, nil
+		return &Add{Parent: Parent{Type: typ}}, nil
 	case AnnounceType:
-		return &Announce{Parent:Parent{Type: typ}}, nil
+		return &Announce{Parent: Parent{Type: typ}}, nil
 	case ArriveType:
-		return &Arrive{Parent:Parent{Type: typ}}, nil
+		return &Arrive{Parent: Parent{Type: typ}}, nil
 	case BlockType:
-		return &Block{Parent:Parent{Type: typ}}, nil
+		return &Block{Parent: Parent{Type: typ}}, nil
 	case CreateType:
-		return &Create{Parent:Parent{Type: typ}}, nil
+		return &Create{Parent: Parent{Type: typ}}, nil
 	case DeleteType:
-		return &Delete{Parent:Parent{Type: typ}}, nil
+		return &Delete{Parent: Parent{Type: typ}}, nil
 	case DislikeType:
-		return &Dislike{Parent:Parent{Type: typ}}, nil
+		return &Dislike{Parent: Parent{Type: typ}}, nil
 	case FlagType:
-		return &Flag{Parent:Parent{Type: typ}}, nil
+		return &Flag{Parent: Parent{Type: typ}}, nil
 	case FollowType:
-		return &Follow{Parent:Parent{Type: typ}}, nil
+		return &Follow{Parent: Parent{Type: typ}}, nil
 	case IgnoreType:
-		return &Ignore{Parent:Parent{Type: typ}}, nil
+		return &Ignore{Parent: Parent{Type: typ}}, nil
 	case InviteType:
-		return &Invite{Parent:Parent{Type: typ}}, nil
+		return &Invite{Parent: Parent{Type: typ}}, nil
 	case JoinType:
-		return &Join{Parent:Parent{Type: typ}}, nil
+		return &Join{Parent: Parent{Type: typ}}, nil
 	case LeaveType:
-		return &Leave{Parent:Parent{Type: typ}}, nil
+		return &Leave{Parent: Parent{Type: typ}}, nil
 	case LikeType:
-		return &Like{Parent:Parent{Type: typ}}, nil
+		return &Like{Parent: Parent{Type: typ}}, nil
 	case ListenType:
-		return &Listen{Parent:Parent{Type: typ}}, nil
+		return &Listen{Parent: Parent{Type: typ}}, nil
 	case MoveType:
-		return &Move{Parent:Parent{Type: typ}}, nil
+		return &Move{Parent: Parent{Type: typ}}, nil
 	case OfferType:
-		return &Offer{Parent:Parent{Type: typ}}, nil
+		return &Offer{Parent: Parent{Type: typ}}, nil
 	case QuestionType:
 		return &Question{Type: typ}, nil
 	case RejectType:
-		return &Reject{Parent:Parent{Type: typ}}, nil
+		return &Reject{Parent: Parent{Type: typ}}, nil
 	case ReadType:
-		return &Read{Parent:Parent{Type: typ}}, nil
+		return &Read{Parent: Parent{Type: typ}}, nil
 	case RemoveType:
-		return &Remove{Parent:Parent{Type: typ}}, nil
+		return &Remove{Parent: Parent{Type: typ}}, nil
 	case TentativeRejectType:
-		return &TentativeReject{Parent:Parent{Type: typ}}, nil
+		return &TentativeReject{Parent: Parent{Type: typ}}, nil
 	case TentativeAcceptType:
-		return &TentativeAccept{Parent:Parent{Type: typ}}, nil
+		return &TentativeAccept{Parent: Parent{Type: typ}}, nil
 	case TravelType:
-		return &Travel{Parent:Parent{Type: typ}}, nil
+		return &Travel{Parent: Parent{Type: typ}}, nil
 	case UndoType:
-		return &Undo{Parent:Parent{Type: typ}}, nil
+		return &Undo{Parent: Parent{Type: typ}}, nil
 	case UpdateType:
-		return &Update{Parent:Parent{Type: typ}}, nil
+		return &Update{Parent: Parent{Type: typ}}, nil
 	case ViewType:
-		return &View{Parent:Parent{Type: typ}}, nil
+		return &View{Parent: Parent{Type: typ}}, nil
 	case "":
 		// when no type is available use a plain Object
 		return nil, nil

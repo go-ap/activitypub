@@ -254,7 +254,7 @@ var allTests = tests{
 						a.NilLangRef, "#my_tag",
 					}},
 					Type: a.MentionType,
-					ID: a.ObjectID("http://example.com/tag/my_tag"),
+					ID:   a.ObjectID("http://example.com/tag/my_tag"),
 				},
 				&a.Mention{
 					Name: a.NaturalLanguageValues{{
