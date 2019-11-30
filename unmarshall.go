@@ -113,9 +113,9 @@ func itemFn(data []byte) (Item, error) {
 
 	i, err := ItemTyperFunc(JSONGetType(data))
 	if err != nil || i == nil {
-		if _, err := url.ParseRequestURI(string(data)); err == nil {
+		if i, ok := asIRI(data); ok {
 			// try to see if it's an IRI
-			return IRI(data), nil
+			return i, nil
 		}
 		return nil, nil
 	}
@@ -149,27 +149,37 @@ func JSONUnmarshalToItem(data []byte) Item {
 		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 			var it Item
 			it, err = itemFn(value)
-			if i != nil {
+			if it != nil && err == nil {
 				items.Append(it)
 			}
 		})
 		if len(items) == 1 {
-			i = items[0]
-		} else if len(items) > 0 {
+			i = items.First()
+		}
+		if len(items) > 1 {
 			i = items
 		}
 	case jsonparser.Object:
 		i, err = itemFn(data)
 	case jsonparser.String:
-		if _, err := url.ParseRequestURI(string(data)); err == nil {
+		if iri, ok := asIRI(data); ok {
 			// try to see if it's an IRI
-			i = IRI(data)
+			i = iri
 		}
 	}
 	if err != nil {
 		return nil
 	}
 	return i
+}
+
+func asIRI(val []byte) (IRI, bool) {
+	u, err := url.ParseRequestURI(string(val))
+	if err == nil && len(u.Scheme) > 0 && len(u.Host) > 0 {
+		// try to see if it's an IRI
+		return IRI(val), true
+	}
+	return IRI(""), false
 }
 
 func JSONGetItem(data []byte, prop string) Item {
@@ -179,15 +189,15 @@ func JSONGetItem(data []byte, prop string) Item {
 	}
 	switch typ {
 	case jsonparser.String:
-		if _, err = url.ParseRequestURI(string(val)); err == nil {
+		if i, ok := asIRI(val); ok {
 			// try to see if it's an IRI
-			return IRI(val)
+			return i
 		}
+	case jsonparser.Array:
+		fallthrough
 	case jsonparser.Object:
 		return JSONUnmarshalToItem(val)
 	case jsonparser.Number:
-		fallthrough
-	case jsonparser.Array:
 		fallthrough
 	case jsonparser.Boolean:
 		fallthrough
@@ -213,8 +223,8 @@ func JSONGetURIItem(data []byte, prop string) Item {
 	case jsonparser.Array:
 		it := make(ItemCollection, 0)
 		jsonparser.ArrayEach(val, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			if _, err := url.Parse(string(value)); err == nil {
-				it.Append(IRI(value))
+			if i, ok := asIRI(value); ok {
+				it.Append(i)
 				return
 			}
 			i, err := ItemTyperFunc(JSONGetType(value))

@@ -1,0 +1,10 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Article",
+  "id": "http://www.test.example/article/1",
+  "name": "This someday will grow up to be an article",
+  "inReplyTo": [
+    "http://www.test.example/object/1",
+    "http://www.test.example/object/778"
+  ]
+}

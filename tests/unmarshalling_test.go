@@ -404,6 +404,39 @@ var allTests = tests{
 			},
 		},
 	},
+	"activity_create_multiple_objects": {
+		expected: true,
+		blank:    &a.Create{},
+		result: &a.Create{
+			Parent: a.Parent{
+				Type: a.CreateType,
+			},
+			Actor: a.IRI("https://littr.git/api/accounts/anonymous"),
+			Object: a.ItemCollection{
+				&a.Object{
+					Type:         a.NoteType,
+					AttributedTo: a.IRI("https://littr.git/api/accounts/anonymous"),
+					InReplyTo:    a.ItemCollection{a.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff")},
+					Content:      a.NaturalLanguageValues{{a.NilLangRef, "<p>Hello world</p>"}},
+					To:           a.ItemCollection{a.IRI("https://www.w3.org/ns/activitystreams#Public")},
+				},
+				&a.Article{
+					Type: a.ArticleType,
+					ID:   a.ObjectID("http://www.test.example/article/1"),
+					Name: a.NaturalLanguageValues{
+						{
+							a.NilLangRef,
+							"This someday will grow up to be an article",
+						},
+					},
+					InReplyTo: a.ItemCollection{
+						a.IRI("http://www.test.example/object/1"),
+						a.IRI("http://www.test.example/object/778"),
+					},
+				},
+			},
+		},
+	},
 	"object_with_audience": testPair{
 		expected: true,
 		blank:    &a.Object{},
@@ -422,6 +455,24 @@ var allTests = tests{
 			},
 			BCC: a.ItemCollection{
 				a.IRI("https://darkside.cookie/actors/darthvader"),
+			},
+		},
+	},
+	"article_with_multiple_inreplyto": {
+		expected: true,
+		blank:    &a.Article{},
+		result: &a.Article{
+			Type: a.ArticleType,
+			ID:   a.ObjectID("http://www.test.example/article/1"),
+			Name: a.NaturalLanguageValues{
+				{
+					a.NilLangRef,
+					"This someday will grow up to be an article",
+				},
+			},
+			InReplyTo: a.ItemCollection{
+				a.IRI("http://www.test.example/object/1"),
+				a.IRI("http://www.test.example/object/778"),
 			},
 		},
 	},
