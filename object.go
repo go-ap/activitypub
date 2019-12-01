@@ -801,7 +801,7 @@ func FlattenObjectProperties(o *Object) *Object {
 			o.Replies = IRI(fmt.Sprintf("%s/replies", o.GetLink()))
 		}
 	}
-	o.AttributedTo = FlattenToIRI(o.AttributedTo)
+	o.AttributedTo = Flatten(o.AttributedTo)
 	o.To = FlattenItemCollection(o.To)
 	o.Bto = FlattenItemCollection(o.Bto)
 	o.CC = FlattenItemCollection(o.CC)

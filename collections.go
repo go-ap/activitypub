@@ -340,6 +340,20 @@ func (o *OrderedCollectionPage) Collection() ItemCollection {
 func (o OrderedCollectionPage) IsCollection() bool {
 	return true
 }
+
+// Flatten checks if Item can be flatten to an IRI or array of IRIs and returns it if so
+func Flatten(it Item) Item {
+	if it.IsCollection() {
+		if c, ok := it.(CollectionInterface); ok {
+			it = FlattenItemCollection(c.Collection())
+		}
+	}
+	if it != nil && len(it.GetLink()) > 0 {
+		return it.GetLink()
+	}
+	return it
+}
+
 // FlattenItemCollection flattens the Collection's properties from Object type to IRI
 func FlattenItemCollection(c ItemCollection) ItemCollection {
 	if c != nil && len(c) > 0 {

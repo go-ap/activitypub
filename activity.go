@@ -858,23 +858,23 @@ func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
 
 // FlattenIntransitiveActivityProperties flattens the IntransitiveActivity's properties from Object type to IRI
 func FlattenIntransitiveActivityProperties(act *IntransitiveActivity) *IntransitiveActivity {
-	act.Actor = FlattenToIRI(act.Actor)
-	act.Target = FlattenToIRI(act.Target)
-	act.Result = FlattenToIRI(act.Result)
-	act.Origin = FlattenToIRI(act.Origin)
-	act.Result = FlattenToIRI(act.Result)
-	act.Instrument = FlattenToIRI(act.Instrument)
+	act.Actor = Flatten(act.Actor)
+	act.Target = Flatten(act.Target)
+	act.Result = Flatten(act.Result)
+	act.Origin = Flatten(act.Origin)
+	act.Result = Flatten(act.Result)
+	act.Instrument = Flatten(act.Instrument)
 	return act
 }
 
 // FlattenActivityProperties flattens the Activity's properties from Object type to IRI
 func FlattenActivityProperties(act *Activity) *Activity {
-	act.Object = FlattenToIRI(act.Object)
-	act.Actor = FlattenToIRI(act.Actor)
-	act.Target = FlattenToIRI(act.Target)
-	act.Result = FlattenToIRI(act.Result)
-	act.Origin = FlattenToIRI(act.Origin)
-	act.Result = FlattenToIRI(act.Result)
-	act.Instrument = FlattenToIRI(act.Instrument)
+	act.Object = Flatten(act.Object)
+	act.Actor = Flatten(act.Actor)
+	act.Target = Flatten(act.Target)
+	act.Result = Flatten(act.Result)
+	act.Origin = Flatten(act.Origin)
+	act.Result = Flatten(act.Result)
+	act.Instrument = Flatten(act.Instrument)
 	return act
 }
