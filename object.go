@@ -433,7 +433,7 @@ type object struct {
 	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
 	Image Item `jsonld:"image,omitempty"`
 	// InReplyTo indicates one or more entities for which this object is considered a response.
-	InReplyTo ItemCollection `jsonld:"inReplyTo,omitempty"`
+	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
 	// Location indicates one or more physical or logical locations associated with the object.
 	Location Item `jsonld:"location,omitempty"`
 	// Preview identifies an entity that provides a preview of this object.
@@ -796,8 +796,6 @@ func FlattenObjectProperties(o *Object) *Object {
 		}
 	}
 	o.AttributedTo = FlattenToIRI(o.AttributedTo)
-	o.InReplyTo = FlattenItemCollection(o.InReplyTo)
-
 	o.To = FlattenItemCollection(o.To)
 	o.Bto = FlattenItemCollection(o.Bto)
 	o.CC = FlattenItemCollection(o.CC)
