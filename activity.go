@@ -253,94 +253,94 @@ type IntransitiveActivity struct {
 type (
 	// Accept indicates that the actor accepts the object. The target property can be used in certain circumstances to indicate
 	// the context into which the object has been accepted.
-	Accept Activity
+	Accept = Activity
 
 	// Add indicates that the actor has added the object to the target. If the target property is not explicitly specified,
 	// the target would need to be determined implicitly by context.
 	// The origin can be used to identify the context from which the object originated.
-	Add Activity
+	Add = Activity
 
 	// Announce indicates that the actor is calling the target's attention the object.
 	// The origin typically has no defined meaning.
-	Announce Activity
+	Announce = Activity
 
 	// Arrive is an IntransitiveActivity that indicates that the actor has arrived at the location.
 	// The origin can be used to identify the context from which the actor originated.
 	// The target typically has no defined meaning.
-	Arrive IntransitiveActivity
+	Arrive = IntransitiveActivity
 
 	// Block indicates that the actor is blocking the object. Blocking is a stronger form of Ignore.
 	// The typical use is to support social systems that allow one user to block activities or content of other users.
 	// The target and origin typically have no defined meaning.
-	Block Ignore
+	Block = Ignore
 
 	// Create indicates that the actor has created the object.
-	Create Activity
+	Create = Activity
 
 	// Delete indicates that the actor has deleted the object.
 	// If specified, the origin indicates the context from which the object was deleted.
-	Delete Activity
+	Delete = Activity
 
 	// Dislike indicates that the actor dislikes the object.
-	Dislike Activity
+	Dislike = Activity
 
 	// Flag indicates that the actor is "flagging" the object.
 	// Flagging is defined in the sense common to many social platforms as reporting content as being
 	// inappropriate for any number of reasons.
-	Flag Activity
+	Flag = Activity
 
 	// Follow indicates that the actor is "following" the object. Following is defined in the sense typically used within
 	// Social systems in which the actor is interested in any activity performed by or on the object.
 	// The target and origin typically have no defined meaning.
-	Follow Activity
+	Follow = Activity
 
 	// Ignore indicates that the actor is ignoring the object. The target and origin typically have no defined meaning.
-	Ignore Activity
+	Ignore = Activity
 
 	// Invite is a specialization of Offer in which the actor is extending an invitation for the object to the target.
-	Invite Offer
+	Invite = Offer
 
 	// Join indicates that the actor has joined the object. The target and origin typically have no defined meaning.
-	Join Activity
+	Join = Activity
 
 	// Leave indicates that the actor has left the object. The target and origin typically have no meaning.
-	Leave Activity
+	Leave = Activity
 
 	// Like indicates that the actor likes, recommends or endorses the object.
 	// The target and origin typically have no defined meaning.
-	Like Activity
+	Like = Activity
 
 	// Listen inherits all properties from Activity.
-	Listen Activity
+	Listen = Activity
 
 	// Move indicates that the actor has moved object from origin to target.
 	// If the origin or target are not specified, either can be determined by context.
-	Move Activity
+	Move = Activity
 
 	// Offer indicates that the actor is offering the object.
 	// If specified, the target indicates the entity to which the object is being offered.
-	Offer Activity
+	Offer = Activity
 
 	// Reject indicates that the actor is rejecting the object. The target and origin typically have no defined meaning.
-	Reject Activity
+	Reject = Activity
 
 	// Read indicates that the actor has read the object.
-	Read Activity
+	Read = Activity
 
 	// Remove indicates that the actor is removing the object. If specified,
 	// the origin indicates the context from which the object is being removed.
-	Remove Activity
+	Remove = Activity
 
 	// TentativeReject is a specialization of Reject in which the rejection is considered tentative.
-	TentativeReject Reject
+	TentativeReject = Reject
 
 	// TentativeAccept is a specialization of Accept indicating that the acceptance is tentative.
-	TentativeAccept Accept
+	TentativeAccept = Accept
 
 	// Travel indicates that the actor is traveling to target from origin.
 	// Travel is an IntransitiveObject whose actor specifies the direct object.
 	// If the target or origin are not specified, either can be determined by context.
-	Travel IntransitiveActivity
+	Travel = IntransitiveActivity
 
 	// Undo indicates that the actor is undoing the object. In most cases, the object will be an Activity describing
 	// some previously performed action (for instance, a person may have previously "liked" an article but,
@@ -351,10 +351,10 @@ type (
 	// Update indicates that the actor has updated the object. Note, however, that this vocabulary does not define a mechanism
 	// for describing the actual set of modifications made to object.
 	// The target and origin typically have no defined meaning.
-	Update Activity
+	Update = Activity
 
 	// View indicates that the actor has viewed the object.
-	View Activity
+	View = Activity
 )
 
 // Question represents a question being asked. Question objects are an extension of IntransitiveActivity.
@@ -693,139 +693,6 @@ func IntransitiveActivityNew(id ObjectID, typ ActivityVocabularyType) *Intransit
 	return &i
 }
 
-// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (a *Activity) Recipients() ItemCollection {
-	actor := make(ItemCollection, 0)
-	actor.Append(a.Actor)
-	rec, _ := ItemCollectionDeduplication(&actor, &a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (a *Activity) Clean(){
-	a.BCC = nil
-	a.Bto = nil
-}
-
-// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (i *IntransitiveActivity) Recipients() ItemCollection {
-	actor := make(ItemCollection, 0)
-	actor.Append(i.Actor)
-	rec, _ := ItemCollectionDeduplication(&actor, &i.To, &i.Bto, &i.CC, &i.BCC, &i.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (i *IntransitiveActivity) Clean(){
-	i.BCC = nil
-	i.Bto = nil
-}
-
-// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (b *Block) Recipients() ItemCollection {
-	dedupObjects := make(ItemCollection, 0)
-	dedupObjects.Append(b.Actor)
-	dedupObjects.Append(b.Object)
-	rec, _ := ItemCollectionDeduplication(&dedupObjects, &b.To, &b.Bto, &b.CC, &b.BCC, &b.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (b *Block) Clean(){
-	b.BCC = nil
-	b.Bto = nil
-}
-
-// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (c *Create) Recipients() ItemCollection {
-	dedupObjects := make(ItemCollection, 0)
-	dedupObjects.Append(c.Actor)
-	dedupObjects.Append(c.Object)
-	rec, _ := ItemCollectionDeduplication(&dedupObjects, &c.To, &c.Bto, &c.CC, &c.BCC, &c.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (c *Create) Clean(){
-	c.BCC = nil
-	c.Bto = nil
-}
-
-// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (l *Like) Recipients() ItemCollection {
-	dedupObjects := make(ItemCollection, 0)
-	dedupObjects.Append(l.Actor)
-	dedupObjects.Append(l.Object)
-	rec, _ := ItemCollectionDeduplication(&dedupObjects, &l.To, &l.Bto, &l.CC, &l.BCC, &l.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (l *Like) Clean(){
-	l.BCC = nil
-	l.Bto = nil
-}
-
-// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (d *Dislike) Recipients() ItemCollection {
-	dedupObjects := make(ItemCollection, 0)
-	dedupObjects.Append(d.Actor)
-	dedupObjects.Append(d.Object)
-	rec, _ := ItemCollectionDeduplication(&dedupObjects, &d.To, &d.Bto, &d.CC, &d.BCC, &d.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (d *Dislike) Clean(){
-	d.BCC = nil
-	d.Bto = nil
-}
-
-// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (u *Update) Recipients() ItemCollection {
-	dedupObjects := make(ItemCollection, 0)
-	dedupObjects.Append(u.Actor)
-	dedupObjects.Append(u.Object)
-	rec, _ := ItemCollectionDeduplication(&dedupObjects, &u.To, &u.Bto, &u.CC, &u.BCC, &u.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (u *Update) Clean(){
-	u.BCC = nil
-	u.Bto = nil
-}
-
-// GetType returns the ActivityVocabulary type of the current Intransitive Activity
-func (i IntransitiveActivity) GetType() ActivityVocabularyType {
-	return i.Type
-}
-
-// IsLink returns false for Activity objects
-func (i IntransitiveActivity) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the IntransitiveActivity object
-func (i IntransitiveActivity) GetID() *ObjectID {
-	return &i.ID
-}
-
-// GetLink returns the IRI corresponding to the IntransitiveActivity object
-func (i IntransitiveActivity) GetLink() IRI {
-	return IRI(i.ID)
-}
-
-// IsObject returns true for Activity objects
-func (i IntransitiveActivity) IsObject() bool {
-	return true
-}
-
-// IsCollection returns false for IntransitiveActivity objects
-func (i IntransitiveActivity) IsCollection() bool {
-	return false
-}
-
 // GetType returns the ActivityVocabulary type of the current Activity
 func (a Activity) GetType() ActivityVocabularyType {
 	return a.Type
@@ -856,453 +723,61 @@ func (a Activity) IsCollection() bool {
 	return false
 }
 
-// GetID returns the ObjectID corresponding to the Like object
-func (l Like) GetID() *ObjectID {
-	return Activity(l).GetID()
+// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
+func (a *Activity) Recipients() ItemCollection {
+	actor := make(ItemCollection, 0)
+	actor.Append(a.Actor)
+	rec, _ := ItemCollectionDeduplication(&actor, &a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
+	return rec
 }
 
-// GetLink returns the IRI corresponding to the Like object
-func (l Like) GetLink() IRI {
-	return IRI(l.ID)
+// Clean removes Bto and BCC properties
+func (a *Activity) Clean() {
+	a.BCC = nil
+	a.Bto = nil
 }
 
-// GetType returns the ActivityVocabulary type of the current Activity
-func (l Like) GetType() ActivityVocabularyType {
-	return l.Type
+// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
+func (i *IntransitiveActivity) Recipients() ItemCollection {
+	actor := make(ItemCollection, 0)
+	actor.Append(i.Actor)
+	rec, _ := ItemCollectionDeduplication(&actor, &i.To, &i.Bto, &i.CC, &i.BCC, &i.Audience)
+	return rec
 }
 
-// IsObject returns true for Like objects
-func (l Like) IsObject() bool {
-	return true
+// Clean removes Bto and BCC properties
+func (i *IntransitiveActivity) Clean() {
+	i.BCC = nil
+	i.Bto = nil
 }
 
-// IsLink returns false for Like objects
-func (l Like) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Dislike object
-func (d Dislike) GetID() *ObjectID {
-	return Activity(d).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Dislike object
-func (d Dislike) GetLink() IRI {
-	return IRI(d.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (d Dislike) GetType() ActivityVocabularyType {
-	return d.Type
-}
-
-// IsObject returns true for Dislike objects
-func (d Dislike) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Dislike objects
-func (d Dislike) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Accept object
-func (a Accept) GetID() *ObjectID {
-	return Activity(a).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Accept object
-func (a Accept) GetLink() IRI {
-	return IRI(a.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (a Accept) GetType() ActivityVocabularyType {
-	return a.Type
-}
-
-// IsObject returns true for Accept objects
-func (a Accept) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Accept objects
-func (a Accept) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Add object
-func (a Add) GetID() *ObjectID {
-	return Activity(a).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Add object
-func (a Add) GetLink() IRI {
-	return IRI(a.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (a Add) GetType() ActivityVocabularyType {
-	return a.Type
-}
-
-// IsObject returns true for Add objects
-func (a Add) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Add objects
-func (a Add) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Announce object
-func (a Announce) GetID() *ObjectID {
-	return Activity(a).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Announce object
-func (a Announce) GetLink() IRI {
-	return IRI(a.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (a Announce) GetType() ActivityVocabularyType {
-	return a.Type
-}
-
-// IsObject returns true for Announce objects
-func (a Announce) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Announce objects
-func (a Announce) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Arrive object
-func (a Arrive) GetID() *ObjectID {
-	return IntransitiveActivity(a).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Arrive object
-func (a Arrive) GetLink() IRI {
-	return IRI(a.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (a Arrive) GetType() ActivityVocabularyType {
-	return a.Type
-}
-
-// IsObject returns true for Arrive objects
-func (a Arrive) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Arrive objects
-func (a Arrive) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Block object
-func (b Block) GetID() *ObjectID {
-	return Activity(b).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Block object
-func (b Block) GetLink() IRI {
-	return IRI(b.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (b Block) GetType() ActivityVocabularyType {
-	return b.Type
-}
-
-// IsObject returns true for Block objects
-func (b Block) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Block objects
-func (b Block) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Create object
-func (c Create) GetID() *ObjectID {
-	return Activity(c).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Create object
-func (c Create) GetLink() IRI {
-	return IRI(c.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (c Create) GetType() ActivityVocabularyType {
-	return c.Type
-}
-
-// IsObject returns true for Create objects
-func (c Create) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Create objects
-func (c Create) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Delete object
-func (d Delete) GetID() *ObjectID {
-	return Activity(d).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Delete object
-func (d Delete) GetLink() IRI {
-	return IRI(d.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (d Delete) GetType() ActivityVocabularyType {
-	return d.Type
-}
-
-// IsObject returns true for Delete objects
-func (d Delete) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Delete objects
-func (d Delete) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Flag object
-func (f Flag) GetID() *ObjectID {
-	return Activity(f).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Flag object
-func (f Flag) GetLink() IRI {
-	return IRI(f.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (f Flag) GetType() ActivityVocabularyType {
-	return f.Type
-}
-
-// IsObject returns true for Flag objects
-func (f Flag) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Flag objects
-func (f Flag) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Follow object
-func (f Follow) GetID() *ObjectID {
-	return Activity(f).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Follow object
-func (f Follow) GetLink() IRI {
-	return IRI(f.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (f Follow) GetType() ActivityVocabularyType {
-	return f.Type
-}
-
-// IsObject returns true for Follow objects
-func (f Follow) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Follow objects
-func (f Follow) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Ignore object
-func (i Ignore) GetID() *ObjectID {
-	return Activity(i).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Ignore object
-func (i Ignore) GetLink() IRI {
-	return IRI(i.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (i Ignore) GetType() ActivityVocabularyType {
+// GetType returns the ActivityVocabulary type of the current Intransitive Activity
+func (i IntransitiveActivity) GetType() ActivityVocabularyType {
 	return i.Type
 }
 
-// IsObject returns true for Ignore objects
-func (i Ignore) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Ignore objects
-func (i Ignore) IsLink() bool {
+// IsLink returns false for Activity objects
+func (i IntransitiveActivity) IsLink() bool {
 	return false
 }
 
-// GetID returns the ObjectID corresponding to the Invite object
-func (i Invite) GetID() *ObjectID {
-	return Activity(i).GetID()
+// GetID returns the ObjectID corresponding to the IntransitiveActivity object
+func (i IntransitiveActivity) GetID() *ObjectID {
+	return &i.ID
 }
 
-// GetLink returns the IRI corresponding to the Invite object
-func (i Invite) GetLink() IRI {
+// GetLink returns the IRI corresponding to the IntransitiveActivity object
+func (i IntransitiveActivity) GetLink() IRI {
 	return IRI(i.ID)
 }
 
-// GetType returns the ActivityVocabulary type of the current Activity
-func (i Invite) GetType() ActivityVocabularyType {
-	return i.Type
-}
-
-// IsObject returns true for Invite objects
-func (i Invite) IsObject() bool {
+// IsObject returns true for IntransitiveActivity objects
+func (i IntransitiveActivity) IsObject() bool {
 	return true
 }
 
-// IsLink returns false for Invite objects
-func (i Invite) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Join object
-func (j Join) GetID() *ObjectID {
-	return Activity(j).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Join object
-func (j Join) GetLink() IRI {
-	return IRI(j.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (j Join) GetType() ActivityVocabularyType {
-	return j.Type
-}
-
-// IsObject returns true for Join objects
-func (j Join) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Join objects
-func (j Join) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Leave object
-func (l Leave) GetID() *ObjectID {
-	return Activity(l).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Leave object
-func (l Leave) GetLink() IRI {
-	return IRI(l.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (l Leave) GetType() ActivityVocabularyType {
-	return l.Type
-}
-
-// IsObject returns true for Leave objects
-func (l Leave) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Leave objects
-func (l Leave) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Listen object
-func (l Listen) GetID() *ObjectID {
-	return Activity(l).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Listen object
-func (l Listen) GetLink() IRI {
-	return IRI(l.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (l Listen) GetType() ActivityVocabularyType {
-	return l.Type
-}
-
-// IsObject returns true for Listen objects
-func (l Listen) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Listen objects
-func (l Listen) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Move object
-func (m Move) GetID() *ObjectID {
-	return Activity(m).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Move object
-func (m Move) GetLink() IRI {
-	return IRI(m.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (m Move) GetType() ActivityVocabularyType {
-	return m.Type
-}
-
-// IsObject returns true for Move objects
-func (m Move) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Move objects
-func (m Move) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Offer object
-func (o Offer) GetID() *ObjectID {
-	return Activity(o).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Offer object
-func (o Offer) GetLink() IRI {
-	return IRI(o.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (o Offer) GetType() ActivityVocabularyType {
-	return o.Type
-}
-
-// IsObject returns true for Offer objects
-func (o Offer) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Offer objects
-func (o Offer) IsLink() bool {
+// IsCollection returns false for IntransitiveActivity objects
+func (i IntransitiveActivity) IsCollection() bool {
 	return false
 }
 
@@ -1326,213 +801,13 @@ func (q Question) IsObject() bool {
 	return true
 }
 
-// IsCollection returns false for Question objects
-func (q Question) IsCollection() bool {
-	return false
-}
-
 // IsLink returns false for Question objects
 func (q Question) IsLink() bool {
 	return false
 }
 
-// GetID returns the ObjectID corresponding to the Reject object
-func (r Reject) GetID() *ObjectID {
-	return Activity(r).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Reject object
-func (r Reject) GetLink() IRI {
-	return IRI(r.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (r Reject) GetType() ActivityVocabularyType {
-	return r.Type
-}
-
-// IsObject returns true for Reject objects
-func (r Reject) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Reject objects
-func (r Reject) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Remove object
-func (r Remove) GetID() *ObjectID {
-	return Activity(r).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Remove object
-func (r Remove) GetLink() IRI {
-	return IRI(r.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (r Remove) GetType() ActivityVocabularyType {
-	return r.Type
-}
-
-// IsObject returns true for Remove objects
-func (r Remove) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Remove objects
-func (r Remove) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Read object
-func (r Read) GetID() *ObjectID {
-	return Activity(r).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Read object
-func (r Read) GetLink() IRI {
-	return IRI(r.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (r Read) GetType() ActivityVocabularyType {
-	return r.Type
-}
-
-// IsObject returns true for Read objects
-func (r Read) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Read objects
-func (r Read) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the TentativeAccept object
-func (t TentativeAccept) GetID() *ObjectID {
-	return Activity(t).GetID()
-}
-
-// GetLink returns the IRI corresponding to the TentativeAccept object
-func (t TentativeAccept) GetLink() IRI {
-	return IRI(t.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (t TentativeAccept) GetType() ActivityVocabularyType {
-	return t.Type
-}
-
-// IsObject returns true for TentativeAccept objects
-func (t TentativeAccept) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for TentativeAccept objects
-func (t TentativeAccept) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the TentativeReject object
-func (t TentativeReject) GetID() *ObjectID {
-	return Activity(t).GetID()
-}
-
-// GetLink returns the IRI corresponding to the TentativeReject object
-func (t TentativeReject) GetLink() IRI {
-	return IRI(t.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (t TentativeReject) GetType() ActivityVocabularyType {
-	return t.Type
-}
-
-// IsObject returns true for TentativeReject objects
-func (t TentativeReject) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for TentativeReject objects
-func (t TentativeReject) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Travel object
-func (t Travel) GetID() *ObjectID {
-	return IntransitiveActivity(t).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Travel object
-func (t Travel) GetLink() IRI {
-	return IRI(t.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (t Travel) GetType() ActivityVocabularyType {
-	return t.Type
-}
-
-// IsObject returns true for Travel objects
-func (t Travel) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Travel objects
-func (t Travel) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Update object
-func (u Update) GetID() *ObjectID {
-	return Activity(u).GetID()
-}
-
-// GetLink returns the IRI corresponding to the Update object
-func (u Update) GetLink() IRI {
-	return IRI(u.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (u Update) GetType() ActivityVocabularyType {
-	return u.Type
-}
-
-// IsObject returns true for Update objects
-func (u Update) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Update objects
-func (u Update) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the View object
-func (v View) GetID() *ObjectID {
-	return Activity(v).GetID()
-}
-
-// GetLink returns the IRI corresponding to the View object
-func (v View) GetLink() IRI {
-	return IRI(v.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (v View) GetType() ActivityVocabularyType {
-	return v.Type
-}
-
-// IsObject returns true for View objects
-func (v View) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for View objects
-func (v View) IsLink() bool {
+// IsCollection returns false for Question objects
+func (q Question) IsCollection() bool {
 	return false
 }
 
@@ -1548,49 +823,6 @@ func (a *Activity) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// UnmarshalJSON
-func (l *Like) UnmarshalJSON(data []byte) error {
-	a := Activity(*l)
-	err := a.UnmarshalJSON(data)
-
-	*l = Like(a)
-
-	return err
-}
-
-// UnmarshalJSON
-func (d *Dislike) UnmarshalJSON(data []byte) error {
-	a := Activity(*d)
-	err := a.UnmarshalJSON(data)
-
-	*d = Dislike(a)
-
-	return err
-}
-
-// UnmarshalJSON
-func (u *Update) UnmarshalJSON(data []byte) error {
-	a := Activity(*u)
-	err := a.UnmarshalJSON(data)
-
-	*u = Update(a)
-
-	return err
-}
-
-// UnmarshalJSON
-func (c *Create) UnmarshalJSON(data []byte) error {
-	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
-	}
-	a := Activity(*c)
-	err := a.UnmarshalJSON(data)
-
-	*c = Create(a)
-
-	return err
-}
-
 // ToActivity
 func ToActivity(it Item) (*Activity, error) {
 	switch i := it.(type) {
@@ -1598,198 +830,6 @@ func ToActivity(it Item) (*Activity, error) {
 		return i, nil
 	case Activity:
 		return &i, nil
-	case *Accept:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Accept:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Add:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Add:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Announce:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Announce:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Block:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Block:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Create:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Create:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Delete:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Delete:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Dislike:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Dislike:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Flag:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Flag:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Follow:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Follow:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Ignore:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Ignore:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Invite:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Invite:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Join:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Join:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Leave:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Leave:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Like:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Like:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Listen:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Listen:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Move:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Move:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Offer:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Offer:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Reject:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Reject:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Read:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Read:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Remove:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Remove:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *TentativeAccept:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case TentativeAccept:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *TentativeReject:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case TentativeReject:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *Update:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case Update:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
-	case *View:
-		var a Activity
-		a = Activity(*i)
-		return &a, nil
-	case View:
-		var a Activity
-		a = Activity(i)
-		return &a, nil
 	}
 	return nil, errors.New("unable to convert activity")
 }
@@ -1812,22 +852,6 @@ func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
 		return i, nil
 	case IntransitiveActivity:
 		return &i, nil
-	case *Arrive:
-		var it IntransitiveActivity
-		it = IntransitiveActivity(*i)
-		return &it, nil
-	case Arrive:
-		var it IntransitiveActivity
-		it = IntransitiveActivity(i)
-		return &it, nil
-	case *Travel:
-		var it IntransitiveActivity
-		it = IntransitiveActivity(*i)
-		return &it, nil
-	case Travel:
-		var it IntransitiveActivity
-		it = IntransitiveActivity(i)
-		return &it, nil
 	}
 	return nil, errors.New("unable to convert to intransitive activity")
 }

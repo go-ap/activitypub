@@ -502,7 +502,7 @@ func TestBlockRecipients(t *testing.T) {
 	}
 
 	a.Recipients()
-	if len(a.To) != 3 {
+	if len(a.To) != 4 {
 		t.Errorf("%T.To should have exactly 3(four) elements, not %d", a, len(a.To))
 	}
 
@@ -526,7 +526,7 @@ func TestBlockRecipients(t *testing.T) {
 	b.BCC.Append(bob)
 
 	b.Recipients()
-	if len(b.To) != 3 {
+	if len(b.To) != 4 {
 		t.Errorf("%T.To should have exactly 4(four) elements, not %d", b, len(b.To))
 	}
 	if len(b.Bto) != 0 {
