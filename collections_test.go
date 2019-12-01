@@ -115,8 +115,8 @@ func TestCollection_Collection(t *testing.T) {
 
 	c := CollectionNew(id)
 
-	if c.Collection() != c {
-		t.Errorf("Collection should return itself %q", *c.GetID())
+	if !reflect.DeepEqual(c.Collection(), c.Items) {
+		t.Errorf("Collection items should be equal %v %v", c.Collection(), c.Items)
 	}
 }
 
@@ -299,10 +299,10 @@ func TestOrderedCollection_Append(t *testing.T) {
 func TestOrderedCollection_Collection(t *testing.T) {
 	id := ObjectID("test")
 
-	c := OrderedCollectionNew(id)
+	o := OrderedCollectionNew(id)
 
-	if c.Collection() != c {
-		t.Errorf("Collection should return itself %q", *c.GetID())
+	if !reflect.DeepEqual(o.Collection(), o.OrderedItems) {
+		t.Errorf("Collection items should be equal %v %v", o.Collection(), o.OrderedItems)
 	}
 }
 
@@ -488,8 +488,8 @@ func TestOrderedCollectionPage_Collection(t *testing.T) {
 	c := OrderedCollectionNew(id)
 	p := OrderedCollectionPageNew(c)
 
-	if p.Collection() != p {
-		t.Errorf("Collection should return itself %q", *p.GetID())
+	if !reflect.DeepEqual(p.Collection(), p.OrderedItems) {
+		t.Errorf("Collection items should be equal %v %v", p.Collection(), p.OrderedItems)
 	}
 }
 
@@ -499,8 +499,8 @@ func TestCollectionPage_Collection(t *testing.T) {
 	c := CollectionNew(id)
 	p := CollectionPageNew(c)
 
-	if p.Collection() != p {
-		t.Errorf("Collection should return itself %q", *p.GetID())
+	if !reflect.DeepEqual(p.Collection(), p.Items) {
+		t.Errorf("Collection items should be equal %v %v", p.Collection(), p.Items)
 	}
 }
 

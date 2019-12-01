@@ -5,7 +5,10 @@ import (
 	"github.com/buger/jsonparser"
 )
 
+const CollectionOfItems ActivityVocabularyType = "ItemCollection"
+
 var CollectionTypes = ActivityVocabularyTypes{
+	CollectionOfItems,
 	CollectionType,
 	OrderedCollectionType,
 	CollectionPageType,
@@ -14,7 +17,7 @@ var CollectionTypes = ActivityVocabularyTypes{
 
 type CollectionInterface interface {
 	ObjectOrLink
-	Collection() CollectionInterface
+	Collection() ItemCollection
 	Append(ob Item) error
 	Count() uint
 	Contains(IRI) bool
@@ -299,25 +302,44 @@ func (o *OrderedCollection) MarshalJSON() ([]byte, error) {
 */
 
 // Collection returns the underlying Collection type
-func (c *Collection) Collection() CollectionInterface {
-	return c
+func (c *Collection) Collection() ItemCollection {
+	return c.Items
+}
+
+// IsCollection returns true for Collection objects
+func (c Collection) IsCollection() bool {
+	return true
 }
 
 // Collection returns the underlying Collection type
-func (o *OrderedCollection) Collection() CollectionInterface {
-	return o
+func (o *OrderedCollection) Collection() ItemCollection {
+	return o.OrderedItems
+}
+
+// IsCollection returns true for OrderedCollection objects
+func (o OrderedCollection) IsCollection() bool {
+	return true
 }
 
 // Collection returns the underlying Collection type
-func (c *CollectionPage) Collection() CollectionInterface {
-	return c
+func (c *CollectionPage) Collection() ItemCollection {
+	return c.Items
+}
+
+// IsCollection returns true for CollectionPage objects
+func (c CollectionPage) IsCollection() bool {
+	return true
 }
 
 // Collection returns the underlying Collection type
-func (o *OrderedCollectionPage) Collection() CollectionInterface {
-	return o
+func (o *OrderedCollectionPage) Collection() ItemCollection {
+	return o.OrderedItems
 }
 
+// IsCollection returns true for OrderedCollectionPage objects
+func (o OrderedCollectionPage) IsCollection() bool {
+	return true
+}
 // FlattenItemCollection flattens the Collection's properties from Object type to IRI
 func FlattenItemCollection(c ItemCollection) ItemCollection {
 	if c != nil && len(c) > 0 {
@@ -326,6 +348,17 @@ func FlattenItemCollection(c ItemCollection) ItemCollection {
 		}
 	}
 	return c
+}
+
+// ToItemCollection
+func ToItemCollection(it Item) (*ItemCollection, error) {
+	switch i := it.(type) {
+	case *ItemCollection:
+		return i, nil
+	case ItemCollection:
+		return &i, nil
+	}
+	return nil, errors.New("unable to convert to item collection")
 }
 
 // ToCollection

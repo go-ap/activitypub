@@ -111,11 +111,12 @@ type (
 		LinkOrURI
 		// GetType returns the ActivityStreams type
 		GetType() ActivityVocabularyType
-		// IsLink shows if current object represents a link object or an IRI
+		// IsLink shows if current item represents a Link object or an IRI
 		IsLink() bool
-		// IsObject shows if current object represents an ActivityStrems object
+		// IsObject shows if current item represents an ActivityStreams object
 		IsObject() bool
-		//UnmarshalJSON([]byte) error
+		// IsCollection shows if the current item represents an ItemCollection
+		IsCollection()bool
 	}
 	// Mapper interface allows external objects to implement their own mechanism for loading information
 	// from an ActivityStreams vocabulary object
@@ -191,6 +192,11 @@ func (o Object) IsLink() bool {
 // IsObject validates if currentActivity Pub Object is an Object
 func (o Object) IsObject() bool {
 	return true
+}
+
+// IsCollection returns false for Object objects
+func (o Object) IsCollection() bool {
+	return false
 }
 
 // MarshalJSON serializes the NaturalLanguageValues into JSON

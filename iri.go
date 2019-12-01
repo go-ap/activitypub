@@ -56,6 +56,11 @@ func (i IRI) IsObject() bool {
 	return false
 }
 
+// IsCollection returns false for IRI objects
+func (i IRI) IsCollection() bool {
+	return false
+}
+
 // FlattenToIRI checks if Item can be flatten to an IRI and returns it if so
 func FlattenToIRI(it Item) Item {
 	if it != nil && it.IsObject() && len(it.GetLink()) > 0 {

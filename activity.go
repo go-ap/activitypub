@@ -821,6 +821,11 @@ func (i IntransitiveActivity) IsObject() bool {
 	return true
 }
 
+// IsCollection returns false for IntransitiveActivity objects
+func (i IntransitiveActivity) IsCollection() bool {
+	return false
+}
+
 // GetType returns the ActivityVocabulary type of the current Activity
 func (a Activity) GetType() ActivityVocabularyType {
 	return a.Type
@@ -844,6 +849,11 @@ func (a Activity) GetLink() IRI {
 // IsObject returns true for Activity objects
 func (a Activity) IsObject() bool {
 	return true
+}
+
+// IsCollection returns false for Activity objects
+func (a Activity) IsCollection() bool {
+	return false
 }
 
 // GetID returns the ObjectID corresponding to the Like object
@@ -1314,6 +1324,11 @@ func (q Question) GetType() ActivityVocabularyType {
 // IsObject returns true for Question objects
 func (q Question) IsObject() bool {
 	return true
+}
+
+// IsCollection returns false for Question objects
+func (q Question) IsCollection() bool {
+	return false
 }
 
 // IsLink returns false for Question objects

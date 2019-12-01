@@ -18,7 +18,7 @@ func (i ItemCollection) GetLink() IRI {
 
 // GetType returns the ItemCollection's type
 func (i ItemCollection) GetType() ActivityVocabularyType {
-	return i.First().GetType()
+	return CollectionOfItems
 }
 
 // IsLink returns false for an ItemCollection object
@@ -58,12 +58,17 @@ func (i ItemCollection) First() Item {
 }
 
 // Collection returns the current object as collection interface
-func (i *ItemCollection) Collection() CollectionInterface {
-	return i
+func (i *ItemCollection) Collection() ItemCollection {
+	return *i
+}
+
+// IsCollection returns true for ItemCollection arrays
+func (i ItemCollection) IsCollection() bool {
+	return true
 }
 
 // Contains verifies if IRIs array contains the received one
-func(i ItemCollection) Contains(r IRI) bool {
+func (i ItemCollection) Contains(r IRI) bool {
 	if len(i) == 0 {
 		return false
 	}
