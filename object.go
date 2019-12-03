@@ -655,7 +655,8 @@ func (c *MimeType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// ToObject
+// ToObject returns an Object pointer to the data in the current Item
+// It relies on the fact that all the types in this package have a data layout compatible with Object.
 func ToObject(it Item) (*Object, error) {
 	switch i := it.(type) {
 	case *Object:
@@ -690,28 +691,36 @@ func ToObject(it Item) (*Object, error) {
 		return (*Object)(unsafe.Pointer(i)), nil
 	case Question:
 		return (*Object)(unsafe.Pointer(&i)), nil
+	case *Collection:
+		return (*Object)(unsafe.Pointer(i)), nil
+	case Collection:
+		return (*Object)(unsafe.Pointer(&i)), nil
+	case *CollectionPage:
+		return (*Object)(unsafe.Pointer(i)), nil
+	case CollectionPage:
+		return (*Object)(unsafe.Pointer(&i)), nil
+	case *OrderedCollection:
+		return (*Object)(unsafe.Pointer(i)), nil
+	case OrderedCollection:
+		return (*Object)(unsafe.Pointer(&i)), nil
+	case *OrderedCollectionPage:
+		return (*Object)(unsafe.Pointer(i)), nil
+	case OrderedCollectionPage:
+		return (*Object)(unsafe.Pointer(&i)), nil
 	}
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
 
 // FlattenObjectProperties flattens the Object's properties from Object types to IRI
 func FlattenObjectProperties(o *Object) *Object {
-	if o.Replies != nil && o.Replies.IsObject() {
-		if len(o.Replies.GetLink()) > 0 {
-			o.Replies = o.Replies.GetLink()
-		} else {
-			o.Replies = IRI(fmt.Sprintf("%s/replies", o.GetLink()))
-		}
-	}
+	o.Replies = Flatten(o.Replies)
 	o.AttributedTo = Flatten(o.AttributedTo)
 	o.To = FlattenItemCollection(o.To)
 	o.Bto = FlattenItemCollection(o.Bto)
 	o.CC = FlattenItemCollection(o.CC)
 	o.BCC = FlattenItemCollection(o.BCC)
 	o.Audience = FlattenItemCollection(o.Audience)
-
 	o.Tag = FlattenItemCollection(o.Tag)
-
 	return o
 }
 
