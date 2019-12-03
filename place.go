@@ -1,6 +1,10 @@
 package activitystreams
 
-import "time"
+import (
+	"fmt"
+	"time"
+	"unsafe"
+)
 
 // Place represents a logical or physical location. See 5.3 Representing Places for additional information.
 type Place struct {
@@ -200,4 +204,36 @@ func (p *Place) UnmarshalJSON(data []byte) error {
 	p.Radius = JSONGetInt(data, "radius")
 	p.Units = JSONGetString(data, "units")
 	return nil
+}
+
+// Recipients performs recipient de-duplication on the Place object's To, Bto, CC and BCC properties
+func (p *Place) Recipients() ItemCollection {
+	var aud ItemCollection
+	rec, _ := ItemCollectionDeduplication(&aud, &p.To, &p.Bto, &p.CC, &p.BCC, &p.Audience)
+	return rec
+}
+
+// Clean removes Bto and BCC properties
+func (p *Place) Clean(){
+	p.BCC = nil
+	p.Bto = nil
+}
+
+// ToPlace
+func ToPlace(it Item) (*Place, error) {
+	switch i := it.(type) {
+	case *Place:
+		return i, nil
+	case Place:
+		return &i, nil
+	case *Object:
+		// FIXME(marius): **memory_safety** Place has extra properties which will point to invalid memory
+		//   we need a safe version for converting from smaller objects to larger ones
+		return (*Place)(unsafe.Pointer(i)), nil
+	case Object:
+		// FIXME(marius): **memory_safety** Place has extra properties which will point to invalid memory
+		//   we need a safe version for converting from smaller objects to larger ones
+		return (*Place)(unsafe.Pointer(&i)), nil
+	}
+	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }

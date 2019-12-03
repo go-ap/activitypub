@@ -567,6 +567,19 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// Recipients performs recipient de-duplication on the Object's To, Bto, CC and BCC properties
+func (o *Object) Recipients() ItemCollection {
+	var aud ItemCollection
+	rec, _ := ItemCollectionDeduplication(&aud, &o.To, &o.Bto, &o.CC, &o.BCC, &o.Audience)
+	return rec
+}
+
+// Clean removes Bto and BCC properties
+func (o *Object) Clean(){
+	o.BCC = nil
+	o.Bto = nil
+}
+
 type (
 	object = Object
 	Parent = Object
@@ -712,25 +725,6 @@ func ToRelationship(it Item) (*Relationship, error) {
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
 
-// ToPlace
-func ToPlace(it Item) (*Place, error) {
-	switch i := it.(type) {
-	case *Place:
-		return i, nil
-	case Place:
-		return &i, nil
-	case *Object:
-		// FIXME(marius): **memory_safety** Place has extra properties which will point to invalid memory
-		//   we need a safe version for converting from smaller objects to larger ones
-		return (*Place)(unsafe.Pointer(i)), nil
-	case Object:
-		// FIXME(marius): **memory_safety** Place has extra properties which will point to invalid memory
-		//   we need a safe version for converting from smaller objects to larger ones
-		return (*Place)(unsafe.Pointer(&i)), nil
-	}
-	return nil, fmt.Errorf("unable to convert %q", it.GetType())
-}
-
 // ToTombstone
 func ToTombstone(it Item) (*Tombstone, error) {
 	switch i := it.(type) {
@@ -829,45 +823,6 @@ func (t *Tombstone) UnmarshalJSON(data []byte) error {
 	t.FormerType = ActivityVocabularyType(JSONGetString(data, "formerType"))
 	t.Deleted = JSONGetTime(data, "deleted")
 	return nil
-}
-
-// Recipients performs recipient de-duplication on the Object's To, Bto, CC and BCC properties
-func (o *object) Recipients() ItemCollection {
-	var aud ItemCollection
-	rec, _ := ItemCollectionDeduplication(&aud, &o.To, &o.Bto, &o.CC, &o.BCC, &o.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (o *object) Clean(){
-	o.BCC = nil
-	o.Bto = nil
-}
-
-// Recipients performs recipient de-duplication on the Place object's To, Bto, CC and BCC properties
-func (p *Place) Recipients() ItemCollection {
-	var aud ItemCollection
-	rec, _ := ItemCollectionDeduplication(&aud, &p.To, &p.Bto, &p.CC, &p.BCC, &p.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (p *Place) Clean(){
-	p.BCC = nil
-	p.Bto = nil
-}
-
-// Recipients performs recipient de-duplication on the Profile object's To, Bto, CC and BCC properties
-func (p *Profile) Recipients() ItemCollection {
-	var aud ItemCollection
-	rec, _ := ItemCollectionDeduplication(&aud, &p.To, &p.Bto, &p.CC, &p.BCC, &p.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (p *Profile) Clean(){
-	p.BCC = nil
-	p.Bto = nil
 }
 
 // Recipients performs recipient de-duplication on the Relationship object's To, Bto, CC and BCC properties
