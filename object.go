@@ -582,8 +582,6 @@ func (o *Object) Clean() {
 }
 
 type (
-	object = Object
-	Parent = Object
 	// Article represents any kind of multi-paragraph written work.
 	Article = Object
 	// Audio represents an audio document of any kind.

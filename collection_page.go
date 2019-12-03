@@ -5,26 +5,10 @@ import (
 	"time"
 )
 
-const CollectionOfItems ActivityVocabularyType = "ItemCollection"
-
-var CollectionTypes = ActivityVocabularyTypes{
-	CollectionOfItems,
-	CollectionType,
-	OrderedCollectionType,
-	CollectionPageType,
-	OrderedCollectionPageType,
-}
-
-type CollectionInterface interface {
-	ObjectOrLink
-	Collection() ItemCollection
-	Append(ob Item) error
-	Count() uint
-	Contains(IRI) bool
-}
-
-// Collection is a subtype of Activity Pub Object that represents ordered or unordered sets of Activity Pub Object or Link instances.
-type Collection struct {
+// CollectionPage is a Collection that contains a large number of items and when it becomes impractical
+// for an implementation to serialize every item contained by a Collection using the items
+// property alone. In such cases, the items within a Collection can be divided into distinct subsets or "pages".
+type CollectionPage struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
@@ -114,79 +98,67 @@ type Collection struct {
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
 	TotalItems uint `jsonld:"totalItems"`
-	// Identifies the items contained in a collection. The items might be ordered or unordered.
+	// Identifies the items contained in a collection. The items might be unordered.
 	Items ItemCollection `jsonld:"items,omitempty"`
+	// Identifies the Collection to which a CollectionPage objects items belong.
+	PartOf Item `jsonld:"partOf,omitempty"`
+	// In a paged Collection, indicates the next page of items.
+	Next Item `jsonld:"next,omitempty"`
+	// In a paged Collection, identifies the previous page of items.
+	Prev Item `jsonld:"prev,omitempty"`
 }
 
-// CollectionNew initializes a new Collection
-func CollectionNew(id ObjectID) *Collection {
-	c := Collection{ID: id, Type: CollectionType}
-	c.Name = NaturalLanguageValuesNew()
-	c.Content = NaturalLanguageValuesNew()
-	c.Summary = NaturalLanguageValuesNew()
-	return &c
-}
-
-// OrderedCollectionNew initializes a new OrderedCollection
-func OrderedCollectionNew(id ObjectID) *OrderedCollection {
-	o := OrderedCollection{ID: id, Type: OrderedCollectionType}
-	o.Name = NaturalLanguageValuesNew()
-	o.Content = NaturalLanguageValuesNew()
-
-	return &o
-}
-
-// GetID returns the ObjectID corresponding to the Collection object
-func (c Collection) GetID() *ObjectID {
+// GetID returns the ObjectID corresponding to the CollectionPage object
+func (c CollectionPage) GetID() *ObjectID {
 	return &c.ID
 }
 
-// GetType returns the Collection's type
-func (c Collection) GetType() ActivityVocabularyType {
+// GetType returns the CollectionPage's type
+func (c CollectionPage) GetType() ActivityVocabularyType {
 	return c.Type
 }
 
-// IsLink returns false for a Collection object
-func (c Collection) IsLink() bool {
+// IsLink returns false for a CollectionPage object
+func (c CollectionPage) IsLink() bool {
 	return false
 }
 
-// IsObject returns true for a Collection object
-func (c Collection) IsObject() bool {
+// IsObject returns true for a CollectionPage object
+func (c CollectionPage) IsObject() bool {
 	return true
 }
 
-// IsCollection returns true for Collection objects
-func (c Collection) IsCollection() bool {
+// IsCollection returns true for CollectionPage objects
+func (c CollectionPage) IsCollection() bool {
 	return true
 }
 
-// GetLink returns the IRI corresponding to the Collection object
-func (c Collection) GetLink() IRI {
+// GetLink returns the IRI corresponding to the CollectionPage object
+func (c CollectionPage) GetLink() IRI {
 	return IRI(c.ID)
 }
 
-// Collection returns the Collection's items
-func (c Collection) Collection() ItemCollection {
+// Collection returns the ColleCollectionPagection items
+func (c CollectionPage) Collection() ItemCollection {
 	return c.Items
 }
 
-// Append adds an element to a Collection
-func (c *Collection) Append(ob Item) error {
-	c.Items = append(c.Items, ob)
-	return nil
-}
-
-// Count returns the maximum between the length of Items in collection and its TotalItems property
-func (c *Collection) Count() uint {
+// Count returns the maximum between the length of Items in the collection page and its TotalItems property
+func (c *CollectionPage) Count() uint {
 	if c.TotalItems > 0 {
 		return c.TotalItems
 	}
 	return uint(len(c.Items))
 }
 
-// Contains verifies if Collection array contains the received one
-func (c Collection) Contains(r IRI) bool {
+// Append adds an element to a CollectionPage
+func (c *CollectionPage) Append(ob Item) error {
+	c.Items = append(c.Items, ob)
+	return nil
+}
+
+// Contains verifies if CollectionPage array contains the received one
+func (c CollectionPage) Contains(r IRI) bool {
 	if len(c.Items) == 0 {
 		return false
 	}
@@ -199,7 +171,7 @@ func (c Collection) Contains(r IRI) bool {
 }
 
 // UnmarshalJSON
-func (c *Collection) UnmarshalJSON(data []byte) error {
+func (c *CollectionPage) UnmarshalJSON(data []byte) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = JSONGetItemByType
 	}
@@ -263,50 +235,37 @@ func (c *Collection) UnmarshalJSON(data []byte) error {
 	c.First = JSONGetItem(data, "first")
 	c.Last = JSONGetItem(data, "last")
 
+	c.Next = JSONGetItem(data, "next")
+	c.Prev = JSONGetItem(data, "prev")
+	c.PartOf = JSONGetItem(data, "partOf")
+
 	return nil
 }
 
-// Flatten checks if Item can be flatten to an IRI or array of IRIs and returns it if so
-func Flatten(it Item) Item {
-	if it.IsCollection() {
-		if c, ok := it.(CollectionInterface); ok {
-			it = FlattenItemCollection(c.Collection())
-		}
+// CollectionNew initializes a new CollectionPage
+func CollectionPageNew(parent CollectionInterface) *CollectionPage {
+	p := CollectionPage{
+		PartOf: parent.GetLink(),
 	}
-	if it != nil && len(it.GetLink()) > 0 {
-		return it.GetLink()
+	if pc, ok := parent.(*Collection); ok {
+		copyCollectionToPage(pc, &p)
 	}
-	return it
+	p.Type = CollectionPageType
+	return &p
 }
 
-// FlattenItemCollection flattens the Collection's properties from Object type to IRI
-func FlattenItemCollection(c ItemCollection) ItemCollection {
-	if c != nil && len(c) > 0 {
-		for i, it := range c {
-			c[i] = FlattenToIRI(it)
-		}
-	}
-	return c
+func copyCollectionToPage(c *Collection, p *CollectionPage) error {
+	p.ID = c.ID
+	return nil
 }
 
-// ToItemCollection
-func ToItemCollection(it Item) (*ItemCollection, error) {
+// ToCollectionPage
+func ToCollectionPage(it Item) (*CollectionPage, error) {
 	switch i := it.(type) {
-	case *ItemCollection:
+	case *CollectionPage:
 		return i, nil
-	case ItemCollection:
+	case CollectionPage:
 		return &i, nil
 	}
-	return nil, errors.New("unable to convert to item collection")
-}
-
-// ToCollection
-func ToCollection(it Item) (*Collection, error) {
-	switch i := it.(type) {
-	case *Collection:
-		return i, nil
-	case Collection:
-		return &i, nil
-	}
-	return nil, errors.New("unable to convert to collection")
+	return nil, errors.New("unable to convert to collection page")
 }

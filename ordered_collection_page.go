@@ -2,29 +2,15 @@ package activitystreams
 
 import (
 	"errors"
+	"github.com/buger/jsonparser"
 	"time"
 )
 
-const CollectionOfItems ActivityVocabularyType = "ItemCollection"
-
-var CollectionTypes = ActivityVocabularyTypes{
-	CollectionOfItems,
-	CollectionType,
-	OrderedCollectionType,
-	CollectionPageType,
-	OrderedCollectionPageType,
-}
-
-type CollectionInterface interface {
-	ObjectOrLink
-	Collection() ItemCollection
-	Append(ob Item) error
-	Count() uint
-	Contains(IRI) bool
-}
-
-// Collection is a subtype of Activity Pub Object that represents ordered or unordered sets of Activity Pub Object or Link instances.
-type Collection struct {
+// OrderedCollectionPage type extends from both CollectionPage and OrderedCollection.
+// In addition to the properties inherited from each of those, the OrderedCollectionPage
+// may contain an additional startIndex property whose value indicates the relative index position
+// of the first item contained by the page within the OrderedCollection to which the page belongs.
+type OrderedCollectionPage struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
@@ -115,82 +101,72 @@ type Collection struct {
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
 	TotalItems uint `jsonld:"totalItems"`
 	// Identifies the items contained in a collection. The items might be ordered or unordered.
-	Items ItemCollection `jsonld:"items,omitempty"`
+	OrderedItems ItemCollection `jsonld:"orderedItems,omitempty"`
+	// Identifies the Collection to which a CollectionPage objects items belong.
+	PartOf Item `jsonld:"partOf,omitempty"`
+	// In a paged Collection, indicates the next page of items.
+	Next Item `jsonld:"next,omitempty"`
+	// In a paged Collection, identifies the previous page of items.
+	Prev Item `jsonld:"prev,omitempty"`
+	// A non-negative integer value identifying the relative position within the logical view of a strictly ordered collection.
+	StartIndex uint `jsonld:"startIndex,omitempty"`
 }
 
-// CollectionNew initializes a new Collection
-func CollectionNew(id ObjectID) *Collection {
-	c := Collection{ID: id, Type: CollectionType}
-	c.Name = NaturalLanguageValuesNew()
-	c.Content = NaturalLanguageValuesNew()
-	c.Summary = NaturalLanguageValuesNew()
-	return &c
+// GetID returns the ObjectID corresponding to the OrderedCollectionPage object
+func (o OrderedCollectionPage) GetID() *ObjectID {
+	return &o.ID
 }
 
-// OrderedCollectionNew initializes a new OrderedCollection
-func OrderedCollectionNew(id ObjectID) *OrderedCollection {
-	o := OrderedCollection{ID: id, Type: OrderedCollectionType}
-	o.Name = NaturalLanguageValuesNew()
-	o.Content = NaturalLanguageValuesNew()
-
-	return &o
+// GetType returns the OrderedCollectionPage's type
+func (o OrderedCollectionPage) GetType() ActivityVocabularyType {
+	return o.Type
 }
 
-// GetID returns the ObjectID corresponding to the Collection object
-func (c Collection) GetID() *ObjectID {
-	return &c.ID
-}
-
-// GetType returns the Collection's type
-func (c Collection) GetType() ActivityVocabularyType {
-	return c.Type
-}
-
-// IsLink returns false for a Collection object
-func (c Collection) IsLink() bool {
+// IsLink returns false for a OrderedCollectionPage object
+func (o OrderedCollectionPage) IsLink() bool {
 	return false
 }
 
-// IsObject returns true for a Collection object
-func (c Collection) IsObject() bool {
+// IsObject returns true for a OrderedCollectionPage object
+func (o OrderedCollectionPage) IsObject() bool {
 	return true
 }
 
-// IsCollection returns true for Collection objects
-func (c Collection) IsCollection() bool {
+// IsCollection returns true for OrderedCollectionPage objects
+func (o OrderedCollectionPage) IsCollection() bool {
 	return true
 }
 
-// GetLink returns the IRI corresponding to the Collection object
-func (c Collection) GetLink() IRI {
-	return IRI(c.ID)
+// GetLink returns the IRI corresponding to the OrderedCollectionPage object
+func (o OrderedCollectionPage) GetLink() IRI {
+	return IRI(o.ID)
 }
 
-// Collection returns the Collection's items
-func (c Collection) Collection() ItemCollection {
-	return c.Items
+// Collection returns the underlying Collection type
+func (o *OrderedCollectionPage) Collection() ItemCollection {
+	return o.OrderedItems
 }
 
-// Append adds an element to a Collection
-func (c *Collection) Append(ob Item) error {
-	c.Items = append(c.Items, ob)
+// Count returns the maximum between the length of Items in the collection page and its TotalItems property
+func (o *OrderedCollectionPage) Count() uint {
+	if o.TotalItems > 0 {
+		return o.TotalItems
+	}
+	return uint(len(o.OrderedItems))
+}
+
+// Append adds an element to an OrderedCollectionPage
+func (o *OrderedCollectionPage) Append(ob Item) error {
+	o.OrderedItems = append(o.OrderedItems, ob)
 	return nil
 }
 
-// Count returns the maximum between the length of Items in collection and its TotalItems property
-func (c *Collection) Count() uint {
-	if c.TotalItems > 0 {
-		return c.TotalItems
-	}
-	return uint(len(c.Items))
-}
-
-// Contains verifies if Collection array contains the received one
-func (c Collection) Contains(r IRI) bool {
-	if len(c.Items) == 0 {
+// Contains verifies if OrderedCollectionPage array contains the received one
+func (o OrderedCollectionPage) Contains(r IRI) bool {
+	if len(o.OrderedItems) == 0 {
 		return false
 	}
-	for _, iri := range c.Items {
+	for _, iri := range o.OrderedItems {
 		if r.Equals(iri.GetLink(), false) {
 			return true
 		}
@@ -199,114 +175,87 @@ func (c Collection) Contains(r IRI) bool {
 }
 
 // UnmarshalJSON
-func (c *Collection) UnmarshalJSON(data []byte) error {
+func (o *OrderedCollectionPage) UnmarshalJSON(data []byte) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = JSONGetItemByType
 	}
-	c.ID = JSONGetObjectID(data)
-	c.Type = JSONGetType(data)
-	c.Name = JSONGetNaturalLanguageField(data, "name")
-	c.Content = JSONGetNaturalLanguageField(data, "content")
-	c.Summary = JSONGetNaturalLanguageField(data, "summary")
-	c.Context = JSONGetItem(data, "context")
-	c.URL = JSONGetURIItem(data, "url")
-	c.MediaType = MimeType(JSONGetString(data, "mediaType"))
-	c.Generator = JSONGetItem(data, "generator")
-	c.AttributedTo = JSONGetItem(data, "attributedTo")
-	c.Attachment = JSONGetItem(data, "attachment")
-	c.Location = JSONGetItem(data, "location")
-	c.Published = JSONGetTime(data, "published")
-	c.StartTime = JSONGetTime(data, "startTime")
-	c.EndTime = JSONGetTime(data, "endTime")
-	c.Duration = JSONGetDuration(data, "duration")
-	c.Icon = JSONGetItem(data, "icon")
-	c.Preview = JSONGetItem(data, "preview")
-	c.Image = JSONGetItem(data, "image")
-	c.Updated = JSONGetTime(data, "updated")
+	o.ID = JSONGetObjectID(data)
+	o.Type = JSONGetType(data)
+	o.Name = JSONGetNaturalLanguageField(data, "name")
+	o.Content = JSONGetNaturalLanguageField(data, "content")
+	o.Summary = JSONGetNaturalLanguageField(data, "summary")
+	o.Context = JSONGetItem(data, "context")
+	o.URL = JSONGetURIItem(data, "url")
+	o.MediaType = MimeType(JSONGetString(data, "mediaType"))
+	o.Generator = JSONGetItem(data, "generator")
+	o.AttributedTo = JSONGetItem(data, "attributedTo")
+	o.Attachment = JSONGetItem(data, "attachment")
+	o.Location = JSONGetItem(data, "location")
+	o.Published = JSONGetTime(data, "published")
+	o.StartTime = JSONGetTime(data, "startTime")
+	o.EndTime = JSONGetTime(data, "endTime")
+	o.Duration = JSONGetDuration(data, "duration")
+	o.Icon = JSONGetItem(data, "icon")
+	o.Preview = JSONGetItem(data, "preview")
+	o.Image = JSONGetItem(data, "image")
+	o.Updated = JSONGetTime(data, "updated")
 	inReplyTo := JSONGetItems(data, "inReplyTo")
 	if len(inReplyTo) > 0 {
-		c.InReplyTo = inReplyTo
+		o.InReplyTo = inReplyTo
 	}
 	to := JSONGetItems(data, "to")
 	if len(to) > 0 {
-		c.To = to
+		o.To = to
 	}
 	audience := JSONGetItems(data, "audience")
 	if len(audience) > 0 {
-		c.Audience = audience
+		o.Audience = audience
 	}
 	bto := JSONGetItems(data, "bto")
 	if len(bto) > 0 {
-		c.Bto = bto
+		o.Bto = bto
 	}
 	cc := JSONGetItems(data, "cc")
 	if len(cc) > 0 {
-		c.CC = cc
+		o.CC = cc
 	}
 	bcc := JSONGetItems(data, "bcc")
 	if len(bcc) > 0 {
-		c.BCC = bcc
+		o.BCC = bcc
 	}
 	replies := JSONGetItem(data, "replies")
 	if replies != nil {
-		c.Replies = replies
+		o.Replies = replies
 	}
 	tag := JSONGetItems(data, "tag")
 	if len(tag) > 0 {
-		c.Tag = tag
+		o.Tag = tag
 	}
 
-	c.TotalItems = uint(JSONGetInt(data, "totalItems"))
-	c.Items = JSONGetItems(data, "items")
+	o.TotalItems = uint(JSONGetInt(data, "totalItems"))
+	o.OrderedItems = JSONGetItems(data, "orderedItems")
 
-	c.Current = JSONGetItem(data, "current")
-	c.First = JSONGetItem(data, "first")
-	c.Last = JSONGetItem(data, "last")
+	o.Current = JSONGetItem(data, "current")
+	o.First = JSONGetItem(data, "first")
+	o.Last = JSONGetItem(data, "last")
 
+	o.Next = JSONGetItem(data, "next")
+	o.Prev = JSONGetItem(data, "prev")
+	o.PartOf = JSONGetItem(data, "partOf")
+
+	if si, err := jsonparser.GetInt(data, "startIndex"); err != nil {
+		o.StartIndex = uint(si)
+	}
 	return nil
 }
 
-// Flatten checks if Item can be flatten to an IRI or array of IRIs and returns it if so
-func Flatten(it Item) Item {
-	if it.IsCollection() {
-		if c, ok := it.(CollectionInterface); ok {
-			it = FlattenItemCollection(c.Collection())
-		}
-	}
-	if it != nil && len(it.GetLink()) > 0 {
-		return it.GetLink()
-	}
-	return it
-}
-
-// FlattenItemCollection flattens the Collection's properties from Object type to IRI
-func FlattenItemCollection(c ItemCollection) ItemCollection {
-	if c != nil && len(c) > 0 {
-		for i, it := range c {
-			c[i] = FlattenToIRI(it)
-		}
-	}
-	return c
-}
-
-// ToItemCollection
-func ToItemCollection(it Item) (*ItemCollection, error) {
+// ToOrderedCollectionPage
+func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
 	switch i := it.(type) {
-	case *ItemCollection:
+	case *OrderedCollectionPage:
 		return i, nil
-	case ItemCollection:
+	case OrderedCollectionPage:
 		return &i, nil
 	}
-	return nil, errors.New("unable to convert to item collection")
-}
-
-// ToCollection
-func ToCollection(it Item) (*Collection, error) {
-	switch i := it.(type) {
-	case *Collection:
-		return i, nil
-	case Collection:
-		return &i, nil
-	}
-	return nil, errors.New("unable to convert to collection")
+	return nil, errors.New("unable to convert to ordered collection page")
 }

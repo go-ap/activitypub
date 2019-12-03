@@ -325,13 +325,13 @@ func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
 	case ActorType:
 		return ObjectNew(typ), nil
 	case CollectionType:
-		return &Collection{Parent: Parent{Type: typ}}, nil
+		return &Collection{Type: typ}, nil
 	case OrderedCollectionType:
-		return &OrderedCollection{Parent: Parent{Type: typ}}, nil
+		return &OrderedCollection{Type: typ}, nil
 	case CollectionPageType:
-		return &CollectionPage{ParentCollection: ParentCollection{Parent: Parent{Type: typ}}}, nil
+		return &CollectionPage{Type: typ}, nil
 	case OrderedCollectionPageType:
-		return &OrderedCollectionPage{OrderedCollection: OrderedCollection{Parent: Parent{Type: typ}}}, nil
+		return &OrderedCollectionPage{Type: typ}, nil
 	case ArticleType:
 		return ObjectNew(typ), nil
 	case AudioType:

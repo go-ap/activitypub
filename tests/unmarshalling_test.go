@@ -273,10 +273,8 @@ var allTests = tests{
 			Type: a.ObjectType,
 			ID:   a.ObjectID("http://www.test.example/object/1"),
 			Replies: &a.Collection{
-				Parent: a.Parent{
-					ID:   a.ObjectID("http://www.test.example/object/1/replies"),
-					Type: a.CollectionType,
-				},
+				ID:         a.ObjectID("http://www.test.example/object/1/replies"),
+				Type:       a.CollectionType,
 				TotalItems: 1,
 				Items: a.ItemCollection{
 					&a.Object{
@@ -320,11 +318,9 @@ var allTests = tests{
 		expected: true,
 		blank:    &a.OrderedCollection{},
 		result: &a.OrderedCollection{
-			Parent: a.Parent{
-				ID:   a.ObjectID("http://example.com/outbox"),
-				Type: a.OrderedCollectionType,
-				URL:  a.IRI("http://example.com/outbox"),
-			},
+			ID:         a.ObjectID("http://example.com/outbox"),
+			Type:       a.OrderedCollectionType,
+			URL:        a.IRI("http://example.com/outbox"),
 			TotalItems: 1,
 			OrderedItems: a.ItemCollection{
 				&a.Object{
@@ -345,29 +341,25 @@ var allTests = tests{
 		expected: true,
 		blank:    &a.OrderedCollectionPage{},
 		result: &a.OrderedCollectionPage{
-			PartOf: a.IRI("http://example.com/outbox"),
-			Next:   a.IRI("http://example.com/outbox?page=3"),
-			Prev:   a.IRI("http://example.com/outbox?page=1"),
-			OrderedCollection: a.OrderedCollection{
-				Parent: a.Parent{
-					ID:   a.ObjectID("http://example.com/outbox?page=2"),
-					Type: a.OrderedCollectionPageType,
-					URL:  a.IRI("http://example.com/outbox?page=2"),
-				},
-				Current:    a.IRI("http://example.com/outbox?page=2"),
-				TotalItems: 1,
-				OrderedItems: a.ItemCollection{
-					&a.Object{
-						ID:           a.ObjectID("http://example.com/outbox/53c6fb47"),
-						Type:         a.ArticleType,
-						Name:         a.NaturalLanguageValues{{a.NilLangRef, "Example title"}},
-						Content:      a.NaturalLanguageValues{{a.NilLangRef, "Example content!"}},
-						URL:          a.IRI("http://example.com/53c6fb47"),
-						MediaType:    a.MimeType("text/markdown"),
-						Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
-						Generator:    a.IRI("http://example.com"),
-						AttributedTo: a.IRI("http://example.com/accounts/alice"),
-					},
+			PartOf:     a.IRI("http://example.com/outbox"),
+			Next:       a.IRI("http://example.com/outbox?page=3"),
+			Prev:       a.IRI("http://example.com/outbox?page=1"),
+			ID:         a.ObjectID("http://example.com/outbox?page=2"),
+			Type:       a.OrderedCollectionPageType,
+			URL:        a.IRI("http://example.com/outbox?page=2"),
+			Current:    a.IRI("http://example.com/outbox?page=2"),
+			TotalItems: 1,
+			OrderedItems: a.ItemCollection{
+				&a.Object{
+					ID:           a.ObjectID("http://example.com/outbox/53c6fb47"),
+					Type:         a.ArticleType,
+					Name:         a.NaturalLanguageValues{{a.NilLangRef, "Example title"}},
+					Content:      a.NaturalLanguageValues{{a.NilLangRef, "Example content!"}},
+					URL:          a.IRI("http://example.com/53c6fb47"),
+					MediaType:    a.MimeType("text/markdown"),
+					Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
+					Generator:    a.IRI("http://example.com"),
+					AttributedTo: a.IRI("http://example.com/accounts/alice"),
 				},
 			},
 		},
