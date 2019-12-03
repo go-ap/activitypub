@@ -336,11 +336,58 @@ func (a Activity) IsCollection() bool {
 	return false
 }
 
+func removeFromCollection(col ItemCollection, items ...Item) ItemCollection {
+	result := make(ItemCollection, 0)
+	if len(items) == 0 {
+		return col
+	}
+	for _, ob := range col {
+		found := false
+		for _, it := range items {
+			if IRI(ob.GetID()).Equals(IRI(it.GetID()), false) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			result = append(result, ob)
+		}
+	}
+	return result
+}
+
+func removeFromAudience(a *Activity, items ...Item) error {
+	if a.To != nil {
+		a.To = removeFromCollection(a.To, items...)
+	}
+	if a.Bto != nil {
+		a.Bto = removeFromCollection(a.Bto, items...)
+	}
+	if a.CC != nil {
+		a.CC = removeFromCollection(a.CC, items...)
+	}
+	if a.BCC != nil {
+		a.BCC = removeFromCollection(a.BCC, items...)
+	}
+	if a.Audience != nil {
+		a.Audience = removeFromCollection(a.Audience, items...)
+	}
+	return nil
+}
+
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (a *Activity) Recipients() ItemCollection {
-	actor := make(ItemCollection, 0)
-	actor.Append(a.Actor)
-	rec, _ := ItemCollectionDeduplication(&actor, &a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
+	var alwaysRemove ItemCollection
+	if a.GetType() == BlockType && a.Object != nil {
+		alwaysRemove = append(alwaysRemove, a.Object)
+	}
+	if a.Actor != nil {
+		alwaysRemove = append(alwaysRemove, a.Actor)
+	}
+	if len(alwaysRemove) > 0 {
+		removeFromAudience(a, alwaysRemove...)
+	}
+	rec, _ := ItemCollectionDeduplication(&a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
 	return rec
 }
 

@@ -630,16 +630,16 @@ func ItemCollectionDeduplication(recCols ...*ItemCollection) (ItemCollection, er
 			if cur == nil {
 				continue
 			}
-			var testIt Item
+			var testIt IRI
 			if cur.IsObject() {
-				testIt = cur
+				testIt = IRI(cur.GetID())
 			} else if cur.IsLink() {
 				testIt = cur.GetLink()
 			} else {
 				continue
 			}
 			for _, it := range rec {
-				if testIt == it {
+				if testIt.Equals(IRI(it.GetID()), false) {
 					// mark the element for removal
 					toRemove = append(toRemove, i)
 					save = false

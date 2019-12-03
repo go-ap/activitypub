@@ -81,6 +81,10 @@ func (i IRIs) Contains(r IRI) bool {
 	return false
 }
 
+func validURL(u *url.URL) bool {
+	return len(u.Scheme) > 0 && len(u.Host) > 0
+}
+
 // Equals verifies if our receiver IRI is equals with the "with" IRI
 // It ignores the protocol
 // It tries to use the URL representation if possible and fallback to string comparison if unable to convert
@@ -88,7 +92,7 @@ func (i IRIs) Contains(r IRI) bool {
 func (i IRI) Equals(with IRI, checkScheme bool) bool {
 	u, e := i.URL()
 	uw, ew := with.URL()
-	if e != nil || ew != nil {
+	if e != nil || ew != nil || !validURL(u) || !validURL(uw) {
 		return strings.ToLower(i.String()) == strings.ToLower(with.String())
 	}
 	if checkScheme {
