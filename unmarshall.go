@@ -71,6 +71,13 @@ func JSONGetString(data []byte, prop string) string {
 	return val
 }
 
+func JSONGetBoolean(data []byte, prop string) bool {
+	val, err := jsonparser.GetBoolean(data, prop)
+	if err != nil {
+	}
+	return val
+}
+
 func JSONGetNaturalLanguageField(data []byte, prop string) NaturalLanguageValues {
 	n := NaturalLanguageValues{}
 	val, typ, _, err := jsonparser.Get(data, prop)
@@ -312,9 +319,9 @@ func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
 	case LinkType:
 		return &Link{Type: typ}, nil
 	case ActivityType:
-		return &Activity{Parent: Parent{Type: typ}}, nil
+		return &Activity{Type: typ}, nil
 	case IntransitiveActivityType:
-		return &IntransitiveActivity{Parent: Parent{Type: typ}}, nil
+		return &IntransitiveActivity{Type: typ}, nil
 	case ActorType:
 		return ObjectNew(typ), nil
 	case CollectionType:
@@ -362,61 +369,61 @@ func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
 	case ServiceType:
 		return ObjectNew(typ), nil
 	case AcceptType:
-		return &Accept{Parent: Parent{Type: typ}}, nil
+		return &Accept{Type: typ}, nil
 	case AddType:
-		return &Add{Parent: Parent{Type: typ}}, nil
+		return &Add{Type: typ}, nil
 	case AnnounceType:
-		return &Announce{Parent: Parent{Type: typ}}, nil
+		return &Announce{Type: typ}, nil
 	case ArriveType:
-		return &Arrive{Parent: Parent{Type: typ}}, nil
+		return &Arrive{Type: typ}, nil
 	case BlockType:
-		return &Block{Parent: Parent{Type: typ}}, nil
+		return &Block{Type: typ}, nil
 	case CreateType:
-		return &Create{Parent: Parent{Type: typ}}, nil
+		return &Create{Type: typ}, nil
 	case DeleteType:
-		return &Delete{Parent: Parent{Type: typ}}, nil
+		return &Delete{Type: typ}, nil
 	case DislikeType:
-		return &Dislike{Parent: Parent{Type: typ}}, nil
+		return &Dislike{Type: typ}, nil
 	case FlagType:
-		return &Flag{Parent: Parent{Type: typ}}, nil
+		return &Flag{Type: typ}, nil
 	case FollowType:
-		return &Follow{Parent: Parent{Type: typ}}, nil
+		return &Follow{Type: typ}, nil
 	case IgnoreType:
-		return &Ignore{Parent: Parent{Type: typ}}, nil
+		return &Ignore{Type: typ}, nil
 	case InviteType:
-		return &Invite{Parent: Parent{Type: typ}}, nil
+		return &Invite{Type: typ}, nil
 	case JoinType:
-		return &Join{Parent: Parent{Type: typ}}, nil
+		return &Join{Type: typ}, nil
 	case LeaveType:
-		return &Leave{Parent: Parent{Type: typ}}, nil
+		return &Leave{Type: typ}, nil
 	case LikeType:
-		return &Like{Parent: Parent{Type: typ}}, nil
+		return &Like{Type: typ}, nil
 	case ListenType:
-		return &Listen{Parent: Parent{Type: typ}}, nil
+		return &Listen{Type: typ}, nil
 	case MoveType:
-		return &Move{Parent: Parent{Type: typ}}, nil
+		return &Move{Type: typ}, nil
 	case OfferType:
-		return &Offer{Parent: Parent{Type: typ}}, nil
+		return &Offer{Type: typ}, nil
 	case QuestionType:
 		return &Question{Type: typ}, nil
 	case RejectType:
-		return &Reject{Parent: Parent{Type: typ}}, nil
+		return &Reject{Type: typ}, nil
 	case ReadType:
-		return &Read{Parent: Parent{Type: typ}}, nil
+		return &Read{Type: typ}, nil
 	case RemoveType:
-		return &Remove{Parent: Parent{Type: typ}}, nil
+		return &Remove{Type: typ}, nil
 	case TentativeRejectType:
-		return &TentativeReject{Parent: Parent{Type: typ}}, nil
+		return &TentativeReject{Type: typ}, nil
 	case TentativeAcceptType:
-		return &TentativeAccept{Parent: Parent{Type: typ}}, nil
+		return &TentativeAccept{Type: typ}, nil
 	case TravelType:
-		return &Travel{Parent: Parent{Type: typ}}, nil
+		return &Travel{Type: typ}, nil
 	case UndoType:
-		return &Undo{Parent: Parent{Type: typ}}, nil
+		return &Undo{Type: typ}, nil
 	case UpdateType:
-		return &Update{Parent: Parent{Type: typ}}, nil
+		return &Update{Type: typ}, nil
 	case ViewType:
-		return &View{Parent: Parent{Type: typ}}, nil
+		return &View{Type: typ}, nil
 	case "":
 		// when no type is available use a plain Object
 		return nil, nil

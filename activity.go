@@ -201,7 +201,86 @@ type HasRecipients interface {
 // It is important to note that the Activity type itself does not carry any specific semantics
 // about the kind of action being taken.
 type Activity struct {
-	Parent
+	// ID provides the globally unique identifier for anActivity Pub Object or Link.
+	ID ObjectID `jsonld:"id,omitempty"`
+	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
+	Type ActivityVocabularyType `jsonld:"type,omitempty"`
+	// Name a simple, human-readable, plain-text name for the object.
+	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
+	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
+	// Attachment identifies a resource attached or related to an object that potentially requires special handling.
+	// The intent is to provide a model that is at least semantically similar to attachments in email.
+	Attachment Item `jsonld:"attachment,omitempty"`
+	// AttributedTo identifies one or more entities to which this object is attributed. The attributed entities might not be Actors.
+	// For instance, an object might be attributed to the completion of another activity.
+	AttributedTo Item `jsonld:"attributedTo,omitempty"`
+	// Audience identifies one or more entities that represent the total population of entities
+	// for which the object can considered to be relevant.
+	Audience ItemCollection `jsonld:"audience,omitempty"`
+	// Content or textual representation of the Activity Pub Object encoded as a JSON string.
+	// By default, the value of content is HTML.
+	// The mediaType property can be used in the object to indicate a different content type.
+	// (The content MAY be expressed using multiple language-tagged values.)
+	Content NaturalLanguageValues `jsonld:"content,omitempty,collapsible"`
+	// Context identifies the context within which the object exists or an activity was performed.
+	// The notion of "context" used is intentionally vague.
+	// The intended function is to serve as a means of grouping objects and activities that share a
+	// common originating context or purpose. An example could be all activities relating to a common project or event.
+	Context Item `jsonld:"context,omitempty"`
+	// MediaType when used on an Object, identifies the MIME media type of the value of the content property.
+	// If not specified, the content property is assumed to contain text/html content.
+	MediaType MimeType `jsonld:"mediaType,omitempty"`
+	// EndTime the date and time describing the actual or expected ending time of the object.
+	// When used with an Activity object, for instance, the endTime property specifies the moment
+	// the activity concluded or is expected to conclude.
+	EndTime time.Time `jsonld:"endTime,omitempty"`
+	// Generator identifies the entity (e.g. an application) that generated the object.
+	Generator Item `jsonld:"generator,omitempty"`
+	// Icon indicates an entity that describes an icon for this object.
+	// The image should have an aspect ratio of one (horizontal) to one (vertical)
+	// and should be suitable for presentation at a small size.
+	Icon Item `jsonld:"icon,omitempty"`
+	// Image indicates an entity that describes an image for this object.
+	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
+	Image Item `jsonld:"image,omitempty"`
+	// InReplyTo indicates one or more entities for which this object is considered a response.
+	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
+	// Location indicates one or more physical or logical locations associated with the object.
+	Location Item `jsonld:"location,omitempty"`
+	// Preview identifies an entity that provides a preview of this object.
+	Preview Item `jsonld:"preview,omitempty"`
+	// Published the date and time at which the object was published
+	Published time.Time `jsonld:"published,omitempty"`
+	// Replies identifies a Collection containing objects considered to be responses to this object.
+	Replies Item `jsonld:"replies,omitempty"`
+	// StartTime the date and time describing the actual or expected starting time of the object.
+	// When used with an Activity object, for instance, the startTime property specifies
+	// the moment the activity began or is scheduled to begin.
+	StartTime time.Time `jsonld:"startTime,omitempty"`
+	// Summary a natural language summarization of the object encoded as HTML.
+	// *Multiple language tagged summaries may be provided.)
+	Summary NaturalLanguageValues `jsonld:"summary,omitempty,collapsible"`
+	// Tag one or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
+	// The key difference between attachment and tag is that the former implies association by inclusion,
+	// while the latter implies associated by reference.
+	Tag ItemCollection `jsonld:"tag,omitempty"`
+	// Updated the date and time at which the object was updated
+	Updated time.Time `jsonld:"updated,omitempty"`
+	// URL identifies one or more links to representations of the object
+	URL LinkOrIRI `jsonld:"url,omitempty"`
+	// To identifies an entity considered to be part of the public primary audience of an Activity Pub Object
+	To ItemCollection `jsonld:"to,omitempty"`
+	// Bto identifies anActivity Pub Object that is part of the private primary audience of this Activity Pub Object.
+	Bto ItemCollection `jsonld:"bto,omitempty"`
+	// CC identifies anActivity Pub Object that is part of the public secondary audience of this Activity Pub Object.
+	CC ItemCollection `jsonld:"cc,omitempty"`
+	// BCC identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
+	BCC ItemCollection `jsonld:"bcc,omitempty"`
+	// Duration when the object describes a time-bound resource, such as an audio or video, a meeting, etc,
+	// the duration property indicates the object's approximate duration.
+	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
+	// section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
+	Duration time.Duration `jsonld:"duration,omitempty"`
 	// Actor describes one or more entities that either performed or are expected to perform the activity.
 	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
 	Actor Item `jsonld:"actor,omitempty"`
@@ -227,28 +306,48 @@ type Activity struct {
 	Object Item `jsonld:"object,omitempty"`
 }
 
-// IntransitiveActivity Instances of IntransitiveActivity are a subtype of Activity representing intransitive actions.
-// The object property is therefore inappropriate for these activities.
-type IntransitiveActivity struct {
-	Parent
-	// Actor describes one or more entities that either performed or are expected to perform the activity.
-	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
-	Actor Actor `jsonld:"actor,omitempty"`
-	// Target describes the indirect object, or target, of the activity.
-	// The precise meaning of the target is largely dependent on the type of action being described
-	// but will often be the object of the English preposition "to".
-	// For instance, in the activity "John added a movie to his wishlist",
-	// the target of the activity is John's wishlist. An activity can have more than one target.
-	Target Item `jsonld:"target,omitempty"`
-	// Result describes the result of the activity. For instance, if a particular action results in the creation
-	// of a new resource, the result property can be used to describe that new resource.
-	Result Item `jsonld:"result,omitempty"`
-	// Origin describes an indirect object of the activity from which the activity is directed.
-	// The precise meaning of the origin is the object of the English preposition "from".
-	// For instance, in the activity "John moved an item to List B from List A", the origin of the activity is "List A".
-	Origin Item `jsonld:"origin,omitempty"`
-	// Instrument identifies one or more objects used (or to be used) in the completion of an Activity.
-	Instrument Item `jsonld:"instrument,omitempty"`
+// GetType returns the ActivityVocabulary type of the current Activity
+func (a Activity) GetType() ActivityVocabularyType {
+	return a.Type
+}
+
+// IsLink returns false for Activity objects
+func (a Activity) IsLink() bool {
+	return false
+}
+
+// GetID returns the ObjectID corresponding to the Activity object
+func (a Activity) GetID() *ObjectID {
+	return &a.ID
+}
+
+// GetLink returns the IRI corresponding to the Activity object
+func (a Activity) GetLink() IRI {
+	return IRI(a.ID)
+}
+
+// IsObject returns true for Activity objects
+func (a Activity) IsObject() bool {
+	return true
+}
+
+// IsCollection returns false for Activity objects
+func (a Activity) IsCollection() bool {
+	return false
+}
+
+// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
+func (a *Activity) Recipients() ItemCollection {
+	actor := make(ItemCollection, 0)
+	actor.Append(a.Actor)
+	rec, _ := ItemCollectionDeduplication(&actor, &a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
+	return rec
+}
+
+// Clean removes Bto and BCC properties
+func (a *Activity) Clean() {
+	a.BCC = nil
+	a.Bto = nil
 }
 
 type (
@@ -264,11 +363,6 @@ type (
 	// Announce indicates that the actor is calling the target's attention the object.
 	// The origin typically has no defined meaning.
 	Announce = Activity
-
-	// Arrive is an IntransitiveActivity that indicates that the actor has arrived at the location.
-	// The origin can be used to identify the context from which the actor originated.
-	// The target typically has no defined meaning.
-	Arrive = IntransitiveActivity
 
 	// Block indicates that the actor is blocking the object. Blocking is a stronger form of Ignore.
 	// The typical use is to support social systems that allow one user to block activities or content of other users.
@@ -338,11 +432,6 @@ type (
 	// TentativeAccept is a specialization of Accept indicating that the acceptance is tentative.
 	TentativeAccept = Accept
 
-	// Travel indicates that the actor is traveling to target from origin.
-	// Travel is an IntransitiveObject whose actor specifies the direct object.
-	// If the target or origin are not specified, either can be determined by context.
-	Travel = IntransitiveActivity
-
 	// Undo indicates that the actor is undoing the object. In most cases, the object will be an Activity describing
 	// some previously performed action (for instance, a person may have previously "liked" an article but,
 	// for whatever reason, might choose to undo that like at some later point in time).
@@ -357,117 +446,6 @@ type (
 	// View indicates that the actor has viewed the object.
 	View = Activity
 )
-
-// Question represents a question being asked. Question objects are an extension of IntransitiveActivity.
-// That is, the Question object is an Activity, but the direct object is the question
-// itself and therefore it would not contain an object property.
-// Either of the anyOf and oneOf properties may be used to express possible answers,
-// but a Question object must not have both properties.
-type Question struct {
-	// ID providesthe globally unique identifier for an Activity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
-	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyType `jsonld:"type,omitempty"`
-	// Name a simple, human-readable, plain-text name for the object.
-	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
-	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
-	// Attachment identifies a resource attached or related to an object that potentially requires special handling.
-	// The intent is to provide a model that is at least semantically similar to attachments in email.
-	Attachment Item `jsonld:"attachment,omitempty"`
-	// AttributedTo identifies one or more entities to which this object is attributed. The attributed entities might not be Actors.
-	// For instance, an object might be attributed to the completion of another activity.
-	AttributedTo Item `jsonld:"attributedTo,omitempty"`
-	// Audience identifies one or more entities that represent the total population of entities
-	// for which the object can considered to be relevant.
-	Audience Item `jsonld:"audience,omitempty"`
-	// Content the content or textual representation of the Activity Pub Object encoded as a JSON string.
-	// By default, the value of content is HTML.
-	// The mediaType property can be used in the object to indicate a different content type.
-	// (The content MAY be expressed using multiple language-tagged values.)
-	Content NaturalLanguageValues `jsonld:"content,omitempty,collapsible"`
-	// Context identifies the context within which the object exists or an activity was performed.
-	// The notion of "context" used is intentionally vague.
-	// The intended function is to serve as a means of grouping objects and activities that share a
-	// common originating context or purpose. An example could be all activities relating to a common project or event.
-	Context Item `jsonld:"context,omitempty"`
-	// EndTime the date and time describing the actual or expected ending time of the object.
-	// When used with an Activity object, for instance, the endTime property specifies the moment
-	// the activity concluded or is expected to conclude.
-	EndTime time.Time `jsonld:"endTime,omitempty"`
-	// Generator identifies the entity (e.g. an application) that generated the object.
-	Generator Item `jsonld:"generator,omitempty"`
-	// Icon indicates an entity that describes an icon for this object.
-	// The image should have an aspect ratio of one (horizontal) to one (vertical)
-	// and should be suitable for presentation at a small size.
-	Icon Item `jsonld:"icon,omitempty"`
-	// Image indicates an entity that describes an image for this object.
-	// Unlike the icon property, there are no aspect ratio or display size limitations assumed.
-	Image Item `jsonld:"image,omitempty"`
-	// InReplyTo indicates one or more entities for which this object is considered a response.
-	InReplyTo Item `jsonld:"inReplyTo,omitempty"`
-	// Location indicates one or more physical or logical locations associated with the object.
-	Location Item `jsonld:"location,omitempty"`
-	// Preview identifies an entity that providesa preview of this object.
-	Preview Item `jsonld:"preview,omitempty"`
-	// Published the date and time at which the object was published
-	Published time.Time `jsonld:"published,omitempty"`
-	// Replies identifies a Collection containing objects considered to be responses to this object.
-	Replies Item `jsonld:"replies,omitempty"`
-	// StartTime the date and time describing the actual or expected starting time of the object.
-	// When used with an Activity object, for instance, the startTime property specifies
-	// the moment the activity began or is scheduled to begin.
-	StartTime time.Time `jsonld:"startTime,omitempty"`
-	// Summary a natural language summarization of the object encoded as HTML.
-	// *Multiple language tagged summaries may be provided.)
-	Summary NaturalLanguageValues `jsonld:"summary,omitempty,collapsible"`
-	// Tag One or more "tags" that have been associated with an objects. A tag can be any kind of Activity Pub Object.
-	// The key difference between attachment and tag is that the former implies association by inclusion,
-	// while the latter implies associated by reference.
-	Tag Item `jsonld:"tag,omitempty"`
-	// Updated the date and time at which the object was updated
-	Updated time.Time `jsonld:"updated,omitempty"`
-	// URL identifies one or more links to representations of the object
-	URL LinkOrIRI `jsonld:"url,omitempty"`
-	// To identifies an entity considered to be part of the public primary audience of an Activity Pub Object
-	To ItemCollection `jsonld:"to,omitempty"`
-	// Bto identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
-	Bto ItemCollection `jsonld:"bto,omitempty"`
-	// CC identifies an Activity Pub Object that is part of the public secondary audience of this Activity Pub Object.
-	CC ItemCollection `jsonld:"cc,omitempty"`
-	// BCC identifies one or more Objects that are part of the private secondary audience of this Activity Pub Object.
-	BCC ItemCollection `jsonld:"bcc,omitempty"`
-	// Duration When the object describes a time-bound resource, such as an audio or video, a meeting, etc,
-	// the duration property indicates the object's approximate duration.
-	// The value must be expressed as an xsd:duration as defined by [ xmlschema11-2],
-	// section 3.3.6 (e.g. a period of 5 seconds is represented as "PT5S").
-	Duration time.Duration `jsonld:"duration,omitempty"`
-	// Actor describes one or more entities that either performed or are expected to perform the activity.
-	// Any single activity can have multiple actors. The actor may be specified using an indirect Link.
-	Actor Actor `jsonld:"actor,omitempty"`
-	// Target describes the indirect object, or target, of the activity.
-	// The precise meaning of the target is largely dependent on the type of action being described
-	// but will often be the object of the English preposition "to".
-	// For instance, in the activity "John added a movie to his wishlist",
-	// the target of the activity is John's wishlist. An activity can have more than one target.
-	Target Item `jsonld:"target,omitempty"`
-	// Result describes the result of the activity. For instance, if a particular action results in the creation
-	// of a new resource, the result property can be used to describe that new resource.
-	Result Item `jsonld:"result,omitempty"`
-	// Origin describes an indirect object of the activity from which the activity is directed.
-	// The precise meaning of the origin is the object of the English preposition "from".
-	// For instance, in the activity "John moved an item to List B from List A", the origin of the activity is "List A".
-	Origin Item `jsonld:"origin,omitempty"`
-	// Instrument identifies one or more objects used (or to be used) in the completion of an Activity.
-	Instrument Item `jsonld:"instrument,omitempty"`
-	// OneOf identifies an exclusive option for a Question. Use of oneOf implies that the Question
-	// can have only a single answer. To indicate that a Question can have multiple answers, use anyOf.
-	OneOf Item `jsonld:"oneOf,omitempty"`
-	// AnyOf identifies an inclusive option for a Question. Use of anyOf implies that the Question can have multiple answers.
-	// To indicate that a Question can have only one answer, use oneOf.
-	AnyOf Item `jsonld:"anyOf,omitempty"`
-	// Closed indicates that a question has been closed, and answers are no longer accepted.
-	Closed bool `jsonld:"closed,omitempty"`
-}
 
 // AcceptNew initializes an Accept activity
 func AcceptNew(id ObjectID, ob Item) *Accept {
@@ -488,13 +466,6 @@ func AddNew(id ObjectID, ob Item, trgt Item) *Add {
 func AnnounceNew(id ObjectID, ob Item) *Announce {
 	a := ActivityNew(id, AnnounceType, ob)
 	o := Announce(*a)
-	return &o
-}
-
-// ArriveNew initializes an Arrive activity
-func ArriveNew(id ObjectID) *Arrive {
-	a := IntransitiveActivityNew(id, ArriveType)
-	o := Arrive(*a)
 	return &o
 }
 
@@ -632,13 +603,6 @@ func TentativeAcceptNew(id ObjectID, ob Item) *TentativeAccept {
 	return &o
 }
 
-// TravelNew initializes a Travel activity
-func TravelNew(id ObjectID) *Travel {
-	a := IntransitiveActivityNew(id, TravelType)
-	o := Travel(*a)
-	return &o
-}
-
 // UndoNew initializes an Undo activity
 func UndoNew(id ObjectID, ob Item) *Undo {
 	a := ActivityNew(id, UndoType, ob)
@@ -660,20 +624,12 @@ func ViewNew(id ObjectID, ob Item) *View {
 	return &o
 }
 
-// QuestionNew initializes a Question activity
-func QuestionNew(id ObjectID) *Question {
-	q := Question{ID: id, Type: QuestionType}
-	q.Name = NaturalLanguageValuesNew()
-	q.Content = NaturalLanguageValuesNew()
-	return &q
-}
-
 // ActivityNew initializes a basic activity
 func ActivityNew(id ObjectID, typ ActivityVocabularyType, ob Item) *Activity {
 	if !ActivityTypes.Contains(typ) {
 		typ = ActivityType
 	}
-	a := Activity{Parent: Parent{ID: id, Type: typ}}
+	a := Activity{ID: id, Type: typ}
 	a.Name = NaturalLanguageValuesNew()
 	a.Content = NaturalLanguageValuesNew()
 
@@ -682,145 +638,69 @@ func ActivityNew(id ObjectID, typ ActivityVocabularyType, ob Item) *Activity {
 	return &a
 }
 
-// IntransitiveActivityNew initializes a intransitive activity
-func IntransitiveActivityNew(id ObjectID, typ ActivityVocabularyType) *IntransitiveActivity {
-	if !IntransitiveActivityTypes.Contains(typ) {
-		typ = IntransitiveActivityType
-	}
-	i := IntransitiveActivity{Parent: Parent{ID: id, Type: typ}}
-	i.Name = NaturalLanguageValuesNew()
-	i.Content = NaturalLanguageValuesNew()
-
-	return &i
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (a Activity) GetType() ActivityVocabularyType {
-	return a.Type
-}
-
-// IsLink returns false for Activity objects
-func (a Activity) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Activity object
-func (a Activity) GetID() *ObjectID {
-	return &a.ID
-}
-
-// GetLink returns the IRI corresponding to the Activity object
-func (a Activity) GetLink() IRI {
-	return IRI(a.ID)
-}
-
-// IsObject returns true for Activity objects
-func (a Activity) IsObject() bool {
-	return true
-}
-
-// IsCollection returns false for Activity objects
-func (a Activity) IsCollection() bool {
-	return false
-}
-
-// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (a *Activity) Recipients() ItemCollection {
-	actor := make(ItemCollection, 0)
-	actor.Append(a.Actor)
-	rec, _ := ItemCollectionDeduplication(&actor, &a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (a *Activity) Clean() {
-	a.BCC = nil
-	a.Bto = nil
-}
-
-// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
-func (i *IntransitiveActivity) Recipients() ItemCollection {
-	actor := make(ItemCollection, 0)
-	actor.Append(i.Actor)
-	rec, _ := ItemCollectionDeduplication(&actor, &i.To, &i.Bto, &i.CC, &i.BCC, &i.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (i *IntransitiveActivity) Clean() {
-	i.BCC = nil
-	i.Bto = nil
-}
-
-// GetType returns the ActivityVocabulary type of the current Intransitive Activity
-func (i IntransitiveActivity) GetType() ActivityVocabularyType {
-	return i.Type
-}
-
-// IsLink returns false for Activity objects
-func (i IntransitiveActivity) IsLink() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the IntransitiveActivity object
-func (i IntransitiveActivity) GetID() *ObjectID {
-	return &i.ID
-}
-
-// GetLink returns the IRI corresponding to the IntransitiveActivity object
-func (i IntransitiveActivity) GetLink() IRI {
-	return IRI(i.ID)
-}
-
-// IsObject returns true for IntransitiveActivity objects
-func (i IntransitiveActivity) IsObject() bool {
-	return true
-}
-
-// IsCollection returns false for IntransitiveActivity objects
-func (i IntransitiveActivity) IsCollection() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Question object
-func (q Question) GetID() *ObjectID {
-	return &q.ID
-}
-
-// GetLink returns the IRI corresponding to the Question object
-func (q Question) GetLink() IRI {
-	return IRI(q.ID)
-}
-
-// GetType returns the ActivityVocabulary type of the current Activity
-func (q Question) GetType() ActivityVocabularyType {
-	return q.Type
-}
-
-// IsObject returns true for Question objects
-func (q Question) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Question objects
-func (q Question) IsLink() bool {
-	return false
-}
-
-// IsCollection returns false for Question objects
-func (q Question) IsCollection() bool {
-	return false
-}
-
 // UnmarshalJSON
 func (a *Activity) UnmarshalJSON(data []byte) error {
-	a.Parent.UnmarshalJSON(data)
+	if ItemTyperFunc == nil {
+		ItemTyperFunc = JSONGetItemByType
+	}
+	a.ID = JSONGetObjectID(data)
+	a.Type = JSONGetType(data)
+	a.Name = JSONGetNaturalLanguageField(data, "name")
+	a.Content = JSONGetNaturalLanguageField(data, "content")
+	a.Summary = JSONGetNaturalLanguageField(data, "summary")
+	a.Context = JSONGetItem(data, "context")
+	a.URL = JSONGetURIItem(data, "url")
+	a.MediaType = MimeType(JSONGetString(data, "mediaType"))
+	a.Generator = JSONGetItem(data, "generator")
+	a.AttributedTo = JSONGetItem(data, "attributedTo")
+	a.Attachment = JSONGetItem(data, "attachment")
+	a.Location = JSONGetItem(data, "location")
+	a.Published = JSONGetTime(data, "published")
+	a.StartTime = JSONGetTime(data, "startTime")
+	a.EndTime = JSONGetTime(data, "endTime")
+	a.Duration = JSONGetDuration(data, "duration")
+	a.Icon = JSONGetItem(data, "icon")
+	a.Preview = JSONGetItem(data, "preview")
+	a.Image = JSONGetItem(data, "image")
+	a.Updated = JSONGetTime(data, "updated")
+	inReplyTo := JSONGetItems(data, "inReplyTo")
+	if len(inReplyTo) > 0 {
+		a.InReplyTo = inReplyTo
+	}
+	to := JSONGetItems(data, "to")
+	if len(to) > 0 {
+		a.To = to
+	}
+	audience := JSONGetItems(data, "audience")
+	if len(audience) > 0 {
+		a.Audience = audience
+	}
+	bto := JSONGetItems(data, "bto")
+	if len(bto) > 0 {
+		a.Bto = bto
+	}
+	cc := JSONGetItems(data, "cc")
+	if len(cc) > 0 {
+		a.CC = cc
+	}
+	bcc := JSONGetItems(data, "bcc")
+	if len(bcc) > 0 {
+		a.BCC = bcc
+	}
+	replies := JSONGetItem(data, "replies")
+	if replies != nil {
+		a.Replies = replies
+	}
+	tag := JSONGetItems(data, "tag")
+	if len(tag) > 0 {
+		a.Tag = tag
+	}
 	a.Actor = JSONGetItem(data, "actor")
-	a.Object = JSONGetItem(data, "object")
 	a.Target = JSONGetItem(data, "target")
 	a.Instrument = JSONGetItem(data, "instrument")
 	a.Origin = JSONGetItem(data, "origin")
 	a.Result = JSONGetItem(data, "result")
+	a.Object = JSONGetItem(data, "object")
 	return nil
 }
 
@@ -841,39 +721,6 @@ func ToActivity(it Item) (*Activity, error) {
 		return (*Activity)(unsafe.Pointer(&i)), nil
 	}
 	return nil, errors.New("unable to convert activity")
-}
-
-// ToQuestion
-func ToQuestion(it Item) (*Question, error) {
-	switch i := it.(type) {
-	case *Question:
-		return i, nil
-	case Question:
-		return &i, nil
-	}
-	return nil, errors.New("unable to convert to question activity")
-}
-
-// ToIntransitiveActivity
-func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
-	switch i := it.(type) {
-	case *IntransitiveActivity:
-		return i, nil
-	case IntransitiveActivity:
-		return &i, nil
-	}
-	return nil, errors.New("unable to convert to intransitive activity")
-}
-
-// FlattenIntransitiveActivityProperties flattens the IntransitiveActivity's properties from Object type to IRI
-func FlattenIntransitiveActivityProperties(act *IntransitiveActivity) *IntransitiveActivity {
-	act.Actor = Flatten(act.Actor)
-	act.Target = Flatten(act.Target)
-	act.Result = Flatten(act.Result)
-	act.Origin = Flatten(act.Origin)
-	act.Result = Flatten(act.Result)
-	act.Instrument = Flatten(act.Instrument)
-	return act
 }
 
 // FlattenActivityProperties flattens the Activity's properties from Object type to IRI

@@ -294,10 +294,8 @@ var allTests = tests{
 			Actor: &a.Person{},
 		},
 		result: &a.Activity{
-			Parent: a.Parent{
-				Type:    a.ActivityType,
-				Summary: a.NaturalLanguageValues{{a.NilLangRef, "Sally did something to a note"}},
-			},
+			Type:    a.ActivityType,
+			Summary: a.NaturalLanguageValues{{a.NilLangRef, "Sally did something to a note"}},
 			Actor: &a.Person{
 				Type: a.PersonType,
 				Name: a.NaturalLanguageValues{{a.NilLangRef, "Sally"}},
@@ -391,9 +389,7 @@ var allTests = tests{
 		expected: true,
 		blank:    &a.Create{},
 		result: &a.Create{
-			Parent: a.Parent{
-				Type: a.CreateType,
-			},
+			Type:  a.CreateType,
 			Actor: a.IRI("https://littr.git/api/accounts/anonymous"),
 			Object: &a.Object{
 				Type:         a.NoteType,
@@ -408,9 +404,7 @@ var allTests = tests{
 		expected: true,
 		blank:    &a.Create{},
 		result: &a.Create{
-			Parent: a.Parent{
-				Type: a.CreateType,
-			},
+			Type:  a.CreateType,
 			Actor: a.IRI("https://littr.git/api/accounts/anonymous"),
 			Object: a.ItemCollection{
 				&a.Object{

@@ -117,7 +117,7 @@ type (
 		// IsObject shows if current item represents an ActivityStreams object
 		IsObject() bool
 		// IsCollection shows if the current item represents an ItemCollection
-		IsCollection()bool
+		IsCollection() bool
 	}
 	// Mapper interface allows external objects to implement their own mechanism for loading information
 	// from an ActivityStreams vocabulary object
@@ -380,6 +380,7 @@ func (n *NaturalLanguageValues) UnmarshalText(data []byte) error {
 	}
 	return nil
 }
+
 // Describes an object of any kind.
 // The Activity Pub Object type serves as the base type for most of the other kinds of objects defined in the Activity
 // Vocabulary, including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
@@ -575,7 +576,7 @@ func (o *Object) Recipients() ItemCollection {
 }
 
 // Clean removes Bto and BCC properties
-func (o *Object) Clean(){
+func (o *Object) Clean() {
 	o.BCC = nil
 	o.Bto = nil
 }
@@ -680,15 +681,15 @@ func ToObject(it Item) (*Object, error) {
 	case Tombstone:
 		return (*Object)(unsafe.Pointer(&i)), nil
 	case *Activity:
-		return &i.Parent, nil
+		return (*Object)(unsafe.Pointer(i)), nil
 	case Activity:
-		return &i.Parent, nil
-	case *IntransitiveActivity:
-		return (*Object)(unsafe.Pointer(&i.Parent)), nil
-	case IntransitiveActivity:
-		return (*Object)(unsafe.Pointer(&i.Parent)), nil
-	case *Question:
 		return (*Object)(unsafe.Pointer(&i)), nil
+	case *IntransitiveActivity:
+		return (*Object)(unsafe.Pointer(i)), nil
+	case IntransitiveActivity:
+		return (*Object)(unsafe.Pointer(&i)), nil
+	case *Question:
+		return (*Object)(unsafe.Pointer(i)), nil
 	case Question:
 		return (*Object)(unsafe.Pointer(&i)), nil
 	}

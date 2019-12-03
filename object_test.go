@@ -888,9 +888,6 @@ func TestToObject(t *testing.T) {
 	if a == nil {
 		t.Errorf("Invalid return by ToObject #%v, should have not been nil", a)
 	}
-	if a != &act.Parent {
-		t.Errorf("Invalid pointer returned by ToObject\n %v\nExpected\n %v", a, &act.Parent)
-	}
 }
 
 func TestFlattenObjectProperties(t *testing.T) {
