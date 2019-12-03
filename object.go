@@ -185,21 +185,6 @@ func (n *NaturalLanguageValues) Set(ref LangRef, v string) error {
 	return nil
 }
 
-// IsLink validates if currentActivity Pub Object is a Link
-func (o Object) IsLink() bool {
-	return false
-}
-
-// IsObject validates if currentActivity Pub Object is an Object
-func (o Object) IsObject() bool {
-	return true
-}
-
-// IsCollection returns false for Object objects
-func (o Object) IsCollection() bool {
-	return false
-}
-
 // MarshalJSON serializes the NaturalLanguageValues into JSON
 func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 	if len(n) == 0 {
@@ -395,8 +380,10 @@ func (n *NaturalLanguageValues) UnmarshalText(data []byte) error {
 	}
 	return nil
 }
-
-type object struct {
+// Describes an object of any kind.
+// The Activity Pub Object type serves as the base type for most of the other kinds of objects defined in the Activity
+// Vocabulary, including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
+type Object struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ObjectID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
@@ -479,69 +466,6 @@ type object struct {
 	Duration time.Duration `jsonld:"duration,omitempty"`
 }
 
-type (
-	Parent = object
-	// Describes an object of any kind.
-	// The Activity Pub Object type serves as the base type for most of the other kinds of objects defined in the Activity Vocabulary,
-	// including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
-	Object = object
-	// Article represents any kind of multi-paragraph written work.
-	Article = Object
-	// Audio represents an audio document of any kind.
-	Audio = Document
-	// Document represents a document of any kind.
-	Document = Object
-	// Event represents any kind of event.
-	Event = Object
-	// Image An image document of any kind
-	Image = Document
-	// Note represents a short written work typically less than a single paragraph in length.
-	Note = Object
-	// Page represents a Web Page.
-	Page = Document
-	// Video represents a video document of any kind
-	Video = Document
-)
-
-// Profile a Profile is a content object that describes another Object,
-// typically used to describe Actor Type objects.
-// The describes property is used to reference the object being described by the profile.
-type Profile struct {
-	Parent
-	// Describes On a Profile object, the describes property identifies the object described by the Profile.
-	Describes Item `jsonld:"describes,omitempty"`
-}
-
-// Relationship describes a relationship between two individuals.
-// The subject and object properties are used to identify the connected individuals.
-//See 5.2 Representing Relationships Between Entities for additional information.
-// 5.2: The relationship property specifies the kind of relationship that exists between the two individuals identified
-// by the subject and object properties. Used together, these three properties form what is commonly known
-// as a "reified statement" where subject identifies the subject, relationship identifies the predicate,
-// and object identifies the object.
-type Relationship struct {
-	Parent
-	// Subject Subject On a Relationship object, the subject property identifies one of the connected individuals.
-	// For instance, for a Relationship object describing "John is related to Sally", subject would refer to John.
-	Subject Item
-	// Object
-	Object Item
-	// Relationship On a Relationship object, the relationship property identifies the kind
-	// of relationship that exists between subject and object.
-	Relationship Item
-}
-
-// Tombstone a Tombstone represents a content object that has been deleted.
-// It can be used in Collections to signify that there used to be an object at this position,
-// but it has been deleted.
-type Tombstone struct {
-	Parent
-	// FormerType On a Tombstone object, the formerType property identifies the type of the object that was deleted.
-	FormerType ActivityVocabularyType `jsonld:"formerType,omitempty"`
-	// Deleted On a Tombstone object, the deleted property is a timestamp for when the object was deleted.
-	Deleted time.Time `jsonld:"deleted,omitempty"`
-}
-
 // ObjectNew initializes a new Object
 func ObjectNew(typ ActivityVocabularyType) *Object {
 	if !(ObjectTypes.Contains(typ)) {
@@ -568,59 +492,19 @@ func (o Object) GetType() ActivityVocabularyType {
 	return o.Type
 }
 
-// ItemCollectionDeduplication normalizes the received arguments lists into a single unified one
-func ItemCollectionDeduplication(recCols ...*ItemCollection) (ItemCollection, error) {
-	rec := make(ItemCollection, 0)
-
-	for _, recCol := range recCols {
-		if recCol == nil {
-			continue
-		}
-
-		toRemove := make([]int, 0)
-		for i, cur := range *recCol {
-			save := true
-			if cur == nil {
-				continue
-			}
-			var testIt Item
-			if cur.IsObject() {
-				testIt = cur
-			} else if cur.IsLink() {
-				testIt = cur.GetLink()
-			} else {
-				continue
-			}
-			for _, it := range rec {
-				if testIt == it {
-					// mark the element for removal
-					toRemove = append(toRemove, i)
-					save = false
-				}
-			}
-			if save {
-				rec = append(rec, testIt)
-			}
-		}
-
-		sort.Sort(sort.Reverse(sort.IntSlice(toRemove)))
-		for _, idx := range toRemove {
-			*recCol = append((*recCol)[:idx], (*recCol)[idx+1:]...)
-		}
-	}
-	return rec, nil
+// IsLink validates if currentActivity Pub Object is a Link
+func (o Object) IsLink() bool {
+	return false
 }
 
-// UnmarshalJSON
-func (i *ObjectID) UnmarshalJSON(data []byte) error {
-	*i = ObjectID(strings.Trim(string(data), "\""))
-	return nil
+// IsObject validates if currentActivity Pub Object is an Object
+func (o Object) IsObject() bool {
+	return true
 }
 
-// UnmarshalJSON
-func (c *MimeType) UnmarshalJSON(data []byte) error {
-	*c = MimeType(strings.Trim(string(data), "\""))
-	return nil
+// IsCollection returns false for Object objects
+func (o Object) IsCollection() bool {
+	return false
 }
 
 // UnmarshalJSON
@@ -680,6 +564,121 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	if len(tag) > 0 {
 		o.Tag = tag
 	}
+	return nil
+}
+
+type (
+	object = Object
+	Parent = Object
+	// Article represents any kind of multi-paragraph written work.
+	Article = Object
+	// Audio represents an audio document of any kind.
+	Audio = Document
+	// Document represents a document of any kind.
+	Document = Object
+	// Event represents any kind of event.
+	Event = Object
+	// Image An image document of any kind
+	Image = Document
+	// Note represents a short written work typically less than a single paragraph in length.
+	Note = Object
+	// Page represents a Web Page.
+	Page = Document
+	// Video represents a video document of any kind
+	Video = Document
+)
+
+// Profile a Profile is a content object that describes another Object,
+// typically used to describe Actor Type objects.
+// The describes property is used to reference the object being described by the profile.
+type Profile struct {
+	Parent
+	// Describes On a Profile object, the describes property identifies the object described by the Profile.
+	Describes Item `jsonld:"describes,omitempty"`
+}
+
+// Relationship describes a relationship between two individuals.
+// The subject and object properties are used to identify the connected individuals.
+//See 5.2 Representing Relationships Between Entities for additional information.
+// 5.2: The relationship property specifies the kind of relationship that exists between the two individuals identified
+// by the subject and object properties. Used together, these three properties form what is commonly known
+// as a "reified statement" where subject identifies the subject, relationship identifies the predicate,
+// and object identifies the object.
+type Relationship struct {
+	Parent
+	// Subject Subject On a Relationship object, the subject property identifies one of the connected individuals.
+	// For instance, for a Relationship object describing "John is related to Sally", subject would refer to John.
+	Subject Item
+	// Object
+	Object Item
+	// Relationship On a Relationship object, the relationship property identifies the kind
+	// of relationship that exists between subject and object.
+	Relationship Item
+}
+
+// Tombstone a Tombstone represents a content object that has been deleted.
+// It can be used in Collections to signify that there used to be an object at this position,
+// but it has been deleted.
+type Tombstone struct {
+	Parent
+	// FormerType On a Tombstone object, the formerType property identifies the type of the object that was deleted.
+	FormerType ActivityVocabularyType `jsonld:"formerType,omitempty"`
+	// Deleted On a Tombstone object, the deleted property is a timestamp for when the object was deleted.
+	Deleted time.Time `jsonld:"deleted,omitempty"`
+}
+
+// ItemCollectionDeduplication normalizes the received arguments lists into a single unified one
+func ItemCollectionDeduplication(recCols ...*ItemCollection) (ItemCollection, error) {
+	rec := make(ItemCollection, 0)
+
+	for _, recCol := range recCols {
+		if recCol == nil {
+			continue
+		}
+
+		toRemove := make([]int, 0)
+		for i, cur := range *recCol {
+			save := true
+			if cur == nil {
+				continue
+			}
+			var testIt Item
+			if cur.IsObject() {
+				testIt = cur
+			} else if cur.IsLink() {
+				testIt = cur.GetLink()
+			} else {
+				continue
+			}
+			for _, it := range rec {
+				if testIt == it {
+					// mark the element for removal
+					toRemove = append(toRemove, i)
+					save = false
+				}
+			}
+			if save {
+				rec = append(rec, testIt)
+			}
+		}
+
+		sort.Sort(sort.Reverse(sort.IntSlice(toRemove)))
+		for _, idx := range toRemove {
+			*recCol = append((*recCol)[:idx], (*recCol)[idx+1:]...)
+		}
+	}
+	return rec, nil
+}
+
+// UnmarshalJSON
+func (i *ObjectID) UnmarshalJSON(data []byte) error {
+	*i = ObjectID(strings.Trim(string(data), "\""))
+	return nil
+}
+
+// UnmarshalJSON
+func (c *MimeType) UnmarshalJSON(data []byte) error {
+	*c = MimeType(strings.Trim(string(data), "\""))
 	return nil
 }
 
