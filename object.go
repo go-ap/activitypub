@@ -99,6 +99,8 @@ type (
 	ActivityObject interface {
 		// GetID returns the dereferenceable ActivityStreams object id
 		GetID() *ObjectID
+		// GetType returns the ActivityStreams type
+		GetType() ActivityVocabularyType
 	}
 	// LinkOrIRI is an interface that Object and Link structs implement, and at the same time
 	// they are kept disjointed
@@ -110,8 +112,6 @@ type (
 	ObjectOrLink interface {
 		ActivityObject
 		LinkOrIRI
-		// GetType returns the ActivityStreams type
-		GetType() ActivityVocabularyType
 		// IsLink shows if current item represents a Link object or an IRI
 		IsLink() bool
 		// IsObject shows if current item represents an ActivityStreams object
