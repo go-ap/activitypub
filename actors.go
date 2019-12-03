@@ -283,6 +283,16 @@ func ServiceNew(id ObjectID) *Service {
 	return &o
 }
 
+func (a *Actor) Recipients() ItemCollection {
+	rec, _ := ItemCollectionDeduplication(&a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
+	return rec
+}
+
+func (a *Actor) Clean() {
+	a.BCC = nil
+	a.Bto = nil
+}
+
 func (a *Actor) UnmarshalJSON(data []byte) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = JSONGetItemByType

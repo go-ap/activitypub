@@ -341,3 +341,27 @@ func TestToPerson(t *testing.T) {
 func TestEndpoints_UnmarshalJSON(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestActor_Clean(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOnActor(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestToActor(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestActor_IsCollection(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestActor_Recipients(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestPublicKey_UnmarshalJSON(t *testing.T) {
+	t.Skipf("TODO")
+}
