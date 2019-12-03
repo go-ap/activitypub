@@ -342,7 +342,7 @@ func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
 	case PlaceType:
 		return &Place{Type: typ}, nil
 	case ProfileType:
-		return &Profile{Parent: Parent{Type: typ}}, nil
+		return &Profile{Type: typ}, nil
 	case RelationshipType:
 		return &Relationship{Parent: Parent{Type: typ}}, nil
 	case TombstoneType:

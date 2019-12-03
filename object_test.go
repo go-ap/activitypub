@@ -909,19 +909,11 @@ func TestToTombstone(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestToProfile(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestToRelationship(t *testing.T) {
 	t.Skipf("TODO")
 }
 
 func TestObject_Recipients(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestProfile_Recipients(t *testing.T) {
 	t.Skipf("TODO")
 }
 

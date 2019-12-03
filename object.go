@@ -601,15 +601,6 @@ type (
 	Video = Document
 )
 
-// Profile a Profile is a content object that describes another Object,
-// typically used to describe Actor Type objects.
-// The describes property is used to reference the object being described by the profile.
-type Profile struct {
-	Parent
-	// Describes On a Profile object, the describes property identifies the object described by the Profile.
-	Describes Item `jsonld:"describes,omitempty"`
-}
-
 // Relationship describes a relationship between two individuals.
 // The subject and object properties are used to identify the connected individuals.
 //See 5.2 Representing Relationships Between Entities for additional information.
@@ -695,21 +686,6 @@ func (c *MimeType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// ToProfile
-func ToProfile(it Item) (*Profile, error) {
-	switch i := it.(type) {
-	case *Profile:
-		return i, nil
-	case Profile:
-		return &i, nil
-	case *Object:
-		return &Profile{Parent: *i}, nil
-	case Object:
-		return &Profile{Parent: i}, nil
-	}
-	return nil, fmt.Errorf("unable to convert %q", it.GetType())
-}
-
 // ToRelationship
 func ToRelationship(it Item) (*Relationship, error) {
 	switch i := it.(type) {
@@ -752,9 +728,9 @@ func ToObject(it Item) (*Object, error) {
 	case Place:
 		return (*Object)(unsafe.Pointer(&i)), nil
 	case *Profile:
-		return &i.Parent, nil
+		return (*Object)(unsafe.Pointer(i)), nil
 	case Profile:
-		return &i.Parent, nil
+		return (*Object)(unsafe.Pointer(&i)), nil
 	case *Relationship:
 		return &i.Parent, nil
 	case Relationship:
