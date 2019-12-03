@@ -1,0 +1,18 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Object",
+  "id": "http://www.test.example/object/1",
+  "name": "A Simple, non-specific object",
+  "tag": [
+    {
+      "name": "#my_tag",
+      "type": "Mention",
+      "ID":  "http://example.com/tag/my_tag"
+    },
+    {
+      "name": "@ana",
+      "type": "Mention",
+      "ID":  "http://example.com/users/ana"
+    }
+  ]
+}

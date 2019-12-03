@@ -1,0 +1,24 @@
+image: archlinux
+secrets:
+- 72c9ab0b-ed5f-4291-bab7-30b361be94a6
+packages:
+  - go
+sources:
+  - https://github.com/go-ap/activitystreams
+environment:
+  GO111MODULE: 'on'
+tasks:
+  - setup: |
+      cd activitystreams && go mod download
+  - tests: |
+      cd activitystreams && make test
+  - coverage: |
+      set -a +x
+      cd activitystreams && make coverage
+      GIT_SHA=$(git rev-parse --verify HEAD)
+      GIT_BRANCH=$(git name-rev --name-only HEAD)
+      source ~/.code-cov.sh
+      curl -X POST \
+          --data-binary @activitystreams.coverprofile \
+           -H 'Accept: application/json' \
+          "https://codecov.io/upload/v2?commit=${GIT_SHA}&token=${STREAMS_TOKEN}&branch=${GIT_BRANCH}&service=custom" || true
