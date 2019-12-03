@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"errors"
+	"github.com/buger/jsonparser"
 	"time"
 	"unsafe"
 )
@@ -149,8 +150,8 @@ type Actor struct {
 	// to a JSON-LD document with these properties.
 	Endpoints *Endpoints `jsonld:"endpoints,omitempty"`
 	// A list of supplementary Collections which may be of interest.
-	Streams []ItemCollection `jsonld:"streams,omitempty"`
-
+	Streams   []ItemCollection `jsonld:"streams,omitempty"`
+	PublicKey PublicKey        `jsonld:"publicKey,omitempty"`
 }
 
 // GetID returns the ObjectID corresponding to the current Actor
@@ -183,6 +184,31 @@ func (a Actor) IsCollection() bool {
 	return false
 }
 
+// PublicKey holds the ActivityPub compatible public key data
+type PublicKey struct {
+	ID           ObjectID     `jsonld:"id,omitempty"`
+	Owner        ObjectOrLink `jsonld:"owner,omitempty"`
+	PublicKeyPem string       `jsonld:"publicKeyPem,omitempty"`
+}
+
+func (p *PublicKey) UnmarshalJSON(data []byte) error {
+	if id, err := jsonparser.GetString(data, "id"); err == nil {
+		p.ID = ObjectID(id)
+	} else {
+		return err
+	}
+	if o, err := jsonparser.GetString(data, "owner"); err == nil {
+		p.Owner = IRI(o)
+	} else {
+		return err
+	}
+	if pub, err := jsonparser.GetString(data, "publicKeyPem"); err == nil {
+		p.PublicKeyPem = pub
+	} else {
+		return err
+	}
+	return nil
+}
 type (
 	// Application describes a software application.
 	Application = Actor
@@ -323,8 +349,8 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 	a.Outbox = JSONGetItem(data, "outbox")
 	a.Liked = JSONGetItem(data, "liked")
 	a.Endpoints = JSONGetActorEndpoints(data, "endpoints")
-	// TODO(marius): Streams needs custom unmarshalling
-	//a.Streams = JSONGetItems(data, "streams")
+	a.Streams = JSONGetStreams(data, "streams")
+	a.PublicKey = JSONGetPublicKey(data, "publicKey")
 	return nil
 }
 

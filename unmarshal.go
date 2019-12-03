@@ -71,6 +71,13 @@ func JSONGetString(data []byte, prop string) string {
 	return val
 }
 
+func JSONGetBytes(data []byte, prop string) []byte {
+	val, _, _, err := jsonparser.Get(data, prop)
+	if err != nil {
+	}
+	return val
+}
+
 func JSONGetBoolean(data []byte, prop string) bool {
 	val, err := jsonparser.GetBoolean(data, prop)
 	if err != nil {
@@ -118,6 +125,16 @@ func JSONGetDuration(data []byte, prop string) time.Duration {
 	str, _ := jsonparser.GetUnsafeString(data, prop)
 	d, _ := time.ParseDuration(str)
 	return d
+}
+
+func JSONGetPublicKey(data []byte, prop string) PublicKey {
+	key := PublicKey{}
+	key.UnmarshalJSON(JSONGetBytes(data, prop))
+	return key
+}
+
+func JSONGetStreams(data []byte, prop string) []ItemCollection {
+	return nil
 }
 
 func itemFn(data []byte) (Item, error) {
