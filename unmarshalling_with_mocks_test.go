@@ -310,7 +310,13 @@ var allTests = testMaps{
 			ID:   ObjectID("http://example.com/accounts/ana"),
 			Type: PersonType,
 			Name: NaturalLanguageValues{{NilLangRef, "ana"}},
+			PreferredUsername: NaturalLanguageValues{{NilLangRef, "ana"}},
 			URL:  IRI("http://example.com/accounts/ana"),
+			Outbox: &OrderedCollection{
+				ID: "http://example.com/accounts/ana/outbox",
+				Type: OrderedCollectionType,
+				URL: IRI("http://example.com/outbox"),
+			},
 		},
 	},
 	"ordered_collection": testPair{
