@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	as "github.com/go-ap/activitystreams"
 	"reflect"
 	"testing"
 )
@@ -9,7 +8,7 @@ import (
 func TestInboxNew(t *testing.T) {
 	i := InboxNew()
 
-	id := as.ObjectID("inbox")
+	id := ObjectID("inbox")
 	if i.ID != id {
 		t.Errorf("%T should be initialized with %q as %T", i, id, id)
 	}
@@ -29,12 +28,12 @@ func TestInboxNew(t *testing.T) {
 
 func TestInboxStream_GetID(t *testing.T) {
 	o := InboxStream{}
-	if *o.GetID() != "" {
+	if o.GetID() != "" {
 		t.Errorf("%T should be initialized with empty %T", o, o.GetID())
 	}
-	id := as.ObjectID("test_out_stream")
+	id := ObjectID("test_out_stream")
 	o.ID = id
-	if *o.GetID() != id {
+	if o.GetID() != id {
 		t.Errorf("%T should have %T as %q", o, id, id)
 	}
 }
@@ -46,16 +45,16 @@ func TestInboxStream_GetType(t *testing.T) {
 		t.Errorf("%T should be initialized with empty %T", o, o.GetType())
 	}
 
-	o.Type = as.OrderedCollectionType
-	if o.GetType() != as.OrderedCollectionType {
-		t.Errorf("%T should have %T as %q", o, o.GetType(), as.OrderedCollectionType)
+	o.Type = OrderedCollectionType
+	if o.GetType() != OrderedCollectionType {
+		t.Errorf("%T should have %T as %q", o, o.GetType(), OrderedCollectionType)
 	}
 }
 
 func TestInboxStream_Append(t *testing.T) {
 	o := InboxStream{}
 
-	val := as.Object{ID: as.ObjectID("grrr")}
+	val := Object{ID: ObjectID("grrr")}
 
 	o.Append(val)
 	if o.TotalItems != 1 {
@@ -68,7 +67,7 @@ func TestInboxStream_Append(t *testing.T) {
 func TestInbox_Append(t *testing.T) {
 	i := InboxNew()
 
-	val := as.Object{ID: as.ObjectID("grrr")}
+	val := Object{ID: ObjectID("grrr")}
 
 	i.Append(val)
 	if i.TotalItems != 0 {

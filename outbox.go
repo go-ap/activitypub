@@ -1,7 +1,5 @@
 package activitypub
 
-import as "github.com/go-ap/activitystreams"
-
 type (
 	// OutboxStream contains activities the user has published,
 	// subject to the ability of the requestor to retrieve the activity (that is,
@@ -9,16 +7,16 @@ type (
 	OutboxStream = Outbox
 
 	// Outbox is a type alias for an Ordered Collection
-	Outbox as.OrderedCollection
+	Outbox OrderedCollection
 )
 
 // OutboxNew initializes a new Outbox
 func OutboxNew() *Outbox {
-	id := as.ObjectID("outbox")
+	id := ObjectID("outbox")
 
-	i := Outbox{Parent: as.Parent{ID: id, Type: as.CollectionType}}
-	i.Name = as.NaturalLanguageValuesNew()
-	i.Content = as.NaturalLanguageValuesNew()
+	i := Outbox{ID: id, Type: CollectionType}
+	i.Name = NaturalLanguageValuesNew()
+	i.Content = NaturalLanguageValuesNew()
 
 	i.TotalItems = 0
 
@@ -26,24 +24,24 @@ func OutboxNew() *Outbox {
 }
 
 // Append adds an element to an Outbox
-func (o *Outbox) Append(ob as.Item) error {
+func (o *Outbox) Append(ob Item) error {
 	o.OrderedItems = append(o.OrderedItems, ob)
 	o.TotalItems++
 	return nil
 }
 
 // GetID returns the ObjectID corresponding to Outbox
-func (o Outbox) GetID() *as.ObjectID {
+func (o Outbox) GetID() ObjectID {
 	return o.Collection().GetID()
 }
 
 // GetLink returns the IRI corresponding to the current Outbox object
-func (o Outbox) GetLink() as.IRI {
-	return as.IRI(o.ID)
+func (o Outbox) GetLink() IRI {
+	return IRI(o.ID)
 }
 
 // GetType returns the Outbox's type
-func (o Outbox) GetType() as.ActivityVocabularyType {
+func (o Outbox) GetType() ActivityVocabularyType {
 	return o.Type
 }
 
@@ -59,7 +57,7 @@ func (o Outbox) IsObject() bool {
 
 // UnmarshalJSON
 func (o *Outbox) UnmarshalJSON(data []byte) error {
-	c := as.OrderedCollection(*o)
+	c := OrderedCollection(*o)
 	err := c.UnmarshalJSON(data)
 
 	*o = Outbox(c)
@@ -68,7 +66,7 @@ func (o *Outbox) UnmarshalJSON(data []byte) error {
 }
 
 // Collection returns the underlying Collection type
-func (o Outbox) Collection() as.CollectionInterface {
-	c := as.OrderedCollection(o)
+func (o Outbox) Collection() CollectionInterface {
+	c := OrderedCollection(o)
 	return &c
 }

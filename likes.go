@@ -1,7 +1,5 @@
 package activitypub
 
-import as "github.com/go-ap/activitystreams"
-
 type (
 	// LikesCollection is a list of all Like activities with this object as the object property,
 	// added as a side effect. The likes collection MUST be either an OrderedCollection or a Collection
@@ -10,16 +8,16 @@ type (
 	LikesCollection Likes
 
 	// Likes is a type alias for an Ordered Collection
-	Likes as.OrderedCollection
+	Likes OrderedCollection
 )
 
 // LikesCollection initializes a new Outbox
 func LikesNew() *Likes {
-	id := as.ObjectID("likes")
+	id := ObjectID("likes")
 
-	l := Likes{Parent: as.Parent{ID: id, Type: as.CollectionType}}
-	l.Name = as.NaturalLanguageValuesNew()
-	l.Content = as.NaturalLanguageValuesNew()
+	l := Likes{ID: id, Type: CollectionType}
+	l.Name = NaturalLanguageValuesNew()
+	l.Content = NaturalLanguageValuesNew()
 
 	l.TotalItems = 0
 
@@ -27,31 +25,31 @@ func LikesNew() *Likes {
 }
 
 // Append adds an element to an LikesCollection
-func (l *LikesCollection) Append(o as.Item) error {
+func (l *LikesCollection) Append(o Item) error {
 	l.OrderedItems = append(l.OrderedItems, o)
 	l.TotalItems++
 	return nil
 }
 
 // Append adds an element to an Outbox
-func (l *Likes) Append(ob as.Item) error {
+func (l *Likes) Append(ob Item) error {
 	l.OrderedItems = append(l.OrderedItems, ob)
 	l.TotalItems++
 	return nil
 }
 
 // GetID returns the ObjectID corresponding to the LikesCollection
-func (l LikesCollection) GetID() *as.ObjectID {
+func (l LikesCollection) GetID() ObjectID {
 	return l.Collection().GetID()
 }
 
 // GetLink returns the IRI corresponding to the current LikesCollection object
-func (l LikesCollection) GetLink() as.IRI {
-	return as.IRI(l.ID)
+func (l LikesCollection) GetLink() IRI {
+	return IRI(l.ID)
 }
 
 // GetType returns the LikesCollection's type
-func (l LikesCollection) GetType() as.ActivityVocabularyType {
+func (l LikesCollection) GetType() ActivityVocabularyType {
 	return l.Type
 }
 
@@ -66,17 +64,17 @@ func (l LikesCollection) IsObject() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Likes
-func (l Likes) GetID() *as.ObjectID {
+func (l Likes) GetID() ObjectID {
 	return l.Collection().GetID()
 }
 
 // GetLink returns the IRI corresponding to the current Likes object
-func (l Likes) GetLink() as.IRI {
-	return as.IRI(l.ID)
+func (l Likes) GetLink() IRI {
+	return IRI(l.ID)
 }
 
 // GetType returns the Likes's type
-func (l Likes) GetType() as.ActivityVocabularyType {
+func (l Likes) GetType() ActivityVocabularyType {
 	return l.Type
 }
 
@@ -91,13 +89,13 @@ func (l Likes) IsObject() bool {
 }
 
 // Collection returns the underlying Collection type
-func (l Likes) Collection() as.CollectionInterface {
-	c := as.OrderedCollection(l)
+func (l Likes) Collection() CollectionInterface {
+	c := OrderedCollection(l)
 	return &c
 }
 
 // Collection returns the underlying Collection type
-func (l LikesCollection) Collection() as.CollectionInterface {
-	c := as.OrderedCollection(l)
+func (l LikesCollection) Collection() CollectionInterface {
+	c := OrderedCollection(l)
 	return &c
 }

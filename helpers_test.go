@@ -1,12 +1,11 @@
 package activitypub
 
 import (
-	"github.com/go-ap/activitystreams"
 	"testing"
 )
 
 func TestOnObject(t *testing.T) {
-	ob := activitystreams.ObjectNew(activitystreams.ArticleType)
+	ob := ObjectNew(ArticleType)
 
 	err := OnObject(ob, func(o *Object) error {
 		return nil
@@ -28,10 +27,10 @@ func TestOnObject(t *testing.T) {
 }
 
 func TestOnActivity(t *testing.T) {
-	ob := activitystreams.ObjectNew(activitystreams.ArticleType)
-	act := activitystreams.ActivityNew("test", activitystreams.CreateType, ob)
+	ob := ObjectNew(ArticleType)
+	act := ActivityNew("test", CreateType, ob)
 
-	err := OnActivity(act, func(a *activitystreams.Activity) error {
+	err := OnActivity(act, func(a *Activity) error {
 		return nil
 	})
 
@@ -39,7 +38,7 @@ func TestOnActivity(t *testing.T) {
 		t.Errorf("Unexpected error returned %s", err)
 	}
 
-	err = OnActivity(act, func(a *activitystreams.Activity) error {
+	err = OnActivity(act, func(a *Activity) error {
 		if a.Type != act.Type {
 			t.Errorf("In function type %s different than expected, %s", a.Type, act.Type)
 		}
@@ -57,9 +56,9 @@ func TestOnActivity(t *testing.T) {
 }
 
 func TestOnIntransitiveActivity(t *testing.T) {
-	act := activitystreams.IntransitiveActivityNew("test", activitystreams.ArriveType)
+	act := IntransitiveActivityNew("test", ArriveType)
 
-	err := OnIntransitiveActivity(act, func(a *activitystreams.IntransitiveActivity) error {
+	err := OnIntransitiveActivity(act, func(a *IntransitiveActivity) error {
 		return nil
 	})
 
@@ -67,7 +66,7 @@ func TestOnIntransitiveActivity(t *testing.T) {
 		t.Errorf("Unexpected error returned %s", err)
 	}
 
-	err = OnIntransitiveActivity(act, func(a *activitystreams.IntransitiveActivity) error {
+	err = OnIntransitiveActivity(act, func(a *IntransitiveActivity) error {
 		if a.Type != act.Type {
 			t.Errorf("In function type %s different than expected, %s", a.Type, act.Type)
 		}
@@ -82,9 +81,9 @@ func TestOnIntransitiveActivity(t *testing.T) {
 }
 
 func TestOnQuestion(t *testing.T) {
-	act := activitystreams.QuestionNew("test")
+	act := QuestionNew("test")
 
-	err := OnQuestion(act, func(a *activitystreams.Question) error {
+	err := OnQuestion(act, func(a *Question) error {
 		return nil
 	})
 
@@ -92,7 +91,7 @@ func TestOnQuestion(t *testing.T) {
 		t.Errorf("Unexpected error returned %s", err)
 	}
 
-	err = OnQuestion(act, func(a *activitystreams.Question) error {
+	err = OnQuestion(act, func(a *Question) error {
 		if a.Type != act.Type {
 			t.Errorf("In function type %s different than expected, %s", a.Type, act.Type)
 		}
@@ -107,7 +106,7 @@ func TestOnQuestion(t *testing.T) {
 }
 
 func TestOnPerson(t *testing.T) {
-	pers := activitystreams.PersonNew("testPerson")
+	pers := PersonNew("testPerson")
 	err := OnPerson(pers, func(a *Person) error {
 		return nil
 	})

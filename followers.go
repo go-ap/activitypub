@@ -1,25 +1,21 @@
 package activitypub
 
-import (
-	as "github.com/go-ap/activitystreams"
-)
-
 type (
 	// FollowersCollection is a collection of followers
 	FollowersCollection = Followers
 
 	// Followers is a Collection type
-	Followers as.Collection
+	Followers Collection
 )
 
 // FollowersNew initializes a new Followers
 func FollowersNew() *Followers {
-	id := as.ObjectID("followers")
+	id := ObjectID("followers")
 
-	i := Followers{Parent: as.Parent{ID: id, Type: as.CollectionType}}
-	i.Name = as.NaturalLanguageValuesNew()
-	i.Content = as.NaturalLanguageValuesNew()
-	i.Summary = as.NaturalLanguageValuesNew()
+	i := Followers{ID: id, Type: CollectionType}
+	i.Name = NaturalLanguageValuesNew()
+	i.Content = NaturalLanguageValuesNew()
+	i.Summary = NaturalLanguageValuesNew()
 
 	i.TotalItems = 0
 
@@ -27,24 +23,24 @@ func FollowersNew() *Followers {
 }
 
 // Append adds an element to an Followers
-func (f *Followers) Append(ob as.Item) error {
+func (f *Followers) Append(ob Item) error {
 	f.Items = append(f.Items, ob)
 	f.TotalItems++
 	return nil
 }
 
 // GetID returns the ObjectID corresponding to Followers
-func (f Followers) GetID() *as.ObjectID {
+func (f Followers) GetID() ObjectID {
 	return f.Collection().GetID()
 }
 
 // GetLink returns the IRI corresponding to the current Followers object
-func (f Followers) GetLink() as.IRI {
-	return as.IRI(f.ID)
+func (f Followers) GetLink() IRI {
+	return IRI(f.ID)
 }
 
 // GetType returns the Followers's type
-func (f Followers) GetType() as.ActivityVocabularyType {
+func (f Followers) GetType() ActivityVocabularyType {
 	return f.Type
 }
 
@@ -60,10 +56,10 @@ func (f Followers) IsObject() bool {
 
 // UnmarshalJSON
 func (f *Followers) UnmarshalJSON(data []byte) error {
-	if as.ItemTyperFunc == nil {
-		as.ItemTyperFunc = JSONGetItemByType
+	if ItemTyperFunc == nil {
+		ItemTyperFunc = JSONGetItemByType
 	}
-	c := as.Collection(*f)
+	c := Collection(*f)
 	err := c.UnmarshalJSON(data)
 
 	*f = Followers(c)
@@ -72,7 +68,7 @@ func (f *Followers) UnmarshalJSON(data []byte) error {
 }
 
 // Collection returns the underlying Collection type
-func (f Followers) Collection() as.CollectionInterface {
-	c := as.Collection(f)
+func (f Followers) Collection() CollectionInterface {
+	c := Collection(f)
 	return &c
 }
