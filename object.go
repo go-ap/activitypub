@@ -503,29 +503,6 @@ type (
 	Video = Document
 )
 
-// Place represents a logical or physical location. See 5.3 Representing Places for additional information.
-type Place struct {
-	Parent
-	// Accuracy indicates the accuracy of position coordinates on a Place objects.
-	// Expressed in properties of percentage. e.g. "94.0" means "94.0% accurate".
-	Accuracy float32
-	// Altitude indicates the altitude of a place. The measurement units is indicated using the units property.
-	// If units is not specified, the default is assumed to be "m" indicating meters.
-	Altitude float32
-	// Latitude the latitude of a place
-	Latitude float32
-	// Longitude the longitude of a place
-	Longitude float32
-	// Radius the radius from the given latitude and longitude for a Place.
-	// The units is expressed by the units property. If units is not specified,
-	// the default is assumed to be "m" indicating "meters".
-	Radius int
-	// Specifies the measurement units for the radius and altitude properties on a Place object.
-	// If not specified, the default is assumed to be "m" for "meters".
-	// Values "cm" | " feet" | " inches" | " km" | " m" | " miles" | xsd:anyURI
-	Units string
-}
-
 // Profile a Profile is a content object that describes another Object,
 // typically used to describe Actor Type objects.
 // The describes property is used to reference the object being described by the profile.
@@ -576,17 +553,17 @@ func ObjectNew(typ ActivityVocabularyType) *Object {
 	return &o
 }
 
-// GetID returns the ObjectID corresponding to the current object
+// GetID returns the ObjectID corresponding to the current Object
 func (o Object) GetID() *ObjectID {
 	return &o.ID
 }
 
-// GetLink returns the IRI corresponding to the current object
+// GetLink returns the IRI corresponding to the current Object
 func (o Object) GetLink() IRI {
 	return IRI(o.ID)
 }
 
-// Link returns the Link corresponding to the current object
+// GetType returns the type of the current Object
 func (o Object) GetType() ActivityVocabularyType {
 	return o.Type
 }
@@ -744,9 +721,13 @@ func ToPlace(it Item) (*Place, error) {
 	case Place:
 		return &i, nil
 	case *Object:
-		return &Place{Parent: *i}, nil
+		// FIXME(marius): **memory_safety** Place has extra properties which will point to invalid memory
+		//   we need a safe version for converting from smaller objects to larger ones
+		return (*Place)(unsafe.Pointer(i)), nil
 	case Object:
-		return &Place{Parent: i}, nil
+		// FIXME(marius): **memory_safety** Place has extra properties which will point to invalid memory
+		//   we need a safe version for converting from smaller objects to larger ones
+		return (*Place)(unsafe.Pointer(&i)), nil
 	}
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
@@ -774,9 +755,9 @@ func ToObject(it Item) (*Object, error) {
 	case Object:
 		return &i, nil
 	case *Place:
-		return &i.Parent, nil
+		return (*Object)(unsafe.Pointer(i)), nil
 	case Place:
-		return &i.Parent, nil
+		return (*Object)(unsafe.Pointer(&i)), nil
 	case *Profile:
 		return &i.Parent, nil
 	case Profile:

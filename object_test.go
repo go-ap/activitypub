@@ -909,10 +909,6 @@ func TestToTombstone(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestToPlace(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestToProfile(t *testing.T) {
 	t.Skipf("TODO")
 }
@@ -922,10 +918,6 @@ func TestToRelationship(t *testing.T) {
 }
 
 func TestObject_Recipients(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestPlace_Recipients(t *testing.T) {
 	t.Skipf("TODO")
 }
 
