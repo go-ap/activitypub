@@ -3,6 +3,7 @@ package activitystreams
 import (
 	"errors"
 	"time"
+	"unsafe"
 )
 
 // Activity Types
@@ -830,6 +831,14 @@ func ToActivity(it Item) (*Activity, error) {
 		return i, nil
 	case Activity:
 		return &i, nil
+	case *IntransitiveActivity:
+		return (*Activity)(unsafe.Pointer(i)), nil
+	case IntransitiveActivity:
+		return (*Activity)(unsafe.Pointer(&i)), nil
+	case *Question:
+		return (*Activity)(unsafe.Pointer(i)), nil
+	case Question:
+		return (*Activity)(unsafe.Pointer(&i)), nil
 	}
 	return nil, errors.New("unable to convert activity")
 }

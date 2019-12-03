@@ -878,15 +878,18 @@ func TestToObject(t *testing.T) {
 		t.Errorf("Invalid activity returned by ToObject #%v", ob)
 	}
 
-	act := ActivityNew(ObjectID("test"), CreateType, nil)
+	act := ActivityNew("test", CreateType, nil)
 	it = act
 
 	a, err := ToObject(it)
-	if err == nil {
-		t.Errorf("Error returned when calling ToObject with activity should not be nil")
+	if err != nil {
+		t.Errorf("Error returned when calling ToObject with activity should be nil, received %s", err)
 	}
-	if a != nil {
-		t.Errorf("Invalid return by ToObject #%v, should have been nil", a)
+	if a == nil {
+		t.Errorf("Invalid return by ToObject #%v, should have not been nil", a)
+	}
+	if a != &act.Parent {
+		t.Errorf("Invalid pointer returned by ToObject\n %v\nExpected\n %v", a, &act.Parent)
 	}
 }
 

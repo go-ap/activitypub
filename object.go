@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unsafe"
 )
 
 // ObjectID designates an unique global identifier.
@@ -788,6 +789,18 @@ func ToObject(it Item) (*Object, error) {
 		return &i.Parent, nil
 	case Tombstone:
 		return &i.Parent, nil
+	case *Activity:
+		return &i.Parent, nil
+	case Activity:
+		return &i.Parent, nil
+	case *IntransitiveActivity:
+		return (*Object)(unsafe.Pointer(&i.Parent)), nil
+	case IntransitiveActivity:
+		return (*Object)(unsafe.Pointer(&i.Parent)), nil
+	case *Question:
+		return (*Object)(unsafe.Pointer(&i)), nil
+	case Question:
+		return (*Object)(unsafe.Pointer(&i)), nil
 	}
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
