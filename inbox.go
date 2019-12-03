@@ -9,7 +9,7 @@ type (
 	InboxStream = Inbox
 
 	// Inbox is a type alias for an Ordered Collection
-	Inbox OrderedCollection
+	Inbox = OrderedCollection
 )
 
 // InboxNew initializes a new Inbox
@@ -23,55 +23,4 @@ func InboxNew() *OrderedCollection {
 	i.TotalItems = 0
 
 	return &i
-}
-
-// Append adds an element to an Inbox
-func (i *Inbox) Append(ob Item) error {
-	i.OrderedItems = append(i.OrderedItems, ob)
-	i.TotalItems++
-	return nil
-}
-
-// GetID returns the ObjectID corresponding to Inbox
-func (i Inbox) GetID() ObjectID {
-	return i.Collection().GetID()
-}
-
-// GetLink returns the IRI corresponding to the current Inbox object
-func (i Inbox) GetLink() IRI {
-	return IRI(i.ID)
-}
-
-// GetType returns the Inbox's type
-func (i Inbox) GetType() ActivityVocabularyType {
-	return i.Type
-}
-
-// IsLink returns false for an Inbox object
-func (i Inbox) IsLink() bool {
-	return false
-}
-
-// IsObject returns true for a Inbox object
-func (i Inbox) IsObject() bool {
-	return true
-}
-
-// UnmarshalJSON
-func (i *Inbox) UnmarshalJSON(data []byte) error {
-	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
-	}
-	c := OrderedCollection(*i)
-	err := c.UnmarshalJSON(data)
-
-	*i = Inbox(c)
-
-	return err
-}
-
-// Collection returns the underlying Collection type
-func (i Inbox) Collection() CollectionInterface {
-	c := OrderedCollection(i)
-	return &c
 }

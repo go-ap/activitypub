@@ -7,7 +7,7 @@ type (
 	FollowingCollection = Following
 
 	// Following is a type alias for a simple Collection
-	Following Collection
+	Following = Collection
 )
 
 // FollowingNew initializes a new Following
@@ -22,55 +22,4 @@ func FollowingNew() *Following {
 	i.TotalItems = 0
 
 	return &i
-}
-
-// Append adds an element to an Following
-func (f *Following) Append(ob Item) error {
-	f.Items = append(f.Items, ob)
-	f.TotalItems++
-	return nil
-}
-
-// GetID returns the ObjectID corresponding to Following
-func (f Following) GetID() ObjectID {
-	return f.Collection().GetID()
-}
-
-// GetLink returns the IRI corresponding to the current Following object
-func (f Following) GetLink() IRI {
-	return IRI(f.ID)
-}
-
-// GetType returns the Following's type
-func (f Following) GetType() ActivityVocabularyType {
-	return f.Type
-}
-
-// IsLink returns false for an Following object
-func (f Following) IsLink() bool {
-	return false
-}
-
-// IsObject returns true for a Following object
-func (f Following) IsObject() bool {
-	return true
-}
-
-// UnmarshalJSON
-func (f *Following) UnmarshalJSON(data []byte) error {
-	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
-	}
-	c := Collection(*f)
-	err := c.UnmarshalJSON(data)
-
-	*f = Following(c)
-
-	return err
-}
-
-// Collection returns the underlying Collection type
-func (f Following) Collection() CollectionInterface {
-	c := Collection(f)
-	return &c
 }

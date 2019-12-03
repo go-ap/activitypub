@@ -57,9 +57,6 @@ func TestOutboxStream_Append(t *testing.T) {
 	val := Object{ID: ObjectID("grrr")}
 
 	o.Append(val)
-	if o.TotalItems != 1 {
-		t.Errorf("%T should have exactly an element, found %d", o, o.TotalItems)
-	}
 	if !reflect.DeepEqual(o.OrderedItems[0], val) {
 		t.Errorf("First item in %T.%T does not match %q", o, o.OrderedItems, val.ID)
 	}
@@ -71,9 +68,6 @@ func TestOutbox_Append(t *testing.T) {
 	val := Object{ID: ObjectID("grrr")}
 
 	o.Append(val)
-	if o.TotalItems != 1 {
-		t.Errorf("%T should have exactly an element, found %d", o, o.TotalItems)
-	}
 	if !reflect.DeepEqual(o.OrderedItems[0], val) {
 		t.Errorf("First item in %T.%T does not match %q", o, o.OrderedItems, val.ID)
 	}
