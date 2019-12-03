@@ -9,7 +9,7 @@ type withObjectFn func (*Object) error
 type withActivityFn func (*Activity) error
 type withIntransitiveActivityFn func (*IntransitiveActivity) error
 type withQuestionFn func (*Question) error
-type withPersonFn func (*Person) error
+type withActorFn func (*Actor) error
 type withCollectionInterfaceFn func (collection CollectionInterface) error
 type withCollectionFn func (collection *Collection) error
 type withCollectionPageFn func (*CollectionPage) error
@@ -28,7 +28,7 @@ func OnObject(it Item, fn withObjectFn) error {
 			return fn(ob)
 		})
 	} else if ActorTypes.Contains(it.GetType()) {
-		return OnPerson(it, func(p *Person) error {
+		return OnActor(it, func(p *Actor) error {
 			ob, err := ToObject(p)
 			if err != nil {
 				return err
@@ -93,8 +93,8 @@ func OnQuestion(it Item, fn withQuestionFn) error {
 	return fn(act)
 }
 
-// OnPerson
-func OnPerson(it Item, fn withPersonFn) error {
+// OnActor
+func OnActor(it Item, fn withActorFn) error {
 	if !ActorTypes.Contains(it.GetType()) {
 		return errors.New(fmt.Sprintf("%T[%s] can't be converted to Person", it, it.GetType()))
 	}

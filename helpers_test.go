@@ -107,7 +107,7 @@ func TestOnQuestion(t *testing.T) {
 
 func TestOnPerson(t *testing.T) {
 	pers := PersonNew("testPerson")
-	err := OnPerson(pers, func(a *Person) error {
+	err := OnActor(pers, func(a *Person) error {
 		return nil
 	})
 
@@ -115,7 +115,7 @@ func TestOnPerson(t *testing.T) {
 		t.Errorf("Unexpected error returned %s", err)
 	}
 
-	err = OnPerson(pers, func(p *Person) error {
+	err = OnActor(pers, func(p *Person) error {
 		if p.Type != pers.Type {
 			t.Errorf("In function type %s different than expected, %s", p.Type, pers.Type)
 		}
