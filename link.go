@@ -39,7 +39,7 @@ type Link struct {
 }
 
 // Mention is a specialized Link that represents an @mention.
-type Mention Link
+type Mention = Link
 
 // ValidLinkType validates a type against the valid link types
 func ValidLinkType(typ ActivityVocabularyType) bool {
@@ -94,36 +94,6 @@ func (l Link) GetType() ActivityVocabularyType {
 	return l.Type
 }
 
-// IsLink validates if current Mention is a Link
-func (m Mention) IsLink() bool {
-	return m.Type == MentionType || ValidLinkType(m.Type)
-}
-
-// IsObject validates if current Mention is an GetID
-func (m Mention) IsObject() bool {
-	return m.Type == ObjectType || ObjectTypes.Contains(m.Type)
-}
-
-// IsCollection returns false for Mention objects
-func (m Mention) IsCollection() bool {
-	return false
-}
-
-// GetID returns the ObjectID corresponding to the Mention object
-func (m Mention) GetID() *ObjectID {
-	return Link(m).GetID()
-}
-
-// GetLink returns the IRI corresponding to the current Mention
-func (m Mention) GetLink() IRI {
-	return IRI(m.ID)
-}
-
-// GetType returns the Type corresponding to the Mention object
-func (m Mention) GetType() ActivityVocabularyType {
-	return m.Type
-}
-
 // UnmarshalJSON
 func (l *Link) UnmarshalJSON(data []byte) error {
 	if ItemTyperFunc == nil {
@@ -149,14 +119,4 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 	//fmt.Printf("%s\n %#v", data, l)
 
 	return nil
-}
-
-// UnmarshalJSON
-func (m *Mention) UnmarshalJSON(data []byte) error {
-	l := Link{}
-
-	err := l.UnmarshalJSON(data)
-	*m = Mention(l)
-
-	return err
 }

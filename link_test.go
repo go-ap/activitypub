@@ -1,7 +1,6 @@
 package activitystreams
 
 import (
-	"reflect"
 	"testing"
 )
 
@@ -57,27 +56,6 @@ func TestLink_IsObject(t *testing.T) {
 	}
 }
 
-func TestMention_IsLink(t *testing.T) {
-	m := MentionNew("test")
-	if !m.IsLink() {
-		t.Errorf("%#v should be a valid Mention", m.Type)
-	}
-}
-
-func TestMention_IsObject(t *testing.T) {
-	m := MentionNew("test")
-	if m.IsObject() {
-		t.Errorf("%#v should not be a valid object", m.Type)
-	}
-}
-
-func TestMention_Object(t *testing.T) {
-	m := MentionNew("test")
-	if !reflect.DeepEqual(ObjectID("test"), *m.GetID()) {
-		t.Errorf("%#v should be an empty object", m.GetID())
-	}
-}
-
 func TestLink_GetID(t *testing.T) {
 	t.Skipf("TODO")
 }
@@ -94,18 +72,10 @@ func TestLink_UnmarshalJSON(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestMention_GetID(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestMention_GetLink(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestMention_GetType(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestMentionNew(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestLink_IsCollection(t *testing.T) {
 	t.Skipf("TODO")
 }
