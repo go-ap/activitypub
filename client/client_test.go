@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	as "github.com/go-ap/activitystreams"
+	pub "github.com/go-ap/activitypub"
 )
 
 func TestNewClient(t *testing.T) {
@@ -18,7 +18,7 @@ func TestNewClient(t *testing.T) {
 func TestErr_Error(t *testing.T) {
 	e := err{
 		msg: "test",
-		iri: as.IRI(""),
+		iri: pub.IRI(""),
 	}
 
 	if len(e.Error()) == 0 {
@@ -30,7 +30,7 @@ func TestErr_Error(t *testing.T) {
 }
 
 func TestClient_LoadIRI(t *testing.T) {
-	empty := as.IRI("")
+	empty := pub.IRI("")
 	c := NewClient()
 
 	var err error
@@ -41,7 +41,7 @@ func TestClient_LoadIRI(t *testing.T) {
 		t.Logf("Valid error received: %s", err)
 	}
 
-	inv := as.IRI("example.com")
+	inv := pub.IRI("example.com")
 	_, err = c.LoadIRI(inv)
 	if err == nil {
 		t.Errorf("LoadIRI should have failed when using invalid http url")

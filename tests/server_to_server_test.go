@@ -4,7 +4,7 @@ package tests
 
 import (
 	"fmt"
-	a "github.com/go-ap/activitystreams"
+	pub "github.com/go-ap/activitypub"
 	"testing"
 )
 
@@ -22,9 +22,9 @@ S2S Server: Activities requiring the object property
 `
 	t.Log(desc)
 
-	obj := a.MentionNew("gigel")
+	obj := pub.MentionNew("gigel")
 
-	add := a.AddNew("https://localhost/myactivity", obj, nil)
+	add := pub.AddNew("https://localhost/myactivity", obj, nil)
 	if add.Object == nil {
 		t.Errorf("Missing GetID in Add activity %#v", add.Object)
 	}
@@ -32,7 +32,7 @@ S2S Server: Activities requiring the object property
 		t.Errorf("Add.GetID different than what we initialized %#v %#v", add.Object, obj)
 	}
 
-	block := a.BlockNew("https://localhost/myactivity", obj)
+	block := pub.BlockNew("https://localhost/myactivity", obj)
 	if block.Object == nil {
 		t.Errorf("Missing GetID in Add activity %#v", block.Object)
 	}
@@ -40,7 +40,7 @@ S2S Server: Activities requiring the object property
 		t.Errorf("Block.GetID different than what we initialized %#v %#v", block.Object, obj)
 	}
 
-	create := a.CreateNew("https://localhost/myactivity", obj)
+	create := pub.CreateNew("https://localhost/myactivity", obj)
 	if create.Object == nil {
 		t.Errorf("Missing GetID in Add activity %#v", create.Object)
 	}
@@ -48,7 +48,7 @@ S2S Server: Activities requiring the object property
 		t.Errorf("Create.GetID different than what we initialized %#v %#v", create.Object, obj)
 	}
 
-	delete := a.DeleteNew("https://localhost/myactivity", obj)
+	delete := pub.DeleteNew("https://localhost/myactivity", obj)
 	if delete.Object == nil {
 		t.Errorf("Missing GetID in Delete activity %#v", delete.Object)
 	}
@@ -56,7 +56,7 @@ S2S Server: Activities requiring the object property
 		t.Errorf("Delete.GetID different than what we initialized %#v %#v", delete.Object, obj)
 	}
 
-	follow := a.FollowNew("https://localhost/myactivity", obj)
+	follow := pub.FollowNew("https://localhost/myactivity", obj)
 	if follow.Object == nil {
 		t.Errorf("Missing GetID in Follow activity %#v", follow.Object)
 	}
@@ -64,7 +64,7 @@ S2S Server: Activities requiring the object property
 		t.Errorf("Follow.GetID different than what we initialized %#v %#v", follow.Object, obj)
 	}
 
-	like := a.LikeNew("https://localhost/myactivity", obj)
+	like := pub.LikeNew("https://localhost/myactivity", obj)
 	if like.Object == nil {
 		t.Errorf("Missing GetID in Like activity %#v", like.Object)
 	}
@@ -72,7 +72,7 @@ S2S Server: Activities requiring the object property
 		t.Errorf("Like.GetID different than what we initialized %#v %#v", add.Object, obj)
 	}
 
-	update := a.UpdateNew("https://localhost/myactivity", obj)
+	update := pub.UpdateNew("https://localhost/myactivity", obj)
 	if update.Object == nil {
 		t.Errorf("Missing GetID in Update activity %#v", update.Object)
 	}
@@ -80,7 +80,7 @@ S2S Server: Activities requiring the object property
 		t.Errorf("Update.GetID different than what we initialized %#v %#v", update.Object, obj)
 	}
 
-	undo := a.UndoNew("https://localhost/myactivity", obj)
+	undo := pub.UndoNew("https://localhost/myactivity", obj)
 	if undo.Object == nil {
 		t.Errorf("Missing GetID in Undo activity %#v", undo.Object)
 	}
@@ -103,10 +103,10 @@ property: Add, Remove.
 `
 	t.Log(desc)
 
-	obj := a.MentionNew("foo")
-	target := a.MentionNew("bar")
+	obj := pub.MentionNew("foo")
+	target := pub.MentionNew("bar")
 
-	add := a.AddNew("https://localhost/myactivity", obj, target)
+	add := pub.AddNew("https://localhost/myactivity", obj, target)
 	if add.Target == nil {
 		t.Errorf("Missing Target in Add activity %#v", add.Target)
 	}
@@ -114,7 +114,7 @@ property: Add, Remove.
 		t.Errorf("Add.Target different than what we initialized %#v %#v", add.Target, target)
 	}
 
-	remove := a.RemoveNew("https://localhost/myactivity", obj, target)
+	remove := pub.RemoveNew("https://localhost/myactivity", obj, target)
 	if remove.Target == nil {
 		t.Errorf("Missing Target in Remove activity %#v", remove.Target)
 	}
@@ -141,32 +141,32 @@ S2S Server: Deduplication of recipient list
 `
 	t.Log(desc)
 
-	to := a.PersonNew("bob")
-	o := a.ObjectNew(a.ArticleType)
-	cc := a.PersonNew("alice")
+	to := pub.PersonNew("bob")
+	o := pub.ObjectNew(pub.ArticleType)
+	cc := pub.PersonNew("alice")
 
 	o.ID = "something"
-	c := a.CreateNew("create", o)
+	c := pub.CreateNew("create", o)
 	c.To.Append(to)
 	c.CC.Append(cc)
 	c.BCC.Append(cc)
 
 	c.Recipients()
 
-	checkDedup := func(list a.ItemCollection, recIds *[]a.ObjectID) error {
+	checkDedup := func(list pub.ItemCollection, recIds *[]pub.ObjectID) error {
 		for _, rec := range list {
 			for _, id := range *recIds {
-				if *rec.GetID() == id {
+				if rec.GetID() == id {
 					return fmt.Errorf("%T[%s] already stored in recipients list, Deduplication faild", rec, id)
 				}
 			}
-			*recIds = append(*recIds, *rec.GetID())
+			*recIds = append(*recIds, rec.GetID())
 		}
 		return nil
 	}
 
 	var err error
-	recIds := make([]a.ObjectID, 0)
+	recIds := make([]pub.ObjectID, 0)
 	err = checkDedup(c.To, &recIds)
 	if err != nil {
 		t.Error(err)
@@ -197,15 +197,15 @@ Activity being notified about
 `
 	t.Log(desc)
 
-	p := a.PersonNew("main actor")
+	p := pub.PersonNew("main actor")
 
-	to := a.PersonNew("bob")
-	o := a.ObjectNew(a.ArticleType)
-	cc := a.PersonNew("alice")
+	to := pub.PersonNew("bob")
+	o := pub.ObjectNew(pub.ArticleType)
+	cc := pub.PersonNew("alice")
 
 	o.ID = "something"
-	c := a.CreateNew("create", o)
-	c.Actor = a.Actor(*p)
+	c := pub.CreateNew("create", o)
+	c.Actor = *p
 
 	c.To.Append(p)
 	c.To.Append(to)
@@ -216,10 +216,10 @@ Activity being notified about
 
 	c.Recipients()
 
-	checkActor := func(list a.ItemCollection, actor a.Item) error {
+	checkActor := func(list pub.ItemCollection, actor pub.Item) error {
 		for _, rec := range list {
 			if rec.GetID() == actor.GetID() {
-				return fmt.Errorf("%T[%s] Actor of activity should not be in the recipients list", rec, *actor.GetID())
+				return fmt.Errorf("%T[%s] Actor of activity should not be in the recipients list", rec, actor.GetID())
 			}
 		}
 		return nil
@@ -254,13 +254,13 @@ S2S Server: Do-not-deliver considerations
 `
 	t.Log(desc)
 
-	p := a.PersonNew("blocked")
+	p := pub.PersonNew("blocked")
 
-	bob := a.PersonNew("bob")
-	jane := a.PersonNew("jane doe")
+	bob := pub.PersonNew("bob")
+	jane := pub.PersonNew("jane doe")
 
-	b := a.BlockNew("block actor", p)
-	b.Actor = a.Actor(*bob)
+	b := pub.BlockNew("block actor", p)
+	b.Actor = *bob
 
 	b.To.Append(jane)
 	b.To.Append(p)
@@ -268,10 +268,10 @@ S2S Server: Do-not-deliver considerations
 
 	b.Recipients()
 
-	checkActor := func(list a.ItemCollection, ob a.Item) error {
+	checkActor := func(list pub.ItemCollection, ob pub.Item) error {
 		for _, rec := range list {
 			if rec.GetID() == ob.GetID() {
-				return fmt.Errorf("%T[%s] of activity should not be in the recipients list", rec, *ob.GetID())
+				return fmt.Errorf("%T[%s] of activity should not be in the recipients list", rec, ob.GetID())
 			}
 		}
 		return nil

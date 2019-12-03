@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	as "github.com/go-ap/activitystreams"
+	pub "github.com/go-ap/activitypub"
 )
 
 type RequestSignFn func(*http.Request) error
@@ -30,7 +30,7 @@ type CanSign interface {
 }
 
 type Client interface {
-	LoadIRI(as.IRI) (as.Item, error)
+	LoadIRI(pub.IRI) (pub.Item, error)
 }
 
 // UserAgent value that the client uses when performing requests
@@ -48,10 +48,10 @@ var defaultSign RequestSignFn = func(r *http.Request) error { return nil }
 
 type err struct {
 	msg string
-	iri as.IRI
+	iri pub.IRI
 }
 
-func errorf(i as.IRI, msg string, p ...interface{}) error {
+func errorf(i pub.IRI, msg string, p ...interface{}) error {
 	return &err{
 		msg: fmt.Sprintf(msg, p...),
 		iri: i,
@@ -82,7 +82,7 @@ func (c *client) SignFn(fn RequestSignFn) {
 }
 
 // LoadIRI tries to dereference an IRI and load the full ActivityPub object it represents
-func (c *client) LoadIRI(id as.IRI) (as.Item, error) {
+func (c *client) LoadIRI(id pub.IRI) (pub.Item, error) {
 	if len(id) == 0 {
 		return nil, errorf(id, "Invalid IRI, nil value")
 	}
@@ -90,7 +90,7 @@ func (c *client) LoadIRI(id as.IRI) (as.Item, error) {
 		return nil, errorf(id, "Invalid IRI: %s", err)
 	}
 	var err error
-	var obj as.Item
+	var obj pub.Item
 
 	var resp *http.Response
 	if resp, err = c.Get(id.String()); err != nil {
@@ -115,7 +115,7 @@ func (c *client) LoadIRI(id as.IRI) (as.Item, error) {
 		return obj, err
 	}
 
-	return as.UnmarshalJSON(body)
+	return pub.UnmarshalJSON(body)
 }
 
 func (c *client) req(method string, url string, body io.Reader) (*http.Request, error) {
@@ -133,7 +133,7 @@ func (c *client) req(method string, url string, body io.Reader) (*http.Request, 
 		req.Header.Set("Content-Type", ContentTypeJsonLD)
 	}
 	if err = c.signFn(req); err != nil {
-		err := errorf(as.IRI(req.URL.String()), "Unable to sign request (method %q, previous error: %s)", req.Method, err)
+		err := errorf(pub.IRI(req.URL.String()), "Unable to sign request (method %q, previous error: %s)", req.Method, err)
 		return req, err
 	}
 	return req, nil
