@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	as "github.com/go-ap/activitystreams"
+	pub "github.com/go-ap/activitypub"
 	"github.com/go-ap/errors"
 	json "github.com/go-ap/jsonld"
 	"github.com/go-ap/storage"
@@ -32,7 +32,7 @@ type RequestValidator interface {
 //  an IRI representing a new Object - in the case of transitive activities that had a side effect, or
 //  an error.
 // In the case of intransitive activities the iri will always be empty.
-type ActivityHandlerFn func(CollectionType, *http.Request, storage.Repository) (as.Item, int, error)
+type ActivityHandlerFn func(CollectionType, *http.Request, storage.Repository) (pub.Item, int, error)
 
 func (a ActivityHandlerFn) Storage(r *http.Request) (storage.Repository, error) {
 	ctxVal := r.Context().Value(RepositoryKey)
@@ -59,7 +59,7 @@ func (a ActivityHandlerFn) ValidateRequest(r *http.Request) (int, error) {
 // ServeHTTP implements the http.Handler interface for the ActivityHandlerFn type
 func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var dat []byte
-	var it as.Item
+	var it pub.Item
 	var err error
 	var status = http.StatusInternalServerError
 
@@ -83,7 +83,7 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	contentType := json.ContentType
-	if act, err := as.ToActivity(it); err == nil {
+	if act, err := pub.ToActivity(it); err == nil {
 		if act.Object.IsLink() {
 			col, cnt, err := st.LoadObjects(act.Object)
 			if err == nil && cnt == 1 {
@@ -117,7 +117,7 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // CollectionHandlerFn is the type that we're using to represent handlers that will return ActivityStreams
 // Collection or OrderedCollection objects. It needs to implement the http.Handler interface.
-type CollectionHandlerFn func(CollectionType, *http.Request, storage.CollectionLoader) (as.CollectionInterface, error)
+type CollectionHandlerFn func(CollectionType, *http.Request, storage.CollectionLoader) (pub.CollectionInterface, error)
 
 func (c CollectionHandlerFn) Storage(r *http.Request) (storage.CollectionLoader, error) {
 	ctxVal := r.Context().Value(RepositoryKey)
@@ -165,7 +165,7 @@ func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
-	if dat, err = json.WithContext(json.IRI(as.ActivityBaseURI)).Marshal(col); err != nil {
+	if dat, err = json.WithContext(json.IRI(pub.ActivityBaseURI)).Marshal(col); err != nil {
 		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
@@ -180,7 +180,7 @@ func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // ItemHandlerFn is the type that we're using to represent handlers that return ActivityStreams
 // objects. It needs to implement the http.Handler interface
-type ItemHandlerFn func(*http.Request, storage.ObjectLoader) (as.Item, error)
+type ItemHandlerFn func(*http.Request, storage.ObjectLoader) (pub.Item, error)
 
 func (i ItemHandlerFn) Storage(r *http.Request) (storage.ObjectLoader, error) {
 	ctxVal := r.Context().Value(RepositoryKey)
@@ -227,7 +227,7 @@ func (i ItemHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
-	if dat, err = json.WithContext(json.IRI(as.ActivityBaseURI)).Marshal(it); err != nil {
+	if dat, err = json.WithContext(json.IRI(pub.ActivityBaseURI)).Marshal(it); err != nil {
 		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
