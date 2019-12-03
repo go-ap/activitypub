@@ -57,6 +57,13 @@ func JSONGetInt(data []byte, prop string) int64 {
 	return val
 }
 
+func JSONGetFloat(data []byte, prop string) float64 {
+	val, err := jsonparser.GetFloat(data, prop)
+	if err != nil {
+	}
+	return val
+}
+
 func JSONGetString(data []byte, prop string) string {
 	val, err := jsonparser.GetString(data, prop)
 	if err != nil {

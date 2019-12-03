@@ -86,18 +86,18 @@ type Place struct {
 	Duration time.Duration `jsonld:"duration,omitempty"`
 	// Accuracy indicates the accuracy of position coordinates on a Place objects.
 	// Expressed in properties of percentage. e.g. "94.0" means "94.0% accurate".
-	Accuracy float32
+	Accuracy float64
 	// Altitude indicates the altitude of a place. The measurement units is indicated using the units property.
 	// If units is not specified, the default is assumed to be "m" indicating meters.
-	Altitude float32
+	Altitude float64
 	// Latitude the latitude of a place
-	Latitude float32
+	Latitude float64
 	// Longitude the longitude of a place
-	Longitude float32
+	Longitude float64
 	// Radius the radius from the given latitude and longitude for a Place.
 	// The units is expressed by the units property. If units is not specified,
 	// the default is assumed to be "m" indicating "meters".
-	Radius int
+	Radius int64
 	// Specifies the measurement units for the radius and altitude properties on a Place object.
 	// If not specified, the default is assumed to be "m" for "meters".
 	// Values "cm" | " feet" | " inches" | " km" | " m" | " miles" | xsd:anyURI
@@ -132,4 +132,72 @@ func (p Place) GetType() ActivityVocabularyType {
 // GetID returns the ID corresponding to the current Place
 func (p Place) GetID() *ObjectID {
 	return &p.ID
+}
+
+// UnmarshalJSON
+func (p *Place) UnmarshalJSON(data []byte) error {
+	// TODO(marius): this is a candidate of using OnObject() for loading the common properties
+	//   and then loading the extra ones
+	if ItemTyperFunc == nil {
+		ItemTyperFunc = JSONGetItemByType
+	}
+	p.ID = JSONGetObjectID(data)
+	p.Type = JSONGetType(data)
+	p.Name = JSONGetNaturalLanguageField(data, "name")
+	p.Content = JSONGetNaturalLanguageField(data, "content")
+	p.Summary = JSONGetNaturalLanguageField(data, "summary")
+	p.Context = JSONGetItem(data, "context")
+	p.URL = JSONGetURIItem(data, "url")
+	p.MediaType = MimeType(JSONGetString(data, "mediaType"))
+	p.Generator = JSONGetItem(data, "generator")
+	p.AttributedTo = JSONGetItem(data, "attributedTo")
+	p.Attachment = JSONGetItem(data, "attachment")
+	p.Location = JSONGetItem(data, "location")
+	p.Published = JSONGetTime(data, "published")
+	p.StartTime = JSONGetTime(data, "startTime")
+	p.EndTime = JSONGetTime(data, "endTime")
+	p.Duration = JSONGetDuration(data, "duration")
+	p.Icon = JSONGetItem(data, "icon")
+	p.Preview = JSONGetItem(data, "preview")
+	p.Image = JSONGetItem(data, "image")
+	p.Updated = JSONGetTime(data, "updated")
+	inReplyTo := JSONGetItems(data, "inReplyTo")
+	if len(inReplyTo) > 0 {
+		p.InReplyTo = inReplyTo
+	}
+	to := JSONGetItems(data, "to")
+	if len(to) > 0 {
+		p.To = to
+	}
+	audience := JSONGetItems(data, "audience")
+	if len(audience) > 0 {
+		p.Audience = audience
+	}
+	bto := JSONGetItems(data, "bto")
+	if len(bto) > 0 {
+		p.Bto = bto
+	}
+	cc := JSONGetItems(data, "cc")
+	if len(cc) > 0 {
+		p.CC = cc
+	}
+	bcc := JSONGetItems(data, "bcc")
+	if len(bcc) > 0 {
+		p.BCC = bcc
+	}
+	replies := JSONGetItem(data, "replies")
+	if replies != nil {
+		p.Replies = replies
+	}
+	tag := JSONGetItems(data, "tag")
+	if len(tag) > 0 {
+		p.Tag = tag
+	}
+	p.Accuracy = JSONGetFloat(data, "accuracy")
+	p.Altitude = JSONGetFloat(data, "altitude")
+	p.Latitude = JSONGetFloat(data, "latitude")
+	p.Longitude = JSONGetFloat(data, "longitude")
+	p.Radius = JSONGetInt(data, "radius")
+	p.Units = JSONGetString(data, "units")
+	return nil
 }
