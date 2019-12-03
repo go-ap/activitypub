@@ -601,25 +601,6 @@ type (
 	Video = Document
 )
 
-// Relationship describes a relationship between two individuals.
-// The subject and object properties are used to identify the connected individuals.
-//See 5.2 Representing Relationships Between Entities for additional information.
-// 5.2: The relationship property specifies the kind of relationship that exists between the two individuals identified
-// by the subject and object properties. Used together, these three properties form what is commonly known
-// as a "reified statement" where subject identifies the subject, relationship identifies the predicate,
-// and object identifies the object.
-type Relationship struct {
-	Parent
-	// Subject Subject On a Relationship object, the subject property identifies one of the connected individuals.
-	// For instance, for a Relationship object describing "John is related to Sally", subject would refer to John.
-	Subject Item
-	// Object
-	Object Item
-	// Relationship On a Relationship object, the relationship property identifies the kind
-	// of relationship that exists between subject and object.
-	Relationship Item
-}
-
 // Tombstone a Tombstone represents a content object that has been deleted.
 // It can be used in Collections to signify that there used to be an object at this position,
 // but it has been deleted.
@@ -686,21 +667,6 @@ func (c *MimeType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// ToRelationship
-func ToRelationship(it Item) (*Relationship, error) {
-	switch i := it.(type) {
-	case *Relationship:
-		return i, nil
-	case Relationship:
-		return &i, nil
-	case *Object:
-		return &Relationship{Parent: *i}, nil
-	case Object:
-		return &Relationship{Parent: i}, nil
-	}
-	return nil, fmt.Errorf("unable to convert %q", it.GetType())
-}
-
 // ToTombstone
 func ToTombstone(it Item) (*Tombstone, error) {
 	switch i := it.(type) {
@@ -732,9 +698,9 @@ func ToObject(it Item) (*Object, error) {
 	case Profile:
 		return (*Object)(unsafe.Pointer(&i)), nil
 	case *Relationship:
-		return &i.Parent, nil
+		return (*Object)(unsafe.Pointer(i)), nil
 	case Relationship:
-		return &i.Parent, nil
+		return (*Object)(unsafe.Pointer(&i)), nil
 	case *Tombstone:
 		return &i.Parent, nil
 	case Tombstone:
@@ -799,19 +765,6 @@ func (t *Tombstone) UnmarshalJSON(data []byte) error {
 	t.FormerType = ActivityVocabularyType(JSONGetString(data, "formerType"))
 	t.Deleted = JSONGetTime(data, "deleted")
 	return nil
-}
-
-// Recipients performs recipient de-duplication on the Relationship object's To, Bto, CC and BCC properties
-func (r *Relationship) Recipients() ItemCollection {
-	var aud ItemCollection
-	rec, _ := ItemCollectionDeduplication(&aud, &r.To, &r.Bto, &r.CC, &r.BCC, &r.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (r *Relationship) Clean(){
-	r.BCC = nil
-	r.Bto = nil
 }
 
 // Recipients performs recipient de-duplication on the Tombstone object's To, Bto, CC and BCC properties
