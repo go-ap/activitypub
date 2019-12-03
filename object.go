@@ -601,17 +601,6 @@ type (
 	Video = Document
 )
 
-// Tombstone a Tombstone represents a content object that has been deleted.
-// It can be used in Collections to signify that there used to be an object at this position,
-// but it has been deleted.
-type Tombstone struct {
-	Parent
-	// FormerType On a Tombstone object, the formerType property identifies the type of the object that was deleted.
-	FormerType ActivityVocabularyType `jsonld:"formerType,omitempty"`
-	// Deleted On a Tombstone object, the deleted property is a timestamp for when the object was deleted.
-	Deleted time.Time `jsonld:"deleted,omitempty"`
-}
-
 // ItemCollectionDeduplication normalizes the received arguments lists into a single unified one
 func ItemCollectionDeduplication(recCols ...*ItemCollection) (ItemCollection, error) {
 	rec := make(ItemCollection, 0)
@@ -667,21 +656,6 @@ func (c *MimeType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// ToTombstone
-func ToTombstone(it Item) (*Tombstone, error) {
-	switch i := it.(type) {
-	case *Tombstone:
-		return i, nil
-	case Tombstone:
-		return &i, nil
-	case *Object:
-		return &Tombstone{Parent: *i}, nil
-	case Object:
-		return &Tombstone{Parent: i}, nil
-	}
-	return nil, fmt.Errorf("unable to convert %q", it.GetType())
-}
-
 // ToObject
 func ToObject(it Item) (*Object, error) {
 	switch i := it.(type) {
@@ -702,9 +676,9 @@ func ToObject(it Item) (*Object, error) {
 	case Relationship:
 		return (*Object)(unsafe.Pointer(&i)), nil
 	case *Tombstone:
-		return &i.Parent, nil
+		return (*Object)(unsafe.Pointer(i)), nil
 	case Tombstone:
-		return &i.Parent, nil
+		return (*Object)(unsafe.Pointer(&i)), nil
 	case *Activity:
 		return &i.Parent, nil
 	case Activity:
@@ -757,25 +731,4 @@ func FlattenProperties(it Item) Item {
 		}
 	}
 	return it
-}
-
-// UnmarshalJSON
-func (t *Tombstone) UnmarshalJSON(data []byte) error {
-	t.Parent.UnmarshalJSON(data)
-	t.FormerType = ActivityVocabularyType(JSONGetString(data, "formerType"))
-	t.Deleted = JSONGetTime(data, "deleted")
-	return nil
-}
-
-// Recipients performs recipient de-duplication on the Tombstone object's To, Bto, CC and BCC properties
-func (t *Tombstone) Recipients() ItemCollection {
-	var aud ItemCollection
-	rec, _ := ItemCollectionDeduplication(&aud, &t.To, &t.Bto, &t.CC, &t.BCC, &t.Audience)
-	return rec
-}
-
-// Clean removes Bto and BCC properties
-func (t *Tombstone) Clean(){
-	t.BCC = nil
-	t.Bto = nil
 }
