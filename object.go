@@ -100,16 +100,16 @@ type (
 		// GetID returns the dereferenceable ActivityStreams object id
 		GetID() *ObjectID
 	}
-	// LinkOrURI is an interface that Object and Link structs implement, and at the same time
+	// LinkOrIRI is an interface that Object and Link structs implement, and at the same time
 	// they are kept disjointed
-	LinkOrURI interface {
+	LinkOrIRI interface {
 		// GetLink returns the object id in IRI type
 		GetLink() IRI
 	}
 	// Item describes the requirements of an ActivityStreams object
 	ObjectOrLink interface {
 		ActivityObject
-		LinkOrURI
+		LinkOrIRI
 		// GetType returns the ActivityStreams type
 		GetType() ActivityVocabularyType
 		// IsLink shows if current item represents a Link object or an IRI
@@ -463,7 +463,7 @@ type object struct {
 	// Updated the date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// URL identifies one or more links to representations of the object
-	URL LinkOrURI `jsonld:"url,omitempty"`
+	URL LinkOrIRI `jsonld:"url,omitempty"`
 	// To identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ItemCollection `jsonld:"to,omitempty"`
 	// Bto identifies anActivity Pub Object that is part of the private primary audience of this Activity Pub Object.

@@ -427,7 +427,7 @@ type Question struct {
 	// Updated the date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// URL identifies one or more links to representations of the object
-	URL LinkOrURI `jsonld:"url,omitempty"`
+	URL LinkOrIRI `jsonld:"url,omitempty"`
 	// To identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ItemCollection `jsonld:"to,omitempty"`
 	// Bto identifies an Activity Pub Object that is part of the private primary audience of this Activity Pub Object.
