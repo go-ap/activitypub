@@ -27,7 +27,7 @@ func Test_OrderedCollection_Append(t *testing.T) {
 	c.Append(val)
 
 	if c.Count() != 1 {
-		t.Errorf("Inbox collection of %q should have one element", *c.GetID())
+		t.Errorf("Inbox collection of %q should have one element", c.GetID())
 	}
 	if !reflect.DeepEqual(c.OrderedItems[0], val) {
 		t.Errorf("First item in Inbox is does not match %q", val.ID)
@@ -49,7 +49,7 @@ func TestOrderedCollection_Append(t *testing.T) {
 		t.Errorf("Ordereed collection page should point to ordered collection %q", c.GetLink())
 	}
 	if p.Count() != 1 {
-		t.Errorf("Ordered collection page of %q should have exactly one element", *p.GetID())
+		t.Errorf("Ordered collection page of %q should have exactly one element", p.GetID())
 	}
 	if !reflect.DeepEqual(p.OrderedItems[0], val) {
 		t.Errorf("First item in Inbox is does not match %q", val.ID)
@@ -71,8 +71,8 @@ func TestOrderedCollection_GetID(t *testing.T) {
 
 	c := OrderedCollectionNew(id)
 
-	if *c.GetID() != id {
-		t.Errorf("GetID should return %q, received %q", id, *c.GetID())
+	if c.GetID() != id {
+		t.Errorf("GetID should return %q, received %q", id, c.GetID())
 	}
 }
 

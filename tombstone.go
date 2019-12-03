@@ -122,8 +122,8 @@ func (t Tombstone) GetType() ActivityVocabularyType {
 }
 
 // GetID returns the ID corresponding to the current Tombstone
-func (t Tombstone) GetID() *ObjectID {
-	return &t.ID
+func (t Tombstone) GetID() ObjectID {
+	return t.ID
 }
 
 // UnmarshalJSON

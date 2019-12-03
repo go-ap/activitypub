@@ -19,11 +19,11 @@ var (
 
 // ItemTyperFunc will return an instance of a struct that implements activitystreams.Item
 // The default for this package is JSONGetItemByType but can be overwritten
-var ItemTyperFunc TyperFunction
+var ItemTyperFunc TyperFn
 
-// TyperFunction is the type of the function which returns an activitystreams.Item struct instance
+// TyperFn is the type of the function which returns an activitystreams.Item struct instance
 // for a specific ActivityVocabularyType
-type TyperFunction func(ActivityVocabularyType) (Item, error)
+type TyperFn func(ActivityVocabularyType) (Item, error)
 
 func JSONGetObjectID(data []byte) ObjectID {
 	i, err := jsonparser.GetString(data, "id")

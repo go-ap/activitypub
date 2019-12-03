@@ -130,8 +130,8 @@ func (r Relationship) GetType() ActivityVocabularyType {
 }
 
 // GetID returns the ID corresponding to the current Relationship
-func (r Relationship) GetID() *ObjectID {
-	return &r.ID
+func (r Relationship) GetID() ObjectID {
+	return r.ID
 }
 
 // UnmarshalJSON

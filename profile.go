@@ -120,8 +120,8 @@ func (p Profile) GetType() ActivityVocabularyType {
 }
 
 // GetID returns the ID corresponding to the current Profile
-func (p Profile) GetID() *ObjectID {
-	return &p.ID
+func (p Profile) GetID() ObjectID {
+	return p.ID
 }
 
 // UnmarshalJSON

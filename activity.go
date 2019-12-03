@@ -317,8 +317,8 @@ func (a Activity) IsLink() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Activity object
-func (a Activity) GetID() *ObjectID {
-	return &a.ID
+func (a Activity) GetID() ObjectID {
+	return a.ID
 }
 
 // GetLink returns the IRI corresponding to the Activity object

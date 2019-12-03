@@ -145,8 +145,8 @@ func (i IntransitiveActivity) IsLink() bool {
 }
 
 // GetID returns the ObjectID corresponding to the IntransitiveActivity object
-func (i IntransitiveActivity) GetID() *ObjectID {
-	return &i.ID
+func (i IntransitiveActivity) GetID() ObjectID {
+	return i.ID
 }
 
 // GetLink returns the IRI corresponding to the IntransitiveActivity object

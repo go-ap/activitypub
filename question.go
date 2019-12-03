@@ -120,8 +120,8 @@ type Question struct {
 }
 
 // GetID returns the ObjectID corresponding to the Question object
-func (q Question) GetID() *ObjectID {
-	return &q.ID
+func (q Question) GetID() ObjectID {
+	return q.ID
 }
 
 // GetLink returns the IRI corresponding to the Question object

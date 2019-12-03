@@ -93,7 +93,7 @@ func TestOrderedCollectionPage_Append(t *testing.T) {
 		t.Errorf("OrderedCollection page should point to OrderedCollection %q", c.GetLink())
 	}
 	if p.Count() != 1 {
-		t.Errorf("OrderedCollection page of %q should have exactly one element", *p.GetID())
+		t.Errorf("OrderedCollection page of %q should have exactly one element", p.GetID())
 	}
 	if !reflect.DeepEqual(p.OrderedItems[0], val) {
 		t.Errorf("First item in Inbox is does not match %q", val.ID)

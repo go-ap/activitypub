@@ -112,8 +112,8 @@ func (o OrderedCollection) IsLink() bool {
 }
 
 // GetID returns the ObjectID corresponding to the OrderedCollection
-func (o OrderedCollection) GetID() *ObjectID {
-	return &o.ID
+func (o OrderedCollection) GetID() ObjectID {
+	return o.ID
 }
 
 // GetLink returns the IRI corresponding to the OrderedCollection object

@@ -20,8 +20,8 @@ func TestIRI_String(t *testing.T) {
 
 func TestIRI_GetID(t *testing.T) {
 	i := IRI("http://example.com")
-	if id := i.GetID(); id == nil || *id != ObjectID(i) {
-		t.Errorf("ObjectID %q (%T) should equal %q (%T)", *id, id, i, ObjectID(i))
+	if id := i.GetID(); !id.IsValid() || id != ObjectID(i) {
+		t.Errorf("ObjectID %q (%T) should equal %q (%T)", id, id, i, ObjectID(i))
 	}
 }
 

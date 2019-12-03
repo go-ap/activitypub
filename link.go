@@ -80,8 +80,8 @@ func (l Link) IsCollection() bool {
 }
 
 // GetID returns the ObjectID corresponding to the Link object
-func (l Link) GetID() *ObjectID {
-	return &l.ID
+func (l Link) GetID() ObjectID {
+	return l.ID
 }
 
 // GetLink returns the IRI corresponding to the current Link

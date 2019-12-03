@@ -619,8 +619,8 @@ func TestObject_GetID(t *testing.T) {
 	a := Object{}
 	testVal := "crash$"
 	a.ID = ObjectID(testVal)
-	if string(*a.GetID()) != testVal {
-		t.Errorf("%T should return %q, Received %q", a.GetID, testVal, *a.GetID())
+	if string(a.GetID()) != testVal {
+		t.Errorf("%T should return %q, Received %q", a.GetID, testVal, a.GetID())
 	}
 }
 

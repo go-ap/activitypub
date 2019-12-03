@@ -6,14 +6,17 @@ type ItemCollection []Item
 // Item struct
 type Item ObjectOrLink
 
+const EmptyObjectID = ObjectID("")
+const EmptyIRI = IRI("")
+
 // GetID returns the ObjectID corresponding to ItemCollection
-func (i ItemCollection) GetID() *ObjectID {
-	return nil
+func (i ItemCollection) GetID() ObjectID {
+	return EmptyObjectID
 }
 
 // GetLink returns the empty IRI
 func (i ItemCollection) GetLink() IRI {
-	return IRI("")
+	return EmptyIRI
 }
 
 // GetType returns the ItemCollection's type

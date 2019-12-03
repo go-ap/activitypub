@@ -635,15 +635,15 @@ func TestUpdate_Recipients(t *testing.T) {
 func TestActivity_GetID(t *testing.T) {
 	a := ActivityNew("test", ActivityType, Person{})
 
-	if *a.GetID() != "test" {
-		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	if a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
 	}
 }
 func TestActivity_GetIDGetType(t *testing.T) {
 	a := ActivityNew("test", ActivityType, Person{})
 
-	if *a.GetID() != "test" || a.GetType() != ActivityType {
-		t.Errorf("%T should not return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	if a.GetID() != "test" || a.GetType() != ActivityType {
+		t.Errorf("%T should not return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
 	}
 }
 func TestActivity_IsLink(t *testing.T) {
@@ -664,11 +664,11 @@ func TestActivity_IsObject(t *testing.T) {
 func checkDedup(list ItemCollection, recIds *[]ObjectID) error {
 	for _, rec := range list {
 		for _, id := range *recIds {
-			if *rec.GetID() == id {
+			if rec.GetID() == id {
 				return fmt.Errorf("%T[%s] already stored in recipients list, Deduplication faild", rec, id)
 			}
 		}
-		*recIds = append(*recIds, *rec.GetID())
+		*recIds = append(*recIds, rec.GetID())
 	}
 	return nil
 }

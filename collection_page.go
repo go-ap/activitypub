@@ -109,8 +109,8 @@ type CollectionPage struct {
 }
 
 // GetID returns the ObjectID corresponding to the CollectionPage object
-func (c CollectionPage) GetID() *ObjectID {
-	return &c.ID
+func (c CollectionPage) GetID() ObjectID {
+	return c.ID
 }
 
 // GetType returns the CollectionPage's type

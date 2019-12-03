@@ -137,8 +137,8 @@ func OrderedCollectionNew(id ObjectID) *OrderedCollection {
 }
 
 // GetID returns the ObjectID corresponding to the Collection object
-func (c Collection) GetID() *ObjectID {
-	return &c.ID
+func (c Collection) GetID() ObjectID {
+	return c.ID
 }
 
 // GetType returns the Collection's type

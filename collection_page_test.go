@@ -32,7 +32,7 @@ func TestCollectionPage_Append(t *testing.T) {
 		t.Errorf("Collection page should point to collection %q", c.GetLink())
 	}
 	if p.Count() != 1 {
-		t.Errorf("Collection page of %q should have exactly one element", *p.GetID())
+		t.Errorf("Collection page of %q should have exactly one element", p.GetID())
 	}
 	if !reflect.DeepEqual(p.Items[0], val) {
 		t.Errorf("First item in Inbox is does not match %q", val.ID)

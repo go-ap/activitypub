@@ -18,8 +18,8 @@ func TestQuestionNew(t *testing.T) {
 func TestQuestion_GetID(t *testing.T) {
 	a := QuestionNew("test")
 
-	if *a.GetID() != "test" {
-		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	if a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
 	}
 }
 

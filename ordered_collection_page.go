@@ -113,8 +113,8 @@ type OrderedCollectionPage struct {
 }
 
 // GetID returns the ObjectID corresponding to the OrderedCollectionPage object
-func (o OrderedCollectionPage) GetID() *ObjectID {
-	return &o.ID
+func (o OrderedCollectionPage) GetID() ObjectID {
+	return o.ID
 }
 
 // GetType returns the OrderedCollectionPage's type

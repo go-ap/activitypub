@@ -108,14 +108,14 @@ func TestIntransitiveActivityRecipients(t *testing.T) {
 func TestIntransitiveActivity_GetLink(t *testing.T) {
 	i := IntransitiveActivityNew("test", QuestionType)
 
-	if *i.GetID() != "test" {
+	if i.GetID() != "test" {
 		t.Errorf("%T should return an empty %T object. Received %#v", i, i, i)
 	}
 }
 func TestIntransitiveActivity_GetObject(t *testing.T) {
 	i := IntransitiveActivityNew("test", QuestionType)
 
-	if *i.GetID() != "test" || i.GetType() != QuestionType {
+	if i.GetID() != "test" || i.GetType() != QuestionType {
 		t.Errorf("%T should not return an empty %T object. Received %#v", i, i, i)
 	}
 }
@@ -170,8 +170,8 @@ func TestIntransitiveActivity_Recipients(t *testing.T) {
 func TestIntransitiveActivity_GetID(t *testing.T) {
 	a := IntransitiveActivityNew("test", IntransitiveActivityType)
 
-	if *a.GetID() != "test" {
-		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), *a.GetID())
+	if a.GetID() != "test" {
+		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
 	}
 }
 

@@ -98,7 +98,7 @@ type (
 	// is currently happening, or has already happened
 	ActivityObject interface {
 		// GetID returns the dereferenceable ActivityStreams object id
-		GetID() *ObjectID
+		GetID() ObjectID
 		// GetType returns the ActivityStreams type
 		GetType() ActivityVocabularyType
 	}
@@ -479,8 +479,8 @@ func ObjectNew(typ ActivityVocabularyType) *Object {
 }
 
 // GetID returns the ObjectID corresponding to the current Object
-func (o Object) GetID() *ObjectID {
-	return &o.ID
+func (o Object) GetID() ObjectID {
+	return o.ID
 }
 
 // GetLink returns the IRI corresponding to the current Object
@@ -647,6 +647,10 @@ func ItemCollectionDeduplication(recCols ...*ItemCollection) (ItemCollection, er
 func (i *ObjectID) UnmarshalJSON(data []byte) error {
 	*i = ObjectID(strings.Trim(string(data), "\""))
 	return nil
+}
+
+func (i *ObjectID) IsValid() bool {
+	return i != nil && len(*i) > 0
 }
 
 // UnmarshalJSON

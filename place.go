@@ -134,8 +134,8 @@ func (p Place) GetType() ActivityVocabularyType {
 }
 
 // GetID returns the ID corresponding to the current Place
-func (p Place) GetID() *ObjectID {
-	return &p.ID
+func (p Place) GetID() ObjectID {
+	return p.ID
 }
 
 // UnmarshalJSON
