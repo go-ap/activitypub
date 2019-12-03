@@ -1,4 +1,4 @@
-package activitypub
+package tests
 
 // Common server tests...
 

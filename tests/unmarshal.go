@@ -1,8 +1,9 @@
-package activitypub
+package tests
 
 import (
 	"bytes"
 	"fmt"
+	pub "github.com/go-ap/activitypub"
 	"io"
 	"os"
 	"path/filepath"
@@ -194,92 +195,94 @@ var zLoc, _ = time.LoadLocation("UTC")
 var allTests = testMaps{
 	"empty": testPair{
 		expected: true,
-		blank:    &Object{},
-		result:   &Object{},
+		blank:    &pub.Object{},
+		result:   &pub.Object{},
 	},
 	"link_simple": testPair{
 		expected: true,
-		blank:    &Link{},
-		result: &Link{
-			Type:      LinkType,
-			Href:      IRI("http://example.org/abc"),
-			HrefLang:  LangRef("en"),
-			MediaType: MimeType("text/html"),
-			Name: NaturalLanguageValues{{
-				NilLangRef, "An example link",
+		blank:    &pub.Link{},
+		result: &pub.Link{
+			Type:      pub.LinkType,
+			Href:      pub.IRI("http://example.org/abc"),
+			HrefLang:  pub.LangRef("en"),
+			MediaType: pub.MimeType("text/html"),
+			Name: pub.NaturalLanguageValues{{
+				pub.NilLangRef, "An example link",
 			}},
 		},
 	},
 	"object_with_url": testPair{
 		expected: true,
-		blank:    &Object{},
-		result: &Object{
-			URL: IRI("http://littr.git/api/accounts/system"),
+		blank:    &pub.Object{},
+		result: &pub.Object{
+			URL: pub.IRI("http://littr.git/api/accounts/system"),
 		},
 	},
 	"object_with_url_collection": testPair{
 		expected: true,
-		blank:    &Object{},
-		result: &Object{
-			URL: ItemCollection{
-				IRI("http://littr.git/api/accounts/system"),
-				IRI("http://littr.git/~system"),
+		blank:    &pub.Object{},
+		result: &pub.Object{
+			URL: pub.ItemCollection{
+				pub.IRI("http://littr.git/api/accounts/system"),
+				pub.IRI("http://littr.git/~system"),
 			},
 		},
 	},
 	"object_simple": testPair{
 		expected: true,
-		blank:    &Object{},
-		result: &Object{
-			Type: ObjectType,
-			ID:   ObjectID("http://www.test.example/object/1"),
-			Name: NaturalLanguageValues{{
-				NilLangRef, "A Simple, non-specific object",
+		blank:    &pub.Object{},
+		result: &pub.Object{
+			Type: pub.ObjectType,
+			ID:   pub.ObjectID("http://www.test.example/object/1"),
+			Name: pub.NaturalLanguageValues{{
+				pub.NilLangRef, "A Simple, non-specific object",
 			}},
 		},
 	},
 	"object_with_tags": testPair{
 		expected: true,
-		blank:    &Object{},
-		result: &Object{
-			Type: ObjectType,
-			ID:   ObjectID("http://www.test.example/object/1"),
-			Name: NaturalLanguageValues{{
-				NilLangRef, "A Simple, non-specific object",
+		blank:    &pub.Object{},
+		result: &pub.Object{
+			Type: pub.ObjectType,
+			ID:   pub.ObjectID("http://www.test.example/object/1"),
+			Name: pub.NaturalLanguageValues{{
+				pub.NilLangRef, "A Simple, non-specific object",
 			}},
-			Tag: ItemCollection{
-				&Mention{
-					Name: NaturalLanguageValues{{
-						NilLangRef, "#my_tag",
+			Tag: pub.ItemCollection{
+				&pub.Mention{
+					Name: pub.NaturalLanguageValues{{
+						pub.NilLangRef, "#my_tag",
 					}},
-					Type: MentionType,
-					ID:   ObjectID("http://example.com/tag/my_tag"),
+					Type: pub.MentionType,
+					ID:   pub.ObjectID("http://example.com/tag/my_tag"),
 				},
-				&Mention{
-					Name: NaturalLanguageValues{{
-						NilLangRef, "@ana",
+				&pub.Mention{
+					Name: pub.NaturalLanguageValues{{
+						pub.NilLangRef, "@ana",
 					}},
-					Type: MentionType,
-					ID:   ObjectID("http://example.com/users/ana"),
+					Type: pub.MentionType,
+					ID:   pub.ObjectID("http://example.com/users/ana"),
 				},
 			},
 		},
 	},
 	"object_with_replies": testPair{
 		expected: true,
-		blank:    &Object{},
-		result: &Object{
-			Type: ObjectType,
-			ID:   ObjectID("http://www.test.example/object/1"),
-			Replies: &Collection{
-				ID:         ObjectID("http://www.test.example/object/1/replies"),
-				Type:       CollectionType,
+		blank:    &pub.Object{},
+		result: &pub.Object{
+			Type: pub.ObjectType,
+			ID:   pub.ObjectID("http://www.test.example/object/1"),
+			Replies: &pub.Collection{
+				ID:         pub.ObjectID("http://www.test.example/object/1/replies"),
+				Type:       pub.CollectionType,
 				TotalItems: 1,
-				Items: ItemCollection{
-					&Object{
-						ID:   ObjectID("http://www.test.example/object/1/replies/2"),
-						Type: ArticleType,
-						Name: NaturalLanguageValues{{NilLangRef, "Example title"}},
+				Items: pub.ItemCollection{
+					&pub.Object{
+						ID:   pub.ObjectID("http://www.test.example/object/1/replies/2"),
+						Type: pub.ArticleType,
+						Name: pub.NaturalLanguageValues{{
+							pub.NilLangRef, "Example title",
+						}},
 					},
 				},
 			},
@@ -287,142 +290,142 @@ var allTests = testMaps{
 	},
 	"activity_simple": testPair{
 		expected: true,
-		blank: &Activity{
-			Actor: &Person{},
+		blank: &pub.Activity{
+			Actor: &pub.Person{},
 		},
-		result: &Activity{
-			Type:    ActivityType,
-			Summary: NaturalLanguageValues{{NilLangRef, "Sally did something to a note"}},
-			Actor: &Person{
-				Type: PersonType,
-				Name: NaturalLanguageValues{{NilLangRef, "Sally"}},
+		result: &pub.Activity{
+			Type:    pub.ActivityType,
+			Summary: pub.NaturalLanguageValues{{pub.NilLangRef, "Sally did something to a note"}},
+			Actor: &pub.Person{
+				Type: pub.PersonType,
+				Name: pub.NaturalLanguageValues{{pub.NilLangRef, "Sally"}},
 			},
-			Object: &Object{
-				Type: NoteType,
-				Name: NaturalLanguageValues{{NilLangRef, "A Note"}},
+			Object: &pub.Object{
+				Type: pub.NoteType,
+				Name: pub.NaturalLanguageValues{{pub.NilLangRef, "A Note"}},
 			},
 		},
 	},
 	"person_with_outbox": testPair{
 		expected: true,
-		blank:    &Person{},
-		result: &Person{
-			ID:   ObjectID("http://example.com/accounts/ana"),
-			Type: PersonType,
-			Name: NaturalLanguageValues{{NilLangRef, "ana"}},
-			PreferredUsername: NaturalLanguageValues{{NilLangRef, "ana"}},
-			URL:  IRI("http://example.com/accounts/ana"),
-			Outbox: &OrderedCollection{
-				ID: "http://example.com/accounts/ana/outbox",
-				Type: OrderedCollectionType,
-				URL: IRI("http://example.com/outbox"),
+		blank:    &pub.Person{},
+		result: &pub.Person{
+			ID:                pub.ObjectID("http://example.com/accounts/ana"),
+			Type:              pub.PersonType,
+			Name:              pub.NaturalLanguageValues{{pub.NilLangRef, "ana"}},
+			PreferredUsername: pub.NaturalLanguageValues{{pub.NilLangRef, "ana"}},
+			URL:               pub.IRI("http://example.com/accounts/ana"),
+			Outbox: &pub.OrderedCollection{
+				ID:   "http://example.com/accounts/ana/outbox",
+				Type: pub.OrderedCollectionType,
+				URL:  pub.IRI("http://example.com/outbox"),
 			},
 		},
 	},
 	"ordered_collection": testPair{
 		expected: true,
-		blank:    &OrderedCollection{},
-		result: &OrderedCollection{
-			ID:         ObjectID("http://example.com/outbox"),
-			Type:       OrderedCollectionType,
-			URL:        IRI("http://example.com/outbox"),
+		blank:    &pub.OrderedCollection{},
+		result: &pub.OrderedCollection{
+			ID:         pub.ObjectID("http://example.com/outbox"),
+			Type:       pub.OrderedCollectionType,
+			URL:        pub.IRI("http://example.com/outbox"),
 			TotalItems: 1,
-			OrderedItems: ItemCollection{
-				&Object{
-					ID:           ObjectID("http://example.com/outbox/53c6fb47"),
-					Type:         ArticleType,
-					Name:         NaturalLanguageValues{{NilLangRef, "Example title"}},
-					Content:      NaturalLanguageValues{{NilLangRef, "Example content!"}},
-					URL:          IRI("http://example.com/53c6fb47"),
-					MediaType:    MimeType("text/markdown"),
+			OrderedItems: pub.ItemCollection{
+				&pub.Object{
+					ID:           pub.ObjectID("http://example.com/outbox/53c6fb47"),
+					Type:         pub.ArticleType,
+					Name:         pub.NaturalLanguageValues{{pub.NilLangRef, "Example title"}},
+					Content:      pub.NaturalLanguageValues{{pub.NilLangRef, "Example content!"}},
+					URL:          pub.IRI("http://example.com/53c6fb47"),
+					MediaType:    pub.MimeType("text/markdown"),
 					Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
-					Generator:    IRI("http://example.com"),
-					AttributedTo: IRI("http://example.com/accounts/alice"),
+					Generator:    pub.IRI("http://example.com"),
+					AttributedTo: pub.IRI("http://example.com/accounts/alice"),
 				},
 			},
 		},
 	},
 	"ordered_collection_page": testPair{
 		expected: true,
-		blank:    &OrderedCollectionPage{},
-		result: &OrderedCollectionPage{
-			PartOf:     IRI("http://example.com/outbox"),
-			Next:       IRI("http://example.com/outbox?page=3"),
-			Prev:       IRI("http://example.com/outbox?page=1"),
-			ID:         ObjectID("http://example.com/outbox?page=2"),
-			Type:       OrderedCollectionPageType,
-			URL:        IRI("http://example.com/outbox?page=2"),
-			Current:    IRI("http://example.com/outbox?page=2"),
+		blank:    &pub.OrderedCollectionPage{},
+		result: &pub.OrderedCollectionPage{
+			PartOf:     pub.IRI("http://example.com/outbox"),
+			Next:       pub.IRI("http://example.com/outbox?page=3"),
+			Prev:       pub.IRI("http://example.com/outbox?page=1"),
+			ID:         pub.ObjectID("http://example.com/outbox?page=2"),
+			Type:       pub.OrderedCollectionPageType,
+			URL:        pub.IRI("http://example.com/outbox?page=2"),
+			Current:    pub.IRI("http://example.com/outbox?page=2"),
 			TotalItems: 1,
-			OrderedItems: ItemCollection{
-				&Object{
-					ID:           ObjectID("http://example.com/outbox/53c6fb47"),
-					Type:         ArticleType,
-					Name:         NaturalLanguageValues{{NilLangRef, "Example title"}},
-					Content:      NaturalLanguageValues{{NilLangRef, "Example content!"}},
-					URL:          IRI("http://example.com/53c6fb47"),
-					MediaType:    MimeType("text/markdown"),
+			OrderedItems: pub.ItemCollection{
+				&pub.Object{
+					ID:           pub.ObjectID("http://example.com/outbox/53c6fb47"),
+					Type:         pub.ArticleType,
+					Name:         pub.NaturalLanguageValues{{pub.NilLangRef, "Example title"}},
+					Content:      pub.NaturalLanguageValues{{pub.NilLangRef, "Example content!"}},
+					URL:          pub.IRI("http://example.com/53c6fb47"),
+					MediaType:    pub.MimeType("text/markdown"),
 					Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
-					Generator:    IRI("http://example.com"),
-					AttributedTo: IRI("http://example.com/accounts/alice"),
+					Generator:    pub.IRI("http://example.com"),
+					AttributedTo: pub.IRI("http://example.com/accounts/alice"),
 				},
 			},
 		},
 	},
 	"natural_language_values": {
 		expected: true,
-		blank:    &NaturalLanguageValues{},
-		result: &NaturalLanguageValues{
+		blank:    &pub.NaturalLanguageValues{},
+		result: &pub.NaturalLanguageValues{
 			{
-				NilLangRef, `
+				pub.NilLangRef, `
 	
 	`},
-			{LangRef("en"), "Ana got apples ⓐ"},
-			{LangRef("fr"), "Aná a des pommes ⒜"},
-			{LangRef("ro"), "Ana are mere"},
+			{pub.LangRef("en"), "Ana got apples ⓐ"},
+			{pub.LangRef("fr"), "Aná a des pommes ⒜"},
+			{pub.LangRef("ro"), "Ana are mere"},
 		},
 	},
 	"activity_create_simple": {
 		expected: true,
-		blank:    &Create{},
-		result: &Create{
-			Type:  CreateType,
-			Actor: IRI("https://littr.git/api/accounts/anonymous"),
-			Object: &Object{
-				Type:         NoteType,
-				AttributedTo: IRI("https://littr.git/api/accounts/anonymous"),
-				InReplyTo:    ItemCollection{IRI("https://littr.git/api/accounts/system/outbox/7ca154ff")},
-				Content:      NaturalLanguageValues{{NilLangRef, "<p>Hello world</p>"}},
-				To:           ItemCollection{IRI("https://www.w3.org/ns/activitystreams#Public")},
+		blank:    &pub.Create{},
+		result: &pub.Create{
+			Type:  pub.CreateType,
+			Actor: pub.IRI("https://littr.git/api/accounts/anonymous"),
+			Object: &pub.Object{
+				Type:         pub.NoteType,
+				AttributedTo: pub.IRI("https://littr.git/api/accounts/anonymous"),
+				InReplyTo:    pub.ItemCollection{pub.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff")},
+				Content:      pub.NaturalLanguageValues{{pub.NilLangRef, "<p>Hello world</p>"}},
+				To:           pub.ItemCollection{pub.IRI("https://www.w3.org/ns/activitystreams#Public")},
 			},
 		},
 	},
 	"activity_create_multiple_objects": {
 		expected: true,
-		blank:    &Create{},
-		result: &Create{
-			Type:  CreateType,
-			Actor: IRI("https://littr.git/api/accounts/anonymous"),
-			Object: ItemCollection{
-				&Object{
-					Type:         NoteType,
-					AttributedTo: IRI("https://littr.git/api/accounts/anonymous"),
-					InReplyTo:    ItemCollection{IRI("https://littr.git/api/accounts/system/outbox/7ca154ff")},
-					Content:      NaturalLanguageValues{{NilLangRef, "<p>Hello world</p>"}},
-					To:           ItemCollection{IRI("https://www.w3.org/ns/activitystreams#Public")},
+		blank:    &pub.Create{},
+		result: &pub.Create{
+			Type:  pub.CreateType,
+			Actor: pub.IRI("https://littr.git/api/accounts/anonymous"),
+			Object:pub.ItemCollection{
+				&pub.Object{
+					Type:         pub.NoteType,
+					AttributedTo: pub.IRI("https://littr.git/api/accounts/anonymous"),
+					InReplyTo:    pub.ItemCollection{pub.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff")},
+					Content:      pub.NaturalLanguageValues{{pub.NilLangRef, "<p>Hello world</p>"}},
+					To:           pub.ItemCollection{pub.IRI("https://www.w3.org/ns/activitystreams#Public")},
 				},
-				&Article{
-					Type: ArticleType,
-					ID:   ObjectID("http://www.test.example/article/1"),
-					Name: NaturalLanguageValues{
+				&pub.Article{
+					Type: pub.ArticleType,
+					ID:   pub.ObjectID("http://www.test.example/article/1"),
+					Name: pub.NaturalLanguageValues{
 						{
-							NilLangRef,
+							pub.NilLangRef,
 							"This someday will grow up to be an article",
 						},
 					},
-					InReplyTo: ItemCollection{
-						IRI("http://www.test.example/object/1"),
-						IRI("http://www.test.example/object/778"),
+					InReplyTo: pub.ItemCollection{
+						pub.IRI("http://www.test.example/object/1"),
+						pub.IRI("http://www.test.example/object/778"),
 					},
 				},
 			},
@@ -430,40 +433,40 @@ var allTests = testMaps{
 	},
 	"object_with_audience": testPair{
 		expected: true,
-		blank:    &Object{},
-		result: &Object{
-			Type: ObjectType,
-			ID:   ObjectID("http://www.test.example/object/1"),
-			To: ItemCollection{
-				IRI("https://www.w3.org/ns/activitystreams#Public"),
+		blank:    &pub.Object{},
+		result: &pub.Object{
+			Type: pub.ObjectType,
+			ID:   pub.ObjectID("http://www.test.example/object/1"),
+			To: pub.ItemCollection{
+				pub.IRI("https://www.w3.org/ns/activitystreams#Public"),
 			},
-			Bto: ItemCollection{
-				IRI("http://example.com/sharedInbox"),
+			Bto: pub.ItemCollection{
+				pub.IRI("http://example.com/sharedInbox"),
 			},
-			CC: ItemCollection{
-				IRI("https://example.com/actors/ana"),
-				IRI("https://example.com/actors/bob"),
+			CC: pub.ItemCollection{
+				pub.IRI("https://example.com/actors/ana"),
+				pub.IRI("https://example.com/actors/bob"),
 			},
-			BCC: ItemCollection{
-				IRI("https://darkside.cookie/actors/darthvader"),
+			BCC: pub.ItemCollection{
+				pub.IRI("https://darkside.cookie/actors/darthvader"),
 			},
 		},
 	},
 	"article_with_multiple_inreplyto": {
 		expected: true,
-		blank:    &Article{},
-		result: &Article{
-			Type: ArticleType,
-			ID:   ObjectID("http://www.test.example/article/1"),
-			Name: NaturalLanguageValues{
+		blank:    &pub.Article{},
+		result: &pub.Article{
+			Type: pub.ArticleType,
+			ID:   pub.ObjectID("http://www.test.example/article/1"),
+			Name: pub.NaturalLanguageValues{
 				{
-					NilLangRef,
+					pub.NilLangRef,
 					"This someday will grow up to be an article",
 				},
 			},
-			InReplyTo: ItemCollection{
-				IRI("http://www.test.example/object/1"),
-				IRI("http://www.test.example/object/778"),
+			InReplyTo: pub.ItemCollection{
+				pub.IRI("http://www.test.example/object/1"),
+				pub.IRI("http://www.test.example/object/778"),
 			},
 		},
 	},

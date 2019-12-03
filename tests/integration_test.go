@@ -1,16 +1,17 @@
-package activitypub
+package tests
 
 import (
 	"testing"
 
 	j "github.com/go-ap/jsonld"
 
+	pub "github.com/go-ap/activitypub"
 	"strings"
 )
 
 func TestAcceptSerialization(t *testing.T) {
-	obj := AcceptNew("https://localhost/myactivity", nil)
-	obj.Name = make(NaturalLanguageValues, 1)
+	obj := pub.AcceptNew("https://localhost/myactivity", nil)
+	obj.Name = make(pub.NaturalLanguageValues, 1)
 	obj.Name.Set("en", "test")
 	obj.Name.Set("fr", "teste")
 
@@ -40,11 +41,11 @@ func TestAcceptSerialization(t *testing.T) {
 }
 
 func TestCreateActivityHTTPSerialization(t *testing.T) {
-	id := ObjectID("test_object")
-	obj := AcceptNew(id, nil)
+	id := pub.ObjectID("test_object")
+	obj := pub.AcceptNew(id, nil)
 	obj.Name.Set("en", "Accept New")
 
-	uri := string(ActivityBaseURI)
+	uri := string(pub.ActivityBaseURI)
 
 	data, err := j.WithContext(j.IRI(uri)).Marshal(obj)
 	if err != nil {
