@@ -6,7 +6,19 @@ import (
 	"strings"
 )
 
-const PublicNS = IRI("https://www.w3.org/ns/activitystreams#Public")
+const (
+	// ActivityBaseURI the URI for the activity streams namespace
+	ActivityBaseURI = IRI("https://www.w3.org/ns/activitystreams")
+	// SecurityContextURI the URI for the secruity namespace (for an Actor's PublicKey)
+	SecurityContextURI = IRI("https://w3id.org/security/v1")
+	// PublicNs is the reference to the Public entity in the Acitivystreams namespace
+	PublicNS = IRI(ActivityBaseURI + "#Public")
+)
+
+var JsonLDContext = []IRI{
+	ActivityBaseURI,
+	SecurityContextURI,
+}
 
 type (
 	// IRI is a Internationalized Resource Identifiers (IRIs) RFC3987

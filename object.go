@@ -24,13 +24,6 @@ import (
 type ObjectID IRI
 
 const (
-	// ActivityBaseURI the URI for the activity streams namespace
-	ActivityBaseURI = IRI("https://www.w3.org/ns/activitystreams")
-	// SecurityContextURI the URI for the secruity namespace (for an Actor's PublicKey)
-	SecurityContextURI = IRI("https://w3id.org/security/v1")
-)
-
-const (
 	ObjectType                ActivityVocabularyType = "Object"
 	LinkType                  ActivityVocabularyType = "Link"
 	ActivityType              ActivityVocabularyType = "Activity"
