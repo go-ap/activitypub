@@ -442,6 +442,10 @@ func ToObject(it Item) (*Object, error) {
 		return (*Object)(unsafe.Pointer(i)), nil
 	case Tombstone:
 		return (*Object)(unsafe.Pointer(&i)), nil
+	case *Actor:
+		return (*Object)(unsafe.Pointer(i)), nil
+	case Actor:
+		return (*Object)(unsafe.Pointer(&i)), nil
 	case *Activity:
 		return (*Object)(unsafe.Pointer(i)), nil
 	case Activity:
