@@ -3,6 +3,7 @@ package activitypub
 import (
 	"errors"
 	"time"
+	"unsafe"
 )
 
 // OrderedCollection is a subtype of Collection in which members of the logical
@@ -262,6 +263,10 @@ func ToOrderedCollection(it Item) (*OrderedCollection, error) {
 		return i, nil
 	case OrderedCollection:
 		return &i, nil
+	case *OrderedCollectionPage:
+		return (*OrderedCollection)(unsafe.Pointer(i)), nil
+	case OrderedCollectionPage:
+		return (*OrderedCollection)(unsafe.Pointer(&i)), nil
 	}
 	return nil, errors.New("unable to convert to ordered collection")
 }

@@ -3,6 +3,7 @@ package activitypub
 import (
 	"errors"
 	"time"
+	"unsafe"
 )
 
 const CollectionOfItems ActivityVocabularyType = "ItemCollection"
@@ -319,6 +320,10 @@ func ToCollection(it Item) (*Collection, error) {
 		return i, nil
 	case Collection:
 		return &i, nil
+	case *CollectionPage:
+		return (*Collection)(unsafe.Pointer(i)), nil
+	case CollectionPage:
+		return (*Collection)(unsafe.Pointer(&i)), nil
 	}
 	return nil, errors.New("unable to convert to collection")
 }
