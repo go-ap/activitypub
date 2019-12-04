@@ -7,7 +7,8 @@
 
 Basic lib for using [activity pub](https://www.w3.org/TR/activitypub/#Overview) API in Go.
 
-Please see issue [#1](https://github.com/go-ap/activitypub.go/issues/1) before considering this project for real life applications.
+It contains types for most of the ActivityStreams vocabulary and the ActivityPub extension. 
+They are documented accordingly with annotations from the specification.
 
 ## Usage
 
