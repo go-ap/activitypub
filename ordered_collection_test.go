@@ -34,7 +34,6 @@ func Test_OrderedCollection_Append(t *testing.T) {
 	}
 }
 
-
 func TestOrderedCollection_Append(t *testing.T) {
 	id := ObjectID("test")
 
