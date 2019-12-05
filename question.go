@@ -166,7 +166,7 @@ func (q *Question) UnmarshalJSON(data []byte) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = JSONGetItemByType
 	}
-	q.ID = JSONGetObjectID(data)
+	q.ID = JSONGetID(data)
 	q.Type = JSONGetType(data)
 	q.Name = JSONGetNaturalLanguageField(data, "name")
 	q.Content = JSONGetNaturalLanguageField(data, "content")

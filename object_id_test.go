@@ -2,7 +2,7 @@ package activitypub
 
 import "testing"
 
-func TestObjectID_UnmarshalJSON(t *testing.T) {
+func TestID_UnmarshalJSON(t *testing.T) {
 	o := ID("")
 	dataEmpty := []byte("")
 

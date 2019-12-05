@@ -10,7 +10,7 @@ type ItemCollection []Item
 
 // GetID returns the ID corresponding to ItemCollection
 func (i ItemCollection) GetID() ID {
-	return EmptyObjectID
+	return EmptyID
 }
 
 // GetLink returns the empty IRI

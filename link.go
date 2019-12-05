@@ -99,7 +99,7 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = JSONGetItemByType
 	}
-	l.ID = JSONGetObjectID(data)
+	l.ID = JSONGetID(data)
 	l.Type = JSONGetType(data)
 	l.MediaType = JSONGetMimeType(data)
 	l.Preview = JSONGetItem(data, "preview")

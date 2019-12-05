@@ -165,7 +165,7 @@ func TestJSONGetMimeType(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestJSONGetObjectID(t *testing.T) {
+func TestJSONGetID(t *testing.T) {
 	t.Skipf("TODO")
 }
 

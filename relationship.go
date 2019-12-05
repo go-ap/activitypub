@@ -153,7 +153,7 @@ func (r *Relationship) UnmarshalJSON(data []byte) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = JSONGetItemByType
 	}
-	r.ID = JSONGetObjectID(data)
+	r.ID = JSONGetID(data)
 	r.Type = JSONGetType(data)
 	r.Name = JSONGetNaturalLanguageField(data, "name")
 	r.Content = JSONGetNaturalLanguageField(data, "content")

@@ -297,7 +297,7 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = JSONGetItemByType
 	}
-	a.ID = JSONGetObjectID(data)
+	a.ID = JSONGetID(data)
 	a.Type = JSONGetType(data)
 	a.Name = JSONGetNaturalLanguageField(data, "name")
 	a.Content = JSONGetNaturalLanguageField(data, "content")

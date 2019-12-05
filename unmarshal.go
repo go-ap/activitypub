@@ -25,7 +25,7 @@ var ItemTyperFunc TyperFn
 // for a specific ActivityVocabularyType
 type TyperFn func(ActivityVocabularyType) (Item, error)
 
-func JSONGetObjectID(data []byte) ID {
+func JSONGetID(data []byte) ID {
 	i, err := jsonparser.GetString(data, "id")
 	if err != nil {
 		return ID("")

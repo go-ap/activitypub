@@ -145,7 +145,7 @@ func (t *Tombstone) UnmarshalJSON(data []byte) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = JSONGetItemByType
 	}
-	t.ID = JSONGetObjectID(data)
+	t.ID = JSONGetID(data)
 	t.Type = JSONGetType(data)
 	t.Name = JSONGetNaturalLanguageField(data, "name")
 	t.Content = JSONGetNaturalLanguageField(data, "content")

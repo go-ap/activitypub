@@ -143,7 +143,7 @@ func (p *Profile) UnmarshalJSON(data []byte) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = JSONGetItemByType
 	}
-	p.ID = JSONGetObjectID(data)
+	p.ID = JSONGetID(data)
 	p.Type = JSONGetType(data)
 	p.Name = JSONGetNaturalLanguageField(data, "name")
 	p.Content = JSONGetNaturalLanguageField(data, "content")

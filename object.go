@@ -250,7 +250,7 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = JSONGetItemByType
 	}
-	o.ID = JSONGetObjectID(data)
+	o.ID = JSONGetID(data)
 	o.Type = JSONGetType(data)
 	o.Name = JSONGetNaturalLanguageField(data, "name")
 	o.Content = JSONGetNaturalLanguageField(data, "content")

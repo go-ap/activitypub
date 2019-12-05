@@ -187,7 +187,7 @@ func (c *CollectionPage) UnmarshalJSON(data []byte) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = JSONGetItemByType
 	}
-	c.ID = JSONGetObjectID(data)
+	c.ID = JSONGetID(data)
 	c.Type = JSONGetType(data)
 	c.Name = JSONGetNaturalLanguageField(data, "name")
 	c.Content = JSONGetNaturalLanguageField(data, "content")

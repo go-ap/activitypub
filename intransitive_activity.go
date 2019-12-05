@@ -181,7 +181,7 @@ func (i *IntransitiveActivity) UnmarshalJSON(data []byte) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = JSONGetItemByType
 	}
-	i.ID = JSONGetObjectID(data)
+	i.ID = JSONGetID(data)
 	i.Type = JSONGetType(data)
 	i.Name = JSONGetNaturalLanguageField(data, "name")
 	i.Content = JSONGetNaturalLanguageField(data, "content")
