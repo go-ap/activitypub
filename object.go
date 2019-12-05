@@ -52,10 +52,6 @@ const (
 	MentionType ActivityVocabularyType = "Mention"
 )
 
-const (
-	NilLangRef LangRef = "-"
-)
-
 var GenericObjectTypes = ActivityVocabularyTypes{
 	ActivityType,
 	IntransitiveActivityType,
