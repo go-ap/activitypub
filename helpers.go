@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -19,45 +18,17 @@ type withItemCollectionFn func (collection *ItemCollection) error
 
 // OnObject
 func OnObject(it Item, fn withObjectFn) error {
-	if ActivityTypes.Contains(it.GetType()) {
-		return OnActivity(it, func(a *Activity) error {
-			ob, err := ToObject(a)
-			if err != nil {
-				return err
-			}
-			return fn(ob)
-		})
-	} else if ActorTypes.Contains(it.GetType()) {
-		return OnActor(it, func(p *Actor) error {
-			ob, err := ToObject(p)
-			if err != nil {
-				return err
-			}
-			return fn(ob)
-		})
-	} else if it.IsCollection() {
-		return OnCollection(it, func(col CollectionInterface) error {
-			for _, it := range col.Collection() {
-				err := OnObject(it, fn)
-				if err != nil {
-					return err
-				}
-			}
-			return nil
-		})
-	} else {
-		ob, err  := ToObject(it)
-		if err != nil {
-			return err
-		}
-		return fn(ob)
+	ob, err  := ToObject(it)
+	if err != nil {
+		return err
 	}
+	return fn(ob)
 }
 
 // OnActivity
 func OnActivity(it Item, fn withActivityFn) error {
-	if !ActivityTypes.Contains(it.GetType()) {
-		return errors.New(fmt.Sprintf("%T[%s] can't be converted to Activity", it, it.GetType()))
+	if !(ActivityTypes.Contains(it.GetType()) || IntransitiveActivityTypes.Contains(it.GetType())) {
+		return fmt.Errorf("%T[%s] can't be converted to Activity", it, it.GetType())
 	}
 	act, err  := ToActivity(it)
 	if err != nil {
@@ -68,11 +39,8 @@ func OnActivity(it Item, fn withActivityFn) error {
 
 // OnIntransitiveActivity
 func OnIntransitiveActivity(it Item, fn withIntransitiveActivityFn) error {
-	if !IntransitiveActivityTypes.Contains(it.GetType()) {
-		return errors.New(fmt.Sprintf("%T[%s] can't be converted to Activity", it, it.GetType()))
-	}
 	if it.GetType() == QuestionType {
-		errors.New(fmt.Sprintf("For %T[%s] you need to use OnQuestion function", it, it.GetType()))
+		fmt.Errorf("for %T[%s] you need to use OnQuestion function", it, it.GetType())
 	}
 	act, err  := ToIntransitiveActivity(it)
 	if err != nil {
@@ -84,7 +52,7 @@ func OnIntransitiveActivity(it Item, fn withIntransitiveActivityFn) error {
 // OnQuestion
 func OnQuestion(it Item, fn withQuestionFn) error {
 	if it.GetType() != QuestionType {
-		errors.New(fmt.Sprintf("For %T[%s] can't be converted to Question", it, it.GetType()))
+		fmt.Errorf("For %T[%s] can't be converted to Question", it, it.GetType())
 	}
 	act, err  := ToQuestion(it)
 	if err != nil {
@@ -96,13 +64,13 @@ func OnQuestion(it Item, fn withQuestionFn) error {
 // OnActor
 func OnActor(it Item, fn withActorFn) error {
 	if !ActorTypes.Contains(it.GetType()) {
-		return errors.New(fmt.Sprintf("%T[%s] can't be converted to Person", it, it.GetType()))
+		return fmt.Errorf("%T[%s] can't be converted to Person", it, it.GetType())
 	}
-	pers, err  := ToActor(it)
+	act, err  := ToActor(it)
 	if err != nil {
 		return err
 	}
-	return fn(pers)
+	return fn(act)
 }
 
 // OnCollection
@@ -133,14 +101,14 @@ func OnCollection(it Item, fn withCollectionInterfaceFn) error {
 			return fn(col)
 		})
 	default:
-		return errors.New(fmt.Sprintf("%T[%s] can't be converted to Collection", it, it.GetType()))
+		return fmt.Errorf("%T[%s] can't be converted to Collection", it, it.GetType())
 	}
 }
 
 // OnCollectionPage
 func OnCollectionPage(it Item, fn withCollectionPageFn) error {
 	if it.GetType() != CollectionPageType {
-		return errors.New(fmt.Sprintf("%T[%s] can't be converted to Collection Page", it, it.GetType()))
+		return fmt.Errorf("%T[%s] can't be converted to Collection Page", it, it.GetType())
 	}
 	col, err  := ToCollectionPage(it)
 	if err != nil {
@@ -151,30 +119,17 @@ func OnCollectionPage(it Item, fn withCollectionPageFn) error {
 
 // OnOrderedCollection
 func OnOrderedCollection(it Item, fn withOrderedCollectionFn) error {
-	switch it.GetType() {
-	case OrderedCollectionType:
-		col, err := ToOrderedCollection(it)
-		if err != nil {
-			return err
-		}
-		return fn(col)
-	case OrderedCollectionPageType:
-		return OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
-			col, err := ToOrderedCollection(p)
-			if err != nil {
-				return err
-			}
-			return fn(col)
-		})
-	default:
-		return errors.New(fmt.Sprintf("%T[%s] can't be converted to OrderedCollection", it, it.GetType()))
+	col, err := ToOrderedCollection(it)
+	if err != nil {
+		return err
 	}
+	return fn(col)
 }
 
 // OnOrderedCollectionPage
 func OnOrderedCollectionPage(it Item, fn withOrderedCollectionPageFn) error {
 	if it.GetType() != OrderedCollectionPageType {
-		return errors.New(fmt.Sprintf("%T[%s] can't be converted to OrderedCollection Page", it, it.GetType()))
+		return fmt.Errorf("%T[%s] can't be converted to OrderedCollection Page", it, it.GetType())
 	}
 	col, err  := ToOrderedCollectionPage(it)
 	if err != nil {
@@ -183,12 +138,9 @@ func OnOrderedCollectionPage(it Item, fn withOrderedCollectionPageFn) error {
 	return fn(col)
 }
 
-// OnOrderedCollectionPage
-func OnItemCOllection(it Item, fn withOrderedCollectionPageFn) error {
-	if it.GetType() != OrderedCollectionPageType {
-		return errors.New(fmt.Sprintf("%T[%s] can't be converted to OrderedCollection Page", it, it.GetType()))
-	}
-	col, err  := ToOrderedCollectionPage(it)
+// OnItemCollection
+func OnItemCollection(it Item, fn withItemCollectionFn) error {
+	col, err  := ToItemCollection(it)
 	if err != nil {
 		return err
 	}
