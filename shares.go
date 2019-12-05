@@ -13,7 +13,7 @@ type (
 
 // SharesNew initializes a new Shares
 func SharesNew() *Shares {
-	id := ObjectID("Shares")
+	id := ID("Shares")
 
 	i := Shares{ID: id, Type: CollectionType}
 	i.Name = NaturalLanguageValuesNew()

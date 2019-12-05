@@ -27,7 +27,7 @@ type CollectionInterface interface {
 // Collection is a subtype of Activity Pub Object that represents ordered or unordered sets of Activity Pub Object or Link instances.
 type Collection struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
+	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
@@ -132,7 +132,7 @@ type Collection struct {
 }
 
 // CollectionNew initializes a new Collection
-func CollectionNew(id ObjectID) *Collection {
+func CollectionNew(id ID) *Collection {
 	c := Collection{ID: id, Type: CollectionType}
 	c.Name = NaturalLanguageValuesNew()
 	c.Content = NaturalLanguageValuesNew()
@@ -141,7 +141,7 @@ func CollectionNew(id ObjectID) *Collection {
 }
 
 // OrderedCollectionNew initializes a new OrderedCollection
-func OrderedCollectionNew(id ObjectID) *OrderedCollection {
+func OrderedCollectionNew(id ID) *OrderedCollection {
 	o := OrderedCollection{ID: id, Type: OrderedCollectionType}
 	o.Name = NaturalLanguageValuesNew()
 	o.Content = NaturalLanguageValuesNew()
@@ -149,8 +149,8 @@ func OrderedCollectionNew(id ObjectID) *OrderedCollection {
 	return &o
 }
 
-// GetID returns the ObjectID corresponding to the Collection object
-func (c Collection) GetID() ObjectID {
+// GetID returns the ID corresponding to the Collection object
+func (c Collection) GetID() ID {
 	return c.ID
 }
 

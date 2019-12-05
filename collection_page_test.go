@@ -6,7 +6,7 @@ import (
 )
 
 func TestCollectionPageNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	c := CollectionNew(testValue)
 	p := CollectionPageNew(c)
@@ -19,9 +19,9 @@ func TestCollectionPageNew(t *testing.T) {
 }
 
 func TestCollectionPage_Append(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
-	val := Object{ID: ObjectID("grrr")}
+	val := Object{ID: ID("grrr")}
 
 	c := CollectionNew(id)
 
@@ -101,7 +101,7 @@ func TestCollectionPage_UnmarshalJSON(t *testing.T) {
 }
 
 func TestCollectionPage_Collection(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := CollectionNew(id)
 	p := CollectionPageNew(c)
@@ -112,7 +112,7 @@ func TestCollectionPage_Collection(t *testing.T) {
 }
 
 func TestCollectionPage_Count(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := CollectionNew(id)
 	p := CollectionPageNew(c)

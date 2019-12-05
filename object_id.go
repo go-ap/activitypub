@@ -2,7 +2,7 @@ package activitypub
 
 import "strings"
 
-// ObjectID designates an unique global identifier.
+// ID designates an unique global identifier.
 // All Objects in [ActivityStreams] should have unique global identifiers.
 // ActivityPub extends this requirement; all objects distributed by the ActivityPub protocol MUST
 // have unique global identifiers, unless they are intentionally transient
@@ -14,14 +14,14 @@ import "strings"
 // to that of their originating server. (Publicly facing content SHOULD use HTTPS URIs).
 // 2. An ID explicitly specified as the JSON null object, which implies an anonymous object
 // (a part of its parent context)
-type ObjectID IRI
+type ID IRI
 
 // UnmarshalJSON
-func (i *ObjectID) UnmarshalJSON(data []byte) error {
-	*i = ObjectID(strings.Trim(string(data), "\""))
+func (i *ID) UnmarshalJSON(data []byte) error {
+	*i = ID(strings.Trim(string(data), "\""))
 	return nil
 }
 
-func (i *ObjectID) IsValid() bool {
+func (i *ID) IsValid() bool {
 	return i != nil && len(*i) > 0
 }

@@ -9,7 +9,7 @@ import (
 // Place represents a logical or physical location. See 5.3 Representing Places for additional information.
 type Place struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
+	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
@@ -146,7 +146,7 @@ func (p Place) GetType() ActivityVocabularyType {
 }
 
 // GetID returns the ID corresponding to the current Place
-func (p Place) GetID() ObjectID {
+func (p Place) GetID() ID {
 	return p.ID
 }
 

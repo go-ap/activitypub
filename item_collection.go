@@ -8,8 +8,8 @@ import (
 // ItemCollection represents an array of items
 type ItemCollection []Item
 
-// GetID returns the ObjectID corresponding to ItemCollection
-func (i ItemCollection) GetID() ObjectID {
+// GetID returns the ID corresponding to ItemCollection
+func (i ItemCollection) GetID() ID {
 	return EmptyObjectID
 }
 
@@ -51,7 +51,7 @@ func (i *ItemCollection) Count() uint {
 	return uint(len(*i))
 }
 
-// First returns the ObjectID corresponding to ItemCollection
+// First returns the ID corresponding to ItemCollection
 func (i ItemCollection) First() Item {
 	if len(i) == 0 {
 		return nil

@@ -15,7 +15,7 @@ import (
 // and object identifies the object.
 type Relationship struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
+	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
@@ -142,7 +142,7 @@ func (r Relationship) GetType() ActivityVocabularyType {
 }
 
 // GetID returns the ID corresponding to the current Relationship
-func (r Relationship) GetID() ObjectID {
+func (r Relationship) GetID() ID {
 	return r.ID
 }
 

@@ -3,7 +3,7 @@ package activitypub
 import "testing"
 
 func TestIntransitiveActivityNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 	var testType ActivityVocabularyType = "Arrive"
 
 	a := IntransitiveActivityNew(testValue, testType)
@@ -87,7 +87,7 @@ func TestIntransitiveActivityRecipients(t *testing.T) {
 		t.Errorf("%T.BCC should have exactly 0(zero) elements, not %d", b, len(b.BCC))
 	}
 	var err error
-	recIds := make([]ObjectID, 0)
+	recIds := make([]ID, 0)
 	err = checkDedup(b.To, &recIds)
 	if err != nil {
 		t.Error(err)
@@ -148,7 +148,7 @@ func TestIntransitiveActivity_Recipients(t *testing.T) {
 	c.Recipients()
 
 	var err error
-	recIds := make([]ObjectID, 0)
+	recIds := make([]ID, 0)
 	err = checkDedup(c.To, &recIds)
 	if err != nil {
 		t.Error(err)
@@ -238,7 +238,7 @@ func TestIntransitiveActivity_UnmarshalJSON(t *testing.T) {
 }
 
 func TestArriveNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := ArriveNew(testValue)
 
@@ -251,7 +251,7 @@ func TestArriveNew(t *testing.T) {
 }
 
 func TestTravelNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := TravelNew(testValue)
 

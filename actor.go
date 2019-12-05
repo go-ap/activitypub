@@ -36,7 +36,7 @@ type CanReceiveActivities Item
 // Like other ActivityStreams objects, actors have an id, which is a URI.
 type Actor struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
+	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
@@ -154,8 +154,8 @@ type Actor struct {
 	PublicKey PublicKey        `jsonld:"publicKey,omitempty"`
 }
 
-// GetID returns the ObjectID corresponding to the current Actor
-func (a Actor) GetID() ObjectID {
+// GetID returns the ID corresponding to the current Actor
+func (a Actor) GetID() ID {
 	return a.ID
 }
 
@@ -186,14 +186,14 @@ func (a Actor) IsCollection() bool {
 
 // PublicKey holds the ActivityPub compatible public key data
 type PublicKey struct {
-	ID           ObjectID     `jsonld:"id,omitempty"`
+	ID           ID           `jsonld:"id,omitempty"`
 	Owner        ObjectOrLink `jsonld:"owner,omitempty"`
 	PublicKeyPem string       `jsonld:"publicKeyPem,omitempty"`
 }
 
 func (p *PublicKey) UnmarshalJSON(data []byte) error {
 	if id, err := jsonparser.GetString(data, "id"); err == nil {
-		p.ID = ObjectID(id)
+		p.ID = ID(id)
 	} else {
 		return err
 	}
@@ -227,7 +227,7 @@ type (
 )
 
 // ActorNew initializes an CanReceiveActivities type actor
-func ActorNew(id ObjectID, typ ActivityVocabularyType) *Actor {
+func ActorNew(id ID, typ ActivityVocabularyType) *Actor {
 	if !ActorTypes.Contains(typ) {
 		typ = ActorType
 	}
@@ -236,9 +236,9 @@ func ActorNew(id ObjectID, typ ActivityVocabularyType) *Actor {
 	a.Name = NaturalLanguageValuesNew()
 	a.Content = NaturalLanguageValuesNew()
 	a.Summary = NaturalLanguageValuesNew()
-	in := OrderedCollectionNew(ObjectID("test-inbox"))
-	out := OrderedCollectionNew(ObjectID("test-outbox"))
-	liked := OrderedCollectionNew(ObjectID("test-liked"))
+	in := OrderedCollectionNew(ID("test-inbox"))
+	out := OrderedCollectionNew(ID("test-outbox"))
+	liked := OrderedCollectionNew(ID("test-liked"))
 
 	a.Inbox = in
 	a.Outbox = out
@@ -249,35 +249,35 @@ func ActorNew(id ObjectID, typ ActivityVocabularyType) *Actor {
 }
 
 // ApplicationNew initializes an Application type actor
-func ApplicationNew(id ObjectID) *Application {
+func ApplicationNew(id ID) *Application {
 	a := ActorNew(id, ApplicationType)
 	o := Application(*a)
 	return &o
 }
 
 // GroupNew initializes a Group type actor
-func GroupNew(id ObjectID) *Group {
+func GroupNew(id ID) *Group {
 	a := ActorNew(id, GroupType)
 	o := Group(*a)
 	return &o
 }
 
 // OrganizationNew initializes an Organization type actor
-func OrganizationNew(id ObjectID) *Organization {
+func OrganizationNew(id ID) *Organization {
 	a := ActorNew(id, OrganizationType)
 	o := Organization(*a)
 	return &o
 }
 
 // PersonNew initializes a Person type actor
-func PersonNew(id ObjectID) *Person {
+func PersonNew(id ID) *Person {
 	a := ActorNew(id, PersonType)
 	o := Person(*a)
 	return &o
 }
 
 // ServiceNew initializes a Service type actor
-func ServiceNew(id ObjectID) *Service {
+func ServiceNew(id ID) *Service {
 	a := ActorNew(id, ServiceType)
 	o := Service(*a)
 	return &o

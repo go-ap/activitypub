@@ -7,7 +7,7 @@ import (
 func TestInboxNew(t *testing.T) {
 	i := InboxNew()
 
-	id := ObjectID("inbox")
+	id := ID("inbox")
 	if i.ID != id {
 		t.Errorf("%T should be initialized with %q as %T", i, id, id)
 	}

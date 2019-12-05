@@ -13,7 +13,7 @@ type (
 
 // LikedCollection initializes a new Outbox
 func LikedNew() *OrderedCollection {
-	id := ObjectID("liked")
+	id := ID("liked")
 
 	l := OrderedCollection{ID: id, Type: CollectionType}
 	l.Name = NaturalLanguageValuesNew()

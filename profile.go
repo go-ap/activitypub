@@ -11,7 +11,7 @@ import (
 // The describes property is used to reference the object being described by the profile.
 type Profile struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
+	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
@@ -132,7 +132,7 @@ func (p Profile) GetType() ActivityVocabularyType {
 }
 
 // GetID returns the ID corresponding to the current Profile
-func (p Profile) GetID() ObjectID {
+func (p Profile) GetID() ID {
 	return p.ID
 }
 

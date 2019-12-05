@@ -12,7 +12,7 @@ import (
 // of the first item contained by the page within the OrderedCollection to which the page belongs.
 type OrderedCollectionPage struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
+	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
@@ -124,8 +124,8 @@ type OrderedCollectionPage struct {
 	StartIndex uint `jsonld:"startIndex,omitempty"`
 }
 
-// GetID returns the ObjectID corresponding to the OrderedCollectionPage object
-func (o OrderedCollectionPage) GetID() ObjectID {
+// GetID returns the ID corresponding to the OrderedCollectionPage object
+func (o OrderedCollectionPage) GetID() ID {
 	return o.ID
 }
 

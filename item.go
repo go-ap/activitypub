@@ -3,7 +3,7 @@ package activitypub
 // Item struct
 type Item ObjectOrLink
 
-const EmptyObjectID = ObjectID("")
+const EmptyObjectID = ID("")
 const EmptyIRI = IRI("")
 
 // Flatten checks if Item can be flatten to an IRI or array of IRIs and returns it if so

@@ -6,7 +6,7 @@ import (
 )
 
 func TestActivityNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 	var testType ActivityVocabularyType = "Accept"
 
 	a := ActivityNew(testValue, testType, nil)
@@ -28,7 +28,7 @@ func TestActivityNew(t *testing.T) {
 }
 
 func TestAcceptNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := AcceptNew(testValue, nil)
 
@@ -41,7 +41,7 @@ func TestAcceptNew(t *testing.T) {
 }
 
 func TestAddNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := AddNew(testValue, nil, nil)
 
@@ -54,7 +54,7 @@ func TestAddNew(t *testing.T) {
 }
 
 func TestAnnounceNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := AnnounceNew(testValue, nil)
 
@@ -67,7 +67,7 @@ func TestAnnounceNew(t *testing.T) {
 }
 
 func TestBlockNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := BlockNew(testValue, nil)
 
@@ -80,7 +80,7 @@ func TestBlockNew(t *testing.T) {
 }
 
 func TestCreateNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := CreateNew(testValue, nil)
 
@@ -93,7 +93,7 @@ func TestCreateNew(t *testing.T) {
 }
 
 func TestDeleteNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := DeleteNew(testValue, nil)
 
@@ -106,7 +106,7 @@ func TestDeleteNew(t *testing.T) {
 }
 
 func TestDislikeNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := DislikeNew(testValue, nil)
 
@@ -119,7 +119,7 @@ func TestDislikeNew(t *testing.T) {
 }
 
 func TestFlagNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := FlagNew(testValue, nil)
 
@@ -132,7 +132,7 @@ func TestFlagNew(t *testing.T) {
 }
 
 func TestFollowNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := FollowNew(testValue, nil)
 
@@ -145,7 +145,7 @@ func TestFollowNew(t *testing.T) {
 }
 
 func TestIgnoreNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := IgnoreNew(testValue, nil)
 
@@ -158,7 +158,7 @@ func TestIgnoreNew(t *testing.T) {
 }
 
 func TestInviteNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := InviteNew(testValue, nil)
 
@@ -171,7 +171,7 @@ func TestInviteNew(t *testing.T) {
 }
 
 func TestJoinNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := JoinNew(testValue, nil)
 
@@ -184,7 +184,7 @@ func TestJoinNew(t *testing.T) {
 }
 
 func TestLeaveNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := LeaveNew(testValue, nil)
 
@@ -197,7 +197,7 @@ func TestLeaveNew(t *testing.T) {
 }
 
 func TestLikeNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := LikeNew(testValue, nil)
 
@@ -210,7 +210,7 @@ func TestLikeNew(t *testing.T) {
 }
 
 func TestListenNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := ListenNew(testValue, nil)
 
@@ -223,7 +223,7 @@ func TestListenNew(t *testing.T) {
 }
 
 func TestMoveNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := MoveNew(testValue, nil)
 
@@ -236,7 +236,7 @@ func TestMoveNew(t *testing.T) {
 }
 
 func TestOfferNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := OfferNew(testValue, nil)
 
@@ -249,7 +249,7 @@ func TestOfferNew(t *testing.T) {
 }
 
 func TestRejectNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := RejectNew(testValue, nil)
 
@@ -262,7 +262,7 @@ func TestRejectNew(t *testing.T) {
 }
 
 func TestReadNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := ReadNew(testValue, nil)
 
@@ -275,7 +275,7 @@ func TestReadNew(t *testing.T) {
 }
 
 func TestRemoveNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := RemoveNew(testValue, nil, nil)
 
@@ -288,7 +288,7 @@ func TestRemoveNew(t *testing.T) {
 }
 
 func TestTentativeRejectNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := TentativeRejectNew(testValue, nil)
 
@@ -301,7 +301,7 @@ func TestTentativeRejectNew(t *testing.T) {
 }
 
 func TestTentativeAcceptNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := TentativeAcceptNew(testValue, nil)
 
@@ -314,7 +314,7 @@ func TestTentativeAcceptNew(t *testing.T) {
 }
 
 func TestUndoNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := UndoNew(testValue, nil)
 
@@ -327,7 +327,7 @@ func TestUndoNew(t *testing.T) {
 }
 
 func TestUpdateNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := UpdateNew(testValue, nil)
 
@@ -340,7 +340,7 @@ func TestUpdateNew(t *testing.T) {
 }
 
 func TestViewNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	a := ViewNew(testValue, nil)
 
@@ -477,7 +477,7 @@ func TestBlockRecipients(t *testing.T) {
 		t.Errorf("%T.BCC should have exactly 0(zero) elements, not %d", b, len(b.BCC))
 	}
 	var err error
-	recIds := make([]ObjectID, 0)
+	recIds := make([]ID, 0)
 	err = checkDedup(b.To, &recIds)
 	if err != nil {
 		t.Error(err)
@@ -511,7 +511,7 @@ func TestCreate_Recipients(t *testing.T) {
 	c.Recipients()
 
 	var err error
-	recIds := make([]ObjectID, 0)
+	recIds := make([]ID, 0)
 	err = checkDedup(c.To, &recIds)
 	if err != nil {
 		t.Error(err)
@@ -545,7 +545,7 @@ func TestDislike_Recipients(t *testing.T) {
 	d.Recipients()
 
 	var err error
-	recIds := make([]ObjectID, 0)
+	recIds := make([]ID, 0)
 	err = checkDedup(d.To, &recIds)
 	if err != nil {
 		t.Error(err)
@@ -579,7 +579,7 @@ func TestLike_Recipients(t *testing.T) {
 	l.Recipients()
 
 	var err error
-	recIds := make([]ObjectID, 0)
+	recIds := make([]ID, 0)
 	err = checkDedup(l.To, &recIds)
 	if err != nil {
 		t.Error(err)
@@ -613,7 +613,7 @@ func TestUpdate_Recipients(t *testing.T) {
 	u.Recipients()
 
 	var err error
-	recIds := make([]ObjectID, 0)
+	recIds := make([]ID, 0)
 	err = checkDedup(u.To, &recIds)
 	if err != nil {
 		t.Error(err)
@@ -661,7 +661,7 @@ func TestActivity_IsObject(t *testing.T) {
 	}
 }
 
-func checkDedup(list ItemCollection, recIds *[]ObjectID) error {
+func checkDedup(list ItemCollection, recIds *[]ID) error {
 	for _, rec := range list {
 		for _, id := range *recIds {
 			if rec.GetID() == id {
@@ -688,7 +688,7 @@ func TestActivity_Recipients(t *testing.T) {
 	c.Recipients()
 
 	var err error
-	recIds := make([]ObjectID, 0)
+	recIds := make([]ID, 0)
 	err = checkDedup(c.To, &recIds)
 	if err != nil {
 		t.Error(err)
@@ -722,7 +722,7 @@ func TestBlock_Recipients(t *testing.T) {
 	b.Recipients()
 
 	var err error
-	recIds := make([]ObjectID, 0)
+	recIds := make([]ID, 0)
 	err = checkDedup(b.To, &recIds)
 	if err != nil {
 		t.Error(err)
@@ -928,7 +928,7 @@ func TestUpdate_UnmarshalJSON(t *testing.T) {
 
 func TestToActivity(t *testing.T) {
 	var it Item
-	act := ActivityNew(ObjectID("test"), CreateType, nil)
+	act := ActivityNew(ID("test"), CreateType, nil)
 	it = act
 
 	a, err := ToActivity(it)

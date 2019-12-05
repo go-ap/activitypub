@@ -14,7 +14,7 @@ type (
 
 // InboxNew initializes a new Inbox
 func InboxNew() *OrderedCollection {
-	id := ObjectID("inbox")
+	id := ID("inbox")
 
 	i := OrderedCollection{ID: id, Type: CollectionType}
 	i.Name = NaturalLanguageValuesNew()

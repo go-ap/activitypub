@@ -6,7 +6,7 @@ import (
 )
 
 func TestOrderedCollectionNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	c := OrderedCollectionNew(testValue)
 
@@ -19,9 +19,9 @@ func TestOrderedCollectionNew(t *testing.T) {
 }
 
 func Test_OrderedCollection_Append(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
-	val := Object{ID: ObjectID("grrr")}
+	val := Object{ID: ID("grrr")}
 
 	c := OrderedCollectionNew(id)
 	c.Append(val)
@@ -35,9 +35,9 @@ func Test_OrderedCollection_Append(t *testing.T) {
 }
 
 func TestOrderedCollection_Append(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
-	val := Object{ID: ObjectID("grrr")}
+	val := Object{ID: ID("grrr")}
 
 	c := OrderedCollectionNew(id)
 
@@ -56,7 +56,7 @@ func TestOrderedCollection_Append(t *testing.T) {
 }
 
 func TestOrderedCollection_Collection(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	o := OrderedCollectionNew(id)
 
@@ -66,7 +66,7 @@ func TestOrderedCollection_Collection(t *testing.T) {
 }
 
 func TestOrderedCollection_GetID(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := OrderedCollectionNew(id)
 
@@ -76,7 +76,7 @@ func TestOrderedCollection_GetID(t *testing.T) {
 }
 
 func TestOrderedCollection_GetLink(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 	link := IRI(id)
 
 	c := OrderedCollectionNew(id)
@@ -87,7 +87,7 @@ func TestOrderedCollection_GetLink(t *testing.T) {
 }
 
 func TestOrderedCollection_GetType(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := OrderedCollectionNew(id)
 
@@ -97,7 +97,7 @@ func TestOrderedCollection_GetType(t *testing.T) {
 }
 
 func TestOrderedCollection_IsLink(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := OrderedCollectionNew(id)
 
@@ -107,7 +107,7 @@ func TestOrderedCollection_IsLink(t *testing.T) {
 }
 
 func TestOrderedCollection_IsObject(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := OrderedCollectionNew(id)
 
@@ -160,7 +160,7 @@ func TestOrderedCollection_UnmarshalJSON(t *testing.T) {
 }
 
 func TestOrderedCollection_Count(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := OrderedCollectionNew(id)
 
@@ -184,7 +184,7 @@ func TestOrderedCollection_Count(t *testing.T) {
 }
 
 func TestOrderedCollectionPage_Count(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := OrderedCollectionNew(id)
 	p := OrderedCollectionPageNew(c)

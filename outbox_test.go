@@ -8,7 +8,7 @@ import (
 func TestOutboxNew(t *testing.T) {
 	o := OutboxNew()
 
-	id := ObjectID("outbox")
+	id := ID("outbox")
 	if o.ID != id {
 		t.Errorf("%T should be initialized with %q as %T", o, id, id)
 	}
@@ -31,7 +31,7 @@ func TestOutboxStream_GetID(t *testing.T) {
 	if o.GetID() != "" {
 		t.Errorf("%T should be initialized with empty %T", o, o.GetID())
 	}
-	id := ObjectID("test_out_stream")
+	id := ID("test_out_stream")
 	o.ID = id
 	if o.GetID() != id {
 		t.Errorf("%T should have %T as %q", o, id, id)
@@ -54,7 +54,7 @@ func TestOutboxStream_GetType(t *testing.T) {
 func TestOutboxStream_Append(t *testing.T) {
 	o := OutboxStream{}
 
-	val := Object{ID: ObjectID("grrr")}
+	val := Object{ID: ID("grrr")}
 
 	o.Append(val)
 	if !reflect.DeepEqual(o.OrderedItems[0], val) {
@@ -65,7 +65,7 @@ func TestOutboxStream_Append(t *testing.T) {
 func TestOutbox_Append(t *testing.T) {
 	o := OutboxNew()
 
-	val := Object{ID: ObjectID("grrr")}
+	val := Object{ID: ID("grrr")}
 
 	o.Append(val)
 	if !reflect.DeepEqual(o.OrderedItems[0], val) {

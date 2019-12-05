@@ -12,7 +12,7 @@ import (
 // but a Question object must not have both properties.
 type Question struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
+	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
@@ -131,8 +131,8 @@ type Question struct {
 	Closed bool `jsonld:"closed,omitempty"`
 }
 
-// GetID returns the ObjectID corresponding to the Question object
-func (q Question) GetID() ObjectID {
+// GetID returns the ID corresponding to the Question object
+func (q Question) GetID() ID {
 	return q.ID
 }
 
@@ -230,7 +230,7 @@ func (q *Question) UnmarshalJSON(data []byte) error {
 }
 
 // QuestionNew initializes a Question activity
-func QuestionNew(id ObjectID) *Question {
+func QuestionNew(id ID) *Question {
 	q := Question{ID: id, Type: QuestionType}
 	q.Name = NaturalLanguageValuesNew()
 	q.Content = NaturalLanguageValuesNew()

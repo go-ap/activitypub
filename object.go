@@ -74,7 +74,7 @@ type (
 	// is currently happening, or has already happened
 	ActivityObject interface {
 		// GetID returns the dereferenceable ActivityStreams object id
-		GetID() ObjectID
+		GetID() ID
 		// GetType returns the ActivityStreams type
 		GetType() ActivityVocabularyType
 	}
@@ -111,7 +111,7 @@ type (
 // Vocabulary, including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
 type Object struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
+	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
@@ -215,8 +215,8 @@ func ObjectNew(typ ActivityVocabularyType) *Object {
 	return &o
 }
 
-// GetID returns the ObjectID corresponding to the current Object
-func (o Object) GetID() ObjectID {
+// GetID returns the ID corresponding to the current Object
+func (o Object) GetID() ID {
 	return o.ID
 }
 

@@ -12,7 +12,7 @@ type (
 
 // FollowingNew initializes a new Following
 func FollowingNew() *Following {
-	id := ObjectID("following")
+	id := ID("following")
 
 	i := Following{ID: id, Type: CollectionType}
 	i.Name = NaturalLanguageValuesNew()

@@ -233,7 +233,7 @@ var allTests = testMaps{
 		blank:    &pub.Object{},
 		result: &pub.Object{
 			Type: pub.ObjectType,
-			ID:   pub.ObjectID("http://www.test.example/object/1"),
+			ID:   pub.ID("http://www.test.example/object/1"),
 			Name: pub.NaturalLanguageValues{{
 				pub.NilLangRef, "A Simple, non-specific object",
 			}},
@@ -244,7 +244,7 @@ var allTests = testMaps{
 		blank:    &pub.Object{},
 		result: &pub.Object{
 			Type: pub.ObjectType,
-			ID:   pub.ObjectID("http://www.test.example/object/1"),
+			ID:   pub.ID("http://www.test.example/object/1"),
 			Name: pub.NaturalLanguageValues{{
 				pub.NilLangRef, "A Simple, non-specific object",
 			}},
@@ -254,14 +254,14 @@ var allTests = testMaps{
 						pub.NilLangRef, "#my_tag",
 					}},
 					Type: pub.MentionType,
-					ID:   pub.ObjectID("http://example.com/tag/my_tag"),
+					ID:   pub.ID("http://example.com/tag/my_tag"),
 				},
 				&pub.Mention{
 					Name: pub.NaturalLanguageValues{{
 						pub.NilLangRef, "@ana",
 					}},
 					Type: pub.MentionType,
-					ID:   pub.ObjectID("http://example.com/users/ana"),
+					ID:   pub.ID("http://example.com/users/ana"),
 				},
 			},
 		},
@@ -271,14 +271,14 @@ var allTests = testMaps{
 		blank:    &pub.Object{},
 		result: &pub.Object{
 			Type: pub.ObjectType,
-			ID:   pub.ObjectID("http://www.test.example/object/1"),
+			ID:   pub.ID("http://www.test.example/object/1"),
 			Replies: &pub.Collection{
-				ID:         pub.ObjectID("http://www.test.example/object/1/replies"),
+				ID:         pub.ID("http://www.test.example/object/1/replies"),
 				Type:       pub.CollectionType,
 				TotalItems: 1,
 				Items: pub.ItemCollection{
 					&pub.Object{
-						ID:   pub.ObjectID("http://www.test.example/object/1/replies/2"),
+						ID:   pub.ID("http://www.test.example/object/1/replies/2"),
 						Type: pub.ArticleType,
 						Name: pub.NaturalLanguageValues{{
 							pub.NilLangRef, "Example title",
@@ -310,7 +310,7 @@ var allTests = testMaps{
 		expected: true,
 		blank:    &pub.Person{},
 		result: &pub.Person{
-			ID:                pub.ObjectID("http://example.com/accounts/ana"),
+			ID:                pub.ID("http://example.com/accounts/ana"),
 			Type:              pub.PersonType,
 			Name:              pub.NaturalLanguageValues{{pub.NilLangRef, "ana"}},
 			PreferredUsername: pub.NaturalLanguageValues{{pub.NilLangRef, "ana"}},
@@ -326,13 +326,13 @@ var allTests = testMaps{
 		expected: true,
 		blank:    &pub.OrderedCollection{},
 		result: &pub.OrderedCollection{
-			ID:         pub.ObjectID("http://example.com/outbox"),
+			ID:         pub.ID("http://example.com/outbox"),
 			Type:       pub.OrderedCollectionType,
 			URL:        pub.IRI("http://example.com/outbox"),
 			TotalItems: 1,
 			OrderedItems: pub.ItemCollection{
 				&pub.Object{
-					ID:           pub.ObjectID("http://example.com/outbox/53c6fb47"),
+					ID:           pub.ID("http://example.com/outbox/53c6fb47"),
 					Type:         pub.ArticleType,
 					Name:         pub.NaturalLanguageValues{{pub.NilLangRef, "Example title"}},
 					Content:      pub.NaturalLanguageValues{{pub.NilLangRef, "Example content!"}},
@@ -352,14 +352,14 @@ var allTests = testMaps{
 			PartOf:     pub.IRI("http://example.com/outbox"),
 			Next:       pub.IRI("http://example.com/outbox?page=3"),
 			Prev:       pub.IRI("http://example.com/outbox?page=1"),
-			ID:         pub.ObjectID("http://example.com/outbox?page=2"),
+			ID:         pub.ID("http://example.com/outbox?page=2"),
 			Type:       pub.OrderedCollectionPageType,
 			URL:        pub.IRI("http://example.com/outbox?page=2"),
 			Current:    pub.IRI("http://example.com/outbox?page=2"),
 			TotalItems: 1,
 			OrderedItems: pub.ItemCollection{
 				&pub.Object{
-					ID:           pub.ObjectID("http://example.com/outbox/53c6fb47"),
+					ID:           pub.ID("http://example.com/outbox/53c6fb47"),
 					Type:         pub.ArticleType,
 					Name:         pub.NaturalLanguageValues{{pub.NilLangRef, "Example title"}},
 					Content:      pub.NaturalLanguageValues{{pub.NilLangRef, "Example content!"}},
@@ -416,7 +416,7 @@ var allTests = testMaps{
 				},
 				&pub.Article{
 					Type: pub.ArticleType,
-					ID:   pub.ObjectID("http://www.test.example/article/1"),
+					ID:   pub.ID("http://www.test.example/article/1"),
 					Name: pub.NaturalLanguageValues{
 						{
 							pub.NilLangRef,
@@ -436,7 +436,7 @@ var allTests = testMaps{
 		blank:    &pub.Object{},
 		result: &pub.Object{
 			Type: pub.ObjectType,
-			ID:   pub.ObjectID("http://www.test.example/object/1"),
+			ID:   pub.ID("http://www.test.example/object/1"),
 			To: pub.ItemCollection{
 				pub.IRI("https://www.w3.org/ns/activitystreams#Public"),
 			},
@@ -457,7 +457,7 @@ var allTests = testMaps{
 		blank:    &pub.Article{},
 		result: &pub.Article{
 			Type: pub.ArticleType,
-			ID:   pub.ObjectID("http://www.test.example/article/1"),
+			ID:   pub.ID("http://www.test.example/article/1"),
 			Name: pub.NaturalLanguageValues{
 				{
 					pub.NilLangRef,

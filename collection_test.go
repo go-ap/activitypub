@@ -6,7 +6,7 @@ import (
 )
 
 func TestCollectionNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	c := CollectionNew(testValue)
 
@@ -19,9 +19,9 @@ func TestCollectionNew(t *testing.T) {
 }
 
 func TestCollection_Append(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
-	val := Object{ID: ObjectID("grrr")}
+	val := Object{ID: ID("grrr")}
 
 	c := CollectionNew(id)
 	c.Append(val)
@@ -35,7 +35,7 @@ func TestCollection_Append(t *testing.T) {
 }
 
 func TestCollection_Collection(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := CollectionNew(id)
 
@@ -45,7 +45,7 @@ func TestCollection_Collection(t *testing.T) {
 }
 
 func TestCollection_GetID(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := CollectionNew(id)
 
@@ -55,7 +55,7 @@ func TestCollection_GetID(t *testing.T) {
 }
 
 func TestCollection_GetLink(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 	link := IRI(id)
 
 	c := CollectionNew(id)
@@ -66,7 +66,7 @@ func TestCollection_GetLink(t *testing.T) {
 }
 
 func TestCollection_GetType(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := CollectionNew(id)
 
@@ -76,7 +76,7 @@ func TestCollection_GetType(t *testing.T) {
 }
 
 func TestCollection_IsLink(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := CollectionNew(id)
 
@@ -86,7 +86,7 @@ func TestCollection_IsLink(t *testing.T) {
 }
 
 func TestCollection_IsObject(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := CollectionNew(id)
 
@@ -139,7 +139,7 @@ func TestCollection_UnmarshalJSON(t *testing.T) {
 }
 
 func TestCollection_Count(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := CollectionNew(id)
 

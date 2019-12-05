@@ -7,7 +7,7 @@ import (
 func TestLikedNew(t *testing.T) {
 	l := LikedNew()
 
-	id := ObjectID("liked")
+	id := ID("liked")
 	if l.ID != id {
 		t.Errorf("%T should be initialized with %q as %T", l, id, id)
 	}

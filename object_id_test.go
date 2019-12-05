@@ -3,7 +3,7 @@ package activitypub
 import "testing"
 
 func TestObjectID_UnmarshalJSON(t *testing.T) {
-	o := ObjectID("")
+	o := ID("")
 	dataEmpty := []byte("")
 
 	o.UnmarshalJSON(dataEmpty)

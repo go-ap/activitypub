@@ -48,8 +48,8 @@ func (i *IRI) UnmarshalJSON(s []byte) error {
 }
 
 // GetID
-func (i IRI) GetID() ObjectID {
-	return ObjectID(i)
+func (i IRI) GetID() ID {
+	return ID(i)
 }
 
 // GetType

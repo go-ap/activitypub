@@ -11,7 +11,7 @@ import (
 // but it has been deleted.
 type Tombstone struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
+	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
@@ -134,7 +134,7 @@ func (t Tombstone) GetType() ActivityVocabularyType {
 }
 
 // GetID returns the ID corresponding to the current Tombstone
-func (t Tombstone) GetID() ObjectID {
+func (t Tombstone) GetID() ID {
 	return t.ID
 }
 

@@ -10,7 +10,7 @@ import (
 // property alone. In such cases, the items within a Collection can be divided into distinct subsets or "pages".
 type CollectionPage struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
+	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
@@ -120,8 +120,8 @@ type CollectionPage struct {
 	Prev Item `jsonld:"prev,omitempty"`
 }
 
-// GetID returns the ObjectID corresponding to the CollectionPage object
-func (c CollectionPage) GetID() ObjectID {
+// GetID returns the ID corresponding to the CollectionPage object
+func (c CollectionPage) GetID() ID {
 	return c.ID
 }
 

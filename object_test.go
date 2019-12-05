@@ -6,7 +6,7 @@ import (
 )
 
 func TestObjectNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 	var testType = ArticleType
 
 	o := ObjectNew(testType)
@@ -216,7 +216,7 @@ func TestObject_IsObject(t *testing.T) {
 func TestObjectsArr_Append(t *testing.T) {
 	d := make(ItemCollection, 0)
 
-	val := Object{ID: ObjectID("grrr")}
+	val := Object{ID: ID("grrr")}
 
 	d.Append(val)
 
@@ -388,7 +388,7 @@ func TestLangRef_UnmarshalText(t *testing.T) {
 func TestObject_GetID(t *testing.T) {
 	a := Object{}
 	testVal := "crash$"
-	a.ID = ObjectID(testVal)
+	a.ID = ID(testVal)
 	if string(a.GetID()) != testVal {
 		t.Errorf("%T should return %q, Received %q", a.GetID, testVal, a.GetID())
 	}
@@ -397,7 +397,7 @@ func TestObject_GetID(t *testing.T) {
 func TestObject_GetLink(t *testing.T) {
 	a := Object{}
 	testVal := "crash$"
-	a.ID = ObjectID(testVal)
+	a.ID = ID(testVal)
 	if string(a.GetLink()) != testVal {
 		t.Errorf("%T should return %q, Received %q", a.GetLink, testVal, a.GetLink())
 	}

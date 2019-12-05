@@ -10,7 +10,7 @@ import (
 // collection are assumed to always be strictly ordered.
 type OrderedCollection struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
+	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
@@ -124,8 +124,8 @@ func (o OrderedCollection) IsLink() bool {
 	return false
 }
 
-// GetID returns the ObjectID corresponding to the OrderedCollection
-func (o OrderedCollection) GetID() ObjectID {
+// GetID returns the ID corresponding to the OrderedCollection
+func (o OrderedCollection) GetID() ID {
 	return o.ID
 }
 

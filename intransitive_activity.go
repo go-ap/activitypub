@@ -9,7 +9,7 @@ import (
 // The object property is therefore inappropriate for these activities.
 type IntransitiveActivity struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
+	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
@@ -156,8 +156,8 @@ func (i IntransitiveActivity) IsLink() bool {
 	return false
 }
 
-// GetID returns the ObjectID corresponding to the IntransitiveActivity object
-func (i IntransitiveActivity) GetID() ObjectID {
+// GetID returns the ID corresponding to the IntransitiveActivity object
+func (i IntransitiveActivity) GetID() ID {
 	return i.ID
 }
 
@@ -242,7 +242,7 @@ func (i *IntransitiveActivity) UnmarshalJSON(data []byte) error {
 }
 
 // IntransitiveActivityNew initializes a intransitive activity
-func IntransitiveActivityNew(id ObjectID, typ ActivityVocabularyType) *IntransitiveActivity {
+func IntransitiveActivityNew(id ID, typ ActivityVocabularyType) *IntransitiveActivity {
 	if !IntransitiveActivityTypes.Contains(typ) {
 		typ = IntransitiveActivityType
 	}
@@ -276,14 +276,14 @@ func FlattenIntransitiveActivityProperties(act *IntransitiveActivity) *Intransit
 }
 
 // ArriveNew initializes an Arrive activity
-func ArriveNew(id ObjectID) *Arrive {
+func ArriveNew(id ID) *Arrive {
 	a := IntransitiveActivityNew(id, ArriveType)
 	o := Arrive(*a)
 	return &o
 }
 
 // TravelNew initializes a Travel activity
-func TravelNew(id ObjectID) *Travel {
+func TravelNew(id ID) *Travel {
 	a := IntransitiveActivityNew(id, TravelType)
 	o := Travel(*a)
 	return &o

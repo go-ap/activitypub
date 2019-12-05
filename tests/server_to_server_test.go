@@ -153,7 +153,7 @@ S2S Server: Deduplication of recipient list
 
 	c.Recipients()
 
-	checkDedup := func(list pub.ItemCollection, recIds *[]pub.ObjectID) error {
+	checkDedup := func(list pub.ItemCollection, recIds *[]pub.ID) error {
 		for _, rec := range list {
 			for _, id := range *recIds {
 				if rec.GetID() == id {
@@ -166,7 +166,7 @@ S2S Server: Deduplication of recipient list
 	}
 
 	var err error
-	recIds := make([]pub.ObjectID, 0)
+	recIds := make([]pub.ID, 0)
 	err = checkDedup(c.To, &recIds)
 	if err != nil {
 		t.Error(err)

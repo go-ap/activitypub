@@ -6,7 +6,7 @@ import (
 )
 
 func TestOrderedCollectionPageNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	c := OrderedCollectionNew(testValue)
 	p := OrderedCollectionPageNew(c)
@@ -80,9 +80,9 @@ func TestOrderedCollectionPage_UnmarshalJSON(t *testing.T) {
 }
 
 func TestOrderedCollectionPage_Append(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
-	val := Object{ID: ObjectID("grrr")}
+	val := Object{ID: ID("grrr")}
 
 	c := OrderedCollectionNew(id)
 
@@ -101,7 +101,7 @@ func TestOrderedCollectionPage_Append(t *testing.T) {
 }
 
 func TestOrderedCollectionPage_Collection(t *testing.T) {
-	id := ObjectID("test")
+	id := ID("test")
 
 	c := OrderedCollectionNew(id)
 	p := OrderedCollectionPageNew(c)

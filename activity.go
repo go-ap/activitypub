@@ -202,7 +202,7 @@ type HasRecipients interface {
 // about the kind of action being taken.
 type Activity struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
-	ID ObjectID `jsonld:"id,omitempty"`
+	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
@@ -328,8 +328,8 @@ func (a Activity) IsLink() bool {
 	return false
 }
 
-// GetID returns the ObjectID corresponding to the Activity object
-func (a Activity) GetID() ObjectID {
+// GetID returns the ID corresponding to the Activity object
+func (a Activity) GetID() ID {
 	return a.ID
 }
 
@@ -507,14 +507,14 @@ type (
 )
 
 // AcceptNew initializes an Accept activity
-func AcceptNew(id ObjectID, ob Item) *Accept {
+func AcceptNew(id ID, ob Item) *Accept {
 	a := ActivityNew(id, AcceptType, ob)
 	o := Accept(*a)
 	return &o
 }
 
 // AddNew initializes an Add activity
-func AddNew(id ObjectID, ob Item, trgt Item) *Add {
+func AddNew(id ID, ob Item, trgt Item) *Add {
 	a := ActivityNew(id, AddType, ob)
 	o := Add(*a)
 	o.Target = trgt
@@ -522,126 +522,126 @@ func AddNew(id ObjectID, ob Item, trgt Item) *Add {
 }
 
 // AnnounceNew initializes an Announce activity
-func AnnounceNew(id ObjectID, ob Item) *Announce {
+func AnnounceNew(id ID, ob Item) *Announce {
 	a := ActivityNew(id, AnnounceType, ob)
 	o := Announce(*a)
 	return &o
 }
 
 // BlockNew initializes a Block activity
-func BlockNew(id ObjectID, ob Item) *Block {
+func BlockNew(id ID, ob Item) *Block {
 	a := ActivityNew(id, BlockType, ob)
 	o := Block(*a)
 	return &o
 }
 
 // CreateNew initializes a Create activity
-func CreateNew(id ObjectID, ob Item) *Create {
+func CreateNew(id ID, ob Item) *Create {
 	a := ActivityNew(id, CreateType, ob)
 	o := Create(*a)
 	return &o
 }
 
 // DeleteNew initializes a Delete activity
-func DeleteNew(id ObjectID, ob Item) *Delete {
+func DeleteNew(id ID, ob Item) *Delete {
 	a := ActivityNew(id, DeleteType, ob)
 	o := Delete(*a)
 	return &o
 }
 
 // DislikeNew initializes a Dislike activity
-func DislikeNew(id ObjectID, ob Item) *Dislike {
+func DislikeNew(id ID, ob Item) *Dislike {
 	a := ActivityNew(id, DislikeType, ob)
 	o := Dislike(*a)
 	return &o
 }
 
 // FlagNew initializes a Flag activity
-func FlagNew(id ObjectID, ob Item) *Flag {
+func FlagNew(id ID, ob Item) *Flag {
 	a := ActivityNew(id, FlagType, ob)
 	o := Flag(*a)
 	return &o
 }
 
 // FollowNew initializes a Follow activity
-func FollowNew(id ObjectID, ob Item) *Follow {
+func FollowNew(id ID, ob Item) *Follow {
 	a := ActivityNew(id, FollowType, ob)
 	o := Follow(*a)
 	return &o
 }
 
 // IgnoreNew initializes an Ignore activity
-func IgnoreNew(id ObjectID, ob Item) *Ignore {
+func IgnoreNew(id ID, ob Item) *Ignore {
 	a := ActivityNew(id, IgnoreType, ob)
 	o := Ignore(*a)
 	return &o
 }
 
 // InviteNew initializes an Invite activity
-func InviteNew(id ObjectID, ob Item) *Invite {
+func InviteNew(id ID, ob Item) *Invite {
 	a := ActivityNew(id, InviteType, ob)
 	o := Invite(*a)
 	return &o
 }
 
 // JoinNew initializes a Join activity
-func JoinNew(id ObjectID, ob Item) *Join {
+func JoinNew(id ID, ob Item) *Join {
 	a := ActivityNew(id, JoinType, ob)
 	o := Join(*a)
 	return &o
 }
 
 // LeaveNew initializes a Leave activity
-func LeaveNew(id ObjectID, ob Item) *Leave {
+func LeaveNew(id ID, ob Item) *Leave {
 	a := ActivityNew(id, LeaveType, ob)
 	o := Leave(*a)
 	return &o
 }
 
 // LikeNew initializes a Like activity
-func LikeNew(id ObjectID, ob Item) *Like {
+func LikeNew(id ID, ob Item) *Like {
 	a := ActivityNew(id, LikeType, ob)
 	o := Like(*a)
 	return &o
 }
 
 // ListenNew initializes a Listen activity
-func ListenNew(id ObjectID, ob Item) *Listen {
+func ListenNew(id ID, ob Item) *Listen {
 	a := ActivityNew(id, ListenType, ob)
 	o := Listen(*a)
 	return &o
 }
 
 // MoveNew initializes a Move activity
-func MoveNew(id ObjectID, ob Item) *Move {
+func MoveNew(id ID, ob Item) *Move {
 	a := ActivityNew(id, MoveType, ob)
 	o := Move(*a)
 	return &o
 }
 
 // OfferNew initializes an Offer activity
-func OfferNew(id ObjectID, ob Item) *Offer {
+func OfferNew(id ID, ob Item) *Offer {
 	a := ActivityNew(id, OfferType, ob)
 	o := Offer(*a)
 	return &o
 }
 
 // RejectNew initializes a Reject activity
-func RejectNew(id ObjectID, ob Item) *Reject {
+func RejectNew(id ID, ob Item) *Reject {
 	a := ActivityNew(id, RejectType, ob)
 	o := Reject(*a)
 	return &o
 }
 
 // ReadNew initializes a Read activity
-func ReadNew(id ObjectID, ob Item) *Read {
+func ReadNew(id ID, ob Item) *Read {
 	a := ActivityNew(id, ReadType, ob)
 	o := Read(*a)
 	return &o
 }
 
 // RemoveNew initializes a Remove activity
-func RemoveNew(id ObjectID, ob Item, trgt Item) *Remove {
+func RemoveNew(id ID, ob Item, trgt Item) *Remove {
 	a := ActivityNew(id, RemoveType, ob)
 	o := Remove(*a)
 	o.Target = trgt
@@ -649,42 +649,42 @@ func RemoveNew(id ObjectID, ob Item, trgt Item) *Remove {
 }
 
 // TentativeRejectNew initializes a TentativeReject activity
-func TentativeRejectNew(id ObjectID, ob Item) *TentativeReject {
+func TentativeRejectNew(id ID, ob Item) *TentativeReject {
 	a := ActivityNew(id, TentativeRejectType, ob)
 	o := TentativeReject(*a)
 	return &o
 }
 
 // TentativeAcceptNew initializes a TentativeAccept activity
-func TentativeAcceptNew(id ObjectID, ob Item) *TentativeAccept {
+func TentativeAcceptNew(id ID, ob Item) *TentativeAccept {
 	a := ActivityNew(id, TentativeAcceptType, ob)
 	o := TentativeAccept(*a)
 	return &o
 }
 
 // UndoNew initializes an Undo activity
-func UndoNew(id ObjectID, ob Item) *Undo {
+func UndoNew(id ID, ob Item) *Undo {
 	a := ActivityNew(id, UndoType, ob)
 	o := Undo(*a)
 	return &o
 }
 
 // UpdateNew initializes an Update activity
-func UpdateNew(id ObjectID, ob Item) *Update {
+func UpdateNew(id ID, ob Item) *Update {
 	a := ActivityNew(id, UpdateType, ob)
 	u := Update(*a)
 	return &u
 }
 
 // ViewNew initializes a View activity
-func ViewNew(id ObjectID, ob Item) *View {
+func ViewNew(id ID, ob Item) *View {
 	a := ActivityNew(id, ViewType, ob)
 	o := View(*a)
 	return &o
 }
 
 // ActivityNew initializes a basic activity
-func ActivityNew(id ObjectID, typ ActivityVocabularyType, ob Item) *Activity {
+func ActivityNew(id ID, typ ActivityVocabularyType, ob Item) *Activity {
 	if !ActivityTypes.Contains(typ) {
 		typ = ActivityType
 	}

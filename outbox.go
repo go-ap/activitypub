@@ -12,7 +12,7 @@ type (
 
 // OutboxNew initializes a new Outbox
 func OutboxNew() *Outbox {
-	id := ObjectID("outbox")
+	id := ID("outbox")
 
 	i := Outbox{ID: id, Type: OrderedCollectionType}
 	i.Name = NaturalLanguageValuesNew()

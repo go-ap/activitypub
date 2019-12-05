@@ -6,7 +6,7 @@ import (
 )
 
 func TestActorNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 	var testType = ApplicationType
 
 	o := ActorNew(testValue, testType)
@@ -28,7 +28,7 @@ func TestActorNew(t *testing.T) {
 }
 
 func TestPersonNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	o := PersonNew(testValue)
 	if o.ID != testValue {
@@ -40,7 +40,7 @@ func TestPersonNew(t *testing.T) {
 }
 
 func TestApplicationNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	o := ApplicationNew(testValue)
 	if o.ID != testValue {
@@ -52,7 +52,7 @@ func TestApplicationNew(t *testing.T) {
 }
 
 func TestGroupNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	o := GroupNew(testValue)
 	if o.ID != testValue {
@@ -64,7 +64,7 @@ func TestGroupNew(t *testing.T) {
 }
 
 func TestOrganizationNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	o := OrganizationNew(testValue)
 	if o.ID != testValue {
@@ -76,7 +76,7 @@ func TestOrganizationNew(t *testing.T) {
 }
 
 func TestServiceNew(t *testing.T) {
-	var testValue = ObjectID("test")
+	var testValue = ID("test")
 
 	o := ServiceNew(testValue)
 	if o.ID != testValue {
@@ -103,7 +103,7 @@ func TestActor_IsObject(t *testing.T) {
 
 func TestActor_Object(t *testing.T) {
 	m := ActorNew("test", ActorType)
-	if reflect.DeepEqual(ObjectID(""), m.GetID()) {
+	if reflect.DeepEqual(ID(""), m.GetID()) {
 		t.Errorf("%#v should not be an empty activity pub object", m.GetID())
 	}
 }
