@@ -3,25 +3,10 @@ package activitypub
 import (
 	"fmt"
 	"github.com/buger/jsonparser"
-	"sort"
 	"strings"
 	"time"
 	"unsafe"
 )
-
-// ObjectID designates an unique global identifier.
-// All Objects in [ActivityStreams] should have unique global identifiers.
-// ActivityPub extends this requirement; all objects distributed by the ActivityPub protocol MUST
-// have unique global identifiers, unless they are intentionally transient
-// (short lived activities that are not intended to be able to be looked up,
-// such as some kinds of chat messages or game notifications).
-// These identifiers must fall into one of the following groups:
-//
-// 1. Publicly dereferenceable URIs, such as HTTPS URIs, with their authority belonging
-// to that of their originating server. (Publicly facing content SHOULD use HTTPS URIs).
-// 2. An ID explicitly specified as the JSON null object, which implies an anonymous object
-// (a part of its parent context)
-type ObjectID IRI
 
 const (
 	ObjectType                ActivityVocabularyType = "Object"
@@ -354,59 +339,6 @@ type (
 	// Video represents a video document of any kind
 	Video = Document
 )
-
-// ItemCollectionDeduplication normalizes the received arguments lists into a single unified one
-func ItemCollectionDeduplication(recCols ...*ItemCollection) (ItemCollection, error) {
-	rec := make(ItemCollection, 0)
-
-	for _, recCol := range recCols {
-		if recCol == nil {
-			continue
-		}
-
-		toRemove := make([]int, 0)
-		for i, cur := range *recCol {
-			save := true
-			if cur == nil {
-				continue
-			}
-			var testIt IRI
-			if cur.IsObject() {
-				testIt = IRI(cur.GetID())
-			} else if cur.IsLink() {
-				testIt = cur.GetLink()
-			} else {
-				continue
-			}
-			for _, it := range rec {
-				if testIt.Equals(IRI(it.GetID()), false) {
-					// mark the element for removal
-					toRemove = append(toRemove, i)
-					save = false
-				}
-			}
-			if save {
-				rec = append(rec, testIt)
-			}
-		}
-
-		sort.Sort(sort.Reverse(sort.IntSlice(toRemove)))
-		for _, idx := range toRemove {
-			*recCol = append((*recCol)[:idx], (*recCol)[idx+1:]...)
-		}
-	}
-	return rec, nil
-}
-
-// UnmarshalJSON
-func (i *ObjectID) UnmarshalJSON(data []byte) error {
-	*i = ObjectID(strings.Trim(string(data), "\""))
-	return nil
-}
-
-func (i *ObjectID) IsValid() bool {
-	return i != nil && len(*i) > 0
-}
 
 // UnmarshalJSON
 func (c *MimeType) UnmarshalJSON(data []byte) error {
