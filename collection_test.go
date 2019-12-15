@@ -169,3 +169,8 @@ func TestToCollection(t *testing.T) {
 func TestCollection_Contains(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestCollection_IsCollection(t *testing.T) {
+	t.Skipf("TODO")
+}
+

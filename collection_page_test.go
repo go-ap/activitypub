@@ -143,3 +143,27 @@ func TestToCollectionPage(t *testing.T) {
 func TestCollectionPage_Contains(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestCollectionPage_GetID(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestCollectionPage_GetLink(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestCollectionPage_GetType(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestCollectionPage_IsCollection(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestCollectionPage_IsLink(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestCollectionPage_IsObject(t *testing.T) {
+	t.Skipf("TODO")
+}

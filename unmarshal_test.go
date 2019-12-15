@@ -196,3 +196,23 @@ func TestJSONUnmarshalToItem(t *testing.T) {
 func TestJSONGetActorEndpoints(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestJSONGetBoolean(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetBytes(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetFloat(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetPublicKey(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestJSONGetStreams(t *testing.T) {
+	t.Skipf("TODO")
+}

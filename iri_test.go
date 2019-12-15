@@ -210,3 +210,11 @@ func TestIRI_Equals(t *testing.T) {
 		}
 	}
 }
+
+func TestIRI_Contains(t *testing.T) {
+	t.Skip("TODO")
+}
+
+func TestIRI_IsCollection(t *testing.T) {
+	t.Skip("TODO")
+}

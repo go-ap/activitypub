@@ -969,3 +969,11 @@ func TestActivity_Clean(t *testing.T) {
 func TestActivity_IsCollection(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestActivity_GetLink(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestActivity_GetType(t *testing.T) {
+	t.Skipf("TODO")
+}
