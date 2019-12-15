@@ -1,6 +1,9 @@
 package activitypub
 
-import "strings"
+import (
+	"bytes"
+	"strings"
+)
 
 // ID designates an unique global identifier.
 // All Objects in [ActivityStreams] should have unique global identifiers.
@@ -20,6 +23,18 @@ type ID IRI
 func (i *ID) UnmarshalJSON(data []byte) error {
 	*i = ID(strings.Trim(string(data), "\""))
 	return nil
+}
+
+// MarshalJSON
+func (i ID) MarshalJSON() ([]byte, error) {
+	if len(i) == 0 {
+		return nil, nil
+	}
+	b := bytes.Buffer{}
+	b.Write([]byte{'"'})
+	b.WriteString(string(i))
+	b.Write([]byte{'"'})
+	return b.Bytes(), nil
 }
 
 func (i *ID) IsValid() bool {

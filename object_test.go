@@ -488,3 +488,23 @@ func TestGetAPSource(t *testing.T) {
 		t.Errorf("Content didn't match test value. Received %q, expecting %q", a.MediaType, "text/plain")
 	}
 }
+
+func TestObject_Clean(t *testing.T) {
+	t.Skip("TODO")
+}
+
+func TestObject_IsCollection(t *testing.T) {
+	t.Skip("TODO")
+}
+
+func TestObject_MarshalJSON(t *testing.T) {
+	t.Skip("TODO")
+}
+
+func TestSource_MarshalJSON(t *testing.T) {
+	t.Skip("TODO")
+}
+
+func TestActivityVocabularyType_MarshalJSON(t *testing.T) {
+	t.Skip("TODO")
+}

@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/buger/jsonparser"
 	"strings"
@@ -105,6 +106,17 @@ type (
 	// MimeType is the type for representing MIME types in certain ActivityStreams properties
 	MimeType string
 )
+
+func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
+	if len(a) == 0 {
+		return nil, nil
+	}
+	b := bytes.Buffer{}
+	b.Write([]byte{'"'})
+	b.WriteString(string(a))
+	b.Write([]byte{'"'})
+	return b.Bytes(), nil
+}
 
 // Object describes an ActivityPub object of any kind.
 // It serves as the base type for most of the other kinds of objects defined in the Activity
@@ -308,6 +320,92 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func writeProp(b *bytes.Buffer, name string, val []byte) {
+	writePropName(b, name)
+	writeValue(b, val)
+}
+func writePropName(b *bytes.Buffer, s string) {
+	b.Write([]byte{'"'})
+	b.WriteString(s)
+	b.Write([]byte{'"', ':'})
+}
+
+func writeValue(b *bytes.Buffer, s []byte) {
+	b.Write([]byte{'"'})
+	b.Write(s)
+	b.Write([]byte{'"'})
+}
+
+func writeNaturalLanguageProp (b *bytes.Buffer, n string,  nl NaturalLanguageValues) {
+	if v, err := nl.MarshalJSON(); err == nil {
+		if nl.Count() > 1 {
+			n += "Map"
+		}
+		writeProp(b, n, v)
+	}
+}
+
+func writeItemProp (b *bytes.Buffer, n string, i Item) {
+	if i == nil {
+		b.WriteString("nil")
+		return
+	}
+	if i.IsObject() {
+		OnObject(i, func(o *Object) error {
+			v, err := o.MarshalJSON()
+			if err != nil {
+				return nil
+			}
+			writeProp(b, n, v)
+			return nil
+		})
+	} else if i.IsCollection() {
+		OnCollection(i, func(c CollectionInterface) error {
+			writeItemCollectionProp(b, n, c.Collection())
+			return nil
+		})
+	}
+}
+
+func writeItemCollectionProp (b *bytes.Buffer, n string, i ItemCollection) {
+}
+
+// MarshalJSON
+func (o Object) MarshalJSON() ([]byte, error) {
+	b := bytes.Buffer{}
+	writeComma := func () { b.WriteString(",") }
+	
+	if v, err := o.ID.MarshalJSON(); err == nil {
+		writeProp(&b, "id", v)
+		writeComma()
+	}
+	if v, err := o.Type.MarshalJSON(); err == nil {
+		writeProp(&b, "type", v)
+		writeComma()
+	}
+	if v, err := o.MediaType.MarshalJSON(); err == nil {
+		writeProp(&b, "mediaType", v)
+		writeComma()
+	}
+	if len(o.Name) > 0 {
+		writeNaturalLanguageProp(&b, "name", o.Name)
+		writeComma()
+	}
+	if len(o.Summary) > 0 {
+		writeNaturalLanguageProp(&b, "summary", o.Summary)
+		writeComma()
+	}
+	if len(o.Content) > 0 {
+		writeNaturalLanguageProp(&b, "content", o.Content)
+		writeComma()
+	}
+
+	if v, err := o.Source.MarshalJSON(); err == nil {
+		writeProp(&b, "source", v)
+	}
+	return b.Bytes(), nil
+}
+
 // Recipients performs recipient de-duplication on the Object's To, Bto, CC and BCC properties
 func (o *Object) Recipients() ItemCollection {
 	var aud ItemCollection
@@ -344,6 +442,18 @@ type (
 func (c *MimeType) UnmarshalJSON(data []byte) error {
 	*c = MimeType(strings.Trim(string(data), "\""))
 	return nil
+}
+
+// MarshalJSON
+func (c MimeType) MarshalJSON() ([]byte, error) {
+	if len(c) == 0 {
+		return nil, nil
+	}
+	b := bytes.Buffer{}
+	b.Write([]byte{'"'})
+	b.WriteString(string(c))
+	b.Write([]byte{'"'})
+	return b.Bytes(), nil
 }
 
 // ToObject returns an Object pointer to the data in the current Item
@@ -463,4 +573,25 @@ func GetAPSource(data []byte) Source {
 func (s *Source) UnmarshalJSON(data []byte) error {
 	*s = GetAPSource(data)
 	return nil
+}
+
+// MarshalJSON
+func (s Source) MarshalJSON() ([]byte, error) {
+	b := bytes.Buffer{}
+	b.Write([]byte{'{'})
+	if len(s.MediaType) > 0 {
+		if v, err := s.MediaType.MarshalJSON(); err == nil {
+			writePropName(&b, "mediaType")
+			b.Write(v)
+			b.Write([]byte{','})
+		}
+	}
+	if len(s.Content) > 0 {
+		if v, err := s.Content.MarshalJSON(); err == nil {
+			b.Write([]byte(`"content":`))
+			b.Write(v)
+		}
+	}
+	b.Write([]byte{'}'})
+	return b.Bytes(), nil
 }
