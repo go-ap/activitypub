@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/buger/jsonparser"
-	json "github.com/go-ap/jsonld"
 	"strconv"
 	"strings"
 )
@@ -73,21 +72,47 @@ func (n *NaturalLanguageValues) Set(ref LangRef, v string) error {
 
 // MarshalJSON serializes the NaturalLanguageValues into JSON
 func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
-	if len(n) == 0 {
-		return json.Marshal(nil)
+	l := len(n)
+	if l == 0 {
+		return nil, nil
 	}
-	if len(n) == 1 {
+	
+	b := bytes.Buffer{}
+	if l == 1 {
 		v := n[0]
-		if v.Ref == NilLangRef {
-			return v.MarshalJSON()
+		if len(v.Value) > 0 {
+			v.Value = string(unescape([]byte(v.Value)))
+			ll, err := b.WriteString(strconv.Quote(v.Value))
+			if err != nil {
+				return nil, err
+			}
+			if ll == 0 {
+				return nil, nil
+			}
+			return b.Bytes(), nil
 		}
 	}
-	mm := make(map[LangRef]string)
+	b.Write([]byte{'{'})
+	empty := true
 	for _, val := range n {
-		mm[val.Ref] = val.Value
+		if len(val.Ref) == 0 || len(val.Value) == 0 {
+			continue
+		}
+		if !empty {
+			b.Write([]byte{','})
+		}
+		if v, err := val.MarshalJSON(); err == nil && len(v) > 0 {
+			l, err := b.Write(v)
+			if err == nil && l > 0 {
+				empty = false
+			}
+		}
 	}
-
-	return json.Marshal(mm)
+	b.Write([]byte{'}'})
+	if !empty {
+		return b.Bytes(), nil
+	}
+	return nil, nil
 }
 
 // First returns the first element in the array
@@ -165,7 +190,7 @@ func (l *LangRefValue) UnmarshalText(data []byte) error {
 // MarshalJSON serializes the LangRefValue into JSON
 func (l LangRefValue) MarshalJSON() ([]byte, error) {
 	buf := bytes.Buffer{}
-	if l.Ref != NilLangRef {
+	if l.Ref != NilLangRef && len(l.Ref) > 0{
 		if l.Value == "" {
 			return nil, nil
 		}

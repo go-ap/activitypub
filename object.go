@@ -320,35 +320,57 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func writeProp(b *bytes.Buffer, name string, val []byte) {
-	writePropName(b, name)
-	writeValue(b, val)
-}
-func writePropName(b *bytes.Buffer, s string) {
-	b.Write([]byte{'"'})
-	b.WriteString(s)
-	b.Write([]byte{'"', ':'})
-}
-
-func writeValue(b *bytes.Buffer, s []byte) {
-	b.Write([]byte{'"'})
-	b.Write(s)
-	b.Write([]byte{'"'})
-}
-
-func writeNaturalLanguageProp (b *bytes.Buffer, n string,  nl NaturalLanguageValues) {
-	if v, err := nl.MarshalJSON(); err == nil {
-		if nl.Count() > 1 {
-			n += "Map"
-		}
-		writeProp(b, n, v)
+func writeProp(b *bytes.Buffer, name string, val []byte) (notEmpty bool) {
+	notEmpty = false
+	if len(val) == 0 {
+		return notEmpty
 	}
+	writePropName(b, name)
+	return writeValue(b, val)
 }
 
-func writeItemProp (b *bytes.Buffer, n string, i Item) {
+func writePropName(b *bytes.Buffer, s string) (notEmpty bool) {
+	if len(s) == 0 {
+		return false
+	}
+	b.Write([]byte{'"'})
+	l, err := b.WriteString(s)
+	b.Write([]byte{'"', ':'})
+	if err != nil {
+		return false
+	}
+	if l == 0 {
+		return false
+	}
+	return true
+}
+
+func writeValue(b *bytes.Buffer, s []byte) (notEmpty bool) {
+	l, err := b.Write(s)
+	if err != nil {
+		return false
+	}
+	if l == 0 {
+		return false
+	}
+	return true
+}
+
+func writeNaturalLanguageProp(b *bytes.Buffer, n string, nl NaturalLanguageValues) (notEmpty bool) {
+	l := nl.Count()
+	if l > 1 {
+		n += "Map"
+	}
+	if v, err := nl.MarshalJSON(); err == nil && len(v) > 0 {
+		notEmpty = writeProp(b, n, v)
+	}
+	return notEmpty
+}
+
+func writeItemProp(b *bytes.Buffer, n string, i Item) (notEmpty bool) {
+	notEmpty = false
 	if i == nil {
-		b.WriteString("nil")
-		return
+		return notEmpty
 	}
 	if i.IsObject() {
 		OnObject(i, func(o *Object) error {
@@ -356,54 +378,68 @@ func writeItemProp (b *bytes.Buffer, n string, i Item) {
 			if err != nil {
 				return nil
 			}
-			writeProp(b, n, v)
+			notEmpty = writeProp(b, n, v)
 			return nil
 		})
 	} else if i.IsCollection() {
 		OnCollection(i, func(c CollectionInterface) error {
-			writeItemCollectionProp(b, n, c.Collection())
+			notEmpty = writeItemCollectionProp(b, n, c.Collection())
 			return nil
 		})
 	}
+	return notEmpty
 }
 
-func writeItemCollectionProp (b *bytes.Buffer, n string, i ItemCollection) {
+func writeItemCollectionProp(b *bytes.Buffer, n string, i ItemCollection) (notEmpty bool) {
+	return false
 }
 
 // MarshalJSON
 func (o Object) MarshalJSON() ([]byte, error) {
 	b := bytes.Buffer{}
-	writeComma := func () { b.WriteString(",") }
-	
-	if v, err := o.ID.MarshalJSON(); err == nil {
-		writeProp(&b, "id", v)
-		writeComma()
-	}
-	if v, err := o.Type.MarshalJSON(); err == nil {
-		writeProp(&b, "type", v)
-		writeComma()
-	}
-	if v, err := o.MediaType.MarshalJSON(); err == nil {
-		writeProp(&b, "mediaType", v)
-		writeComma()
-	}
-	if len(o.Name) > 0 {
-		writeNaturalLanguageProp(&b, "name", o.Name)
-		writeComma()
-	}
-	if len(o.Summary) > 0 {
-		writeNaturalLanguageProp(&b, "summary", o.Summary)
-		writeComma()
-	}
-	if len(o.Content) > 0 {
-		writeNaturalLanguageProp(&b, "content", o.Content)
-		writeComma()
+	notEmpty := false
+	b.Write([]byte{'{'})
+
+	writeComma := func() { b.WriteString(",") }
+	writeCommaIfNotEmpty := func(notEmpty bool) {
+		if notEmpty {
+			writeComma()
+		}
 	}
 
-	if v, err := o.Source.MarshalJSON(); err == nil {
-		writeProp(&b, "source", v)
+	if v, err := o.ID.MarshalJSON(); err == nil && len(v) > 0 {
+		notEmpty = writeProp(&b, "id", v)
 	}
-	return b.Bytes(), nil
+	if v, err := o.Type.MarshalJSON(); err == nil && len(v) > 0 {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeProp(&b, "type", v)
+	}
+	if v, err := o.MediaType.MarshalJSON(); err == nil && len(v) > 0 {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeProp(&b, "mediaType", v)
+	}
+	if len(o.Name) > 0 {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeNaturalLanguageProp(&b, "name", o.Name)
+	}
+	if len(o.Summary) > 0 {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeNaturalLanguageProp(&b, "summary", o.Summary)
+	}
+	if len(o.Content) > 0 {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeNaturalLanguageProp(&b, "content", o.Content)
+	}
+
+	if v, err := o.Source.MarshalJSON(); err == nil && len(v) > 0 {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeProp(&b, "source", v)
+	}
+	if notEmpty {
+		b.Write([]byte{'}'})
+		return b.Bytes(), nil
+	}
+	return nil, nil
 }
 
 // Recipients performs recipient de-duplication on the Object's To, Bto, CC and BCC properties
@@ -578,20 +614,22 @@ func (s *Source) UnmarshalJSON(data []byte) error {
 // MarshalJSON
 func (s Source) MarshalJSON() ([]byte, error) {
 	b := bytes.Buffer{}
+	empty := true
 	b.Write([]byte{'{'})
 	if len(s.MediaType) > 0 {
-		if v, err := s.MediaType.MarshalJSON(); err == nil {
-			writePropName(&b, "mediaType")
-			b.Write(v)
-			b.Write([]byte{','})
+		if v, err := s.MediaType.MarshalJSON(); err == nil && len(v) > 0 {
+			empty = !writeProp(&b, "mediaType", v)
 		}
 	}
 	if len(s.Content) > 0 {
-		if v, err := s.Content.MarshalJSON(); err == nil {
-			b.Write([]byte(`"content":`))
-			b.Write(v)
+		if !empty {
+			b.Write([]byte{','})
 		}
+		empty = !writeNaturalLanguageProp(&b, "content", s.Content)
 	}
-	b.Write([]byte{'}'})
-	return b.Bytes(), nil
+	if !empty {
+		b.Write([]byte{'}'})
+		return b.Bytes(), nil
+	}
+	return nil, nil
 }

@@ -3,6 +3,7 @@ package activitypub
 import (
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestObjectNew(t *testing.T) {
@@ -497,14 +498,269 @@ func TestObject_IsCollection(t *testing.T) {
 	t.Skip("TODO")
 }
 
-func TestObject_MarshalJSON(t *testing.T) {
+func TestActivityVocabularyType_MarshalJSON(t *testing.T) {
 	t.Skip("TODO")
+}
+
+func TestObject_MarshalJSON(t *testing.T) {
+	type fields struct {
+		ID           ID
+		Type         ActivityVocabularyType
+		Name         NaturalLanguageValues
+		Attachment   Item
+		AttributedTo Item
+		Audience     ItemCollection
+		Content      NaturalLanguageValues
+		Context      Item
+		MediaType    MimeType
+		EndTime      time.Time
+		Generator    Item
+		Icon         Item
+		Image        Item
+		InReplyTo    Item
+		Location     Item
+		Preview      Item
+		Published    time.Time
+		Replies      Item
+		StartTime    time.Time
+		Summary      NaturalLanguageValues
+		Tag          ItemCollection
+		Updated      time.Time
+		URL          LinkOrIRI
+		To           ItemCollection
+		Bto          ItemCollection
+		CC           ItemCollection
+		BCC          ItemCollection
+		Duration     time.Duration
+		Likes        Item
+		Shares       Item
+		Source       Source
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name:    "Empty",
+			fields:  fields{},
+			want:    nil,
+			wantErr: false,
+		},
+		{
+			name: "JustID",
+			fields: fields{
+				ID: ID("example.com"),
+			},
+			want:    []byte(`{"id":"example.com"}`),
+			wantErr: false,
+		},
+		{
+			name: "JustType",
+			fields: fields{
+				Type: ActivityVocabularyType("myType"),
+			},
+			want:    []byte(`{"type":"myType"}`),
+			wantErr: false,
+		},
+		{
+			name: "JustOneName",
+			fields: fields{
+				Name: NaturalLanguageValues{
+					{Ref: NilLangRef, Value: "ana"},
+				},
+			},
+			want:    []byte(`{"name":"ana"}`),
+			wantErr: false,
+		},
+		{
+			name: "MoreNames",
+			fields: fields{
+				Name: NaturalLanguageValues{
+					{Ref: "en", Value: "anna"},
+					{Ref: "fr", Value: "anne"},
+				},
+			},
+			want:    []byte(`{"nameMap":{"en":"anna","fr":"anne"}}`),
+			wantErr: false,
+		},
+		{
+			name: "JustOneSummary",
+			fields: fields{
+				Summary: NaturalLanguageValues{
+					{Ref: NilLangRef, Value: "test summary"},
+				},
+			},
+			want:    []byte(`{"summary":"test summary"}`),
+			wantErr: false,
+		},
+		{
+			name: "MoreSummaryEntries",
+			fields: fields{
+				Summary: NaturalLanguageValues{
+					{Ref: "en", Value: "test summary"},
+					{Ref: "fr", Value: "teste summary"},
+				},
+			},
+			want:    []byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
+			wantErr: false,
+		},
+		{
+			name: "JustOneContent",
+			fields: fields{
+				Content: NaturalLanguageValues{
+					{Ref: NilLangRef, Value: "test content"},
+				},
+			},
+			want:    []byte(`{"content":"test content"}`),
+			wantErr: false,
+		},
+		{
+			name: "MoreContentEntries",
+			fields: fields{
+				Content: NaturalLanguageValues{
+					{Ref: "en", Value: "test content"},
+					{Ref: "fr", Value: "teste content"},
+				},
+			},
+			want:    []byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),
+			wantErr: false,
+		},
+		{
+			name: "MediaType",
+			fields: fields{
+				MediaType: MimeType("text/stupid"),
+			},
+			want:    []byte(`{"mediaType":"text/stupid"}`),
+			wantErr: false,
+		},
+		{
+			name: "Source",
+			fields: fields{
+				Source: Source{
+					MediaType: MimeType("text/plain"),
+					Content:   NaturalLanguageValues{},
+				},
+			},
+			want:    []byte(`{"source":{"mediaType":"text/plain"}}`),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			o := Object{
+				ID:           tt.fields.ID,
+				Type:         tt.fields.Type,
+				Name:         tt.fields.Name,
+				Attachment:   tt.fields.Attachment,
+				AttributedTo: tt.fields.AttributedTo,
+				Audience:     tt.fields.Audience,
+				Content:      tt.fields.Content,
+				Context:      tt.fields.Context,
+				MediaType:    tt.fields.MediaType,
+				EndTime:      tt.fields.EndTime,
+				Generator:    tt.fields.Generator,
+				Icon:         tt.fields.Icon,
+				Image:        tt.fields.Image,
+				InReplyTo:    tt.fields.InReplyTo,
+				Location:     tt.fields.Location,
+				Preview:      tt.fields.Preview,
+				Published:    tt.fields.Published,
+				Replies:      tt.fields.Replies,
+				StartTime:    tt.fields.StartTime,
+				Summary:      tt.fields.Summary,
+				Tag:          tt.fields.Tag,
+				Updated:      tt.fields.Updated,
+				URL:          tt.fields.URL,
+				To:           tt.fields.To,
+				Bto:          tt.fields.Bto,
+				CC:           tt.fields.CC,
+				BCC:          tt.fields.BCC,
+				Duration:     tt.fields.Duration,
+				Likes:        tt.fields.Likes,
+				Shares:       tt.fields.Shares,
+				Source:       tt.fields.Source,
+			}
+			got, err := o.MarshalJSON()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestSource_MarshalJSON(t *testing.T) {
-	t.Skip("TODO")
-}
-
-func TestActivityVocabularyType_MarshalJSON(t *testing.T) {
-	t.Skip("TODO")
+	type fields struct {
+		Content   NaturalLanguageValues
+		MediaType MimeType
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name:    "Empty",
+			fields:  fields{},
+			want:    nil,
+			wantErr: false,
+		},
+		{
+			name:    "MediaType",
+			fields:  fields{
+				MediaType: MimeType("blank"),
+			},
+			want:    []byte(`{"mediaType":"blank"}`),
+			wantErr: false,
+		},
+		{
+			name:    "OneContentValue",
+			fields:  fields{
+				Content: NaturalLanguageValues{
+					{Value: "test"},
+				},
+			},
+			want:    []byte(`{"content":"test"}`),
+			wantErr: false,
+		},
+		{
+			name:    "MultipleContentValues",
+			fields:  fields{
+				Content: NaturalLanguageValues{
+					{
+						Ref:   "en",
+						Value: "test",
+					},
+					{
+						Ref:   "fr",
+						Value: "teste",
+					},
+				},
+			},
+			want:    []byte(`{"contentMap":{"en":"test","fr":"teste"}}`),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := Source{
+				Content:   tt.fields.Content,
+				MediaType: tt.fields.MediaType,
+			}
+			got, err := s.MarshalJSON()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
+			}
+		})
+	}
 }
