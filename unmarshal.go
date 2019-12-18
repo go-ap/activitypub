@@ -123,6 +123,7 @@ func JSONGetTime(data []byte, prop string) time.Time {
 
 func JSONGetDuration(data []byte, prop string) time.Duration {
 	str, _ := jsonparser.GetUnsafeString(data, prop)
+	// TODO(marius): this needs to be replaced to be compatible with xsd:duration
 	d, _ := time.ParseDuration(str)
 	return d
 }

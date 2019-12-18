@@ -636,6 +636,45 @@ func TestObject_MarshalJSON(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "Attachment",
+			fields: fields{
+				Attachment: &Object{
+					ID:   "some example",
+					Type: VideoType,
+				},
+			},
+			want:    []byte(`{"attachment":{"id":"some example","type":"Video"}}`),
+			wantErr: false,
+		},
+		{
+			name: "AttributedTo",
+			fields: fields{
+				AttributedTo: &Actor{
+					ID:   "http://example.com/ana",
+					Type: PersonType,
+				},
+			},
+			want:    []byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`),
+			wantErr: false,
+		},
+		{
+			name: "AttributedToDouble",
+			fields: fields{
+				AttributedTo: ItemCollection{
+					&Actor{
+						ID:   "http://example.com/ana",
+						Type: PersonType,
+					},
+					&Actor{
+						ID:   "http://example.com/GGG",
+						Type: GroupType,
+					},
+				},
+			},
+			want:    []byte(`{"attributedTo":[{"id":"http://example.com/ana","type":"Person"},{"id":"http://example.com/GGG","type":"Group"}]}`),
+			wantErr: false,
+		},
+		{
 			name: "Source",
 			fields: fields{
 				Source: Source{

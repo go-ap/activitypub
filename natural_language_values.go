@@ -73,7 +73,7 @@ func (n *NaturalLanguageValues) Set(ref LangRef, v string) error {
 // MarshalJSON serializes the NaturalLanguageValues into JSON
 func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 	l := len(n)
-	if l == 0 {
+	if l <= 0 {
 		return nil, nil
 	}
 	
@@ -86,7 +86,7 @@ func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 			if err != nil {
 				return nil, err
 			}
-			if ll == 0 {
+			if ll <= 0 {
 				return nil, nil
 			}
 			return b.Bytes(), nil
