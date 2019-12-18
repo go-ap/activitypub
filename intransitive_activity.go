@@ -3,6 +3,7 @@ package activitypub
 import (
 	"errors"
 	"time"
+	"unsafe"
 )
 
 // IntransitiveActivity Instances of IntransitiveActivity are a subtype of Activity representing intransitive actions.
@@ -256,6 +257,14 @@ func IntransitiveActivityNew(id ID, typ ActivityVocabularyType) *IntransitiveAct
 // ToIntransitiveActivity
 func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
 	switch i := it.(type) {
+	case *Activity:
+		return (*IntransitiveActivity)(unsafe.Pointer(i)), nil
+	case Activity:
+		return (*IntransitiveActivity)(unsafe.Pointer(&i)), nil
+	case *Question:
+		return (*IntransitiveActivity)(unsafe.Pointer(i)), nil
+	case Question:
+		return (*IntransitiveActivity)(unsafe.Pointer(&i)), nil
 	case *IntransitiveActivity:
 		return i, nil
 	case IntransitiveActivity:
