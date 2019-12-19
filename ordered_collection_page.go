@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"errors"
 	"github.com/buger/jsonparser"
 	"time"
@@ -259,6 +260,60 @@ func (o *OrderedCollectionPage) UnmarshalJSON(data []byte) error {
 		o.StartIndex = uint(si)
 	}
 	return nil
+}
+// MarshalJSON
+func (c OrderedCollectionPage) MarshalJSON() ([]byte, error) {
+	b := bytes.Buffer{}
+	notEmpty := false
+	b.Write([]byte{'{'})
+
+	OnObject(c, func(o *Object) error {
+		notEmpty = writeObject(&b, *o)
+		return nil
+	})
+	writeComma := func() { b.WriteString(",") }
+	writeCommaIfNotEmpty := func(notEmpty bool) {
+		if notEmpty {
+			writeComma()
+		}
+	}
+	if c.Current != nil {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeItemProp(&b, "current", c.Current) || notEmpty
+	}
+	if c.First != nil {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeItemProp(&b, "first", c.First) || notEmpty
+	}
+	if c.Last != nil {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeItemProp(&b, "last", c.Last) || notEmpty
+	}
+	if c.OrderedItems != nil {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeItemCollectionProp(&b, "orderedItems", c.OrderedItems) || notEmpty
+	}
+	if c.PartOf != nil {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeItemProp(&b, "partOf", c.PartOf) || notEmpty
+	}
+	if c.Next != nil {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeItemProp(&b, "next", c.Next) || notEmpty
+	}
+	if c.Prev != nil {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeItemProp(&b, "prev", c.Prev) || notEmpty
+	}
+
+	writeCommaIfNotEmpty(notEmpty)
+	notEmpty = writeIntProp(&b, "totalItems", int(c.TotalItems)) || notEmpty
+
+	if notEmpty {
+		b.Write([]byte{'}'})
+		return b.Bytes(), nil
+	}
+	return nil, nil
 }
 
 // ToOrderedCollectionPage

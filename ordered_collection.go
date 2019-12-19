@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"errors"
 	"time"
 	"unsafe"
@@ -289,6 +290,48 @@ func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
 	o.Last = JSONGetItem(data, "last")
 
 	return nil
+}
+
+// MarshalJSON
+func (o OrderedCollection) MarshalJSON() ([]byte, error) {
+	b := bytes.Buffer{}
+	notEmpty := false
+	b.Write([]byte{'{'})
+
+	OnObject(o, func(o *Object) error {
+		notEmpty = writeObject(&b, *o)
+		return nil
+	})
+	writeComma := func() { b.WriteString(",") }
+	writeCommaIfNotEmpty := func(notEmpty bool) {
+		if notEmpty {
+			writeComma()
+		}
+	}
+	if o.Current != nil {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeItemProp(&b, "current", o.Current) || notEmpty
+	}
+	if o.First != nil {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeItemProp(&b, "first", o.First) || notEmpty
+	}
+	if o.Last != nil {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeItemProp(&b, "last", o.Last) || notEmpty
+	}
+	if o.OrderedItems != nil {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeItemCollectionProp(&b, "orderedItems", o.OrderedItems) || notEmpty
+	}
+	writeCommaIfNotEmpty(notEmpty)
+	notEmpty = writeIntProp(&b, "totalItems", int(o.TotalItems)) || notEmpty
+
+	if notEmpty {
+		b.Write([]byte{'}'})
+		return b.Bytes(), nil
+	}
+	return nil, nil
 }
 
 // OrderedCollectionPageNew initializes a new OrderedCollectionPage
