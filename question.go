@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"errors"
 	"time"
 )
@@ -227,6 +228,17 @@ func (q *Question) UnmarshalJSON(data []byte) error {
 	q.AnyOf = JSONGetItem(data, "anyOf")
 	q.Closed = JSONGetBoolean(data, "closed")
 	return nil
+}
+
+func (q Question) MarshalJSON() ([]byte, error) {
+	b := bytes.Buffer{}
+	b.Write([]byte{'{'})
+
+	if !writeQuestion(&b, q) {
+		return nil, nil
+	}
+	b.Write([]byte{'}'})
+	return b.Bytes(), nil
 }
 
 // QuestionNew initializes a Question activity
