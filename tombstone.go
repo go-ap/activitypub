@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 	"unsafe"
@@ -200,6 +201,39 @@ func (t *Tombstone) UnmarshalJSON(data []byte) error {
 	t.FormerType = ActivityVocabularyType(JSONGetString(data, "formerType"))
 	t.Deleted = JSONGetTime(data, "deleted")
 	return nil
+}
+
+// MarshalJSON
+func (t Tombstone) MarshalJSON() ([]byte, error) {
+	b := bytes.Buffer{}
+	writeComma := func() { b.WriteString(",") }
+	writeCommaIfNotEmpty := func(notEmpty bool) {
+		if notEmpty {
+			writeComma()
+		}
+	}
+	notEmpty := false
+	b.Write([]byte{'{'})
+
+	OnObject(t, func(o *Object) error {
+		notEmpty = writeObject(&b, *o)
+		return nil
+	})
+	if len(t.FormerType) > 0 {
+		writeCommaIfNotEmpty(notEmpty)
+		if v, err := t.FormerType.MarshalJSON(); err == nil && len(v) > 0 {
+			notEmpty = writeProp(&b, "formerType", v) || notEmpty
+		}
+	}
+	if !t.Deleted.IsZero() {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeTimeProp(&b, "deleted", t.Deleted) || notEmpty
+	}
+	if notEmpty {
+		b.Write([]byte{'}'})
+		return b.Bytes(), nil
+	}
+	return nil, nil
 }
 
 // Recipients performs recipient de-duplication on the Tombstone object's To, Bto, CC and BCC properties

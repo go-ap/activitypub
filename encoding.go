@@ -42,12 +42,17 @@ func writeNaturalLanguageProp(b *bytes.Buffer, n string, nl NaturalLanguageValue
 	}
 	return false
 }
-
+func writeStringProp(b *bytes.Buffer, n string, s string) (notEmpty bool) {
+	return writeProp(b, n, []byte(s))
+}
 func writeBoolProp(b *bytes.Buffer, n string, t bool) (notEmpty bool) {
 	return writeProp(b, n, []byte(fmt.Sprintf("%t", t)))
 }
-func writeIntProp(b *bytes.Buffer, n string, d int) (notEmpty bool) {
+func writeIntProp(b *bytes.Buffer, n string, d int64) (notEmpty bool) {
 	return writeProp(b, n, []byte(fmt.Sprintf("%d", d)))
+}
+func writeFloatProp(b *bytes.Buffer, n string, f float64) (notEmpty bool) {
+	return writeProp(b, n, []byte(fmt.Sprintf("%f", f)))
 }
 func writeTimeProp(b *bytes.Buffer, n string, t time.Time) (notEmpty bool) {
 	if v, err := t.MarshalJSON(); err == nil {

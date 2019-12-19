@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 	"unsafe"
@@ -197,6 +198,35 @@ func (p *Profile) UnmarshalJSON(data []byte) error {
 	}
 	p.Describes = JSONGetItem(data, "describes")
 	return nil
+}
+
+// MarshalJSON
+func (p Profile) MarshalJSON() ([]byte, error) {
+	b := bytes.Buffer{}
+	writeComma := func() { b.WriteString(",") }
+	writeCommaIfNotEmpty := func(notEmpty bool) {
+		if notEmpty {
+			writeComma()
+		}
+	}
+	notEmpty := false
+	b.Write([]byte{'{'})
+
+	OnObject(p, func(o *Object) error {
+		notEmpty = writeObject(&b, *o)
+		return nil
+	})
+
+	if p.Describes != nil {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeItemProp(&b, "describes", p.Describes) || notEmpty
+	}
+
+	if notEmpty {
+		b.Write([]byte{'}'})
+		return b.Bytes(), nil
+	}
+	return nil, nil
 }
 
 // Recipients performs recipient de-duplication on the Profile object's To, Bto, CC and BCC properties

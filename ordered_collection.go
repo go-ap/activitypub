@@ -325,7 +325,7 @@ func (o OrderedCollection) MarshalJSON() ([]byte, error) {
 		notEmpty = writeItemCollectionProp(&b, "orderedItems", o.OrderedItems) || notEmpty
 	}
 	writeCommaIfNotEmpty(notEmpty)
-	notEmpty = writeIntProp(&b, "totalItems", int(o.TotalItems)) || notEmpty
+	notEmpty = writeIntProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
 
 	if notEmpty {
 		b.Write([]byte{'}'})

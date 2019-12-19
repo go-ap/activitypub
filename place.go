@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 	"unsafe"
@@ -102,22 +103,22 @@ type Place struct {
 	Source Source `jsonld:"source,omitempty"`
 	// Accuracy indicates the accuracy of position coordinates on a Place objects.
 	// Expressed in properties of percentage. e.g. "94.0" means "94.0% accurate".
-	Accuracy float64
+	Accuracy float64 `jsonld:"accuracy,omitempty"`
 	// Altitude indicates the altitude of a place. The measurement units is indicated using the units property.
 	// If units is not specified, the default is assumed to be "m" indicating meters.
-	Altitude float64
+	Altitude float64 `jsonld:"altitude,omitempty"`
 	// Latitude the latitude of a place
-	Latitude float64
+	Latitude float64 `jsonld:"latitude,omitempty"`
 	// Longitude the longitude of a place
-	Longitude float64
+	Longitude float64 `jsonld:"longitude,omitempty"`
 	// Radius the radius from the given latitude and longitude for a Place.
 	// The units is expressed by the units property. If units is not specified,
 	// the default is assumed to be "m" indicating "meters".
-	Radius int64
+	Radius int64 `jsonld:"radius,omitempty"`
 	// Specifies the measurement units for the radius and altitude properties on a Place object.
 	// If not specified, the default is assumed to be "m" for "meters".
 	// Values "cm" | " feet" | " inches" | " km" | " m" | " miles" | xsd:anyURI
-	Units string
+	Units string `jsonld:"units,omitempty"`
 }
 
 // IsLink returns false for Place objects
@@ -218,6 +219,53 @@ func (p *Place) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// MarshalJSON
+func (p Place) MarshalJSON() ([]byte, error) {
+	b := bytes.Buffer{}
+	writeComma := func() { b.WriteString(",") }
+	writeCommaIfNotEmpty := func(notEmpty bool) {
+		if notEmpty {
+			writeComma()
+		}
+	}
+	notEmpty := false
+	b.Write([]byte{'{'})
+
+	OnObject(p, func(o *Object) error {
+		notEmpty = writeObject(&b, *o)
+		return nil
+	})
+	if p.Accuracy > 0 {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeFloatProp(&b, "accuracy", p.Accuracy) || notEmpty
+	}
+	if p.Altitude > 0 {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeFloatProp(&b, "altitude", p.Altitude) || notEmpty
+	}
+	if p.Latitude > 0 {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeFloatProp(&b, "latitude", p.Latitude) || notEmpty
+	}
+	if p.Longitude > 0 {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeFloatProp(&b, "longitude", p.Longitude) || notEmpty
+	}
+	if p.Radius > 0 {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeIntProp(&b, "radius", p.Radius) || notEmpty
+	}
+	if len(p.Units) > 0 {
+		writeCommaIfNotEmpty(notEmpty)
+		notEmpty = writeStringProp(&b, "radius", p.Units) || notEmpty
+	}
+	if notEmpty {
+		b.Write([]byte{'}'})
+		return b.Bytes(), nil
+	}
+	return nil, nil
+}
+
 // Recipients performs recipient de-duplication on the Place object's To, Bto, CC and BCC properties
 func (p *Place) Recipients() ItemCollection {
 	var aud ItemCollection
@@ -226,7 +274,7 @@ func (p *Place) Recipients() ItemCollection {
 }
 
 // Clean removes Bto and BCC properties
-func (p *Place) Clean(){
+func (p *Place) Clean() {
 	p.BCC = nil
 	p.Bto = nil
 }

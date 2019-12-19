@@ -301,7 +301,7 @@ func (c CollectionPage) MarshalJSON() ([]byte, error) {
 	}
 
 	writeCommaIfNotEmpty(notEmpty)
-	notEmpty = writeIntProp(&b, "totalItems", int(c.TotalItems)) || notEmpty
+	notEmpty = writeIntProp(&b, "totalItems", int64(c.TotalItems)) || notEmpty
 
 	if notEmpty {
 		b.Write([]byte{'}'})
