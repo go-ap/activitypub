@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"bytes"
 	"errors"
 	"github.com/buger/jsonparser"
 	"time"
@@ -212,30 +211,22 @@ func (p *PublicKey) UnmarshalJSON(data []byte) error {
 }
 
 func (p PublicKey) MarshalJSON() ([]byte, error) {
-	b := bytes.Buffer{}
-	writeComma := func() { b.WriteString(",") }
-	writeCommaIfNotEmpty := func(notEmpty bool) {
-		if notEmpty {
-			writeComma()
-		}
-	}
+	b := make([]byte, 0)
 	notEmpty := true
-	b.Write([]byte{'{'})
+	write(&b, '{')
 	if v, err := p.ID.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = !writeProp(&b, "id", v)
+		notEmpty = !writeProp(&b,  "id", v)
 	}
 	if p.Owner != nil {
-		writeCommaIfNotEmpty(notEmpty)
-		notEmpty = writeIRIProp(&b, "owner", p.Owner) || notEmpty
+		notEmpty = writeIRIProp(&b,  "owner", p.Owner) || notEmpty
 	}
 	if len(p.PublicKeyPem) > 0 {
-		writeCommaIfNotEmpty(notEmpty)
-		notEmpty = writeIRIProp(&b, "publicKeyPem", p.Owner) || notEmpty
+		notEmpty = writeIRIProp(&b,  "publicKeyPem", p.Owner) || notEmpty
 	}
 
 	if notEmpty {
-		b.Write([]byte{'}'})
-		return b.Bytes(), nil
+		write(&b, '}')
+		return b, nil
 	}
 	return nil, nil
 }
@@ -396,60 +387,46 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 }
 
 func (a Actor) MarshalJSON() ([]byte, error) {
-	b := bytes.Buffer{}
+	b := make([]byte, 0)
 	notEmpty := false
-	b.Write([]byte{'{'})
+	write(&b, '{')
 
 	OnObject(a, func(o *Object) error {
-		notEmpty = writeObject(&b, *o)
+		notEmpty = writeObject(&b,  *o)
 		return nil
 	})
-	writeComma := func() { b.WriteString(",") }
-	writeCommaIfNotEmpty := func(notEmpty bool) {
-		if notEmpty {
-			writeComma()
-		}
-	}
 	if a.Inbox != nil {
-		writeCommaIfNotEmpty(notEmpty)
-		notEmpty = writeItemProp(&b, "inbox", a.Inbox) || notEmpty
+		notEmpty = writeItemProp(&b,  "inbox", a.Inbox) || notEmpty
 	}
 	if a.Outbox != nil {
-		writeCommaIfNotEmpty(notEmpty)
-		notEmpty = writeItemProp(&b, "outbox", a.Outbox) || notEmpty
+		notEmpty = writeItemProp(&b,  "outbox", a.Outbox) || notEmpty
 	}
 	if a.Following != nil {
-		writeCommaIfNotEmpty(notEmpty)
-		notEmpty = writeItemProp(&b, "following", a.Following) || notEmpty
+		notEmpty = writeItemProp(&b,  "following", a.Following) || notEmpty
 	}
 	if a.Followers != nil {
-		writeCommaIfNotEmpty(notEmpty)
-		notEmpty = writeItemProp(&b, "followers", a.Followers) || notEmpty
+		notEmpty = writeItemProp(&b,  "followers", a.Followers) || notEmpty
 	}
 	if a.Liked != nil {
-		writeCommaIfNotEmpty(notEmpty)
-		notEmpty = writeItemProp(&b, "liked", a.Liked) || notEmpty
+		notEmpty = writeItemProp(&b,  "liked", a.Liked) || notEmpty
 	}
 	if a.Endpoints != nil {
-		writeCommaIfNotEmpty(notEmpty)
 		if v, err := a.Endpoints.MarshalJSON(); err == nil && len(v) > 0 {
-			notEmpty = writeProp(&b, "endpoints", v) || notEmpty
+			notEmpty = writeProp(&b,  "endpoints", v) || notEmpty
 		}
 	}
 	if len(a.Streams) > 0 {
-		writeCommaIfNotEmpty(notEmpty)
-		writePropName(&b, "streams")
+		writePropName(&b,  "streams")
 		lNotEmpty := true
 		for _, ss := range a.Streams {
-			writeCommaIfNotEmpty(lNotEmpty)
-			lNotEmpty = writeItemCollection(&b, ss) || lNotEmpty
+			lNotEmpty = writeItemCollection(&b,  ss) || lNotEmpty
 		}
 		notEmpty = lNotEmpty || notEmpty
 	}
 
 	if notEmpty {
-		b.Write([]byte{'}'})
-		return b.Bytes(), nil
+		write(&b, '}')
+		return b, nil
 	}
 	return nil, nil
 }
@@ -494,43 +471,31 @@ func (e *Endpoints) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON
 func (e Endpoints) MarshalJSON() ([]byte, error) {
-	b := bytes.Buffer{}
+	b := make([]byte, 0)
 	notEmpty := false
 
-	writeComma := func() { b.WriteString(",") }
-	writeCommaIfNotEmpty := func(notEmpty bool) {
-		if notEmpty {
-			writeComma()
-		}
-	}
-	b.Write([]byte{'{'})
+	write(&b, '{')
 	if e.OauthAuthorizationEndpoint != nil {
-		writeCommaIfNotEmpty(notEmpty)
-		notEmpty = writeItemProp(&b, "oauthAuthorizationEndpoint", e.OauthAuthorizationEndpoint) || notEmpty
+		notEmpty = writeItemProp(&b,  "oauthAuthorizationEndpoint", e.OauthAuthorizationEndpoint) || notEmpty
 	}
 	if e.OauthTokenEndpoint != nil {
-		writeCommaIfNotEmpty(notEmpty)
-		notEmpty = writeItemProp(&b, "oauthTokenEndpoint", e.OauthTokenEndpoint) || notEmpty
+		notEmpty = writeItemProp(&b,  "oauthTokenEndpoint", e.OauthTokenEndpoint) || notEmpty
 	}
 	if e.ProvideClientKey != nil {
-		writeCommaIfNotEmpty(notEmpty)
-		notEmpty = writeItemProp(&b, "provideClientKey", e.ProvideClientKey) || notEmpty
+		notEmpty = writeItemProp(&b,  "provideClientKey", e.ProvideClientKey) || notEmpty
 	}
 	if e.SignClientKey != nil {
-		writeCommaIfNotEmpty(notEmpty)
-		notEmpty = writeItemProp(&b, "signClientKey", e.SignClientKey) || notEmpty
+		notEmpty = writeItemProp(&b,  "signClientKey", e.SignClientKey) || notEmpty
 	}
 	if e.SharedInbox != nil {
-		writeCommaIfNotEmpty(notEmpty)
-		notEmpty = writeItemProp(&b, "sharedInbox", e.SharedInbox) || notEmpty
+		notEmpty = writeItemProp(&b,  "sharedInbox", e.SharedInbox) || notEmpty
 	}
 	if e.UploadMedia != nil {
-		writeCommaIfNotEmpty(notEmpty)
-		notEmpty = writeItemProp(&b, "uploadMedia", e.UploadMedia) || notEmpty
+		notEmpty = writeItemProp(&b,  "uploadMedia", e.UploadMedia) || notEmpty
 	}
 	if notEmpty {
-		b.Write([]byte{'}'})
-		return b.Bytes(), nil
+		write(&b, '}')
+		return b, nil
 	}
 	return nil, nil
 }

@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"bytes"
 	"errors"
 	"time"
 	"unsafe"
@@ -797,24 +796,24 @@ func FlattenActivityProperties(act *Activity) *Activity {
 
 // MarshalJSON
 func (a Activity) MarshalJSON() ([]byte, error) {
-	b := bytes.Buffer{}
-	b.Write([]byte{'{'})
+	b := make([]byte, 0)
+	write(&b, '{')
 
 	if !writeActivity(&b, a) {
 		return nil, nil
 	}
-	b.Write([]byte{'}'})
-	return b.Bytes(), nil
+	write(&b, '}')
+	return b, nil
 }
 
 // MarshalJSON
 func (i IntransitiveActivity) MarshalJSON() ([]byte, error) {
-	b := bytes.Buffer{}
-	b.Write([]byte{'{'})
+	b := make([]byte, 0)
+	write(&b, '{')
 
 	if !writeIntransitiveActivity(&b, i) {
 		return nil, nil
 	}
-	b.Write([]byte{'}'})
-	return b.Bytes(), nil
+	write(&b, '}')
+	return b, nil
 }

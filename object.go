@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/buger/jsonparser"
 	"strings"
@@ -111,9 +110,9 @@ func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
 	if len(a) == 0 {
 		return nil, nil
 	}
-	b := bytes.Buffer{}
+	b := make([]byte, 0)
 	writeString(&b, string(a))
-	return b.Bytes(), nil
+	return b, nil
 }
 
 // Object describes an ActivityPub object of any kind.
@@ -320,15 +319,15 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON
 func (o Object) MarshalJSON() ([]byte, error) {
-	b := bytes.Buffer{}
+	b := make([]byte, 0)
 	notEmpty := false
-	b.Write([]byte{'{'})
+	write(&b, '{')
 
 	notEmpty = writeObject(&b, o)
 
 	if notEmpty {
-		b.Write([]byte{'}'})
-		return b.Bytes(), nil
+		write(&b, '}')
+		return b, nil
 	}
 	return nil, nil
 }
@@ -376,9 +375,9 @@ func (m MimeType) MarshalJSON() ([]byte, error) {
 	if len(m) == 0 {
 		return nil, nil
 	}
-	b := bytes.Buffer{}
+	b := make([]byte, 0)
 	writeString(&b, string(m))
-	return b.Bytes(), nil
+	return b, nil
 }
 
 // ToObject returns an Object pointer to the data in the current Item
@@ -502,23 +501,20 @@ func (s *Source) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON
 func (s Source) MarshalJSON() ([]byte, error) {
-	b := bytes.Buffer{}
+	b := make([]byte, 0)
 	empty := true
-	b.Write([]byte{'{'})
+	write(&b, '{')
 	if len(s.MediaType) > 0 {
 		if v, err := s.MediaType.MarshalJSON(); err == nil && len(v) > 0 {
 			empty = !writeProp(&b, "mediaType", v)
 		}
 	}
 	if len(s.Content) > 0 {
-		if !empty {
-			b.Write([]byte{','})
-		}
 		empty = !writeNaturalLanguageProp(&b, "content", s.Content)
 	}
 	if !empty {
-		b.Write([]byte{'}'})
-		return b.Bytes(), nil
+		write(&b, '}')
+		return b, nil
 	}
 	return nil, nil
 }

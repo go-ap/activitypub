@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"bytes"
 	"fmt"
 	"time"
 	"unsafe"
@@ -202,29 +201,21 @@ func (p *Profile) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON
 func (p Profile) MarshalJSON() ([]byte, error) {
-	b := bytes.Buffer{}
-	writeComma := func() { b.WriteString(",") }
-	writeCommaIfNotEmpty := func(notEmpty bool) {
-		if notEmpty {
-			writeComma()
-		}
-	}
+	b := make([]byte, 0)
 	notEmpty := false
-	b.Write([]byte{'{'})
+	write(&b, '{')
 
 	OnObject(p, func(o *Object) error {
-		notEmpty = writeObject(&b, *o)
 		return nil
 	})
 
 	if p.Describes != nil {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeItemProp(&b, "describes", p.Describes) || notEmpty
 	}
 
 	if notEmpty {
-		b.Write([]byte{'}'})
-		return b.Bytes(), nil
+		write(&b, '}')
+		return b, nil
 	}
 	return nil, nil
 }

@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"bytes"
 	"errors"
 	"time"
 	"unsafe"
@@ -294,42 +293,31 @@ func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON
 func (o OrderedCollection) MarshalJSON() ([]byte, error) {
-	b := bytes.Buffer{}
+	b := make([]byte, 0)
 	notEmpty := false
-	b.Write([]byte{'{'})
+	write(&b, '{')
 
 	OnObject(o, func(o *Object) error {
 		notEmpty = writeObject(&b, *o)
 		return nil
 	})
-	writeComma := func() { b.WriteString(",") }
-	writeCommaIfNotEmpty := func(notEmpty bool) {
-		if notEmpty {
-			writeComma()
-		}
-	}
 	if o.Current != nil {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeItemProp(&b, "current", o.Current) || notEmpty
 	}
 	if o.First != nil {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeItemProp(&b, "first", o.First) || notEmpty
 	}
 	if o.Last != nil {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeItemProp(&b, "last", o.Last) || notEmpty
 	}
 	if o.OrderedItems != nil {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeItemCollectionProp(&b, "orderedItems", o.OrderedItems) || notEmpty
 	}
-	writeCommaIfNotEmpty(notEmpty)
 	notEmpty = writeIntProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
 
 	if notEmpty {
-		b.Write([]byte{'}'})
-		return b.Bytes(), nil
+		write(&b, '}')
+		return b, nil
 	}
 	return nil, nil
 }

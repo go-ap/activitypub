@@ -47,6 +47,15 @@ func (i *IRI) UnmarshalJSON(s []byte) error {
 	return nil
 }
 
+// MarshalJSON
+func (i IRI) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	write(&b, '"')
+	writeS(&b, i.String())
+	write(&b, '"')
+	return b, nil
+}
+
 // GetID
 func (i IRI) GetID() ID {
 	return ID(i)
@@ -78,6 +87,29 @@ func FlattenToIRI(it Item) Item {
 		return it.GetLink()
 	}
 	return it
+}
+
+func (i IRIs) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	if len(i) == 0 {
+		return nil, nil
+	}
+	notEmpty := false
+	writeComma := func() { writeS(&b, ",") }
+	writeCommaIfNotEmpty := func(notEmpty bool) {
+		if notEmpty {
+			writeComma()
+		}
+	}
+	write(&b, '[')
+	for _, iri := range i {
+		writeCommaIfNotEmpty(notEmpty)
+		write(&b, '"')
+		writeS(&b, iri.String())
+		write(&b, '"')
+	}
+	write(&b, ']')
+	return b, nil
 }
 
 // Contains verifies if IRIs array contains the received one

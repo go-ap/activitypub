@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"bytes"
 	"fmt"
 	"time"
 	"unsafe"
@@ -205,33 +204,25 @@ func (t *Tombstone) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON
 func (t Tombstone) MarshalJSON() ([]byte, error) {
-	b := bytes.Buffer{}
-	writeComma := func() { b.WriteString(",") }
-	writeCommaIfNotEmpty := func(notEmpty bool) {
-		if notEmpty {
-			writeComma()
-		}
-	}
+	b := make([]byte, 0)
 	notEmpty := false
-	b.Write([]byte{'{'})
+	write(&b, '{')
 
 	OnObject(t, func(o *Object) error {
 		notEmpty = writeObject(&b, *o)
 		return nil
 	})
 	if len(t.FormerType) > 0 {
-		writeCommaIfNotEmpty(notEmpty)
 		if v, err := t.FormerType.MarshalJSON(); err == nil && len(v) > 0 {
 			notEmpty = writeProp(&b, "formerType", v) || notEmpty
 		}
 	}
 	if !t.Deleted.IsZero() {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeTimeProp(&b, "deleted", t.Deleted) || notEmpty
 	}
 	if notEmpty {
-		b.Write([]byte{'}'})
-		return b.Bytes(), nil
+		write(&b, '}')
+		return b, nil
 	}
 	return nil, nil
 }

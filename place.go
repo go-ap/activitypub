@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"bytes"
 	"fmt"
 	"time"
 	"unsafe"
@@ -221,47 +220,35 @@ func (p *Place) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON
 func (p Place) MarshalJSON() ([]byte, error) {
-	b := bytes.Buffer{}
-	writeComma := func() { b.WriteString(",") }
-	writeCommaIfNotEmpty := func(notEmpty bool) {
-		if notEmpty {
-			writeComma()
-		}
-	}
+	b := make([]byte, 0)
 	notEmpty := false
-	b.Write([]byte{'{'})
+	write(&b, '{')
 
 	OnObject(p, func(o *Object) error {
 		notEmpty = writeObject(&b, *o)
 		return nil
 	})
 	if p.Accuracy > 0 {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeFloatProp(&b, "accuracy", p.Accuracy) || notEmpty
 	}
 	if p.Altitude > 0 {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeFloatProp(&b, "altitude", p.Altitude) || notEmpty
 	}
 	if p.Latitude > 0 {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeFloatProp(&b, "latitude", p.Latitude) || notEmpty
 	}
 	if p.Longitude > 0 {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeFloatProp(&b, "longitude", p.Longitude) || notEmpty
 	}
 	if p.Radius > 0 {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeIntProp(&b, "radius", p.Radius) || notEmpty
 	}
 	if len(p.Units) > 0 {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeStringProp(&b, "radius", p.Units) || notEmpty
 	}
 	if notEmpty {
-		b.Write([]byte{'}'})
-		return b.Bytes(), nil
+		write(&b, '}')
+		return b, nil
 	}
 	return nil, nil
 }

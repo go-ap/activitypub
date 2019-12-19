@@ -33,6 +33,12 @@ func (i ItemCollection) IsObject() bool {
 	return false
 }
 
+func (i ItemCollection) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	writeItemCollection(&b, i)
+	return b, nil
+}
+
 // Append facilitates adding elements to Item arrays
 // and ensures ItemCollection implements the Collection interface
 func (i *ItemCollection) Append(o Item) error {

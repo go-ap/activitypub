@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"bytes"
 	"fmt"
 	"time"
 	"unsafe"
@@ -214,15 +213,9 @@ func (r *Relationship) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON
 func (r Relationship) MarshalJSON() ([]byte, error) {
-	b := bytes.Buffer{}
-	writeComma := func() { b.WriteString(",") }
-	writeCommaIfNotEmpty := func(notEmpty bool) {
-		if notEmpty {
-			writeComma()
-		}
-	}
+	b := make([]byte, 0)
 	notEmpty := false
-	b.Write([]byte{'{'})
+	write(&b, '{')
 
 	OnObject(r, func(o *Object) error {
 		notEmpty = writeObject(&b, *o)
@@ -230,21 +223,18 @@ func (r Relationship) MarshalJSON() ([]byte, error) {
 	})
 
 	if r.Subject != nil {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeItemProp(&b, "subject", r.Subject) || notEmpty
 	}
 	if r.Object != nil {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeItemProp(&b, "object", r.Object) || notEmpty
 	}
 	if r.Relationship != nil {
-		writeCommaIfNotEmpty(notEmpty)
 		notEmpty = writeItemProp(&b, "relationship", r.Relationship) || notEmpty
 	}
 
 	if notEmpty {
-		b.Write([]byte{'}'})
-		return b.Bytes(), nil
+		write(&b, '}')
+		return b, nil
 	}
 	return nil, nil
 }

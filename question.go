@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"bytes"
 	"errors"
 	"time"
 )
@@ -231,14 +230,14 @@ func (q *Question) UnmarshalJSON(data []byte) error {
 }
 
 func (q Question) MarshalJSON() ([]byte, error) {
-	b := bytes.Buffer{}
-	b.Write([]byte{'{'})
+	b := make([]byte, 0)
+	write(&b, '{')
 
 	if !writeQuestion(&b, q) {
 		return nil, nil
 	}
-	b.Write([]byte{'}'})
-	return b.Bytes(), nil
+	write(&b, '}')
+	return b, nil
 }
 
 // QuestionNew initializes a Question activity
