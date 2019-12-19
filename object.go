@@ -112,9 +112,7 @@ func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 	b := bytes.Buffer{}
-	b.Write([]byte{'"'})
-	b.WriteString(string(a))
-	b.Write([]byte{'"'})
+	writeString(&b, string(a))
 	return b.Bytes(), nil
 }
 
@@ -374,14 +372,12 @@ func (c *MimeType) UnmarshalJSON(data []byte) error {
 }
 
 // MarshalJSON
-func (c MimeType) MarshalJSON() ([]byte, error) {
-	if len(c) == 0 {
+func (m MimeType) MarshalJSON() ([]byte, error) {
+	if len(m) == 0 {
 		return nil, nil
 	}
 	b := bytes.Buffer{}
-	b.Write([]byte{'"'})
-	b.WriteString(string(c))
-	b.Write([]byte{'"'})
+	writeString(&b, string(m))
 	return b.Bytes(), nil
 }
 

@@ -46,6 +46,9 @@ func writeNaturalLanguageProp(b *bytes.Buffer, n string, nl NaturalLanguageValue
 func writeBoolProp(b *bytes.Buffer, n string, t bool) (notEmpty bool) {
 	return writeProp(b, n, []byte(fmt.Sprintf("%t", t)))
 }
+func writeIntProp(b *bytes.Buffer, n string, d int) (notEmpty bool) {
+	return writeProp(b, n, []byte(fmt.Sprintf("%d", d)))
+}
 func writeTimeProp(b *bytes.Buffer, n string, t time.Time) (notEmpty bool) {
 	if v, err := t.MarshalJSON(); err == nil {
 		return writeProp(b, n, v)
@@ -94,11 +97,20 @@ func writeItemProp(b *bytes.Buffer, n string, i Item) (notEmpty bool) {
 	return notEmpty
 }
 
-func writeItemCollectionProp(b *bytes.Buffer, n string, col ItemCollection) (notEmpty bool) {
+func writeString(b *bytes.Buffer, s string) (notEmpty bool) {
+	if len(s) == 0 {
+		return false
+	}
+	b.Write([]byte{'"'})
+	b.WriteString(s)
+	b.Write([]byte{'"'})
+	return true
+}
+
+func writeItemCollection(b *bytes.Buffer, col ItemCollection) (notEmpty bool) {
 	if len(col) == 0 {
 		return notEmpty
 	}
-	writePropName(b, n)
 	writeComma := func() { b.WriteString(",") }
 	writeCommaIfNotEmpty := func(notEmpty bool) {
 		if notEmpty {
@@ -124,6 +136,13 @@ func writeItemCollectionProp(b *bytes.Buffer, n string, col ItemCollection) (not
 	}
 	b.Write([]byte{']'})
 	return notEmpty
+}
+func writeItemCollectionProp(b *bytes.Buffer, n string, col ItemCollection) (notEmpty bool) {
+	if len(col) == 0 {
+		return notEmpty
+	}
+	writePropName(b, n)
+	return writeItemCollection(b, col)
 }
 
 func writeObject(b *bytes.Buffer, o Object) (notEmpty bool) {
