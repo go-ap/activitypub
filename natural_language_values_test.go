@@ -36,7 +36,7 @@ func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
 	if err1 != nil {
 		t.Errorf("Error: '%s'", err1)
 	}
-	txt := `{"en":"the test"}`
+	txt := `"the test"`
 	if txt != string(out1) {
 		t.Errorf("Different marshal result '%s', instead of '%s'", out1, txt)
 	}
@@ -291,7 +291,7 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		if err != nil {
 			t.Errorf("Failed marshaling '%v'", err)
 		}
-		mRes := "{\"de\":\"test\",\"en\":\"test\"}"
+		mRes := "{\"en\":\"test\",\"de\":\"test\"}"
 		if string(result) != mRes {
 			t.Errorf("Different results '%v' vs. '%v'", string(result), mRes)
 		}
@@ -307,7 +307,7 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		if err1 != nil {
 			t.Errorf("Failed marshaling '%v'", err1)
 		}
-		mRes1 := `{"en":"test"}`
+		mRes1 := `"test"`
 		if string(result1) != mRes1 {
 			t.Errorf("Different results '%v' vs. '%v'", string(result1), mRes1)
 		}
@@ -343,7 +343,7 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		if j == nil {
 			t.Errorf("Error marshaling: nil value returned")
 		}
-		expected := fmt.Sprintf("{\"%s\":\"%s\"}", nlv.Ref, nlv.Value)
+		expected := fmt.Sprintf("\"%s\"", nlv.Value)
 		if string(j) != expected {
 			t.Errorf("Wrong value: %s, expected %s", j, expected)
 		}

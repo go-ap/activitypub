@@ -199,6 +199,27 @@ func (p *Profile) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// MarshalJSON
+func (p Profile) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	notEmpty := false
+	write(&b, '{')
+
+	OnObject(p, func(o *Object) error {
+		return nil
+	})
+
+	if p.Describes != nil {
+		notEmpty = writeItemProp(&b, "describes", p.Describes) || notEmpty
+	}
+
+	if notEmpty {
+		write(&b, '}')
+		return b, nil
+	}
+	return nil, nil
+}
+
 // Recipients performs recipient de-duplication on the Profile object's To, Bto, CC and BCC properties
 func (p *Profile) Recipients() ItemCollection {
 	var aud ItemCollection

@@ -209,6 +209,28 @@ func (p *PublicKey) UnmarshalJSON(data []byte) error {
 	}
 	return nil
 }
+
+func (p PublicKey) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	notEmpty := true
+	write(&b, '{')
+	if v, err := p.ID.MarshalJSON(); err == nil && len(v) > 0 {
+		notEmpty = !writeProp(&b,  "id", v)
+	}
+	if p.Owner != nil {
+		notEmpty = writeIRIProp(&b,  "owner", p.Owner) || notEmpty
+	}
+	if len(p.PublicKeyPem) > 0 {
+		notEmpty = writeIRIProp(&b,  "publicKeyPem", p.Owner) || notEmpty
+	}
+
+	if notEmpty {
+		write(&b, '}')
+		return b, nil
+	}
+	return nil, nil
+}
+
 type (
 	// Application describes a software application.
 	Application = Actor
@@ -364,6 +386,51 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (a Actor) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	notEmpty := false
+	write(&b, '{')
+
+	OnObject(a, func(o *Object) error {
+		notEmpty = writeObject(&b,  *o)
+		return nil
+	})
+	if a.Inbox != nil {
+		notEmpty = writeItemProp(&b,  "inbox", a.Inbox) || notEmpty
+	}
+	if a.Outbox != nil {
+		notEmpty = writeItemProp(&b,  "outbox", a.Outbox) || notEmpty
+	}
+	if a.Following != nil {
+		notEmpty = writeItemProp(&b,  "following", a.Following) || notEmpty
+	}
+	if a.Followers != nil {
+		notEmpty = writeItemProp(&b,  "followers", a.Followers) || notEmpty
+	}
+	if a.Liked != nil {
+		notEmpty = writeItemProp(&b,  "liked", a.Liked) || notEmpty
+	}
+	if a.Endpoints != nil {
+		if v, err := a.Endpoints.MarshalJSON(); err == nil && len(v) > 0 {
+			notEmpty = writeProp(&b,  "endpoints", v) || notEmpty
+		}
+	}
+	if len(a.Streams) > 0 {
+		writePropName(&b,  "streams")
+		lNotEmpty := true
+		for _, ss := range a.Streams {
+			lNotEmpty = writeItemCollection(&b,  ss) || lNotEmpty
+		}
+		notEmpty = lNotEmpty || notEmpty
+	}
+
+	if notEmpty {
+		write(&b, '}')
+		return b, nil
+	}
+	return nil, nil
+}
+
 // Endpoints a json object which maps additional (typically server/domain-wide)
 // endpoints which may be useful either for this actor or someone referencing this actor.
 // This mapping may be nested inside the actor document as the value or may be a link to
@@ -402,6 +469,37 @@ func (e *Endpoints) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// MarshalJSON
+func (e Endpoints) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	notEmpty := false
+
+	write(&b, '{')
+	if e.OauthAuthorizationEndpoint != nil {
+		notEmpty = writeItemProp(&b,  "oauthAuthorizationEndpoint", e.OauthAuthorizationEndpoint) || notEmpty
+	}
+	if e.OauthTokenEndpoint != nil {
+		notEmpty = writeItemProp(&b,  "oauthTokenEndpoint", e.OauthTokenEndpoint) || notEmpty
+	}
+	if e.ProvideClientKey != nil {
+		notEmpty = writeItemProp(&b,  "provideClientKey", e.ProvideClientKey) || notEmpty
+	}
+	if e.SignClientKey != nil {
+		notEmpty = writeItemProp(&b,  "signClientKey", e.SignClientKey) || notEmpty
+	}
+	if e.SharedInbox != nil {
+		notEmpty = writeItemProp(&b,  "sharedInbox", e.SharedInbox) || notEmpty
+	}
+	if e.UploadMedia != nil {
+		notEmpty = writeItemProp(&b,  "uploadMedia", e.UploadMedia) || notEmpty
+	}
+	if notEmpty {
+		write(&b, '}')
+		return b, nil
+	}
+	return nil, nil
+}
+
 // ToActor
 func ToActor(it Item) (*Actor, error) {
 	switch i := it.(type) {
@@ -410,6 +508,8 @@ func ToActor(it Item) (*Actor, error) {
 	case Actor:
 		return &i, nil
 	case *Object:
+		// TODO(marius): this is unsafe as Actor has a different memory layout than Actor
+		//  Everything should be fine as long as you don't try to read the Actor specific collections
 		return (*Actor)(unsafe.Pointer(i)), nil
 	case Object:
 		return (*Actor)(unsafe.Pointer(&i)), nil

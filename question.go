@@ -229,6 +229,17 @@ func (q *Question) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (q Question) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	write(&b, '{')
+
+	if !writeQuestion(&b, q) {
+		return nil, nil
+	}
+	write(&b, '}')
+	return b, nil
+}
+
 // QuestionNew initializes a Question activity
 func QuestionNew(id ID) *Question {
 	q := Question{ID: id, Type: QuestionType}

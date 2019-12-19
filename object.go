@@ -106,6 +106,15 @@ type (
 	MimeType string
 )
 
+func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
+	if len(a) == 0 {
+		return nil, nil
+	}
+	b := make([]byte, 0)
+	writeString(&b, string(a))
+	return b, nil
+}
+
 // Object describes an ActivityPub object of any kind.
 // It serves as the base type for most of the other kinds of objects defined in the Activity
 // Vocabulary, including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
@@ -308,6 +317,21 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// MarshalJSON
+func (o Object) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	notEmpty := false
+	write(&b, '{')
+
+	notEmpty = writeObject(&b, o)
+
+	if notEmpty {
+		write(&b, '}')
+		return b, nil
+	}
+	return nil, nil
+}
+
 // Recipients performs recipient de-duplication on the Object's To, Bto, CC and BCC properties
 func (o *Object) Recipients() ItemCollection {
 	var aud ItemCollection
@@ -344,6 +368,16 @@ type (
 func (c *MimeType) UnmarshalJSON(data []byte) error {
 	*c = MimeType(strings.Trim(string(data), "\""))
 	return nil
+}
+
+// MarshalJSON
+func (m MimeType) MarshalJSON() ([]byte, error) {
+	if len(m) == 0 {
+		return nil, nil
+	}
+	b := make([]byte, 0)
+	writeString(&b, string(m))
+	return b, nil
 }
 
 // ToObject returns an Object pointer to the data in the current Item
@@ -463,4 +497,24 @@ func GetAPSource(data []byte) Source {
 func (s *Source) UnmarshalJSON(data []byte) error {
 	*s = GetAPSource(data)
 	return nil
+}
+
+// MarshalJSON
+func (s Source) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	empty := true
+	write(&b, '{')
+	if len(s.MediaType) > 0 {
+		if v, err := s.MediaType.MarshalJSON(); err == nil && len(v) > 0 {
+			empty = !writeProp(&b, "mediaType", v)
+		}
+	}
+	if len(s.Content) > 0 {
+		empty = !writeNaturalLanguageProp(&b, "content", s.Content)
+	}
+	if !empty {
+		write(&b, '}')
+		return b, nil
+	}
+	return nil, nil
 }

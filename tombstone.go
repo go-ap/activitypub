@@ -202,6 +202,31 @@ func (t *Tombstone) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// MarshalJSON
+func (t Tombstone) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	notEmpty := false
+	write(&b, '{')
+
+	OnObject(t, func(o *Object) error {
+		notEmpty = writeObject(&b, *o)
+		return nil
+	})
+	if len(t.FormerType) > 0 {
+		if v, err := t.FormerType.MarshalJSON(); err == nil && len(v) > 0 {
+			notEmpty = writeProp(&b, "formerType", v) || notEmpty
+		}
+	}
+	if !t.Deleted.IsZero() {
+		notEmpty = writeTimeProp(&b, "deleted", t.Deleted) || notEmpty
+	}
+	if notEmpty {
+		write(&b, '}')
+		return b, nil
+	}
+	return nil, nil
+}
+
 // Recipients performs recipient de-duplication on the Tombstone object's To, Bto, CC and BCC properties
 func (t *Tombstone) Recipients() ItemCollection {
 	var aud ItemCollection

@@ -793,3 +793,27 @@ func FlattenActivityProperties(act *Activity) *Activity {
 	act.Instrument = Flatten(act.Instrument)
 	return act
 }
+
+// MarshalJSON
+func (a Activity) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	write(&b, '{')
+
+	if !writeActivity(&b, a) {
+		return nil, nil
+	}
+	write(&b, '}')
+	return b, nil
+}
+
+// MarshalJSON
+func (i IntransitiveActivity) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	write(&b, '{')
+
+	if !writeIntransitiveActivity(&b, i) {
+		return nil, nil
+	}
+	write(&b, '}')
+	return b, nil
+}

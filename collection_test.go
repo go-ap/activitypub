@@ -174,3 +174,10 @@ func TestCollection_IsCollection(t *testing.T) {
 	t.Skipf("TODO")
 }
 
+func TestFollowersNew(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestFollowingNew(t *testing.T) {
+	t.Skipf("TODO")
+}

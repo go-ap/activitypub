@@ -2,7 +2,9 @@ package activitypub
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
+	"time"
 )
 
 func TestActivityNew(t *testing.T) {
@@ -976,4 +978,488 @@ func TestActivity_GetLink(t *testing.T) {
 
 func TestActivity_GetType(t *testing.T) {
 	t.Skipf("TODO")
+}
+
+func TestActivity_MarshalJSON(t *testing.T) {
+	type fields struct {
+		ID           ID
+		Type         ActivityVocabularyType
+		Name         NaturalLanguageValues
+		Attachment   Item
+		AttributedTo Item
+		Audience     ItemCollection
+		Content      NaturalLanguageValues
+		Context      Item
+		MediaType    MimeType
+		EndTime      time.Time
+		Generator    Item
+		Icon         Item
+		Image        Item
+		InReplyTo    Item
+		Location     Item
+		Preview      Item
+		Published    time.Time
+		Replies      Item
+		StartTime    time.Time
+		Summary      NaturalLanguageValues
+		Tag          ItemCollection
+		Updated      time.Time
+		URL          LinkOrIRI
+		To           ItemCollection
+		Bto          ItemCollection
+		CC           ItemCollection
+		BCC          ItemCollection
+		Duration     time.Duration
+		Likes        Item
+		Shares       Item
+		Source       Source
+		Actor        Item
+		Target       Item
+		Result       Item
+		Origin       Item
+		Instrument   Item
+		Object       Item
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name:    "Empty",
+			fields:  fields{},
+			want:    nil,
+			wantErr: false,
+		},
+		{
+			name: "JustID",
+			fields: fields{
+				ID: ID("example.com"),
+			},
+			want:    []byte(`{"id":"example.com"}`),
+			wantErr: false,
+		},
+		{
+			name: "JustType",
+			fields: fields{
+				Type: ActivityVocabularyType("myType"),
+			},
+			want:    []byte(`{"type":"myType"}`),
+			wantErr: false,
+		},
+		{
+			name: "JustOneName",
+			fields: fields{
+				Name: NaturalLanguageValues{
+					{Ref: NilLangRef, Value: "ana"},
+				},
+			},
+			want:    []byte(`{"name":"ana"}`),
+			wantErr: false,
+		},
+		{
+			name: "MoreNames",
+			fields: fields{
+				Name: NaturalLanguageValues{
+					{Ref: "en", Value: "anna"},
+					{Ref: "fr", Value: "anne"},
+				},
+			},
+			want:    []byte(`{"nameMap":{"en":"anna","fr":"anne"}}`),
+			wantErr: false,
+		},
+		{
+			name: "JustOneSummary",
+			fields: fields{
+				Summary: NaturalLanguageValues{
+					{Ref: NilLangRef, Value: "test summary"},
+				},
+			},
+			want:    []byte(`{"summary":"test summary"}`),
+			wantErr: false,
+		},
+		{
+			name: "MoreSummaryEntries",
+			fields: fields{
+				Summary: NaturalLanguageValues{
+					{Ref: "en", Value: "test summary"},
+					{Ref: "fr", Value: "teste summary"},
+				},
+			},
+			want:    []byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
+			wantErr: false,
+		},
+		{
+			name: "JustOneContent",
+			fields: fields{
+				Content: NaturalLanguageValues{
+					{Ref: NilLangRef, Value: "test content"},
+				},
+			},
+			want:    []byte(`{"content":"test content"}`),
+			wantErr: false,
+		},
+		{
+			name: "MoreContentEntries",
+			fields: fields{
+				Content: NaturalLanguageValues{
+					{Ref: "en", Value: "test content"},
+					{Ref: "fr", Value: "teste content"},
+				},
+			},
+			want:    []byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),
+			wantErr: false,
+		},
+		{
+			name: "MediaType",
+			fields: fields{
+				MediaType: MimeType("text/stupid"),
+			},
+			want:    []byte(`{"mediaType":"text/stupid"}`),
+			wantErr: false,
+		},
+		{
+			name: "Attachment",
+			fields: fields{
+				Attachment: &Object{
+					ID:   "some example",
+					Type: VideoType,
+				},
+			},
+			want:    []byte(`{"attachment":{"id":"some example","type":"Video"}}`),
+			wantErr: false,
+		},
+		{
+			name: "AttributedTo",
+			fields: fields{
+				AttributedTo: &Actor{
+					ID:   "http://example.com/ana",
+					Type: PersonType,
+				},
+			},
+			want:    []byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`),
+			wantErr: false,
+		},
+		{
+			name: "AttributedToDouble",
+			fields: fields{
+				AttributedTo: ItemCollection{
+					&Actor{
+						ID:   "http://example.com/ana",
+						Type: PersonType,
+					},
+					&Actor{
+						ID:   "http://example.com/GGG",
+						Type: GroupType,
+					},
+				},
+			},
+			want:    []byte(`{"attributedTo":[{"id":"http://example.com/ana","type":"Person"},{"id":"http://example.com/GGG","type":"Group"}]}`),
+			wantErr: false,
+		},
+		{
+			name: "Source",
+			fields: fields{
+				Source: Source{
+					MediaType: MimeType("text/plain"),
+					Content:   NaturalLanguageValues{},
+				},
+			},
+			want:    []byte(`{"source":{"mediaType":"text/plain"}}`),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := Activity{
+				ID:           tt.fields.ID,
+				Type:         tt.fields.Type,
+				Name:         tt.fields.Name,
+				Attachment:   tt.fields.Attachment,
+				AttributedTo: tt.fields.AttributedTo,
+				Audience:     tt.fields.Audience,
+				Content:      tt.fields.Content,
+				Context:      tt.fields.Context,
+				MediaType:    tt.fields.MediaType,
+				EndTime:      tt.fields.EndTime,
+				Generator:    tt.fields.Generator,
+				Icon:         tt.fields.Icon,
+				Image:        tt.fields.Image,
+				InReplyTo:    tt.fields.InReplyTo,
+				Location:     tt.fields.Location,
+				Preview:      tt.fields.Preview,
+				Published:    tt.fields.Published,
+				Replies:      tt.fields.Replies,
+				StartTime:    tt.fields.StartTime,
+				Summary:      tt.fields.Summary,
+				Tag:          tt.fields.Tag,
+				Updated:      tt.fields.Updated,
+				URL:          tt.fields.URL,
+				To:           tt.fields.To,
+				Bto:          tt.fields.Bto,
+				CC:           tt.fields.CC,
+				BCC:          tt.fields.BCC,
+				Duration:     tt.fields.Duration,
+				Likes:        tt.fields.Likes,
+				Shares:       tt.fields.Shares,
+				Source:       tt.fields.Source,
+				Actor:        tt.fields.Actor,
+				Target:       tt.fields.Target,
+				Result:       tt.fields.Result,
+				Origin:       tt.fields.Origin,
+				Instrument:   tt.fields.Instrument,
+				Object:       tt.fields.Object,
+			}
+			got, err := a.MarshalJSON()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
+	type fields struct {
+		ID           ID
+		Type         ActivityVocabularyType
+		Name         NaturalLanguageValues
+		Attachment   Item
+		AttributedTo Item
+		Audience     ItemCollection
+		Content      NaturalLanguageValues
+		Context      Item
+		MediaType    MimeType
+		EndTime      time.Time
+		Generator    Item
+		Icon         Item
+		Image        Item
+		InReplyTo    Item
+		Location     Item
+		Preview      Item
+		Published    time.Time
+		Replies      Item
+		StartTime    time.Time
+		Summary      NaturalLanguageValues
+		Tag          ItemCollection
+		Updated      time.Time
+		URL          LinkOrIRI
+		To           ItemCollection
+		Bto          ItemCollection
+		CC           ItemCollection
+		BCC          ItemCollection
+		Duration     time.Duration
+		Likes        Item
+		Shares       Item
+		Source       Source
+		Actor        CanReceiveActivities
+		Target       Item
+		Result       Item
+		Origin       Item
+		Instrument   Item
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name:    "Empty",
+			fields:  fields{},
+			want:    nil,
+			wantErr: false,
+		},
+		{
+			name: "JustID",
+			fields: fields{
+				ID: ID("example.com"),
+			},
+			want:    []byte(`{"id":"example.com"}`),
+			wantErr: false,
+		},
+		{
+			name: "JustType",
+			fields: fields{
+				Type: ActivityVocabularyType("myType"),
+			},
+			want:    []byte(`{"type":"myType"}`),
+			wantErr: false,
+		},
+		{
+			name: "JustOneName",
+			fields: fields{
+				Name: NaturalLanguageValues{
+					{Ref: NilLangRef, Value: "ana"},
+				},
+			},
+			want:    []byte(`{"name":"ana"}`),
+			wantErr: false,
+		},
+		{
+			name: "MoreNames",
+			fields: fields{
+				Name: NaturalLanguageValues{
+					{Ref: "en", Value: "anna"},
+					{Ref: "fr", Value: "anne"},
+				},
+			},
+			want:    []byte(`{"nameMap":{"en":"anna","fr":"anne"}}`),
+			wantErr: false,
+		},
+		{
+			name: "JustOneSummary",
+			fields: fields{
+				Summary: NaturalLanguageValues{
+					{Ref: NilLangRef, Value: "test summary"},
+				},
+			},
+			want:    []byte(`{"summary":"test summary"}`),
+			wantErr: false,
+		},
+		{
+			name: "MoreSummaryEntries",
+			fields: fields{
+				Summary: NaturalLanguageValues{
+					{Ref: "en", Value: "test summary"},
+					{Ref: "fr", Value: "teste summary"},
+				},
+			},
+			want:    []byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
+			wantErr: false,
+		},
+		{
+			name: "JustOneContent",
+			fields: fields{
+				Content: NaturalLanguageValues{
+					{Ref: NilLangRef, Value: "test content"},
+				},
+			},
+			want:    []byte(`{"content":"test content"}`),
+			wantErr: false,
+		},
+		{
+			name: "MoreContentEntries",
+			fields: fields{
+				Content: NaturalLanguageValues{
+					{Ref: "en", Value: "test content"},
+					{Ref: "fr", Value: "teste content"},
+				},
+			},
+			want:    []byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),
+			wantErr: false,
+		},
+		{
+			name: "MediaType",
+			fields: fields{
+				MediaType: MimeType("text/stupid"),
+			},
+			want:    []byte(`{"mediaType":"text/stupid"}`),
+			wantErr: false,
+		},
+		{
+			name: "Attachment",
+			fields: fields{
+				Attachment: &Object{
+					ID:   "some example",
+					Type: VideoType,
+				},
+			},
+			want:    []byte(`{"attachment":{"id":"some example","type":"Video"}}`),
+			wantErr: false,
+		},
+		{
+			name: "AttributedTo",
+			fields: fields{
+				AttributedTo: &Actor{
+					ID:   "http://example.com/ana",
+					Type: PersonType,
+				},
+			},
+			want:    []byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`),
+			wantErr: false,
+		},
+		{
+			name: "AttributedToDouble",
+			fields: fields{
+				AttributedTo: ItemCollection{
+					&Actor{
+						ID:   "http://example.com/ana",
+						Type: PersonType,
+					},
+					&Actor{
+						ID:   "http://example.com/GGG",
+						Type: GroupType,
+					},
+				},
+			},
+			want:    []byte(`{"attributedTo":[{"id":"http://example.com/ana","type":"Person"},{"id":"http://example.com/GGG","type":"Group"}]}`),
+			wantErr: false,
+		},
+		{
+			name: "Source",
+			fields: fields{
+				Source: Source{
+					MediaType: MimeType("text/plain"),
+					Content:   NaturalLanguageValues{},
+				},
+			},
+			want:    []byte(`{"source":{"mediaType":"text/plain"}}`),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := IntransitiveActivity{
+				ID:           tt.fields.ID,
+				Type:         tt.fields.Type,
+				Name:         tt.fields.Name,
+				Attachment:   tt.fields.Attachment,
+				AttributedTo: tt.fields.AttributedTo,
+				Audience:     tt.fields.Audience,
+				Content:      tt.fields.Content,
+				Context:      tt.fields.Context,
+				MediaType:    tt.fields.MediaType,
+				EndTime:      tt.fields.EndTime,
+				Generator:    tt.fields.Generator,
+				Icon:         tt.fields.Icon,
+				Image:        tt.fields.Image,
+				InReplyTo:    tt.fields.InReplyTo,
+				Location:     tt.fields.Location,
+				Preview:      tt.fields.Preview,
+				Published:    tt.fields.Published,
+				Replies:      tt.fields.Replies,
+				StartTime:    tt.fields.StartTime,
+				Summary:      tt.fields.Summary,
+				Tag:          tt.fields.Tag,
+				Updated:      tt.fields.Updated,
+				URL:          tt.fields.URL,
+				To:           tt.fields.To,
+				Bto:          tt.fields.Bto,
+				CC:           tt.fields.CC,
+				BCC:          tt.fields.BCC,
+				Duration:     tt.fields.Duration,
+				Likes:        tt.fields.Likes,
+				Shares:       tt.fields.Shares,
+				Source:       tt.fields.Source,
+				Actor:        tt.fields.Actor,
+				Target:       tt.fields.Target,
+				Result:       tt.fields.Result,
+				Origin:       tt.fields.Origin,
+				Instrument:   tt.fields.Instrument,
+			}
+			got, err := i.MarshalJSON()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
+			}
+		})
+	}
 }

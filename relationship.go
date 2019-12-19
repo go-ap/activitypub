@@ -108,12 +108,12 @@ type Relationship struct {
 	Source Source `jsonld:"source,omitempty"`
 	// Subject Subject On a Relationship object, the subject property identifies one of the connected individuals.
 	// For instance, for a Relationship object describing "John is related to Sally", subject would refer to John.
-	Subject Item
+	Subject Item `jsonld:"subject,omitempty"`
 	// Object
-	Object Item
+	Object Item `jsonld:"object,omitempty"`
 	// Relationship On a Relationship object, the relationship property identifies the kind
 	// of relationship that exists between subject and object.
-	Relationship Item
+	Relationship Item `jsonld:"relationship,omitempty"`
 }
 
 // IsLink returns false for Relationship objects
@@ -211,6 +211,34 @@ func (r *Relationship) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// MarshalJSON
+func (r Relationship) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	notEmpty := false
+	write(&b, '{')
+
+	OnObject(r, func(o *Object) error {
+		notEmpty = writeObject(&b, *o)
+		return nil
+	})
+
+	if r.Subject != nil {
+		notEmpty = writeItemProp(&b, "subject", r.Subject) || notEmpty
+	}
+	if r.Object != nil {
+		notEmpty = writeItemProp(&b, "object", r.Object) || notEmpty
+	}
+	if r.Relationship != nil {
+		notEmpty = writeItemProp(&b, "relationship", r.Relationship) || notEmpty
+	}
+
+	if notEmpty {
+		write(&b, '}')
+		return b, nil
+	}
+	return nil, nil
+}
+
 // Recipients performs recipient de-duplication on the Relationship object's To, Bto, CC and BCC properties
 func (r *Relationship) Recipients() ItemCollection {
 	var aud ItemCollection
@@ -219,11 +247,10 @@ func (r *Relationship) Recipients() ItemCollection {
 }
 
 // Clean removes Bto and BCC properties
-func (r *Relationship) Clean(){
+func (r *Relationship) Clean() {
 	r.BCC = nil
 	r.Bto = nil
 }
-
 
 // ToRelationship
 func ToRelationship(it Item) (*Relationship, error) {
