@@ -978,6 +978,7 @@ func TestActivity_GetLink(t *testing.T) {
 
 func TestActivity_GetType(t *testing.T) {
 	t.Skipf("TODO")
+}
 
 func TestActivity_MarshalJSON(t *testing.T) {
 	type fields struct {
