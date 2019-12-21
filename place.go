@@ -225,7 +225,7 @@ func (p Place) MarshalJSON() ([]byte, error) {
 	write(&b, '{')
 
 	OnObject(p, func(o *Object) error {
-		notEmpty = writeObject(&b, *o)
+		notEmpty = writeObjectValue(&b, *o)
 		return nil
 	})
 	if p.Accuracy > 0 {

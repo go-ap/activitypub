@@ -36,8 +36,8 @@ func Test_writeActivity(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeActivity(tt.args.b, tt.args.a); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeActivity() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeActivityValue(tt.args.b, tt.args.a); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeActivityValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -183,8 +183,8 @@ func Test_writeIntransitiveActivity(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeIntransitiveActivity(tt.args.b, tt.args.i); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeIntransitiveActivity() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeIntransitiveActivityValue(tt.args.b, tt.args.i); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeIntransitiveActivityValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -204,8 +204,8 @@ func Test_writeItemCollection(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeItemCollection(tt.args.b, tt.args.col); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeItemCollection() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeItemCollectionValue(tt.args.b, tt.args.col); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeItemCollectionValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -291,8 +291,8 @@ func Test_writeObject(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeObject(tt.args.b, tt.args.o); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeObject() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeObjectValue(tt.args.b, tt.args.o); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeObjectValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -355,8 +355,8 @@ func Test_writeQuestion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeQuestion(tt.args.b, tt.args.q); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeQuestion() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeQuestionValue(tt.args.b, tt.args.q); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeQuestionValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -393,8 +393,8 @@ func Test_writeString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeString(tt.args.b, tt.args.s); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeString() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeStringValue(tt.args.b, tt.args.s); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeStringValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}

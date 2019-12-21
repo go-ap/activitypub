@@ -392,7 +392,7 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 	write(&b, '{')
 
 	OnObject(a, func(o *Object) error {
-		notEmpty = writeObject(&b, *o)
+		notEmpty = writeObjectValue(&b, *o)
 		return nil
 	})
 	if a.Inbox != nil {
@@ -422,7 +422,7 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 		writePropName(&b, "streams")
 		lNotEmpty := true
 		for _, ss := range a.Streams {
-			lNotEmpty = writeItemCollection(&b, ss) || lNotEmpty
+			lNotEmpty = writeItemCollectionValue(&b, ss) || lNotEmpty
 		}
 		notEmpty = lNotEmpty || notEmpty
 	}

@@ -111,7 +111,7 @@ func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 	b := make([]byte, 0)
-	writeString(&b, string(a))
+	writeStringValue(&b, string(a))
 	return b, nil
 }
 
@@ -323,7 +323,7 @@ func (o Object) MarshalJSON() ([]byte, error) {
 	notEmpty := false
 	write(&b, '{')
 
-	notEmpty = writeObject(&b, o)
+	notEmpty = writeObjectValue(&b, o)
 
 	if notEmpty {
 		write(&b, '}')
@@ -376,7 +376,7 @@ func (m MimeType) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 	b := make([]byte, 0)
-	writeString(&b, string(m))
+	writeStringValue(&b, string(m))
 	return b, nil
 }
 

@@ -218,7 +218,7 @@ func (r Relationship) MarshalJSON() ([]byte, error) {
 	write(&b, '{')
 
 	OnObject(r, func(o *Object) error {
-		notEmpty = writeObject(&b, *o)
+		notEmpty = writeObjectValue(&b, *o)
 		return nil
 	})
 

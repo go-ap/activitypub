@@ -799,7 +799,7 @@ func (a Activity) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	write(&b, '{')
 
-	if !writeActivity(&b, a) {
+	if !writeActivityValue(&b, a) {
 		return nil, nil
 	}
 	write(&b, '}')
@@ -811,7 +811,7 @@ func (i IntransitiveActivity) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	write(&b, '{')
 
-	if !writeIntransitiveActivity(&b, i) {
+	if !writeIntransitiveActivityValue(&b, i) {
 		return nil, nil
 	}
 	write(&b, '}')

@@ -267,7 +267,7 @@ func (c OrderedCollectionPage) MarshalJSON() ([]byte, error) {
 	write(&b, '{')
 
 	OnObject(c, func(o *Object) error {
-		notEmpty = writeObject(&b, *o)
+		notEmpty = writeObjectValue(&b, *o)
 		return nil
 	})
 	if c.Current != nil {

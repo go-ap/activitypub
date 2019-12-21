@@ -233,7 +233,7 @@ func (q Question) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	write(&b, '{')
 
-	if !writeQuestion(&b, q) {
+	if !writeQuestionValue(&b, q) {
 		return nil, nil
 	}
 	write(&b, '}')

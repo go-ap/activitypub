@@ -108,7 +108,7 @@ func writeItemProp(b *[]byte, n string, i Item) (notEmpty bool) {
 	return notEmpty
 }
 
-func writeString(b *[]byte, s string) (notEmpty bool) {
+func writeStringValue(b *[]byte, s string) (notEmpty bool) {
 	if len(s) == 0 {
 		return false
 	}
@@ -118,7 +118,7 @@ func writeString(b *[]byte, s string) (notEmpty bool) {
 	return true
 }
 
-func writeItemCollection(b *[]byte, col ItemCollection) (notEmpty bool) {
+func writeItemCollectionValue(b *[]byte, col ItemCollection) (notEmpty bool) {
 	if len(col) == 0 {
 		return notEmpty
 	}
@@ -146,14 +146,14 @@ func writeItemCollectionProp(b *[]byte, n string, col ItemCollection) (notEmpty 
 		return notEmpty
 	}
 	writeComma(b)
-	success := writePropName(b, n) && writeItemCollection(b, col)
+	success := writePropName(b, n) && writeItemCollectionValue(b, col)
 	if !success {
 		*b = (*b)[:len(*b)-1]
 	}
 	return success
 }
 
-func writeObject(b *[]byte, o Object) (notEmpty bool) {
+func writeObjectValue(b *[]byte, o Object) (notEmpty bool) {
 	if v, err := o.ID.MarshalJSON(); err == nil && len(v) > 0 {
 		notEmpty = writeProp(b, "id", v) || notEmpty
 	}
@@ -252,12 +252,12 @@ func writeObject(b *[]byte, o Object) (notEmpty bool) {
 	return notEmpty
 }
 
-func writeActivity(b *[]byte, a Activity) (notEmpty bool) {
+func writeActivityValue(b *[]byte, a Activity) (notEmpty bool) {
 	OnIntransitiveActivity(a, func(i *IntransitiveActivity) error {
 		if i == nil {
 			return nil
 		}
-		notEmpty = writeIntransitiveActivity(b, *i) || notEmpty
+		notEmpty = writeIntransitiveActivityValue(b, *i) || notEmpty
 		return nil
 	})
 	if a.Object != nil {
@@ -266,12 +266,12 @@ func writeActivity(b *[]byte, a Activity) (notEmpty bool) {
 	return notEmpty
 }
 
-func writeIntransitiveActivity(b *[]byte, i IntransitiveActivity) (notEmpty bool) {
+func writeIntransitiveActivityValue(b *[]byte, i IntransitiveActivity) (notEmpty bool) {
 	OnObject(i, func(o *Object) error {
 		if o == nil {
 			return nil
 		}
-		notEmpty = writeObject(b, *o) || notEmpty
+		notEmpty = writeObjectValue(b, *o) || notEmpty
 		return nil
 	})
 	if i.Actor != nil {
@@ -292,12 +292,12 @@ func writeIntransitiveActivity(b *[]byte, i IntransitiveActivity) (notEmpty bool
 	return notEmpty
 }
 
-func writeQuestion(b *[]byte, q Question) (notEmpty bool) {
+func writeQuestionValue(b *[]byte, q Question) (notEmpty bool) {
 	OnIntransitiveActivity(q, func(i *IntransitiveActivity) error {
 		if i == nil {
 			return nil
 		}
-		notEmpty = writeIntransitiveActivity(b, *i) || notEmpty
+		notEmpty = writeIntransitiveActivityValue(b, *i) || notEmpty
 		return nil
 	})
 	if q.OneOf != nil {

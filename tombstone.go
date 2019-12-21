@@ -209,7 +209,7 @@ func (t Tombstone) MarshalJSON() ([]byte, error) {
 	write(&b, '{')
 
 	OnObject(t, func(o *Object) error {
-		notEmpty = writeObject(&b, *o)
+		notEmpty = writeObjectValue(&b, *o)
 		return nil
 	})
 	if len(t.FormerType) > 0 {
