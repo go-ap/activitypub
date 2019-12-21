@@ -655,3 +655,26 @@ func loadTombstone(data []byte, t *Tombstone) error {
 	t.Deleted = JSONGetTime(data, "deleted")
 	return nil
 }
+
+func loadLink(data []byte, l *Link) error {
+	if ItemTyperFunc == nil {
+		ItemTyperFunc = JSONGetItemByType
+	}
+	l.ID = JSONGetID(data)
+	l.Type = JSONGetType(data)
+	l.MediaType = JSONGetMimeType(data)
+	l.Preview = JSONGetItem(data, "preview")
+	l.Height = uint(JSONGetInt(data, "height"))
+	l.Width = uint(JSONGetInt(data, "width"))
+	l.Name = JSONGetNaturalLanguageField(data, "name")
+	l.HrefLang = JSONGetLangRefField(data, "hrefLang")
+	href := JSONGetURIItem(data, "href")
+	if href != nil && !href.IsObject() {
+		l.Href = href.GetLink()
+	}
+	rel := JSONGetURIItem(data, "rel")
+	if rel != nil && !rel.IsObject() {
+		l.Rel = rel.GetLink()
+	}
+	return nil
+}
