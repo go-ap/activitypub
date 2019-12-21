@@ -303,7 +303,7 @@ func writeQuestionValue(b *[]byte, q Question) (notEmpty bool) {
 	if q.OneOf != nil {
 		notEmpty = writeItemProp(b, "oneOf", q.OneOf) || notEmpty
 	} else if q.AnyOf != nil {
-		notEmpty = writeItemProp(b, "oneOf", q.OneOf) || notEmpty
+		notEmpty = writeItemProp(b, "anyOf", q.OneOf) || notEmpty
 	}
 	notEmpty = writeBoolProp(b, "closed", q.Closed) || notEmpty
 	return notEmpty
