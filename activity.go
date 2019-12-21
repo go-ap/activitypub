@@ -699,68 +699,7 @@ func ActivityNew(id ID, typ ActivityVocabularyType, ob Item) *Activity {
 
 // UnmarshalJSON
 func (a *Activity) UnmarshalJSON(data []byte) error {
-	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
-	}
-	a.ID = JSONGetID(data)
-	a.Type = JSONGetType(data)
-	a.Name = JSONGetNaturalLanguageField(data, "name")
-	a.Content = JSONGetNaturalLanguageField(data, "content")
-	a.Summary = JSONGetNaturalLanguageField(data, "summary")
-	a.Context = JSONGetItem(data, "context")
-	a.URL = JSONGetURIItem(data, "url")
-	a.MediaType = MimeType(JSONGetString(data, "mediaType"))
-	a.Generator = JSONGetItem(data, "generator")
-	a.AttributedTo = JSONGetItem(data, "attributedTo")
-	a.Attachment = JSONGetItem(data, "attachment")
-	a.Location = JSONGetItem(data, "location")
-	a.Published = JSONGetTime(data, "published")
-	a.StartTime = JSONGetTime(data, "startTime")
-	a.EndTime = JSONGetTime(data, "endTime")
-	a.Duration = JSONGetDuration(data, "duration")
-	a.Icon = JSONGetItem(data, "icon")
-	a.Preview = JSONGetItem(data, "preview")
-	a.Image = JSONGetItem(data, "image")
-	a.Updated = JSONGetTime(data, "updated")
-	inReplyTo := JSONGetItems(data, "inReplyTo")
-	if len(inReplyTo) > 0 {
-		a.InReplyTo = inReplyTo
-	}
-	to := JSONGetItems(data, "to")
-	if len(to) > 0 {
-		a.To = to
-	}
-	audience := JSONGetItems(data, "audience")
-	if len(audience) > 0 {
-		a.Audience = audience
-	}
-	bto := JSONGetItems(data, "bto")
-	if len(bto) > 0 {
-		a.Bto = bto
-	}
-	cc := JSONGetItems(data, "cc")
-	if len(cc) > 0 {
-		a.CC = cc
-	}
-	bcc := JSONGetItems(data, "bcc")
-	if len(bcc) > 0 {
-		a.BCC = bcc
-	}
-	replies := JSONGetItem(data, "replies")
-	if replies != nil {
-		a.Replies = replies
-	}
-	tag := JSONGetItems(data, "tag")
-	if len(tag) > 0 {
-		a.Tag = tag
-	}
-	a.Actor = JSONGetItem(data, "actor")
-	a.Target = JSONGetItem(data, "target")
-	a.Instrument = JSONGetItem(data, "instrument")
-	a.Origin = JSONGetItem(data, "origin")
-	a.Result = JSONGetItem(data, "result")
-	a.Object = JSONGetItem(data, "object")
-	return nil
+	return loadActivity(data, a)
 }
 
 // ToActivity
@@ -800,18 +739,6 @@ func (a Activity) MarshalJSON() ([]byte, error) {
 	write(&b, '{')
 
 	if !writeActivityValue(&b, a) {
-		return nil, nil
-	}
-	write(&b, '}')
-	return b, nil
-}
-
-// MarshalJSON
-func (i IntransitiveActivity) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
-	write(&b, '{')
-
-	if !writeIntransitiveActivityValue(&b, i) {
 		return nil, nil
 	}
 	write(&b, '}')

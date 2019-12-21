@@ -179,67 +179,19 @@ func (i IntransitiveActivity) IsCollection() bool {
 
 // UnmarshalJSON
 func (i *IntransitiveActivity) UnmarshalJSON(data []byte) error {
-	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
+	return loadIntrasitiveActivity(data, i)
+}
+
+// MarshalJSON
+func (i IntransitiveActivity) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	write(&b, '{')
+
+	if !writeIntransitiveActivityValue(&b, i) {
+		return nil, nil
 	}
-	i.ID = JSONGetID(data)
-	i.Type = JSONGetType(data)
-	i.Name = JSONGetNaturalLanguageField(data, "name")
-	i.Content = JSONGetNaturalLanguageField(data, "content")
-	i.Summary = JSONGetNaturalLanguageField(data, "summary")
-	i.Context = JSONGetItem(data, "context")
-	i.URL = JSONGetURIItem(data, "url")
-	i.MediaType = MimeType(JSONGetString(data, "mediaType"))
-	i.Generator = JSONGetItem(data, "generator")
-	i.AttributedTo = JSONGetItem(data, "attributedTo")
-	i.Attachment = JSONGetItem(data, "attachment")
-	i.Location = JSONGetItem(data, "location")
-	i.Published = JSONGetTime(data, "published")
-	i.StartTime = JSONGetTime(data, "startTime")
-	i.EndTime = JSONGetTime(data, "endTime")
-	i.Duration = JSONGetDuration(data, "duration")
-	i.Icon = JSONGetItem(data, "icon")
-	i.Preview = JSONGetItem(data, "preview")
-	i.Image = JSONGetItem(data, "image")
-	i.Updated = JSONGetTime(data, "updated")
-	inReplyTo := JSONGetItems(data, "inReplyTo")
-	if len(inReplyTo) > 0 {
-		i.InReplyTo = inReplyTo
-	}
-	to := JSONGetItems(data, "to")
-	if len(to) > 0 {
-		i.To = to
-	}
-	audience := JSONGetItems(data, "audience")
-	if len(audience) > 0 {
-		i.Audience = audience
-	}
-	bto := JSONGetItems(data, "bto")
-	if len(bto) > 0 {
-		i.Bto = bto
-	}
-	cc := JSONGetItems(data, "cc")
-	if len(cc) > 0 {
-		i.CC = cc
-	}
-	bcc := JSONGetItems(data, "bcc")
-	if len(bcc) > 0 {
-		i.BCC = bcc
-	}
-	replies := JSONGetItem(data, "replies")
-	if replies != nil {
-		i.Replies = replies
-	}
-	tag := JSONGetItems(data, "tag")
-	if len(tag) > 0 {
-		i.Tag = tag
-	}
-	i.Actor = JSONGetItem(data, "actor")
-	i.Target = JSONGetItem(data, "target")
-	i.Result = JSONGetItem(data, "result")
-	i.Origin = JSONGetItem(data, "origin")
-	i.Instrument = JSONGetItem(data, "instrument")
-	return nil
+	write(&b, '}')
+	return b, nil
 }
 
 // IntransitiveActivityNew initializes a intransitive activity
