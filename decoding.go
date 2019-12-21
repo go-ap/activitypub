@@ -341,7 +341,7 @@ func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
 	case IntransitiveActivityType:
 		return &IntransitiveActivity{Type: typ}, nil
 	case ActorType:
-		return &Actor{Type:typ}, nil
+		return &Actor{Type: typ}, nil
 	case CollectionType:
 		return &Collection{Type: typ}, nil
 	case OrderedCollectionType:
@@ -377,15 +377,15 @@ func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
 	case MentionType:
 		return &Mention{Type: typ}, nil
 	case ApplicationType:
-		return &Application{Type:typ}, nil
+		return &Application{Type: typ}, nil
 	case GroupType:
-		return &Group{Type:typ}, nil
+		return &Group{Type: typ}, nil
 	case OrganizationType:
-		return &Organization{Type:typ}, nil
+		return &Organization{Type: typ}, nil
 	case PersonType:
-		return &Person{Type:typ}, nil
+		return &Person{Type: typ}, nil
 	case ServiceType:
-		return &Service{Type:typ}, nil
+		return &Service{Type: typ}, nil
 	case AcceptType:
 		return &Accept{Type: typ}, nil
 	case AddType:
@@ -540,5 +540,118 @@ func loadActivity(data []byte, a *Activity) error {
 		return loadIntrasitiveActivity(data, i)
 	})
 	a.Object = JSONGetItem(data, "object")
+	return nil
+}
+
+func loadQuestion(data []byte, q *Question) error {
+	OnIntransitiveActivity(q, func(i *IntransitiveActivity) error {
+		return loadIntrasitiveActivity(data, i)
+	})
+	q.OneOf = JSONGetItem(data, "oneOf")
+	q.AnyOf = JSONGetItem(data, "anyOf")
+	q.Closed = JSONGetBoolean(data, "closed")
+	return nil
+}
+
+func loadActor(data []byte, a *Actor) error {
+	OnObject(a, func(o *Object) error {
+		return loadObject(data, o)
+	})
+	a.PreferredUsername = JSONGetNaturalLanguageField(data, "preferredUsername")
+	a.Followers = JSONGetItem(data, "followers")
+	a.Following = JSONGetItem(data, "following")
+	a.Inbox = JSONGetItem(data, "inbox")
+	a.Outbox = JSONGetItem(data, "outbox")
+	a.Liked = JSONGetItem(data, "liked")
+	a.Endpoints = JSONGetActorEndpoints(data, "endpoints")
+	a.Streams = JSONGetStreams(data, "streams")
+	a.PublicKey = JSONGetPublicKey(data, "publicKey")
+	return nil
+}
+
+func loadCollection(data []byte, c *Collection) error {
+	OnObject(c, func(o *Object) error {
+		return loadObject(data, o)
+	})
+	c.Items = JSONGetItems(data, "items")
+	c.TotalItems = uint(JSONGetInt(data, "totalItems"))
+	c.Current = JSONGetItem(data, "current")
+	c.First = JSONGetItem(data, "first")
+	c.Last = JSONGetItem(data, "last")
+	return nil
+}
+
+func loadCollectionPage(data []byte, c *CollectionPage) error {
+	OnCollection(c, func(c CollectionInterface) error {
+		return loadCollection(data, c.(*Collection))
+	})
+	c.Next = JSONGetItem(data, "next")
+	c.Prev = JSONGetItem(data, "prev")
+	c.PartOf = JSONGetItem(data, "partOf")
+	return nil
+}
+
+func loadOrderedCollection(data []byte, c *OrderedCollection) error {
+	OnObject(c, func(o *Object) error {
+		return loadObject(data, o)
+	})
+	c.OrderedItems = JSONGetItems(data, "orderedItems")
+	c.TotalItems = uint(JSONGetInt(data, "totalItems"))
+	c.Current = JSONGetItem(data, "current")
+	c.First = JSONGetItem(data, "first")
+	c.Last = JSONGetItem(data, "last")
+	return nil
+}
+
+func loadOrderedCollectionPage(data []byte, c *OrderedCollectionPage) error {
+	OnOrderedCollection(c, func(c *OrderedCollection) error {
+		return loadOrderedCollection(data, c)
+	})
+	c.Next = JSONGetItem(data, "next")
+	c.Prev = JSONGetItem(data, "prev")
+	c.PartOf = JSONGetItem(data, "partOf")
+	if si, err := jsonparser.GetInt(data, "startIndex"); err != nil {
+		c.StartIndex = uint(si)
+	}
+	return nil
+}
+
+func loadPlace(data []byte, p *Place) error {
+	OnObject(p, func(o *Object) error {
+		return loadObject(data, o)
+	})
+	p.Accuracy = JSONGetFloat(data, "accuracy")
+	p.Altitude = JSONGetFloat(data, "altitude")
+	p.Latitude = JSONGetFloat(data, "latitude")
+	p.Longitude = JSONGetFloat(data, "longitude")
+	p.Radius = JSONGetInt(data, "radius")
+	p.Units = JSONGetString(data, "units")
+	return nil
+}
+
+func loadProfile(data []byte, p *Profile) error {
+	OnObject(p, func(o *Object) error {
+		return loadObject(data, o)
+	})
+	p.Describes = JSONGetItem(data, "describes")
+	return nil
+}
+
+func loadRelationship(data []byte, r *Relationship) error {
+	OnObject(r, func(o *Object) error {
+		return loadObject(data, o)
+	})
+	r.Subject = JSONGetItem(data, "subject")
+	r.Object = JSONGetItem(data, "object")
+	r.Relationship = JSONGetItem(data, "relationship")
+	return nil
+}
+
+func loadTombstone(data []byte, t *Tombstone) error {
+	OnObject(t, func(o *Object) error {
+		return loadObject(data, o)
+	})
+	t.FormerType = ActivityVocabularyType(JSONGetString(data, "formerType"))
+	t.Deleted = JSONGetTime(data, "deleted")
 	return nil
 }

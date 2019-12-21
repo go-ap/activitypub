@@ -225,70 +225,7 @@ func (o *OrderedCollection) Append(ob Item) error {
 
 // UnmarshalJSON
 func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
-	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
-	}
-	o.ID = JSONGetID(data)
-	o.Type = JSONGetType(data)
-	o.Name = JSONGetNaturalLanguageField(data, "name")
-	o.Content = JSONGetNaturalLanguageField(data, "content")
-	o.Summary = JSONGetNaturalLanguageField(data, "summary")
-	o.Context = JSONGetItem(data, "context")
-	o.URL = JSONGetURIItem(data, "url")
-	o.MediaType = MimeType(JSONGetString(data, "mediaType"))
-	o.Generator = JSONGetItem(data, "generator")
-	o.AttributedTo = JSONGetItem(data, "attributedTo")
-	o.Attachment = JSONGetItem(data, "attachment")
-	o.Location = JSONGetItem(data, "location")
-	o.Published = JSONGetTime(data, "published")
-	o.StartTime = JSONGetTime(data, "startTime")
-	o.EndTime = JSONGetTime(data, "endTime")
-	o.Duration = JSONGetDuration(data, "duration")
-	o.Icon = JSONGetItem(data, "icon")
-	o.Preview = JSONGetItem(data, "preview")
-	o.Image = JSONGetItem(data, "image")
-	o.Updated = JSONGetTime(data, "updated")
-	inReplyTo := JSONGetItems(data, "inReplyTo")
-	if len(inReplyTo) > 0 {
-		o.InReplyTo = inReplyTo
-	}
-	to := JSONGetItems(data, "to")
-	if len(to) > 0 {
-		o.To = to
-	}
-	audience := JSONGetItems(data, "audience")
-	if len(audience) > 0 {
-		o.Audience = audience
-	}
-	bto := JSONGetItems(data, "bto")
-	if len(bto) > 0 {
-		o.Bto = bto
-	}
-	cc := JSONGetItems(data, "cc")
-	if len(cc) > 0 {
-		o.CC = cc
-	}
-	bcc := JSONGetItems(data, "bcc")
-	if len(bcc) > 0 {
-		o.BCC = bcc
-	}
-	replies := JSONGetItem(data, "replies")
-	if replies != nil {
-		o.Replies = replies
-	}
-	tag := JSONGetItems(data, "tag")
-	if len(tag) > 0 {
-		o.Tag = tag
-	}
-
-	o.TotalItems = uint(JSONGetInt(data, "totalItems"))
-	o.OrderedItems = JSONGetItems(data, "orderedItems")
-
-	o.Current = JSONGetItem(data, "current")
-	o.First = JSONGetItem(data, "first")
-	o.Last = JSONGetItem(data, "last")
-
-	return nil
+	return loadOrderedCollection(data, o)
 }
 
 // MarshalJSON

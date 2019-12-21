@@ -163,70 +163,7 @@ func (q Question) IsCollection() bool {
 
 // UnmarshalJSON
 func (q *Question) UnmarshalJSON(data []byte) error {
-	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
-	}
-	q.ID = JSONGetID(data)
-	q.Type = JSONGetType(data)
-	q.Name = JSONGetNaturalLanguageField(data, "name")
-	q.Content = JSONGetNaturalLanguageField(data, "content")
-	q.Summary = JSONGetNaturalLanguageField(data, "summary")
-	q.Context = JSONGetItem(data, "context")
-	q.URL = JSONGetURIItem(data, "url")
-	q.MediaType = MimeType(JSONGetString(data, "mediaType"))
-	q.Generator = JSONGetItem(data, "generator")
-	q.AttributedTo = JSONGetItem(data, "attributedTo")
-	q.Attachment = JSONGetItem(data, "attachment")
-	q.Location = JSONGetItem(data, "location")
-	q.Published = JSONGetTime(data, "published")
-	q.StartTime = JSONGetTime(data, "startTime")
-	q.EndTime = JSONGetTime(data, "endTime")
-	q.Duration = JSONGetDuration(data, "duration")
-	q.Icon = JSONGetItem(data, "icon")
-	q.Preview = JSONGetItem(data, "preview")
-	q.Image = JSONGetItem(data, "image")
-	q.Updated = JSONGetTime(data, "updated")
-	inReplyTo := JSONGetItems(data, "inReplyTo")
-	if len(inReplyTo) > 0 {
-		q.InReplyTo = inReplyTo
-	}
-	to := JSONGetItems(data, "to")
-	if len(to) > 0 {
-		q.To = to
-	}
-	audience := JSONGetItems(data, "audience")
-	if len(audience) > 0 {
-		q.Audience = audience
-	}
-	bto := JSONGetItems(data, "bto")
-	if len(bto) > 0 {
-		q.Bto = bto
-	}
-	cc := JSONGetItems(data, "cc")
-	if len(cc) > 0 {
-		q.CC = cc
-	}
-	bcc := JSONGetItems(data, "bcc")
-	if len(bcc) > 0 {
-		q.BCC = bcc
-	}
-	replies := JSONGetItem(data, "replies")
-	if replies != nil {
-		q.Replies = replies
-	}
-	tag := JSONGetItems(data, "tag")
-	if len(tag) > 0 {
-		q.Tag = tag
-	}
-	q.Actor = JSONGetItem(data, "actor")
-	q.Target = JSONGetItem(data, "target")
-	q.Origin = JSONGetItem(data, "origin")
-	q.Result = JSONGetItem(data, "result")
-	q.Instrument = JSONGetItem(data, "instrument")
-	q.OneOf = JSONGetItem(data, "oneOf")
-	q.AnyOf = JSONGetItem(data, "anyOf")
-	q.Closed = JSONGetBoolean(data, "closed")
-	return nil
+	return loadQuestion(data, q)
 }
 
 func (q Question) MarshalJSON() ([]byte, error) {

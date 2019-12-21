@@ -2,7 +2,6 @@ package activitypub
 
 import (
 	"errors"
-	"github.com/buger/jsonparser"
 	"time"
 )
 
@@ -188,110 +187,41 @@ func (o OrderedCollectionPage) Contains(r IRI) bool {
 
 // UnmarshalJSON
 func (o *OrderedCollectionPage) UnmarshalJSON(data []byte) error {
-	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
-	}
-	o.ID = JSONGetID(data)
-	o.Type = JSONGetType(data)
-	o.Name = JSONGetNaturalLanguageField(data, "name")
-	o.Content = JSONGetNaturalLanguageField(data, "content")
-	o.Summary = JSONGetNaturalLanguageField(data, "summary")
-	o.Context = JSONGetItem(data, "context")
-	o.URL = JSONGetURIItem(data, "url")
-	o.MediaType = MimeType(JSONGetString(data, "mediaType"))
-	o.Generator = JSONGetItem(data, "generator")
-	o.AttributedTo = JSONGetItem(data, "attributedTo")
-	o.Attachment = JSONGetItem(data, "attachment")
-	o.Location = JSONGetItem(data, "location")
-	o.Published = JSONGetTime(data, "published")
-	o.StartTime = JSONGetTime(data, "startTime")
-	o.EndTime = JSONGetTime(data, "endTime")
-	o.Duration = JSONGetDuration(data, "duration")
-	o.Icon = JSONGetItem(data, "icon")
-	o.Preview = JSONGetItem(data, "preview")
-	o.Image = JSONGetItem(data, "image")
-	o.Updated = JSONGetTime(data, "updated")
-	inReplyTo := JSONGetItems(data, "inReplyTo")
-	if len(inReplyTo) > 0 {
-		o.InReplyTo = inReplyTo
-	}
-	to := JSONGetItems(data, "to")
-	if len(to) > 0 {
-		o.To = to
-	}
-	audience := JSONGetItems(data, "audience")
-	if len(audience) > 0 {
-		o.Audience = audience
-	}
-	bto := JSONGetItems(data, "bto")
-	if len(bto) > 0 {
-		o.Bto = bto
-	}
-	cc := JSONGetItems(data, "cc")
-	if len(cc) > 0 {
-		o.CC = cc
-	}
-	bcc := JSONGetItems(data, "bcc")
-	if len(bcc) > 0 {
-		o.BCC = bcc
-	}
-	replies := JSONGetItem(data, "replies")
-	if replies != nil {
-		o.Replies = replies
-	}
-	tag := JSONGetItems(data, "tag")
-	if len(tag) > 0 {
-		o.Tag = tag
-	}
-
-	o.TotalItems = uint(JSONGetInt(data, "totalItems"))
-	o.OrderedItems = JSONGetItems(data, "orderedItems")
-
-	o.Current = JSONGetItem(data, "current")
-	o.First = JSONGetItem(data, "first")
-	o.Last = JSONGetItem(data, "last")
-
-	o.Next = JSONGetItem(data, "next")
-	o.Prev = JSONGetItem(data, "prev")
-	o.PartOf = JSONGetItem(data, "partOf")
-
-	if si, err := jsonparser.GetInt(data, "startIndex"); err != nil {
-		o.StartIndex = uint(si)
-	}
-	return nil
+	return loadOrderedCollectionPage(data, o)
 }
+
 // MarshalJSON
-func (c OrderedCollectionPage) MarshalJSON() ([]byte, error) {
+func (o OrderedCollectionPage) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
 	write(&b, '{')
 
-	OnObject(c, func(o *Object) error {
+	OnObject(o, func(o *Object) error {
 		notEmpty = writeObjectValue(&b, *o)
 		return nil
 	})
-	if c.Current != nil {
-		notEmpty = writeItemProp(&b, "current", c.Current) || notEmpty
+	if o.Current != nil {
+		notEmpty = writeItemProp(&b, "current", o.Current) || notEmpty
 	}
-	if c.First != nil {
-		notEmpty = writeItemProp(&b, "first", c.First) || notEmpty
+	if o.First != nil {
+		notEmpty = writeItemProp(&b, "first", o.First) || notEmpty
 	}
-	if c.Last != nil {
-		notEmpty = writeItemProp(&b, "last", c.Last) || notEmpty
+	if o.Last != nil {
+		notEmpty = writeItemProp(&b, "last", o.Last) || notEmpty
 	}
-	if c.OrderedItems != nil {
-		notEmpty = writeItemCollectionProp(&b, "orderedItems", c.OrderedItems) || notEmpty
+	if o.OrderedItems != nil {
+		notEmpty = writeItemCollectionProp(&b, "orderedItems", o.OrderedItems) || notEmpty
 	}
-	if c.PartOf != nil {
-		notEmpty = writeItemProp(&b, "partOf", c.PartOf) || notEmpty
+	if o.PartOf != nil {
+		notEmpty = writeItemProp(&b, "partOf", o.PartOf) || notEmpty
 	}
-	if c.Next != nil {
-		notEmpty = writeItemProp(&b, "next", c.Next) || notEmpty
+	if o.Next != nil {
+		notEmpty = writeItemProp(&b, "next", o.Next) || notEmpty
 	}
-	if c.Prev != nil {
-		notEmpty = writeItemProp(&b, "prev", c.Prev) || notEmpty
+	if o.Prev != nil {
+		notEmpty = writeItemProp(&b, "prev", o.Prev) || notEmpty
 	}
-	notEmpty = writeIntProp(&b, "totalItems", int64(c.TotalItems)) || notEmpty
+	notEmpty = writeIntProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
 
 	if notEmpty {
 		write(&b, '}')

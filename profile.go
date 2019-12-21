@@ -138,65 +138,7 @@ func (p Profile) GetID() ID {
 
 // UnmarshalJSON
 func (p *Profile) UnmarshalJSON(data []byte) error {
-	// TODO(marius): this is a candidate of using OnObject() for loading the common properties
-	//   and then loading the extra ones
-	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
-	}
-	p.ID = JSONGetID(data)
-	p.Type = JSONGetType(data)
-	p.Name = JSONGetNaturalLanguageField(data, "name")
-	p.Content = JSONGetNaturalLanguageField(data, "content")
-	p.Summary = JSONGetNaturalLanguageField(data, "summary")
-	p.Context = JSONGetItem(data, "context")
-	p.URL = JSONGetURIItem(data, "url")
-	p.MediaType = MimeType(JSONGetString(data, "mediaType"))
-	p.Generator = JSONGetItem(data, "generator")
-	p.AttributedTo = JSONGetItem(data, "attributedTo")
-	p.Attachment = JSONGetItem(data, "attachment")
-	p.Location = JSONGetItem(data, "location")
-	p.Published = JSONGetTime(data, "published")
-	p.StartTime = JSONGetTime(data, "startTime")
-	p.EndTime = JSONGetTime(data, "endTime")
-	p.Duration = JSONGetDuration(data, "duration")
-	p.Icon = JSONGetItem(data, "icon")
-	p.Preview = JSONGetItem(data, "preview")
-	p.Image = JSONGetItem(data, "image")
-	p.Updated = JSONGetTime(data, "updated")
-	inReplyTo := JSONGetItems(data, "inReplyTo")
-	if len(inReplyTo) > 0 {
-		p.InReplyTo = inReplyTo
-	}
-	to := JSONGetItems(data, "to")
-	if len(to) > 0 {
-		p.To = to
-	}
-	audience := JSONGetItems(data, "audience")
-	if len(audience) > 0 {
-		p.Audience = audience
-	}
-	bto := JSONGetItems(data, "bto")
-	if len(bto) > 0 {
-		p.Bto = bto
-	}
-	cc := JSONGetItems(data, "cc")
-	if len(cc) > 0 {
-		p.CC = cc
-	}
-	bcc := JSONGetItems(data, "bcc")
-	if len(bcc) > 0 {
-		p.BCC = bcc
-	}
-	replies := JSONGetItem(data, "replies")
-	if replies != nil {
-		p.Replies = replies
-	}
-	tag := JSONGetItems(data, "tag")
-	if len(tag) > 0 {
-		p.Tag = tag
-	}
-	p.Describes = JSONGetItem(data, "describes")
-	return nil
+	return loadProfile(data, p)
 }
 
 // MarshalJSON

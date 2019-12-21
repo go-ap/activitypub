@@ -316,74 +316,7 @@ func (a *Actor) Clean() {
 }
 
 func (a *Actor) UnmarshalJSON(data []byte) error {
-	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
-	}
-	a.ID = JSONGetID(data)
-	a.Type = JSONGetType(data)
-	a.Name = JSONGetNaturalLanguageField(data, "name")
-	a.Content = JSONGetNaturalLanguageField(data, "content")
-	a.Summary = JSONGetNaturalLanguageField(data, "summary")
-	a.Context = JSONGetItem(data, "context")
-	a.URL = JSONGetURIItem(data, "url")
-	a.MediaType = MimeType(JSONGetString(data, "mediaType"))
-	a.Generator = JSONGetItem(data, "generator")
-	a.AttributedTo = JSONGetItem(data, "attributedTo")
-	a.Attachment = JSONGetItem(data, "attachment")
-	a.Location = JSONGetItem(data, "location")
-	a.Published = JSONGetTime(data, "published")
-	a.StartTime = JSONGetTime(data, "startTime")
-	a.EndTime = JSONGetTime(data, "endTime")
-	a.Duration = JSONGetDuration(data, "duration")
-	a.Icon = JSONGetItem(data, "icon")
-	a.Preview = JSONGetItem(data, "preview")
-	a.Image = JSONGetItem(data, "image")
-	a.Updated = JSONGetTime(data, "updated")
-	inReplyTo := JSONGetItems(data, "inReplyTo")
-	if len(inReplyTo) > 0 {
-		a.InReplyTo = inReplyTo
-	}
-	to := JSONGetItems(data, "to")
-	if len(to) > 0 {
-		a.To = to
-	}
-	audience := JSONGetItems(data, "audience")
-	if len(audience) > 0 {
-		a.Audience = audience
-	}
-	bto := JSONGetItems(data, "bto")
-	if len(bto) > 0 {
-		a.Bto = bto
-	}
-	cc := JSONGetItems(data, "cc")
-	if len(cc) > 0 {
-		a.CC = cc
-	}
-	bcc := JSONGetItems(data, "bcc")
-	if len(bcc) > 0 {
-		a.BCC = bcc
-	}
-	replies := JSONGetItem(data, "replies")
-	if replies != nil {
-		a.Replies = replies
-	}
-	tag := JSONGetItems(data, "tag")
-	if len(tag) > 0 {
-		a.Tag = tag
-	}
-	a.Likes = JSONGetItem(data, "likes")
-	a.Shares = JSONGetItem(data, "shares")
-	a.Source = GetAPSource(data)
-	a.PreferredUsername = JSONGetNaturalLanguageField(data, "preferredUsername")
-	a.Followers = JSONGetItem(data, "followers")
-	a.Following = JSONGetItem(data, "following")
-	a.Inbox = JSONGetItem(data, "inbox")
-	a.Outbox = JSONGetItem(data, "outbox")
-	a.Liked = JSONGetItem(data, "liked")
-	a.Endpoints = JSONGetActorEndpoints(data, "endpoints")
-	a.Streams = JSONGetStreams(data, "streams")
-	a.PublicKey = JSONGetPublicKey(data, "publicKey")
-	return nil
+	return loadActor(data, a)
 }
 
 func (a Actor) MarshalJSON() ([]byte, error) {

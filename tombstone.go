@@ -140,66 +140,7 @@ func (t Tombstone) GetID() ID {
 
 // UnmarshalJSON
 func (t *Tombstone) UnmarshalJSON(data []byte) error {
-	// TODO(marius): this is a candidate of using OnObject() for loading the common properties
-	//   and then loading the extra ones
-	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
-	}
-	t.ID = JSONGetID(data)
-	t.Type = JSONGetType(data)
-	t.Name = JSONGetNaturalLanguageField(data, "name")
-	t.Content = JSONGetNaturalLanguageField(data, "content")
-	t.Summary = JSONGetNaturalLanguageField(data, "summary")
-	t.Context = JSONGetItem(data, "context")
-	t.URL = JSONGetURIItem(data, "url")
-	t.MediaType = MimeType(JSONGetString(data, "mediaType"))
-	t.Generator = JSONGetItem(data, "generator")
-	t.AttributedTo = JSONGetItem(data, "attributedTo")
-	t.Attachment = JSONGetItem(data, "attachment")
-	t.Location = JSONGetItem(data, "location")
-	t.Published = JSONGetTime(data, "published")
-	t.StartTime = JSONGetTime(data, "startTime")
-	t.EndTime = JSONGetTime(data, "endTime")
-	t.Duration = JSONGetDuration(data, "duration")
-	t.Icon = JSONGetItem(data, "icon")
-	t.Preview = JSONGetItem(data, "preview")
-	t.Image = JSONGetItem(data, "image")
-	t.Updated = JSONGetTime(data, "updated")
-	inReplyTo := JSONGetItems(data, "inReplyTo")
-	if len(inReplyTo) > 0 {
-		t.InReplyTo = inReplyTo
-	}
-	to := JSONGetItems(data, "to")
-	if len(to) > 0 {
-		t.To = to
-	}
-	audience := JSONGetItems(data, "audience")
-	if len(audience) > 0 {
-		t.Audience = audience
-	}
-	bto := JSONGetItems(data, "bto")
-	if len(bto) > 0 {
-		t.Bto = bto
-	}
-	cc := JSONGetItems(data, "cc")
-	if len(cc) > 0 {
-		t.CC = cc
-	}
-	bcc := JSONGetItems(data, "bcc")
-	if len(bcc) > 0 {
-		t.BCC = bcc
-	}
-	replies := JSONGetItem(data, "replies")
-	if replies != nil {
-		t.Replies = replies
-	}
-	tag := JSONGetItems(data, "tag")
-	if len(tag) > 0 {
-		t.Tag = tag
-	}
-	t.FormerType = ActivityVocabularyType(JSONGetString(data, "formerType"))
-	t.Deleted = JSONGetTime(data, "deleted")
-	return nil
+	return loadTombstone(data, t)
 }
 
 // MarshalJSON

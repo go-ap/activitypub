@@ -184,74 +184,7 @@ func (c CollectionPage) Contains(r IRI) bool {
 
 // UnmarshalJSON
 func (c *CollectionPage) UnmarshalJSON(data []byte) error {
-	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
-	}
-	c.ID = JSONGetID(data)
-	c.Type = JSONGetType(data)
-	c.Name = JSONGetNaturalLanguageField(data, "name")
-	c.Content = JSONGetNaturalLanguageField(data, "content")
-	c.Summary = JSONGetNaturalLanguageField(data, "summary")
-	c.Context = JSONGetItem(data, "context")
-	c.URL = JSONGetURIItem(data, "url")
-	c.MediaType = MimeType(JSONGetString(data, "mediaType"))
-	c.Generator = JSONGetItem(data, "generator")
-	c.AttributedTo = JSONGetItem(data, "attributedTo")
-	c.Attachment = JSONGetItem(data, "attachment")
-	c.Location = JSONGetItem(data, "location")
-	c.Published = JSONGetTime(data, "published")
-	c.StartTime = JSONGetTime(data, "startTime")
-	c.EndTime = JSONGetTime(data, "endTime")
-	c.Duration = JSONGetDuration(data, "duration")
-	c.Icon = JSONGetItem(data, "icon")
-	c.Preview = JSONGetItem(data, "preview")
-	c.Image = JSONGetItem(data, "image")
-	c.Updated = JSONGetTime(data, "updated")
-	inReplyTo := JSONGetItems(data, "inReplyTo")
-	if len(inReplyTo) > 0 {
-		c.InReplyTo = inReplyTo
-	}
-	to := JSONGetItems(data, "to")
-	if len(to) > 0 {
-		c.To = to
-	}
-	audience := JSONGetItems(data, "audience")
-	if len(audience) > 0 {
-		c.Audience = audience
-	}
-	bto := JSONGetItems(data, "bto")
-	if len(bto) > 0 {
-		c.Bto = bto
-	}
-	cc := JSONGetItems(data, "cc")
-	if len(cc) > 0 {
-		c.CC = cc
-	}
-	bcc := JSONGetItems(data, "bcc")
-	if len(bcc) > 0 {
-		c.BCC = bcc
-	}
-	replies := JSONGetItem(data, "replies")
-	if replies != nil {
-		c.Replies = replies
-	}
-	tag := JSONGetItems(data, "tag")
-	if len(tag) > 0 {
-		c.Tag = tag
-	}
-
-	c.TotalItems = uint(JSONGetInt(data, "totalItems"))
-	c.Items = JSONGetItems(data, "items")
-
-	c.Current = JSONGetItem(data, "current")
-	c.First = JSONGetItem(data, "first")
-	c.Last = JSONGetItem(data, "last")
-
-	c.Next = JSONGetItem(data, "next")
-	c.Prev = JSONGetItem(data, "prev")
-	c.PartOf = JSONGetItem(data, "partOf")
-
-	return nil
+	return loadCollectionPage(data, c)
 }
 
 // MarshalJSON

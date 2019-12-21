@@ -148,67 +148,7 @@ func (r Relationship) GetID() ID {
 
 // UnmarshalJSON
 func (r *Relationship) UnmarshalJSON(data []byte) error {
-	// TODO(marius): this is a candidate of using OnObject() for loading the common properties
-	//   and then loading the extra ones
-	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
-	}
-	r.ID = JSONGetID(data)
-	r.Type = JSONGetType(data)
-	r.Name = JSONGetNaturalLanguageField(data, "name")
-	r.Content = JSONGetNaturalLanguageField(data, "content")
-	r.Summary = JSONGetNaturalLanguageField(data, "summary")
-	r.Context = JSONGetItem(data, "context")
-	r.URL = JSONGetURIItem(data, "url")
-	r.MediaType = MimeType(JSONGetString(data, "mediaType"))
-	r.Generator = JSONGetItem(data, "generator")
-	r.AttributedTo = JSONGetItem(data, "attributedTo")
-	r.Attachment = JSONGetItem(data, "attachment")
-	r.Location = JSONGetItem(data, "location")
-	r.Published = JSONGetTime(data, "published")
-	r.StartTime = JSONGetTime(data, "startTime")
-	r.EndTime = JSONGetTime(data, "endTime")
-	r.Duration = JSONGetDuration(data, "duration")
-	r.Icon = JSONGetItem(data, "icon")
-	r.Preview = JSONGetItem(data, "preview")
-	r.Image = JSONGetItem(data, "image")
-	r.Updated = JSONGetTime(data, "updated")
-	inReplyTo := JSONGetItems(data, "inReplyTo")
-	if len(inReplyTo) > 0 {
-		r.InReplyTo = inReplyTo
-	}
-	to := JSONGetItems(data, "to")
-	if len(to) > 0 {
-		r.To = to
-	}
-	audience := JSONGetItems(data, "audience")
-	if len(audience) > 0 {
-		r.Audience = audience
-	}
-	bto := JSONGetItems(data, "bto")
-	if len(bto) > 0 {
-		r.Bto = bto
-	}
-	cc := JSONGetItems(data, "cc")
-	if len(cc) > 0 {
-		r.CC = cc
-	}
-	bcc := JSONGetItems(data, "bcc")
-	if len(bcc) > 0 {
-		r.BCC = bcc
-	}
-	replies := JSONGetItem(data, "replies")
-	if replies != nil {
-		r.Replies = replies
-	}
-	tag := JSONGetItems(data, "tag")
-	if len(tag) > 0 {
-		r.Tag = tag
-	}
-	r.Subject = JSONGetItem(data, "subject")
-	r.Object = JSONGetItem(data, "object")
-	r.Relationship = JSONGetItem(data, "relationship")
-	return nil
+	return loadRelationship(data, r)
 }
 
 // MarshalJSON
