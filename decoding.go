@@ -308,7 +308,7 @@ func JSONGetItems(data []byte, prop string) ItemCollection {
 func JSONGetLangRefField(data []byte, prop string) LangRef {
 	val, err := jsonparser.GetString(data, prop)
 	if err != nil {
-		return LangRef(err.Error())
+		return ""
 	}
 	return LangRef(val)
 }
