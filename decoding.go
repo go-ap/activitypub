@@ -664,17 +664,32 @@ func loadLink(data []byte, l *Link) error {
 	l.Type = JSONGetType(data)
 	l.MediaType = JSONGetMimeType(data)
 	l.Preview = JSONGetItem(data, "preview")
-	l.Height = uint(JSONGetInt(data, "height"))
-	l.Width = uint(JSONGetInt(data, "width"))
+	h := JSONGetInt(data, "height")
+	if h != 0 {
+		l.Height = uint(h)
+	}
+	w := JSONGetInt(data, "width")
+	if w != 0 {
+		l.Width = uint(w)
+	}
 	l.Name = JSONGetNaturalLanguageField(data, "name")
-	l.HrefLang = JSONGetLangRefField(data, "hrefLang")
+	hrefLang := JSONGetLangRefField(data, "hrefLang")
+	if len(hrefLang) > 0 {
+		l.HrefLang = hrefLang
+	}
 	href := JSONGetURIItem(data, "href")
-	if href != nil && !href.IsObject() {
-		l.Href = href.GetLink()
+	if href != nil {
+		ll := href.GetLink()
+		if len(ll) > 0 {
+			l.Href = ll
+		}
 	}
 	rel := JSONGetURIItem(data, "rel")
-	if rel != nil && !rel.IsObject() {
-		l.Rel = rel.GetLink()
+	if rel != nil {
+		rr := rel.GetLink()
+		if len(rr) > 0 {
+			l.Rel = rr
+		}
 	}
 	return nil
 }

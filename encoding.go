@@ -308,3 +308,37 @@ func writeQuestionValue(b *[]byte, q Question) (notEmpty bool) {
 	notEmpty = writeBoolProp(b, "closed", q.Closed) || notEmpty
 	return notEmpty
 }
+
+func writeLinkValue(b *[]byte, l Link) (notEmpty bool) {
+	if v, err := l.ID.MarshalJSON(); err == nil && len(v) > 0 {
+		notEmpty = writeProp(b, "id", v) || notEmpty
+	}
+	if v, err := l.Type.MarshalJSON(); err == nil && len(v) > 0 {
+		notEmpty = writeProp(b, "type", v) || notEmpty
+	}
+	if v, err := l.MediaType.MarshalJSON(); err == nil && len(v) > 0 {
+		notEmpty = writeProp(b, "mediaType", v) || notEmpty
+	}
+	if len(l.Name) > 0 {
+		notEmpty = writeNaturalLanguageProp(b, "name", l.Name) || notEmpty
+	}
+	if v, err := l.Rel.MarshalJSON(); err == nil && len(v) > 0 {
+		notEmpty = writeProp(b, "rel", v) || notEmpty
+	}
+	if l.Height > 0 {
+		notEmpty = writeIntProp(b, "height", int64(l.Height))
+	}
+	if l.Width > 0 {
+		notEmpty = writeIntProp(b, "width", int64(l.Width))
+	}
+	if l.Preview != nil {
+		notEmpty = writeItemProp(b, "rel", l.Preview) || notEmpty
+	}
+	if v, err := l.Href.MarshalJSON(); err == nil && len(v) > 0 {
+		notEmpty = writeProp(b, "href", v) || notEmpty
+	}
+	if len(l.HrefLang) > 0 {
+		notEmpty = writeStringProp(b, "hrefLang", string(l.HrefLang)) || notEmpty
+	}
+	return notEmpty
+}

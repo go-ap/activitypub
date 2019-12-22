@@ -94,6 +94,18 @@ func (l Link) GetType() ActivityVocabularyType {
 	return l.Type
 }
 
+// MarshalJSON
+func (l Link) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0)
+	write(&b, '{')
+
+	if writeLinkValue(&b, l) {
+		write(&b, '}')
+		return b, nil
+	}
+	return nil, nil
+}
+
 // UnmarshalJSON
 func (l *Link) UnmarshalJSON(data []byte) error {
 	return loadLink(data, l)

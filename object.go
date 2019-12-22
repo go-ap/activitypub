@@ -262,12 +262,9 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 // MarshalJSON
 func (o Object) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
-	notEmpty := false
 	write(&b, '{')
 
-	notEmpty = writeObjectValue(&b, o)
-
-	if notEmpty {
+	if writeObjectValue(&b, o) {
 		write(&b, '}')
 		return b, nil
 	}
