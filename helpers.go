@@ -126,7 +126,7 @@ func OnOrderedCollection(it Item, fn withOrderedCollectionFn) error {
 	return fn(col)
 }
 
-// OnOrderedCollectionPage
+// OnOrderedCollectionPage executes a function on an ordered collection page type item
 func OnOrderedCollectionPage(it Item, fn withOrderedCollectionPageFn) error {
 	if it.GetType() != OrderedCollectionPageType {
 		return fmt.Errorf("%T[%s] can't be converted to OrderedCollection Page", it, it.GetType())
@@ -138,11 +138,30 @@ func OnOrderedCollectionPage(it Item, fn withOrderedCollectionPageFn) error {
 	return fn(col)
 }
 
-// OnItemCollection
+// OnItemCollection executes a function on a collection type item
 func OnItemCollection(it Item, fn withItemCollectionFn) error {
 	col, err  := ToItemCollection(it)
 	if err != nil {
 		return err
 	}
 	return fn(col)
+}
+
+// ItemOrderTimestamp is used for ordering a ItemCollection slice using the slice.Sort function
+// It orders i1 and i2 based on their Published and Updated timestamps.
+func ItemOrderTimestamp(i1, i2 Item) bool {
+	o1, e1 := ToObject(i1)
+	o2, e2 := ToObject(i2)
+	if e1 != nil || e2 != nil {
+		return false
+	}
+	t1 := o1.Published
+	if !o1.Updated.IsZero() {
+		t1 = o1.Updated
+	}
+	t2 := o2.Published
+	if !o2.Updated.IsZero() {
+		t2 = o2.Updated
+	}
+	return t1.Sub(t2) > 0
 }
