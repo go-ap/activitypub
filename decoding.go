@@ -118,7 +118,7 @@ func JSONGetTime(data []byte, prop string) time.Time {
 	t := time.Time{}
 	str, _ := jsonparser.GetUnsafeString(data, prop)
 	t.UnmarshalText([]byte(str))
-	return t
+	return t.UTC()
 }
 
 func JSONGetDuration(data []byte, prop string) time.Duration {

@@ -72,7 +72,7 @@ func writeFloatProp(b *[]byte, n string, f float64) (notEmpty bool) {
 	return writeProp(b, n, []byte(fmt.Sprintf("%f", f)))
 }
 func writeTimeProp(b *[]byte, n string, t time.Time) (notEmpty bool) {
-	if v, err := t.MarshalJSON(); err == nil {
+	if v, err := t.UTC().MarshalJSON(); err == nil {
 		return writeProp(b, n, v)
 	}
 	return false
