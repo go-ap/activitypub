@@ -523,7 +523,7 @@ func loadObject(data []byte, o *Object) error {
 	return nil
 }
 
-func loadIntrasitiveActivity(data []byte, i *IntransitiveActivity) error {
+func loadIntransitiveActivity(data []byte, i *IntransitiveActivity) error {
 	OnObject(i, func(o *Object) error {
 		return loadObject(data, o)
 	})
@@ -537,7 +537,7 @@ func loadIntrasitiveActivity(data []byte, i *IntransitiveActivity) error {
 
 func loadActivity(data []byte, a *Activity) error {
 	OnIntransitiveActivity(a, func(i *IntransitiveActivity) error {
-		return loadIntrasitiveActivity(data, i)
+		return loadIntransitiveActivity(data, i)
 	})
 	a.Object = JSONGetItem(data, "object")
 	return nil
@@ -545,7 +545,7 @@ func loadActivity(data []byte, a *Activity) error {
 
 func loadQuestion(data []byte, q *Question) error {
 	OnIntransitiveActivity(q, func(i *IntransitiveActivity) error {
-		return loadIntrasitiveActivity(data, i)
+		return loadIntransitiveActivity(data, i)
 	})
 	q.OneOf = JSONGetItem(data, "oneOf")
 	q.AnyOf = JSONGetItem(data, "anyOf")

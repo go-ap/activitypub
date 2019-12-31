@@ -179,7 +179,7 @@ func (i IntransitiveActivity) IsCollection() bool {
 
 // UnmarshalJSON
 func (i *IntransitiveActivity) UnmarshalJSON(data []byte) error {
-	return loadIntrasitiveActivity(data, i)
+	return loadIntransitiveActivity(data, i)
 }
 
 // MarshalJSON
