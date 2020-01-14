@@ -52,7 +52,7 @@ func OnIntransitiveActivity(it Item, fn withIntransitiveActivityFn) error {
 // OnQuestion
 func OnQuestion(it Item, fn withQuestionFn) error {
 	if it.GetType() != QuestionType {
-		fmt.Errorf("For %T[%s] can't be converted to Question", it, it.GetType())
+		fmt.Errorf("for %T[%s] can't be converted to Question", it, it.GetType())
 	}
 	act, err  := ToQuestion(it)
 	if err != nil {
@@ -72,9 +72,20 @@ func OnActor(it Item, fn withActorFn) error {
 	}
 	return fn(act)
 }
-
 // OnCollection
-func OnCollection(it Item, fn withCollectionInterfaceFn) error {
+func OnCollection (it Item, fn withCollectionFn) error {
+	if !(ActivityVocabularyTypes{CollectionPageType, CollectionType,}).Contains(it.GetType()) {
+		return fmt.Errorf("%T[%s] can't be converted to Collection", it, it.GetType())
+	}
+	col, err := ToCollection(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
+}
+
+// OnCollectionIntf
+func OnCollectionIntf(it Item, fn withCollectionInterfaceFn) error {
 	switch it.GetType() {
 	case CollectionOfItems:
 		col, err := ToItemCollection(it)
@@ -119,6 +130,9 @@ func OnCollectionPage(it Item, fn withCollectionPageFn) error {
 
 // OnOrderedCollection
 func OnOrderedCollection(it Item, fn withOrderedCollectionFn) error {
+	if !(ActivityVocabularyTypes{OrderedCollectionPageType, OrderedCollectionType,}).Contains(it.GetType()) {
+		return fmt.Errorf("%T[%s] can't be converted to Ordered Collection", it, it.GetType())
+	}
 	col, err := ToOrderedCollection(it)
 	if err != nil {
 		return err

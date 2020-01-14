@@ -582,8 +582,8 @@ func loadCollection(data []byte, c *Collection) error {
 }
 
 func loadCollectionPage(data []byte, c *CollectionPage) error {
-	OnCollection(c, func(c CollectionInterface) error {
-		return loadCollection(data, c.(*Collection))
+	OnCollection(c, func(c *Collection) error {
+		return loadCollection(data, c)
 	})
 	c.Next = JSONGetItem(data, "next")
 	c.Prev = JSONGetItem(data, "prev")
