@@ -573,11 +573,11 @@ func loadCollection(data []byte, c *Collection) error {
 	OnObject(c, func(o *Object) error {
 		return loadObject(data, o)
 	})
-	c.Items = JSONGetItems(data, "items")
-	c.TotalItems = uint(JSONGetInt(data, "totalItems"))
 	c.Current = JSONGetItem(data, "current")
 	c.First = JSONGetItem(data, "first")
 	c.Last = JSONGetItem(data, "last")
+	c.TotalItems = uint(JSONGetInt(data, "totalItems"))
+	c.Items = JSONGetItems(data, "items")
 	return nil
 }
 
@@ -595,11 +595,11 @@ func loadOrderedCollection(data []byte, c *OrderedCollection) error {
 	OnObject(c, func(o *Object) error {
 		return loadObject(data, o)
 	})
-	c.OrderedItems = JSONGetItems(data, "orderedItems")
-	c.TotalItems = uint(JSONGetInt(data, "totalItems"))
 	c.Current = JSONGetItem(data, "current")
 	c.First = JSONGetItem(data, "first")
 	c.Last = JSONGetItem(data, "last")
+	c.TotalItems = uint(JSONGetInt(data, "totalItems"))
+	c.OrderedItems = JSONGetItems(data, "orderedItems")
 	return nil
 }
 

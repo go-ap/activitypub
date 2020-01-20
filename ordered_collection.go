@@ -247,11 +247,10 @@ func (o OrderedCollection) MarshalJSON() ([]byte, error) {
 	if o.Last != nil {
 		notEmpty = writeItemProp(&b, "last", o.Last) || notEmpty
 	}
+	notEmpty = writeIntProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
 	if o.OrderedItems != nil {
 		notEmpty = writeItemCollectionProp(&b, "orderedItems", o.OrderedItems) || notEmpty
 	}
-	notEmpty = writeIntProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
-
 	if notEmpty {
 		write(&b, '}')
 		return b, nil

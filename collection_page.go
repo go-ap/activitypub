@@ -197,6 +197,9 @@ func (c CollectionPage) MarshalJSON() ([]byte, error) {
 		notEmpty = writeObjectValue(&b, *o)
 		return nil
 	})
+	if c.PartOf != nil {
+		notEmpty = writeItemProp(&b, "partOf", c.PartOf) || notEmpty
+	}
 	if c.Current != nil {
 		notEmpty = writeItemProp(&b, "current", c.Current) || notEmpty
 	}
@@ -206,21 +209,16 @@ func (c CollectionPage) MarshalJSON() ([]byte, error) {
 	if c.Last != nil {
 		notEmpty = writeItemProp(&b, "last", c.Last) || notEmpty
 	}
-	if c.Items != nil {
-		notEmpty = writeItemCollectionProp(&b, "items", c.Items) || notEmpty
-	}
-	if c.PartOf != nil {
-		notEmpty = writeItemProp(&b, "partOf", c.PartOf) || notEmpty
-	}
 	if c.Next != nil {
 		notEmpty = writeItemProp(&b, "next", c.Next) || notEmpty
 	}
 	if c.Prev != nil {
 		notEmpty = writeItemProp(&b, "prev", c.Prev) || notEmpty
 	}
-
 	notEmpty = writeIntProp(&b, "totalItems", int64(c.TotalItems)) || notEmpty
-
+	if c.Items != nil {
+		notEmpty = writeItemCollectionProp(&b, "items", c.Items) || notEmpty
+	}
 	if notEmpty {
 		write(&b, '}')
 		return b, nil

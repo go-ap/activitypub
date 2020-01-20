@@ -200,6 +200,9 @@ func (o OrderedCollectionPage) MarshalJSON() ([]byte, error) {
 		notEmpty = writeObjectValue(&b, *o)
 		return nil
 	})
+	if o.PartOf != nil {
+		notEmpty = writeItemProp(&b, "partOf", o.PartOf) || notEmpty
+	}
 	if o.Current != nil {
 		notEmpty = writeItemProp(&b, "current", o.Current) || notEmpty
 	}
@@ -209,12 +212,6 @@ func (o OrderedCollectionPage) MarshalJSON() ([]byte, error) {
 	if o.Last != nil {
 		notEmpty = writeItemProp(&b, "last", o.Last) || notEmpty
 	}
-	if o.OrderedItems != nil {
-		notEmpty = writeItemCollectionProp(&b, "orderedItems", o.OrderedItems) || notEmpty
-	}
-	if o.PartOf != nil {
-		notEmpty = writeItemProp(&b, "partOf", o.PartOf) || notEmpty
-	}
 	if o.Next != nil {
 		notEmpty = writeItemProp(&b, "next", o.Next) || notEmpty
 	}
@@ -222,7 +219,9 @@ func (o OrderedCollectionPage) MarshalJSON() ([]byte, error) {
 		notEmpty = writeItemProp(&b, "prev", o.Prev) || notEmpty
 	}
 	notEmpty = writeIntProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
-
+	if o.OrderedItems != nil {
+		notEmpty = writeItemCollectionProp(&b, "orderedItems", o.OrderedItems) || notEmpty
+	}
 	if notEmpty {
 		write(&b, '}')
 		return b, nil
