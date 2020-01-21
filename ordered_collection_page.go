@@ -154,7 +154,7 @@ func (o OrderedCollectionPage) GetLink() IRI {
 }
 
 // Collection returns the underlying Collection type
-func (o *OrderedCollectionPage) Collection() ItemCollection {
+func (o OrderedCollectionPage) Collection() ItemCollection {
 	return o.OrderedItems
 }
 

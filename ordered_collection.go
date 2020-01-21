@@ -187,7 +187,7 @@ func (o OrderedCollection) IsObject() bool {
 }
 
 // Collection returns the underlying Collection type
-func (o *OrderedCollection) Collection() ItemCollection {
+func (o OrderedCollection) Collection() ItemCollection {
 	return o.OrderedItems
 }
 
