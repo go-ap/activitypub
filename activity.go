@@ -407,6 +407,24 @@ func (a *Activity) Recipients() ItemCollection {
 func (a *Activity) Clean() {
 	a.BCC = nil
 	a.Bto = nil
+	if a.Object != nil && a.Object.IsObject() {
+		OnObject(a.Object, func(o *Object) error {
+			o.Clean()
+			return nil
+		})
+	}
+	if a.Actor != nil && a.Actor.IsObject() {
+		OnObject(a.Actor, func(o *Object) error {
+			o.Clean()
+			return nil
+		})
+	}
+	if a.Target != nil && a.Target.IsObject() {
+		OnObject(a.Target, func(o *Object) error {
+			o.Clean()
+			return nil
+		})
+	}
 }
 
 type (
