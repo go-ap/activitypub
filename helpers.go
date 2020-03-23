@@ -111,6 +111,20 @@ func OnCollectionIntf(it Item, fn withCollectionInterfaceFn) error {
 			}
 			return fn(col)
 		})
+	case OrderedCollectionType:
+		col, err := ToOrderedCollection(it)
+		if err != nil {
+			return err
+		}
+		return fn(col)
+	case OrderedCollectionPageType:
+		return OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
+			col, err := ToOrderedCollection(p)
+			if err != nil {
+				return err
+			}
+			return fn(col)
+		})
 	default:
 		return fmt.Errorf("%T[%s] can't be converted to Collection", it, it.GetType())
 	}
