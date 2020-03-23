@@ -66,6 +66,10 @@ var ObjectTypes = ActivityVocabularyTypes{
 	TombstoneType,
 	VideoType,
 }
+var obTypes = append(ActorTypes, ObjectTypes...)
+
+// Types contains all valid types in the ActivityPub vocab
+var Types = append(ActivityTypes, obTypes...)
 
 type (
 	// ActivityVocabularyType is the data type for an Activity type object
