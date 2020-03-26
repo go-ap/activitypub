@@ -1,12 +1,17 @@
 package handlers
 
 import (
+	"fmt"
+	pub "github.com/go-ap/activitypub"
 	"net/http"
 	"strings"
 )
 
 // CollectionType
 type CollectionType string
+
+// CollectionTypes
+type CollectionTypes []CollectionType
 
 const (
 	Unknown   = CollectionType("")
@@ -51,7 +56,7 @@ func (d pathTyper) Type(r *http.Request) CollectionType {
 	return CollectionType(strings.ToLower(col))
 }
 
-var validActivityCollection = []CollectionType{
+var validActivityCollection = CollectionTypes{
 	Outbox,
 	Inbox,
 	Likes,
@@ -59,11 +64,77 @@ var validActivityCollection = []CollectionType{
 	Replies, // activitystreams
 }
 
-func getValidActivityCollection(typ string) CollectionType {
-	for _, t := range validActivityCollection {
-		if strings.ToLower(typ) == string(t) {
-			return t
+var onObject = CollectionTypes{
+	Likes,
+	Shares,
+	Replies,
+}
+
+var onActor = CollectionTypes{
+	Outbox,
+	Inbox,
+	Liked,
+	Following,
+	Followers,
+}
+func (t CollectionTypes) Contains(typ CollectionType) bool {
+	for _, tt := range t {
+		if strings.ToLower(string(typ)) == string(tt) {
+			return true
 		}
+	}
+	return false
+}
+
+func (t CollectionType) IRI(i pub.Item) pub.IRI {
+	var iri pub.IRI
+	if i.IsObject() {
+		if onActor.Contains(t) {
+			pub.OnActor(i, func(a *pub.Actor) error {
+				if t == Inbox && a.Inbox != nil {
+					iri = a.Inbox.GetLink()
+				}
+				if t == Outbox && a.Outbox != nil {
+					iri = a.Outbox.GetLink()
+				}
+				if t == Liked && a.Liked != nil {
+					iri = a.Liked.GetLink()
+				}
+				if t == Following && a.Following != nil {
+					iri = a.Following.GetLink()
+				}
+				if t == Followers && a.Followers != nil {
+					iri = a.Followers.GetLink()
+				}
+				return nil
+			})
+		}
+		if onObject.Contains(t) {
+			pub.OnObject(i, func(o *pub.Object) error {
+				if t == Likes && o.Likes != nil {
+					iri = o.Likes.GetLink()
+				}
+				if t == Shares && o.Shares != nil {
+					iri = o.Shares.GetLink()
+				}
+				if t == Replies && o.Replies != nil {
+					iri = o.Replies.GetLink()
+				}
+				return nil
+			})
+		}
+	}
+	if len(iri) == 0 {
+		iri = pub.IRI(fmt.Sprintf("%s/%s", i.GetLink(), t))
+	}
+	return iri
+}
+
+
+func getValidActivityCollection(typ string) CollectionType {
+	t := CollectionType(typ)
+	if validActivityCollection.Contains(t) {
+		return t
 	}
 	return Unknown
 }
