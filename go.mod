@@ -3,8 +3,9 @@ module github.com/go-ap/handlers
 go 1.13
 
 require (
-	github.com/go-ap/activitypub v0.0.0-20200302113530-ef90082ea6d8
-	github.com/go-ap/errors v0.0.0-20200302114017-b6ee20a2b83e
-	github.com/go-ap/jsonld v0.0.0-20200302113640-5bd3bc85d72b
-	github.com/go-ap/storage v0.0.0-20200302114248-4a991207c62d
+	github.com/buger/jsonparser v0.0.0-20200322175846-f7e751efca13 // indirect
+	github.com/go-ap/activitypub v0.0.0-20200326103819-0a2f9982224e
+	github.com/go-ap/errors v0.0.0-20200326104127-4dafb43ddbac
+	github.com/go-ap/jsonld v0.0.0-20200326103956-d2cbd2210abb
+	github.com/go-ap/storage v0.0.0-20200326104224-29c7c4458e5c
 )
