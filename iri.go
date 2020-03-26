@@ -49,6 +49,9 @@ func (i *IRI) UnmarshalJSON(s []byte) error {
 
 // MarshalJSON
 func (i IRI) MarshalJSON() ([]byte, error) {
+	if i == "" {
+		return nil, nil
+	}
 	b := make([]byte, 0)
 	write(&b, '"')
 	writeS(&b, i.String())
