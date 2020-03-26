@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"errors"
+	"strings"
 	"time"
 	"unsafe"
 )
@@ -42,7 +43,7 @@ type ActivityVocabularyTypes []ActivityVocabularyType
 
 func (a ActivityVocabularyTypes) Contains(typ ActivityVocabularyType) bool {
 	for _, v := range a {
-		if v == typ {
+		if strings.ToLower(string(v)) == strings.ToLower(string(typ)) {
 			return true
 		}
 	}
