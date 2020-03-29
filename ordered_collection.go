@@ -385,3 +385,8 @@ func SharesNew() *Shares {
 
 	return &i
 }
+
+// ItemMatches
+func (o OrderedCollection) ItemMatches(it Item) bool {
+	return o.OrderedItems.Contains(it.GetLink())
+}

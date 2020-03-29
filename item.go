@@ -18,3 +18,4 @@ func Flatten(it Item) Item {
 	}
 	return it
 }
+

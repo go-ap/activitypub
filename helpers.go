@@ -92,11 +92,7 @@ func OnCollectionIntf(it Item, fn withCollectionInterfaceFn) error {
 		if err != nil {
 			return err
 		}
-		c := Collection{
-			TotalItems: uint(len(*col)),
-			Items:      *col,
-		}
-		return fn(&c)
+		return fn(col)
 	case CollectionType:
 		col, err := ToCollection(it)
 		if err != nil {

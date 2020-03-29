@@ -239,3 +239,8 @@ func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
 	}
 	return nil, errors.New("unable to convert to ordered collection page")
 }
+
+// ItemMatches
+func (o OrderedCollectionPage) ItemMatches(it Item) bool {
+	return o.OrderedItems.Contains(it.GetLink())
+}

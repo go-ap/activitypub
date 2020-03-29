@@ -284,3 +284,8 @@ func ToCollectionPage(it Item) (*CollectionPage, error) {
 	}
 	return nil, errors.New("unable to convert to collection page")
 }
+
+// ItemMatches
+func (c CollectionPage) ItemMatches(it Item) bool {
+	return c.Items.Contains(it.GetLink())
+}

@@ -151,3 +151,7 @@ func ToItemCollection(it Item) (*ItemCollection, error) {
 	}
 	return nil, errors.New("unable to convert to item collection")
 }
+
+func (i ItemCollection) ItemMatches(it Item) bool {
+	return i.Contains(it.GetLink())
+}

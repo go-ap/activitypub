@@ -290,3 +290,8 @@ func FollowingNew() *Following {
 
 	return &i
 }
+
+// ItemMatches
+func (c Collection) ItemMatches(it Item) bool {
+	return c.Items.Contains(it.GetLink())
+}
