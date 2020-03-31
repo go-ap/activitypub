@@ -8,9 +8,7 @@ import (
 	"strings"
 )
 
-const (
-	NilLangRef LangRef = "-"
-)
+const NilLangRef LangRef = "-"
 
 type (
 	// LangRef is the type for a language reference code, should be an ISO639-1 language specifier.

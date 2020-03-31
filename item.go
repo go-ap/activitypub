@@ -1,10 +1,15 @@
 package activitypub
 
 // Item struct
-type Item ObjectOrLink
+type Item = ObjectOrLink
 
-const EmptyID = ID("")
-const EmptyIRI = IRI("")
+const (
+	EmptyIRI IRI = ""
+	NilIRI   IRI = "-"
+
+	EmptyID = EmptyIRI
+	NilID   = NilIRI
+)
 
 // Flatten checks if Item can be flatten to an IRI or array of IRIs and returns it if so
 func Flatten(it Item) Item {
@@ -18,4 +23,3 @@ func Flatten(it Item) Item {
 	}
 	return it
 }
-
