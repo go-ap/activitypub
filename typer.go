@@ -88,6 +88,9 @@ func (t CollectionTypes) Contains(typ CollectionType) bool {
 
 func (t CollectionType) IRI(i pub.Item) pub.IRI {
 	var iri pub.IRI
+	if i == nil {
+		return pub.EmptyIRI
+	}
 	if i.IsObject() {
 		if onActor.Contains(t) {
 			pub.OnActor(i, func(a *pub.Actor) error {
