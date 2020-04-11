@@ -1,6 +1,10 @@
 package activitypub
 
-import "testing"
+import (
+	"fmt"
+	"reflect"
+	"testing"
+)
 
 func TestIRI_GetLink(t *testing.T) {
 	val := "http://example.com"
@@ -56,6 +60,20 @@ func TestIRI_UnmarshalJSON(t *testing.T) {
 	}
 	if val != i.String() {
 		t.Errorf("%T invalid value after Unmarshal %q, expected %q", i, i, val)
+	}
+}
+
+func TestIRI_MarshalJSON(t *testing.T) {
+	value := []byte("http://example.com")
+	i := IRI(value)
+
+	v, err := i.MarshalJSON()
+	if err != nil {
+		t.Error(err)
+	}
+	expected := fmt.Sprintf("%q", value)
+	if expected != string(v) {
+		t.Errorf("Invalid value after MarshalJSON: %s, expected %s", v, expected)
 	}
 }
 
@@ -218,3 +236,44 @@ func TestIRI_Contains(t *testing.T) {
 func TestIRI_IsCollection(t *testing.T) {
 	t.Skip("TODO")
 }
+
+func TestIRIs_UnmarshalJSON(t *testing.T) {
+	value1 := []byte("http://example.com")
+	value2 := []byte("http://example.net")
+	value3 := []byte("http://example.org")
+	i := make(IRIs, 0)
+
+	err := i.UnmarshalJSON([]byte(fmt.Sprintf("[%q, %q, %q]", value1, value2, value3)))
+	if err != nil {
+		t.Error(err)
+	}
+	expected:= IRIs{
+		IRI(value1),
+		IRI(value2),
+		IRI(value3),
+	}
+	if !reflect.DeepEqual(i, expected) {
+		t.Errorf("%T invalid value after UnmarshalJSON %#v, expected %#v", i, i, expected)
+	}
+}
+
+func TestIRIs_MarshalJSON(t *testing.T) {
+	value1 := []byte("http://example.com")
+	value2 := []byte("http://example.net")
+	value3 := []byte("http://example.org")
+	i := IRIs{
+		IRI(value1),
+		IRI(value2),
+		IRI(value3),
+	}
+
+	v, err := i.MarshalJSON()
+	if err != nil {
+		t.Error(err)
+	}
+	expected := fmt.Sprintf("[%q, %q, %q]", value1, value2, value3)
+	if expected == string(v) {
+		t.Errorf("Invalid value after MarshalJSON: %s, expected %s", v, expected)
+	}
+}
+

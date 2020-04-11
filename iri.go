@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"github.com/buger/jsonparser"
 	"net/url"
 	"path"
 	"strings"
@@ -113,6 +114,29 @@ func (i IRIs) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
+func (i *IRIs) UnmarshalJSON(data []byte) error {
+	if i == nil {
+		return nil
+	}
+	value, typ, _, err := jsonparser.Get(data)
+	if err != nil {
+		return err
+	}
+	switch typ {
+	case jsonparser.String:
+		if iri, ok := asIRI(value); ok {
+			*i = append(*i, iri)
+		}
+	case jsonparser.Array:
+		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			if iri, ok := asIRI(value); ok {
+				*i = append(*i, iri)
+			}
+		})
+	}
+	return nil
+}
+
 // Contains verifies if IRIs array contains the received one
 func (i IRIs) Contains(r IRI) bool {
 	if len(i) == 0 {
@@ -203,4 +227,8 @@ func (i IRI) Contains(what IRI, checkScheme bool) bool {
 		pw = path.Clean(pw)
 	}
 	return strings.Contains(p, pw)
+}
+
+func (i IRI) ItemMatches(it Item) bool {
+	return it.GetLink().Contains(i, false)
 }
