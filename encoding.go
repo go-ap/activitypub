@@ -3,6 +3,7 @@ package activitypub
 import (
 	"encoding/json"
 	"fmt"
+	"git.sr.ht/~mariusor/go-xsd-duration"
 	"time"
 )
 
@@ -79,7 +80,7 @@ func writeTimeProp(b *[]byte, n string, t time.Time) (notEmpty bool) {
 }
 
 func writeDurationProp(b *[]byte, n string, d time.Duration) (notEmpty bool) {
-	if v, err := marshalXSD(d); err == nil {
+	if v, err := xsd.Marshal(d); err == nil {
 		return writeProp(b, n, v)
 	}
 	return false
