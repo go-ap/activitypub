@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"encoding"
 	"encoding/json"
 	"fmt"
@@ -206,12 +207,16 @@ func JSONUnmarshalToItem(data []byte) Item {
 }
 
 func asIRI(val []byte) (IRI, bool) {
+	if len(val) == 0 {
+		return NilIRI, true
+	}
+	val = bytes.Trim(val, string('"'))
 	u, err := url.ParseRequestURI(string(val))
 	if err == nil && len(u.Scheme) > 0 && len(u.Host) > 0 {
 		// try to see if it's an IRI
 		return IRI(val), true
 	}
-	return IRI(""), false
+	return EmptyIRI, false
 }
 
 func JSONGetItem(data []byte, prop string) Item {

@@ -1,9 +1,175 @@
 package activitypub
 
 import (
+	"errors"
+	"fmt"
 	"reflect"
 	"testing"
+	"unsafe"
 )
+
+type canErrorFunc func(format string, args ...interface{})
+
+type visit struct {
+	a1  unsafe.Pointer
+	a2  unsafe.Pointer
+	typ reflect.Type
+}
+
+func assertDeepEquals(t canErrorFunc, x, y interface{}) bool {
+	if x == nil || y == nil {
+		return x == y
+	}
+	v1 := reflect.ValueOf(x)
+	//if v1.CanAddr() {
+	//	v1 = v1.Addr()
+	//}
+	v2 := reflect.ValueOf(y)
+	//if v2.CanAddr() {
+	//	v2 = v2.Addr()
+	//}
+	if v1.Type() != v2.Type() {
+		t("%T != %T", x, y)
+		return false
+	}
+	return deepValueEqual(t, v1, v2, make(map[visit]bool), 0)
+}
+
+func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool, depth int) bool {
+	if !v1.IsValid() || !v2.IsValid() {
+		return v1.IsValid() == v2.IsValid()
+	}
+	if v1.Type() != v2.Type() {
+		t("types differ %s != %s", v1.Type().Name(), v2.Type().Name())
+		return false
+	}
+
+	// We want to avoid putting more in the visited map than we need to.
+	// For any possible reference cycle that might be encountered,
+	// hard(t) needs to return true for at least one of the types in the cycle.
+	hard := func(k reflect.Kind) bool {
+		switch k {
+		case reflect.Map, reflect.Slice, reflect.Ptr, reflect.Interface:
+			return true
+		}
+		//t("Invalid type for %s", k)
+		return false
+	}
+
+	if v1.CanAddr() && v2.CanAddr() && hard(v1.Kind()) {
+		addr1 := unsafe.Pointer(v1.UnsafeAddr())
+		addr2 := unsafe.Pointer(v2.UnsafeAddr())
+		if uintptr(addr1) > uintptr(addr2) {
+			// Canonicalize order to reduce number of entries in visited.
+			// Assumes non-moving garbage collector.
+			addr1, addr2 = addr2, addr1
+		}
+
+		// Short circuit if references are already seen.
+		typ := v1.Type()
+		v := visit{addr1, addr2, typ}
+		if visited[v] {
+			return true
+		}
+
+		// Remember for later.
+		visited[v] = true
+	}
+
+	switch v1.Kind() {
+	case reflect.Array:
+		for i := 0; i < v1.Len(); i++ {
+			if !deepValueEqual(t, v1.Index(i), v2.Index(i), visited, depth+1) {
+				t("Arrays not equal at index %d %s %s", i, v1.Index(i), v2.Index(i))
+				return false
+			}
+		}
+		return true
+	case reflect.Slice:
+		if v1.IsNil() != v2.IsNil() {
+			t("One of the slices is not nil %s[%d] vs %s[%d]", v1.Type().Name(), v1.Len(), v2.Type().Name(), v2.Len())
+			return false
+		}
+		if v1.Len() != v2.Len() {
+			t("Slices lengths are different %s[%d] vs %s[%d]", v1.Type().Name(), v1.Len(), v2.Type().Name(), v2.Len())
+			return false
+		}
+		if v1.Pointer() == v2.Pointer() {
+			return true
+		}
+		for i := 0; i < v1.Len(); i++ {
+			if !deepValueEqual(t, v1.Index(i), v2.Index(i), visited, depth+1) {
+				t("Slices elements at pos %d are not equal %#v vs %#v", i, v1.Index(i), v2.Index(i))
+				return false
+			}
+		}
+		return true
+	case reflect.Interface:
+		if v1.IsNil() || v2.IsNil() {
+			if v1.IsNil() == v2.IsNil() {
+				return true
+			}
+			var isNil1, isNil2 string
+			if v1.IsNil() {
+				isNil1 = "is"
+			} else {
+				isNil1 = "is not"
+			}
+			if v2.IsNil() {
+				isNil2 = "is"
+			} else {
+				isNil2 = "is not"
+			}
+			t("Interface '%s' %s nil and '%s' %s nil", v1.Type().Name(), isNil1, v2.Type().Name(), isNil2)
+			return false
+		}
+		return deepValueEqual(t, v1.Elem(), v2.Elem(), visited, depth+1)
+	case reflect.Ptr:
+		if v1.Pointer() == v2.Pointer() {
+			return true
+		}
+		return deepValueEqual(t, v1.Elem(), v2.Elem(), visited, depth+1)
+	case reflect.Struct:
+		for i, n := 0, v1.NumField(); i < n; i++ {
+			if !deepValueEqual(t, v1.Field(i), v2.Field(i), visited, depth+1) {
+				t("Struct fields at pos %d %s[%s] and %s[%s] are not deeply equal", i, v1.Type().Field(i).Name, v1.Field(i).Type().Name(), v2.Type().Field(i).Name, v2.Field(i).Type().Name())
+				if v1.Field(i).CanAddr() && v2.Field(i).CanAddr() {
+					t("  Values: %#v - %#v", v1.Field(i).Interface(), v2.Field(i).Interface())
+				}
+				return false
+			}
+		}
+		return true
+	case reflect.Map:
+		if v1.IsNil() != v2.IsNil() {
+			t("Maps are not nil", v1.Type().Name(), v2.Type().Name())
+			return false
+		}
+		if v1.Len() != v2.Len() {
+			t("Maps don't have the same length %d vs %d", v1.Len(), v2.Len())
+			return false
+		}
+		if v1.Pointer() == v2.Pointer() {
+			return true
+		}
+		for _, k := range v1.MapKeys() {
+			val1 := v1.MapIndex(k)
+			val2 := v2.MapIndex(k)
+			if !val1.IsValid() || !val2.IsValid() || !deepValueEqual(t, v1.MapIndex(k), v2.MapIndex(k), visited, depth+1) {
+				t("Maps values at index %s are not equal", k.String())
+				return false
+			}
+		}
+		return true
+	case reflect.Func:
+		if v1.IsNil() && v2.IsNil() {
+			return true
+		}
+		// Can't do better than this:
+		return false
+	}
+	return true // i guess?
+}
 
 type testPairs map[ActivityVocabularyType]reflect.Type
 
@@ -127,13 +293,50 @@ func TestJSONGetItemByType(t *testing.T) {
 }
 
 func TestUnmarshalJSON(t *testing.T) {
-	dataEmpty := []byte("{}")
-	i, err := UnmarshalJSON(dataEmpty)
-	if err != nil {
-		t.Errorf("invalid unmarshaling %s", err)
+	type args struct {
+		d []byte
 	}
-	if i != nil {
-		t.Errorf("invalid unmarshaling, expected nil")
+	tests := []struct {
+		name    string
+		args    args
+		want    Item
+		err     error
+	}{
+		{
+			name:    "empty",
+			args:    args{[]byte{'{', '}'}},
+			want:    nil,
+			err:     nil,
+		},
+		{
+			name:    "IRI",
+			args:    args{[]byte("\"http://example.com\"")},
+			want:    IRI("http://example.com"),
+			err:     nil,
+		},
+		{
+			name:    "IRIs",
+			args:    args{[]byte(fmt.Sprintf("[%q, %q]", "http://example.com", "http://example.net"))},
+			want:    ItemCollection{
+				IRI("http://example.com"),
+				IRI("http://example.net"),
+			},
+			err:     nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := UnmarshalJSON(tt.args.d)
+			if (err != nil && tt.err == nil) || (err == nil && tt.err != nil) {
+				if !errors.Is(err, tt.err) {
+					t.Errorf("UnmarshalJSON() error = %v, wantErr %v", err, tt.err)
+				}
+				return
+			}
+			if !assertDeepEquals(t.Errorf, got, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %#v, want %#v", got, tt.want)
+			}
+		})
 	}
 }
 

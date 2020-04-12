@@ -1,8 +1,8 @@
 package activitypub
 
 import (
+	"errors"
 	"fmt"
-	"reflect"
 	"testing"
 )
 
@@ -238,22 +238,52 @@ func TestIRI_IsCollection(t *testing.T) {
 }
 
 func TestIRIs_UnmarshalJSON(t *testing.T) {
-	value1 := []byte("http://example.com")
-	value2 := []byte("http://example.net")
-	value3 := []byte("http://example.org")
-	i := make(IRIs, 0)
-
-	err := i.UnmarshalJSON([]byte(fmt.Sprintf("[%q, %q, %q]", value1, value2, value3)))
-	if err != nil {
-		t.Error(err)
+	type args struct {
+		d []byte
 	}
-	expected:= IRIs{
-		IRI(value1),
-		IRI(value2),
-		IRI(value3),
+	tests := []struct {
+		name string
+		args args
+		obj  IRIs
+		want IRIs
+		err  error
+	}{
+		{
+			name: "empty",
+			args: args{[]byte{'{', '}'}},
+			want: nil,
+			err:  nil,
+		},
+		{
+			name: "IRI",
+			args: args{[]byte("\"http://example.com\"")},
+			want: IRIs{IRI("http://example.com")},
+			err:  nil,
+		},
+		{
+			name: "IRIs",
+			args: args{[]byte(fmt.Sprintf("[%q, %q, %q]", "http://example.com", "http://example.net", "http://example.org"))},
+			want: IRIs{
+				IRI("http://example.com"),
+				IRI("http://example.net"),
+				IRI("http://example.org"),
+			},
+			err: nil,
+		},
 	}
-	if !reflect.DeepEqual(i, expected) {
-		t.Errorf("%T invalid value after UnmarshalJSON %#v, expected %#v", i, i, expected)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.obj.UnmarshalJSON(tt.args.d)
+			if (err != nil && tt.err == nil) || (err == nil && tt.err != nil) {
+				if !errors.Is(err, tt.err) {
+					t.Errorf("UnmarshalJSON() error = %v, wantErr %v", err, tt.err)
+				}
+				return
+			}
+			if !assertDeepEquals(t.Errorf, tt.obj, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %#v, want %#v", tt.obj, tt.want)
+			}
+		})
 	}
 }
 
@@ -276,4 +306,3 @@ func TestIRIs_MarshalJSON(t *testing.T) {
 		t.Errorf("Invalid value after MarshalJSON: %s, expected %s", v, expected)
 	}
 }
-
