@@ -167,3 +167,11 @@ func TestCollectionPage_IsLink(t *testing.T) {
 func TestCollectionPage_IsObject(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestCollectionPage_MarshalJSON(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestCollectionPage_ItemMatches(t *testing.T) {
+	t.Skipf("TODO")
+}

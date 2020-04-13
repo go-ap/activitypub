@@ -181,3 +181,11 @@ func TestFollowersNew(t *testing.T) {
 func TestFollowingNew(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestCollection_MarshalJSON(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestCollection_ItemMatches(t *testing.T) {
+	t.Skipf("TODO")
+}

@@ -286,3 +286,15 @@ func TestOutboxNew(t *testing.T) {
 func TestSharesNew(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestOrderedCollection_MarshalJSON(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOrderedCollection_ItemMatches(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestOrderedCollection_IsCollection(t *testing.T) {
+	t.Skipf("TODO")
+}

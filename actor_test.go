@@ -365,3 +365,15 @@ func TestActor_Recipients(t *testing.T) {
 func TestPublicKey_UnmarshalJSON(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestActor_MarshalJSON(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestEndpoints_MarshalJSON(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestPublicKey_MarshalJSON(t *testing.T) {
+	t.Skipf("TODO")
+}
