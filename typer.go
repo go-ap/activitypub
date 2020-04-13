@@ -77,6 +77,7 @@ var onActor = CollectionTypes{
 	Following,
 	Followers,
 }
+
 func (t CollectionTypes) Contains(typ CollectionType) bool {
 	for _, tt := range t {
 		if strings.ToLower(string(typ)) == string(tt) {
@@ -127,12 +128,12 @@ func (t CollectionType) IRI(i pub.Item) pub.IRI {
 			})
 		}
 	}
+
 	if len(iri) == 0 {
 		iri = pub.IRI(fmt.Sprintf("%s/%s", i.GetLink(), t))
 	}
 	return iri
 }
-
 
 func getValidActivityCollection(typ string) CollectionType {
 	t := CollectionType(typ)
