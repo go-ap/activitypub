@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"fmt"
 	"github.com/buger/jsonparser"
 	"net/url"
 	"path"
@@ -60,9 +61,14 @@ func (i IRI) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
+// AddPath concatenates el elements as a path to i
+func (i IRI) AddPath(el ...string) IRI {
+	return IRI(fmt.Sprintf("%s/%s", i, path.Join(el...)))
+}
+
 // GetID
 func (i IRI) GetID() ID {
-	return ID(i)
+	return i
 }
 
 // GetType

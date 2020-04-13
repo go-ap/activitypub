@@ -306,3 +306,11 @@ func TestIRIs_MarshalJSON(t *testing.T) {
 		t.Errorf("Invalid value after MarshalJSON: %s, expected %s", v, expected)
 	}
 }
+
+func TestIRI_AddPath(t *testing.T) {
+	t.Skip("TODO")
+}
+
+func TestIRI_ItemMatches(t *testing.T) {
+	t.Skip("TODO")
+}
