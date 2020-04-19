@@ -464,3 +464,7 @@ func Test_writeValue(t *testing.T) {
 		})
 	}
 }
+
+func TestMarshalJSON(t *testing.T) {
+	t.Skip("TODO")
+}

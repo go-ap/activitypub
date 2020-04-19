@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"git.sr.ht/~mariusor/go-xsd-duration"
+	"github.com/go-ap/jsonld"
 	"time"
 )
 
@@ -342,4 +343,9 @@ func writeLinkValue(b *[]byte, l Link) (notEmpty bool) {
 		notEmpty = writeStringProp(b, "hrefLang", string(l.HrefLang)) || notEmpty
 	}
 	return notEmpty
+}
+
+// MarshalJSON wraps the jsonld.Marshal function
+func MarshalJSON(it Item) ([]byte, error) {
+	return jsonld.Marshal(it)
 }
