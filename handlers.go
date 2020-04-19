@@ -81,7 +81,7 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
-	
+
 	contentType := json.ContentType
 	if act, err := pub.ToActivity(it); err == nil {
 		if act.Object.IsLink() {
@@ -90,7 +90,7 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				act.Object = col[0]
 			}
 		}
-		if dat, err = json.Marshal(act.Object); err != nil {
+		if dat, err = pub.MarshalJSON(act.Object); err != nil {
 			dat = dat[:]
 			contentType = "application/json"
 		}
@@ -99,16 +99,16 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch status {
 	case http.StatusCreated:
 		if len(dat) == 0 {
-			dat, _ = json.Marshal("CREATED")
+			dat = []byte("CREATED")
 		}
 		w.Header().Set("Location", it.GetLink().String())
 	case http.StatusGone:
 		if len(dat) == 0 {
-			dat, _ = json.Marshal("DELETED")
+			dat = []byte("DELETED")
 		}
 	default:
 		contentType = json.ContentType
-		dat, _ = json.Marshal(it)
+		dat, _ = pub.MarshalJSON(it)
 	}
 	w.Header().Set("Content-Type", contentType)
 	w.WriteHeader(status)
