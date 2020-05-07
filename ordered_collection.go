@@ -148,7 +148,7 @@ type (
 	// the contents of the outbox are filtered by the permissions of the person reading it).
 	OutboxStream = Outbox
 
-	// Outbox is a type alias for an Ordered Collection
+	// outbox is a type alias for an Ordered Collection
 	Outbox = OrderedCollection
 
 	// SharesCollection is a list of all Announce activities with this object as the object property,
@@ -197,12 +197,12 @@ func (o OrderedCollection) IsCollection() bool {
 }
 
 // Contains verifies if OrderedCollection array contains the received one
-func (o OrderedCollection) Contains(r IRI) bool {
+func (o OrderedCollection) Contains(r Item) bool {
 	if len(o.OrderedItems) == 0 {
 		return false
 	}
-	for _, iri := range o.OrderedItems {
-		if r.Equals(iri.GetLink(), false) {
+	for _, it := range o.OrderedItems {
+		if ItemsEqual(it, r) {
 			return true
 		}
 	}
@@ -334,7 +334,7 @@ func InboxNew() *OrderedCollection {
 	return &i
 }
 
-// LikedCollection initializes a new Outbox
+// LikedCollection initializes a new outbox
 func LikedNew() *OrderedCollection {
 	id := ID("liked")
 
@@ -347,7 +347,7 @@ func LikedNew() *OrderedCollection {
 	return &l
 }
 
-// LikesCollection initializes a new Outbox
+// LikesCollection initializes a new outbox
 func LikesNew() *Likes {
 	id := ID("likes")
 
@@ -360,7 +360,7 @@ func LikesNew() *Likes {
 	return &l
 }
 
-// OutboxNew initializes a new Outbox
+// OutboxNew initializes a new outbox
 func OutboxNew() *Outbox {
 	id := ID("outbox")
 
@@ -388,5 +388,33 @@ func SharesNew() *Shares {
 
 // ItemMatches
 func (o OrderedCollection) ItemMatches(it Item) bool {
-	return o.OrderedItems.Contains(it.GetLink())
+	return o.OrderedItems.Contains(it)
+}
+
+// Equals
+func (o OrderedCollection) Equals(with Item) bool {
+	if with == nil {
+		return false
+	}
+	if !with.IsCollection() {
+		return false
+	}
+	result := true
+	OnOrderedCollection(with, func(w *OrderedCollection) error {
+		OnCollection(w, func(wo *Collection) error {
+			if !wo.Equals(o) {
+				result = false
+				return nil
+			}
+			return nil
+		})
+		if w.OrderedItems != nil {
+			if !o.OrderedItems.Equals(w.OrderedItems) {
+				result = false
+				return nil
+			}
+		}
+		return nil
+	})
+	return result
 }

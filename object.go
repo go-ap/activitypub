@@ -461,3 +461,186 @@ func (s Source) MarshalJSON() ([]byte, error) {
 	}
 	return nil, nil
 }
+
+// Equals verifies if our receiver Object is equals with the "with" Object
+func (o Object) Equals(with Item) bool {
+	if with.IsCollection() {
+		return false
+	}
+	if withID := with.GetID(); len(withID) > 0 && withID != o.ID {
+		return false
+	}
+	if withType := with.GetType(); len(withType) > 0 && withType != o.Type {
+		return false
+	}
+	if with.IsLink() && !with.GetLink().Equals(o.GetLink(), false) {
+		return false
+	}
+	result := true
+	OnObject(with, func(w *Object) error {
+		if len(w.Name) > 0 {
+			if !w.Name.Equals(o.Name) {
+				result = false
+				return nil
+			}
+		}
+		if len(w.Summary) > 0 {
+			if !w.Summary.Equals(o.Summary) {
+				result = false
+				return nil
+			}
+		}
+		if len(w.Content) > 0 {
+			if !w.Content.Equals(o.Content) {
+				result = false
+				return nil
+			}
+		}
+		if w.Attachment != nil {
+			if !ItemsEqual(o.Attachment, w.Attachment) {
+				result = false
+				return nil
+			}
+		}
+		if w.AttributedTo != nil {
+			if !ItemsEqual(o.AttributedTo, w.AttributedTo) {
+				result = false
+				return nil
+			}
+		}
+		if w.Audience != nil {
+			if !ItemsEqual(o.Audience, w.Audience) {
+				result = false
+				return nil
+			}
+		}
+		if w.Context != nil {
+			if !ItemsEqual(o.Context, w.Context) {
+				result = false
+				return nil
+			}
+		}
+		if w.Generator != nil {
+			if !ItemsEqual(o.Generator, w.Generator) {
+				result = false
+				return nil
+			}
+		}
+		if w.Icon != nil {
+			if !ItemsEqual(o.Icon, w.Icon) {
+				result = false
+				return nil
+			}
+		}
+		if w.Image != nil {
+			if !ItemsEqual(o.Image, w.Image) {
+				result = false
+				return nil
+			}
+		}
+		if w.InReplyTo != nil {
+			if !ItemsEqual(o.InReplyTo, w.InReplyTo) {
+				result = false
+				return nil
+			}
+		}
+		if w.Location != nil {
+			if !ItemsEqual(o.Location, w.Location) {
+				result = false
+				return nil
+			}
+		}
+		if w.Preview != nil {
+			if !ItemsEqual(o.Preview, w.Preview) {
+				result = false
+				return nil
+			}
+		}
+		if w.Replies != nil {
+			if !ItemsEqual(o.Replies, w.Replies) {
+				result = false
+				return nil
+			}
+		}
+		if w.Tag != nil {
+			if !ItemsEqual(o.Tag, w.Tag) {
+				result = false
+				return nil
+			}
+		}
+		if w.URL != nil {
+			if !w.URL.GetLink().Equals(o.URL.GetLink(), false) {
+				result = false
+				return nil
+			}
+		}
+		if w.To != nil {
+			if !ItemsEqual(o.To, w.To) {
+				result = false
+				return nil
+			}
+		}
+		if w.Bto != nil {
+			if !ItemsEqual(o.Bto, w.Bto) {
+				result = false
+				return nil
+			}
+		}
+		if w.CC != nil {
+			if !ItemsEqual(o.CC, w.CC) {
+				result = false
+				return nil
+			}
+		}
+		if w.BCC != nil {
+			if !ItemsEqual(o.BCC, w.BCC) {
+				result = false
+				return nil
+			}
+		}
+		if !w.Published.IsZero() {
+			if !w.Published.Equal(o.Published) {
+				result = false
+				return nil
+			}
+		}
+		if !w.Updated.IsZero() {
+			if !w.Updated.Equal(o.Updated) {
+				result = false
+				return nil
+			}
+		}
+		if !w.StartTime.IsZero() {
+			if !w.StartTime.Equal(o.StartTime) {
+				result = false
+				return nil
+			}
+		}
+		if !w.EndTime.IsZero() {
+			if !w.EndTime.Equal(o.EndTime) {
+				result = false
+				return nil
+			}
+		}
+		if w.Duration != 0 {
+			if w.Duration != o.Duration {
+				result = false
+				return nil
+			}
+		}
+		if w.Likes != nil {
+			if !ItemsEqual(o.Likes, w.Likes) {
+				result = false
+				return nil
+			}
+		}
+		if w.Shares != nil {
+			if !ItemsEqual(o.Shares, w.Shares) {
+				result = false
+				return nil
+			}
+		}
+		return nil
+	})
+	return result
+}

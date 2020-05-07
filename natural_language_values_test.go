@@ -465,3 +465,62 @@ func TestNaturalLanguageValues_String(t *testing.T) {
 func TestNaturalLanguageValues_Count(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestNaturalLanguageValues_Equals(t *testing.T) {
+	type args struct {
+		with NaturalLanguageValues
+	}
+	tests := []struct {
+		name string
+		n    NaturalLanguageValues
+		args args
+		want bool
+	}{
+		{
+			name: "equal-key-value", n: NaturalLanguageValues{LangRefValue{
+			Ref:   "en",
+			Value: "test123#",
+			}},
+			args: args{
+				with: NaturalLanguageValues{LangRefValue{
+					Ref:   "en",
+					Value: "test123#",
+				}},
+			},
+			want: true,
+		},
+		{
+			name: "not-equal-key", n: NaturalLanguageValues{LangRefValue{
+			Ref:   "en",
+			Value: "test123#",
+			}},
+			args: args{
+				with: NaturalLanguageValues{LangRefValue{
+					Ref:   "fr",
+					Value: "test123#",
+				}},
+			},
+			want: false,
+		},
+		{
+			name: "not-equal-value", n: NaturalLanguageValues{LangRefValue{
+			Ref:   "en",
+			Value: "test123#",
+			}},
+			args: args{
+				with: NaturalLanguageValues{LangRefValue{
+					Ref:   "en",
+					Value: "test123",
+				}},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.n.Equals(tt.args.with); got != tt.want {
+				t.Errorf("Equals() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

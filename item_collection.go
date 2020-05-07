@@ -76,12 +76,12 @@ func (i ItemCollection) IsCollection() bool {
 }
 
 // Contains verifies if IRIs array contains the received one
-func (i ItemCollection) Contains(r IRI) bool {
+func (i ItemCollection) Contains(r Item) bool {
 	if len(i) == 0 {
 		return false
 	}
-	for _, iri := range i {
-		if r.Equals(iri.GetLink(), false) {
+	for _, it := range i {
+		if ItemsEqual(it, r) {
 			return true
 		}
 	}
@@ -153,5 +153,33 @@ func ToItemCollection(it Item) (*ItemCollection, error) {
 }
 
 func (i ItemCollection) ItemMatches(it Item) bool {
-	return i.Contains(it.GetLink())
+	return i.Contains(it)
+}
+
+// Equals
+func (i ItemCollection) Equals(with Item) bool {
+	if with == nil {
+		return false
+	}
+	if !with.IsCollection() {
+		return false
+	}
+	if with.GetType() != CollectionOfItems {
+		return false
+	}
+	result := true
+	OnItemCollection(with, func(w *ItemCollection) error {
+		if w.Count() != i.Count() {
+			result = false
+			return nil
+		}
+		for _, it := range i {
+			if !w.Contains(it.GetLink()) {
+				result = false
+				return nil
+			}
+		}
+		return nil
+	})
+	return result
 }

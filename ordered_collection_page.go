@@ -173,12 +173,12 @@ func (o *OrderedCollectionPage) Append(ob Item) error {
 }
 
 // Contains verifies if OrderedCollectionPage array contains the received one
-func (o OrderedCollectionPage) Contains(r IRI) bool {
+func (o OrderedCollectionPage) Contains(r Item) bool {
 	if len(o.OrderedItems) == 0 {
 		return false
 	}
-	for _, iri := range o.OrderedItems {
-		if r.Equals(iri.GetLink(), false) {
+	for _, it := range o.OrderedItems {
+		if ItemsEqual(it, r) {
 			return true
 		}
 	}
@@ -242,5 +242,64 @@ func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
 
 // ItemMatches
 func (o OrderedCollectionPage) ItemMatches(it Item) bool {
-	return o.OrderedItems.Contains(it.GetLink())
+	return o.OrderedItems.Contains(it)
+}
+
+// Equals
+func (o OrderedCollectionPage) Equals(with Item) bool {
+	if with == nil {
+		return false
+	}
+	if !with.IsCollection() {
+		return false
+	}
+	result := true
+
+	OnOrderedCollectionPage(with, func(w *OrderedCollectionPage) error {
+		OnOrderedCollection(w, func(wo *OrderedCollection) error {
+			if !wo.Equals(o) {
+				result = false
+				return nil
+			}
+			return nil
+		})
+		if w.PartOf != nil {
+			if !ItemsEqual(o.PartOf, w.PartOf) {
+				result = false
+				return nil
+			}
+		}
+		if w.Current != nil {
+			if !ItemsEqual(o.Current, w.Current) {
+				result = false
+				return nil
+			}
+		}
+		if w.First != nil {
+			if !ItemsEqual(o.First, w.First) {
+				result = false
+				return nil
+			}
+		}
+		if w.Last != nil {
+			if !ItemsEqual(o.Last, w.Last) {
+				result = false
+				return nil
+			}
+		}
+		if w.Next != nil {
+			if !ItemsEqual(o.Next, w.Next) {
+				result = false
+				return nil
+			}
+		}
+		if w.Prev != nil {
+			if !ItemsEqual(o.Prev, w.Prev) {
+				result = false
+				return nil
+			}
+		}
+		return nil
+	})
+	return result
 }

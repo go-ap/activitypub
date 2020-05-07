@@ -763,3 +763,58 @@ func (a Activity) MarshalJSON() ([]byte, error) {
 	write(&b, '}')
 	return b, nil
 }
+
+// Equals verifies if our receiver Object is equals with the "with" Object
+func (a Activity) Equals(with Item) bool {
+	result := true
+	OnActivity(with, func(w *Activity) error {
+		OnObject(a, func(o *Object) error {
+			result = o.Equals(w)
+			return nil
+		})
+		if w.Object != nil {
+			if !ItemsEqual(a.Object, w.Object) {
+				result = false
+				return nil
+			}
+		}
+		if w.Actor != nil {
+			if !ItemsEqual(a.Actor, w.Actor) {
+				result = false
+				return nil
+			}
+		}
+		if w.Target != nil {
+			if !ItemsEqual(a.Target, w.Target) {
+				result = false
+				return nil
+			}
+		}
+		if w.Result != nil {
+			if !ItemsEqual(a.Result, w.Result) {
+				result = false
+				return nil
+			}
+		}
+		if w.Origin != nil {
+			if !ItemsEqual(a.Origin, w.Origin) {
+				result = false
+				return nil
+			}
+		}
+		if w.Result != nil {
+			if !ItemsEqual(a.Result, w.Result) {
+				result = false
+				return nil
+			}
+		}
+		if w.Instrument != nil {
+			if !ItemsEqual(a.Instrument, w.Instrument) {
+				result = false
+				return nil
+			}
+		}
+		return nil
+	})
+	return result
+}

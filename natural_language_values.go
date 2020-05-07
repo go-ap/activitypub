@@ -289,3 +289,19 @@ func (n *NaturalLanguageValues) UnmarshalText(data []byte) error {
 	}
 	return nil
 }
+
+// Equals
+func (n NaturalLanguageValues) Equals(with NaturalLanguageValues) bool {
+	if n.Count() != with.Count() {
+		return false
+	}
+	for _, wv := range with {
+		for _, nv := range n {
+			if nv == wv {
+				continue
+			}
+			return false
+		}
+	}
+	return true
+}

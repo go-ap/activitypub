@@ -170,12 +170,12 @@ func (c *CollectionPage) Append(ob Item) error {
 }
 
 // Contains verifies if CollectionPage array contains the received one
-func (c CollectionPage) Contains(r IRI) bool {
+func (c CollectionPage) Contains(r Item) bool {
 	if len(c.Items) == 0 {
 		return false
 	}
-	for _, iri := range c.Items {
-		if r.Equals(iri.GetLink(), false) {
+	for _, it := range c.Items {
+		if ItemsEqual(it, r) {
 			return true
 		}
 	}
@@ -287,5 +287,63 @@ func ToCollectionPage(it Item) (*CollectionPage, error) {
 
 // ItemMatches
 func (c CollectionPage) ItemMatches(it Item) bool {
-	return c.Items.Contains(it.GetLink())
+	return c.Items.Contains(it)
+}
+
+// Equals
+func (c CollectionPage) Equals(with Item) bool {
+	if with == nil {
+		return false
+	}
+	if !with.IsCollection() {
+		return false
+	}
+	result := true
+	OnCollectionPage(with, func(w *CollectionPage) error {
+		OnCollection(w, func(wo *Collection) error {
+			if !wo.Equals(c) {
+				result = false
+				return nil
+			}
+			return nil
+		})
+		if w.PartOf != nil {
+			if !ItemsEqual(c.PartOf, w.PartOf) {
+				result = false
+				return nil
+			}
+		}
+		if w.Current != nil {
+			if !ItemsEqual(c.Current, w.Current) {
+				result = false
+				return nil
+			}
+		}
+		if w.First != nil {
+			if !ItemsEqual(c.First, w.First) {
+				result = false
+				return nil
+			}
+		}
+		if w.Last != nil {
+			if !ItemsEqual(c.Last, w.Last) {
+				result = false
+				return nil
+			}
+		}
+		if w.Next != nil {
+			if !ItemsEqual(c.Next, w.Next) {
+				result = false
+				return nil
+			}
+		}
+		if w.Prev != nil {
+			if !ItemsEqual(c.Prev, w.Prev) {
+				result = false
+				return nil
+			}
+		}
+		return nil
+	})
+	return result
 }

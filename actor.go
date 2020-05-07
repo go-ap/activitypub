@@ -131,7 +131,7 @@ type Actor struct {
 	// see 5.2 Inbox.
 	Inbox Item `jsonld:"inbox,omitempty"`
 	// An [ActivityStreams] OrderedCollection comprised of all the messages produced by the actor;
-	// see 5.1 Outbox.
+	// see 5.1 outbox.
 	Outbox Item `jsonld:"outbox,omitempty"`
 	// A link to an [ActivityStreams] collection of the actors that this actor is following;
 	// see 5.4 Following Collection
@@ -451,4 +451,20 @@ func ToActor(it Item) (*Actor, error) {
 		return (*Actor)(unsafe.Pointer(&i)), nil
 	}
 	return nil, errors.New("unable to convert object")
+}
+
+// Equals verifies if our receiver Object is equals with the "with" Object
+func (a Actor) Equals(with Item) bool {
+	result := true
+	OnActor(with, func(w *Actor) error {
+		OnObject(w, func(wo *Object) error {
+			if !wo.Equals(a) {
+				result = false
+				return nil
+			}
+			return nil
+		})
+		return nil
+	})
+	return result
 }
