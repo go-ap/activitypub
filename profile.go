@@ -164,9 +164,7 @@ func (p Profile) MarshalJSON() ([]byte, error) {
 
 // Recipients performs recipient de-duplication on the Profile object's To, Bto, CC and BCC properties
 func (p *Profile) Recipients() ItemCollection {
-	var aud ItemCollection
-	rec, _ := ItemCollectionDeduplication(&aud, &p.To, &p.Bto, &p.CC, &p.BCC, &p.Audience)
-	return rec
+	return ItemCollectionDeduplication(&p.To, &p.Bto, &p.CC, &p.BCC, &p.Audience)
 }
 
 // Clean removes Bto and BCC properties

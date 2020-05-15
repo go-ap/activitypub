@@ -181,9 +181,7 @@ func (r Relationship) MarshalJSON() ([]byte, error) {
 
 // Recipients performs recipient de-duplication on the Relationship object's To, Bto, CC and BCC properties
 func (r *Relationship) Recipients() ItemCollection {
-	var aud ItemCollection
-	rec, _ := ItemCollectionDeduplication(&aud, &r.To, &r.Bto, &r.CC, &r.BCC, &r.Audience)
-	return rec
+	return ItemCollectionDeduplication(&r.To, &r.Bto, &r.CC, &r.BCC, &r.Audience)
 }
 
 // Clean removes Bto and BCC properties

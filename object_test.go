@@ -272,11 +272,6 @@ func TestRecipients(t *testing.T) {
 	if len(second) != 0 {
 		t.Errorf("Second Objects array should have exactly 0(zero) elements, not %d", len(second))
 	}
-
-	_, err := ItemCollectionDeduplication(&first, &second, nil)
-	if err != nil {
-		t.Errorf("Deduplication with empty array failed")
-	}
 }
 
 func validateEmptyObject(o Object, t *testing.T) {
@@ -751,16 +746,16 @@ func TestSource_MarshalJSON(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "MediaType",
-			fields:  fields{
+			name: "MediaType",
+			fields: fields{
 				MediaType: MimeType("blank"),
 			},
 			want:    []byte(`{"mediaType":"blank"}`),
 			wantErr: false,
 		},
 		{
-			name:    "OneContentValue",
-			fields:  fields{
+			name: "OneContentValue",
+			fields: fields{
 				Content: NaturalLanguageValues{
 					{Value: "test"},
 				},
@@ -769,8 +764,8 @@ func TestSource_MarshalJSON(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "MultipleContentValues",
-			fields:  fields{
+			name: "MultipleContentValues",
+			fields: fields{
 				Content: NaturalLanguageValues{
 					{
 						Ref:   "en",
@@ -799,6 +794,58 @@ func TestSource_MarshalJSON(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestObject_Equals(t *testing.T) {
+	type args struct {
+		with Object
+	}
+	tests := []struct {
+		name string
+		o    Object
+		args args
+		want bool
+	}{
+		{
+			name: "equal-empty-object",
+			o:    Object{},
+			args: args{
+				with: Object{},
+			},
+			want: true,
+		},
+		{
+			name: "equal-object-just-id",
+			o:    Object{ID: "test"},
+			args: args{
+				with: Object{ID: "test"},
+			},
+			want: true,
+		},
+		{
+			name: "equal-object-id",
+			o:    Object{ID: "test", URL: IRI("example.com")},
+			args: args{
+				with: Object{ID: "test"},
+			},
+			want: true,
+		},
+		{
+			name: "equal-false-with-id-and-url",
+			o:    Object{ID: "test"},
+			args: args{
+				with: Object{ID: "test", URL: IRI("example.com")},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.o.Equals(tt.args.with); got != tt.want {
+				t.Errorf("Equals() = %v, want %v", got, tt.want)
 			}
 		})
 	}

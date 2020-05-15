@@ -170,9 +170,7 @@ func (t Tombstone) MarshalJSON() ([]byte, error) {
 
 // Recipients performs recipient de-duplication on the Tombstone object's To, Bto, CC and BCC properties
 func (t *Tombstone) Recipients() ItemCollection {
-	var aud ItemCollection
-	rec, _ := ItemCollectionDeduplication(&aud, &t.To, &t.Bto, &t.CC, &t.BCC, &t.Audience)
-	return rec
+	return ItemCollectionDeduplication(&t.To, &t.Bto, &t.CC, &t.BCC, &t.Audience)
 }
 
 // Clean removes Bto and BCC properties

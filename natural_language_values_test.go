@@ -477,9 +477,10 @@ func TestNaturalLanguageValues_Equals(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "equal-key-value", n: NaturalLanguageValues{LangRefValue{
-			Ref:   "en",
-			Value: "test123#",
+			name: "equal-key-value",
+			n: NaturalLanguageValues{LangRefValue{
+				Ref:   "en",
+				Value: "test123#",
 			}},
 			args: args{
 				with: NaturalLanguageValues{LangRefValue{
@@ -490,9 +491,10 @@ func TestNaturalLanguageValues_Equals(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "not-equal-key", n: NaturalLanguageValues{LangRefValue{
-			Ref:   "en",
-			Value: "test123#",
+			name: "not-equal-key",
+			n: NaturalLanguageValues{LangRefValue{
+				Ref:   "en",
+				Value: "test123#",
 			}},
 			args: args{
 				with: NaturalLanguageValues{LangRefValue{
@@ -503,9 +505,10 @@ func TestNaturalLanguageValues_Equals(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "not-equal-value", n: NaturalLanguageValues{LangRefValue{
-			Ref:   "en",
-			Value: "test123#",
+			name: "not-equal-value",
+			n: NaturalLanguageValues{LangRefValue{
+				Ref:   "en",
+				Value: "test123#",
 			}},
 			args: args{
 				with: NaturalLanguageValues{LangRefValue{

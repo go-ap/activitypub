@@ -89,7 +89,7 @@ func (i ItemCollection) Contains(r Item) bool {
 }
 
 // ItemCollectionDeduplication normalizes the received arguments lists into a single unified one
-func ItemCollectionDeduplication(recCols ...*ItemCollection) (ItemCollection, error) {
+func ItemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
 	rec := make(ItemCollection, 0)
 
 	for _, recCol := range recCols {
@@ -105,14 +105,14 @@ func ItemCollectionDeduplication(recCols ...*ItemCollection) (ItemCollection, er
 			}
 			var testIt IRI
 			if cur.IsObject() {
-				testIt = IRI(cur.GetID())
+				testIt = cur.GetID()
 			} else if cur.IsLink() {
 				testIt = cur.GetLink()
 			} else {
 				continue
 			}
 			for _, it := range rec {
-				if testIt.Equals(IRI(it.GetID()), false) {
+				if testIt.Equals(it.GetID(), false) {
 					// mark the element for removal
 					toRemove = append(toRemove, i)
 					save = false
@@ -128,7 +128,7 @@ func ItemCollectionDeduplication(recCols ...*ItemCollection) (ItemCollection, er
 			*recCol = append((*recCol)[:idx], (*recCol)[idx+1:]...)
 		}
 	}
-	return rec, nil
+	return rec
 }
 
 // FlattenItemCollection flattens the Collection's properties from Object type to IRI

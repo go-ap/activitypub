@@ -400,8 +400,7 @@ func (a *Activity) Recipients() ItemCollection {
 	if len(alwaysRemove) > 0 {
 		removeFromAudience(a, alwaysRemove...)
 	}
-	rec, _ := ItemCollectionDeduplication(&a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
-	return rec
+	return ItemCollectionDeduplication(&a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
 }
 
 // Clean removes Bto and BCC properties

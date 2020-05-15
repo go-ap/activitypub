@@ -278,8 +278,7 @@ func (o Object) MarshalJSON() ([]byte, error) {
 // Recipients performs recipient de-duplication on the Object's To, Bto, CC and BCC properties
 func (o *Object) Recipients() ItemCollection {
 	var aud ItemCollection
-	rec, _ := ItemCollectionDeduplication(&aud, &o.To, &o.Bto, &o.CC, &o.BCC, &o.Audience)
-	return rec
+	return ItemCollectionDeduplication(&aud, &o.To, &o.Bto, &o.CC, &o.BCC, &o.Audience)
 }
 
 // Clean removes Bto and BCC properties
@@ -569,6 +568,10 @@ func (o Object) Equals(with Item) bool {
 			}
 		}
 		if w.URL != nil {
+			if o.URL == nil {
+				result = false
+				return nil
+			}
 			if !w.URL.GetLink().Equals(o.URL.GetLink(), false) {
 				result = false
 				return nil

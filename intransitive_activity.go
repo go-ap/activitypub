@@ -135,10 +135,7 @@ type (
 
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (i *IntransitiveActivity) Recipients() ItemCollection {
-	actor := make(ItemCollection, 0)
-	actor.Append(i.Actor)
-	rec, _ := ItemCollectionDeduplication(&actor, &i.To, &i.Bto, &i.CC, &i.BCC, &i.Audience)
-	return rec
+	return ItemCollectionDeduplication(&ItemCollection{i.Actor}, &i.To, &i.Bto, &i.CC, &i.BCC, &i.Audience)
 }
 
 // Clean removes Bto and BCC properties

@@ -306,8 +306,7 @@ func ServiceNew(id ID) *Service {
 }
 
 func (a *Actor) Recipients() ItemCollection {
-	rec, _ := ItemCollectionDeduplication(&a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
-	return rec
+	return ItemCollectionDeduplication(&a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
 }
 
 func (a *Actor) Clean() {
