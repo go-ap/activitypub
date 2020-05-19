@@ -191,10 +191,10 @@ func ValidCollection(typ string) bool {
 
 // AddTo adds collection type IRI on the corresponding property of the i Item
 func (t CollectionType) AddTo(i pub.Item) bool {
-	status := false
-	if !i.IsObject() {
-		return status
+	if i == nil || !i.IsObject() {
+		return false
 	}
+	status := false
 	if OnActor.Contains(t) {
 		pub.OnActor(i, func(a *pub.Actor) error {
 			if status = t == Inbox && a.Inbox == nil; status {
