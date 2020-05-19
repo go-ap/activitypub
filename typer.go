@@ -64,13 +64,13 @@ var validActivityCollection = CollectionTypes{
 	Replies, // activitystreams
 }
 
-var onObject = CollectionTypes{
+var OnObject = CollectionTypes{
 	Likes,
 	Shares,
 	Replies,
 }
 
-var onActor = CollectionTypes{
+var OnActor = CollectionTypes{
 	Outbox,
 	Inbox,
 	Liked,
@@ -87,13 +87,20 @@ func (t CollectionTypes) Contains(typ CollectionType) bool {
 	return false
 }
 
+// IRIf formats an IRI from an existing IRI and the collection type
+func IRIf(i pub.IRI, t CollectionType) pub.IRI {
+	return pub.IRI(fmt.Sprintf("%s/%s", i, t))
+}
+
+// IRI gives us the property of the i Item that corresponds to the t collection type
+// or generates a new one if not found.
 func (t CollectionType) IRI(i pub.Item) pub.IRI {
 	var iri pub.IRI
 	if i == nil {
 		return pub.EmptyIRI
 	}
 	if i.IsObject() {
-		if onActor.Contains(t) {
+		if OnActor.Contains(t) {
 			pub.OnActor(i, func(a *pub.Actor) error {
 				if t == Inbox && a.Inbox != nil {
 					iri = a.Inbox.GetLink()
@@ -113,7 +120,7 @@ func (t CollectionType) IRI(i pub.Item) pub.IRI {
 				return nil
 			})
 		}
-		if onObject.Contains(t) {
+		if OnObject.Contains(t) {
 			pub.OnObject(i, func(o *pub.Object) error {
 				if t == Likes && o.Likes != nil {
 					iri = o.Likes.GetLink()
@@ -129,10 +136,10 @@ func (t CollectionType) IRI(i pub.Item) pub.IRI {
 		}
 	}
 
-	if len(iri) == 0 {
-		iri = pub.IRI(fmt.Sprintf("%s/%s", i.GetLink(), t))
+	if len(iri) > 0 {
+		return iri
 	}
-	return iri
+	return IRIf(i.GetLink(), t)
 }
 
 func getValidActivityCollection(typ string) CollectionType {
