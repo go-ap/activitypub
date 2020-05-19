@@ -188,3 +188,39 @@ func getValidCollection(typ string) CollectionType {
 func ValidCollection(typ string) bool {
 	return getValidCollection(typ) != Unknown
 }
+
+// AddTo adds collection type IRI on the corresponding property of the i Item
+func (t CollectionType) AddTo(i pub.Item) bool {
+	status := false
+	if !i.IsObject() {
+		return status
+	}
+	if OnActor.Contains(t) {
+		pub.OnActor(i, func(a *pub.Actor) error {
+			if status = t == Inbox && a.Inbox == nil; status {
+				a.Inbox = IRIf(a.GetLink(), t)
+			} else if status = t == Outbox && a.Outbox == nil; status  {
+				a.Outbox = IRIf(a.GetLink(), t)
+			} else if status = t == Liked && a.Liked == nil; status  {
+				a.Liked = IRIf(a.GetLink(), t)
+			} else if status = t == Following && a.Following == nil; status  {
+				a.Following = IRIf(a.GetLink(), t)
+			} else if status = t == Followers && a.Followers == nil; status {
+				a.Followers = IRIf(a.GetLink(), t)
+			}
+			return nil
+		})
+	} else if OnObject.Contains(t) {
+		pub.OnObject(i, func(o *pub.Object) error {
+			if status = t == Likes && o.Likes == nil; status {
+				o.Likes = IRIf(o.GetLink(), t)
+			} else if status = t == Shares && o.Shares == nil; status {
+				o.Shares = IRIf(o.GetLink(), t)
+			} else if status = t == Replies && o.Replies == nil; status {
+				o.Replies = IRIf(o.GetLink(), t)
+			}
+			return nil
+		})
+	}
+	return status
+}
