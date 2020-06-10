@@ -230,6 +230,8 @@ func (t CollectionType) AddTo(i pub.Item) (pub.IRI, bool) {
 			}
 			return nil
 		})
+	} else {
+		iri = IRIf(i.GetLink(), t)
 	}
 	return iri, status
 }
