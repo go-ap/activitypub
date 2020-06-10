@@ -88,6 +88,25 @@ func (i ItemCollection) Contains(r Item) bool {
 	return false
 }
 
+// Contains verifies if IRIs array contains the received one
+func (i *ItemCollection) Remove(r Item) {
+	li := len(*i)
+	if li == 0 {
+		return
+	}
+	var remIdx int
+	for idx, it := range *i {
+		if ItemsEqual(it, r) {
+			remIdx = idx
+		}
+	}
+	if remIdx < li - 1 {
+		*i = append((*i)[:remIdx], (*i)[remIdx+1:]...)
+	} else {
+		*i = (*i)[:remIdx]
+	}
+}
+
 // ItemCollectionDeduplication normalizes the received arguments lists into a single unified one
 func ItemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
 	rec := make(ItemCollection, 0)
