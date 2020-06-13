@@ -3,7 +3,9 @@ package handlers
 import (
 	"fmt"
 	pub "github.com/go-ap/activitypub"
+	"github.com/go-ap/errors"
 	"net/http"
+	"path"
 	"strings"
 )
 
@@ -27,7 +29,7 @@ const (
 
 // Typer is the static package variable that determines a collection type for a particular request
 // It can be overloaded from outside packages.
-// TODO(marius): This should be moved as a property on an instantiable package object, instead of keeping it here
+// @TODO(marius): This should be moved as a property on an instantiable package object, instead of keeping it here
 var Typer CollectionTyper = pathTyper{}
 
 // CollectionTyper allows external packages to tell us which collection the current HTTP request addresses
@@ -56,27 +58,38 @@ func (d pathTyper) Type(r *http.Request) CollectionType {
 	return CollectionType(strings.ToLower(col))
 }
 
-var validActivityCollection = CollectionTypes{
-	Outbox,
-	Inbox,
-	Likes,
-	Shares,
-	Replies, // activitystreams
-}
+var (
+	validActivityCollection = CollectionTypes{
+		Outbox,
+		Inbox,
+		Likes,
+		Shares,
+		Replies, // activitystreams
+	}
+	OnObject = CollectionTypes{
+		Likes,
+		Shares,
+		Replies,
+	}
+	OnActor = CollectionTypes{
+		Outbox,
+		Inbox,
+		Liked,
+		Following,
+		Followers,
+	}
 
-var OnObject = CollectionTypes{
-	Likes,
-	Shares,
-	Replies,
-}
-
-var OnActor = CollectionTypes{
-	Outbox,
-	Inbox,
-	Liked,
-	Following,
-	Followers,
-}
+	ActivityPubCollections = CollectionTypes{
+		Outbox,
+		Inbox,
+		Liked,
+		Following,
+		Followers,
+		Likes,
+		Shares,
+		Replies,
+	}
+)
 
 func (t CollectionTypes) Contains(typ CollectionType) bool {
 	for _, tt := range t {
@@ -142,6 +155,16 @@ func (t CollectionType) IRI(i pub.Item) pub.IRI {
 	return IRIf(i.GetLink(), t)
 }
 
+// OfActor returns the base IRI of received i, if i represents an IRI matching collection type t
+func (t CollectionType) OfActor(i pub.IRI) (pub.IRI, error) {
+	maybeActor, maybeCol := path.Split(i.String())
+	if strings.ToLower(maybeCol) == strings.ToLower(string(t)) {
+		maybeActor = strings.TrimRight(maybeActor, "/")
+		return pub.IRI(maybeActor), nil
+	}
+	return pub.EmptyIRI, errors.Newf("IRI does not represent a valid %s collection", t)
+}
+
 func getValidActivityCollection(typ string) CollectionType {
 	t := CollectionType(typ)
 	if validActivityCollection.Contains(t) {
@@ -201,13 +224,13 @@ func (t CollectionType) AddTo(i pub.Item) (pub.IRI, bool) {
 			if status = t == Inbox && a.Inbox == nil; status {
 				a.Inbox = IRIf(a.GetLink(), t)
 				iri = a.Inbox.GetLink()
-			} else if status = t == Outbox && a.Outbox == nil; status  {
+			} else if status = t == Outbox && a.Outbox == nil; status {
 				a.Outbox = IRIf(a.GetLink(), t)
 				iri = a.Outbox.GetLink()
-			} else if status = t == Liked && a.Liked == nil; status  {
+			} else if status = t == Liked && a.Liked == nil; status {
 				a.Liked = IRIf(a.GetLink(), t)
 				iri = a.Liked.GetLink()
-			} else if status = t == Following && a.Following == nil; status  {
+			} else if status = t == Following && a.Following == nil; status {
 				a.Following = IRIf(a.GetLink(), t)
 				iri = a.Following.GetLink()
 			} else if status = t == Followers && a.Followers == nil; status {
