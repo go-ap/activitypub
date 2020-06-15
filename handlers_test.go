@@ -37,3 +37,15 @@ func TestItemHandlerFn_ValidateRequest(t *testing.T) {
 func TestItemHandlerFn_ValidMethod(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestActivityHandlerFn_Storage(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestCollectionHandlerFn_Storage(t *testing.T) {
+	t.Skipf("TODO")
+}
+
+func TestItemHandlerFn_Storage(t *testing.T) {
+	t.Skipf("TODO")
+}
