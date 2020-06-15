@@ -18,6 +18,10 @@ func TestValidObjectCollection(t *testing.T) {
 	t.Skipf("TODO")
 }
 
+func TestValidCollectionIRI(t *testing.T) {
+	t.Skipf("TODO")
+}
+
 func TestIRIf(t *testing.T) {
 	t.Skipf("TODO")
 }

@@ -219,6 +219,11 @@ func ValidCollection(typ CollectionType) bool {
 	return getValidCollection(typ) != Unknown
 }
 
+func ValidCollectionIRI(i pub.IRI) bool {
+	_, t := Split(i)
+	return getValidCollection(t) != Unknown
+}
+
 // AddTo adds collection type IRI on the corresponding property of the i Item
 func (t CollectionType) AddTo(i pub.Item) (pub.IRI, bool) {
 	if i == nil || !i.IsObject() {
