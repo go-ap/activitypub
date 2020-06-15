@@ -43,10 +43,10 @@ func (d pathTyper) Type(r *http.Request) CollectionType {
 	if r.URL == nil || len(r.URL.Path) == 0 {
 		return Unknown
 	}
-	var col string
+	col := Unknown
 	pathElements := strings.Split(r.URL.Path[1:], "/") // Skip first /
 	for i := len(pathElements) - 1; i >= 0; i-- {
-		col = pathElements[i]
+		col = CollectionType(pathElements[i])
 		if typ := getValidActivityCollection(col); typ != Unknown {
 			return typ
 		}
@@ -55,7 +55,7 @@ func (d pathTyper) Type(r *http.Request) CollectionType {
 		}
 	}
 
-	return CollectionType(strings.ToLower(col))
+	return col
 }
 
 var (
@@ -165,8 +165,15 @@ func (t CollectionType) OfActor(i pub.IRI) (pub.IRI, error) {
 	return pub.EmptyIRI, errors.Newf("IRI does not represent a valid %s collection", t)
 }
 
-func getValidActivityCollection(typ string) CollectionType {
-	t := CollectionType(typ)
+// OfActor returns the base IRI of received i, if i represents an IRI matching collection type t
+func Split(i pub.IRI) (pub.IRI, CollectionType) {
+	maybeActor, maybeCol := path.Split(i.String())
+	t := CollectionType(maybeCol)
+	iri := pub.IRI(strings.TrimRight(maybeActor, "/"))
+	return iri, t
+}
+
+func getValidActivityCollection(t CollectionType) CollectionType {
 	if validActivityCollection.Contains(t) {
 		return t
 	}
@@ -174,7 +181,7 @@ func getValidActivityCollection(typ string) CollectionType {
 }
 
 // ValidActivityCollection shows if the current ActivityPub end-point type is a valid one for handling Activities
-func ValidActivityCollection(typ string) bool {
+func ValidActivityCollection(typ CollectionType) bool {
 	return getValidActivityCollection(typ) != Unknown
 }
 
@@ -184,9 +191,9 @@ var validObjectCollection = []CollectionType{
 	Liked,
 }
 
-func getValidObjectCollection(typ string) CollectionType {
+func getValidObjectCollection(typ CollectionType) CollectionType {
 	for _, t := range validObjectCollection {
-		if strings.ToLower(typ) == string(t) {
+		if strings.ToLower(string(typ)) == string(t) {
 			return t
 		}
 	}
@@ -194,11 +201,11 @@ func getValidObjectCollection(typ string) CollectionType {
 }
 
 // ValidActivityCollection shows if the current ActivityPub end-point type is a valid one for handling Objects
-func ValidObjectCollection(typ string) bool {
+func ValidObjectCollection(typ CollectionType) bool {
 	return getValidObjectCollection(typ) != Unknown
 }
 
-func getValidCollection(typ string) CollectionType {
+func getValidCollection(typ CollectionType) CollectionType {
 	if typ := getValidActivityCollection(typ); typ != Unknown {
 		return typ
 	}
@@ -208,7 +215,7 @@ func getValidCollection(typ string) CollectionType {
 	return Unknown
 }
 
-func ValidCollection(typ string) bool {
+func ValidCollection(typ CollectionType) bool {
 	return getValidCollection(typ) != Unknown
 }
 
