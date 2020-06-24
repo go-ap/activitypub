@@ -63,20 +63,18 @@ func ItemsEqual(it, with Item) bool {
 		}
 	}
 	if it.IsObject() {
-		if ObjectTypes.Contains(it.GetType()) {
-			OnObject(it, func(i *Object) error {
-				result = i.Equals(with)
-				return nil
-			})
-		}
 		if ActivityTypes.Contains(with.GetType()) {
 			OnActivity(it, func(i*Activity) error {
 				result = i.Equals(with)
 				return nil
 			})
-		}
-		if ActorTypes.Contains(with.GetType()) {
+		} else if ActorTypes.Contains(with.GetType()) {
 			OnActor(it, func(i *Actor) error {
+				result = i.Equals(with)
+				return nil
+			})
+		} else {
+			OnObject(it, func(i *Object) error {
 				result = i.Equals(with)
 				return nil
 			})
