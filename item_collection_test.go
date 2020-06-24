@@ -53,3 +53,101 @@ func TestItemCollection_IsCollection(t *testing.T) {
 func TestToItemCollection(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestItemCollection_Remove(t *testing.T) {
+	tests := []struct {
+		name string
+		i    ItemCollection
+		arg  Item
+	}{
+		{
+			name: "empty_collection_nil_item",
+			i: ItemCollection{},
+			arg: nil,
+		},
+		{
+			name: "empty_collection_non_nil_item",
+			i: ItemCollection{},
+			arg: &Object{},
+		},
+		{
+			name: "non_empty_collection_nil_item",
+			i: ItemCollection{
+				&Object{ID: "test"},
+			},
+			arg: nil,
+		},
+		{
+			name: "non_empty_collection_non_contained_item_empty_ID",
+			i: ItemCollection{
+				&Object{ID: "test"},
+			},
+			arg: &Object{},
+		},
+		{
+			name: "non_empty_collection_non_contained_item",
+			i: ItemCollection{
+				&Object{ID: "test"},
+			},
+			arg: &Object{ID: "test123"},
+		},
+		{
+			name: "non_empty_collection_just_contained_item",
+			i: ItemCollection{
+				&Object{ID: "test"},
+			},
+			arg: &Object{ID: "test"},
+		},
+		{
+			name: "non_empty_collection_contained_item_first_pos",
+			i: ItemCollection{
+				&Object{ID: "test"},
+				&Object{ID: "test123"},
+			},
+			arg: &Object{ID: "test"},
+		},
+		{
+			name: "non_empty_collection_contained_item_not_first_pos",
+			i: ItemCollection{
+				&Object{ID: "test123"},
+				&Object{ID: "test"},
+				&Object{ID: "test321"},
+			},
+			arg: &Object{ID: "test"},
+		},
+		{
+			name: "non_empty_collection_contained_item_last_pos",
+			i: ItemCollection{
+				&Object{ID: "test123"},
+				&Object{ID: "test"},
+			},
+			arg: &Object{ID: "test"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			origContains := tt.i.Contains(tt.arg)
+			origLen := tt.i.Count()
+			should := ""
+			does := "n't"
+			if origContains {
+				should = "n't"
+				does = ""
+			}
+
+			tt.i.Remove(tt.arg)
+			if tt.i.Contains(tt.arg) {
+				t.Errorf("%T should%s contain %T, but it does%s: %#v", tt.i, should, tt.arg, does, tt.i)
+			}
+			if origContains {
+				if tt.i.Count() > origLen - 1 {
+					t.Errorf("%T should have a count lower than %d, got %d", tt.i, origLen, tt.i.Count())
+				}
+			} else {
+				if tt.i.Count() != origLen {
+					t.Errorf("%T should have a count equal to %d, got %d", tt.i, origLen, tt.i.Count())
+				}
+			}
+		})
+	}
+}

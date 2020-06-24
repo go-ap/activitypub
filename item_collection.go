@@ -94,11 +94,17 @@ func (i *ItemCollection) Remove(r Item) {
 	if li == 0 {
 		return
 	}
-	var remIdx int
+	if r == nil {
+		return
+	}
+	remIdx := -1
 	for idx, it := range *i {
 		if ItemsEqual(it, r) {
 			remIdx = idx
 		}
+	}
+	if remIdx == -1 {
+		return
 	}
 	if remIdx < li - 1 {
 		*i = append((*i)[:remIdx], (*i)[remIdx+1:]...)
