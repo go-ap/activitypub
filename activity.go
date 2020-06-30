@@ -39,8 +39,6 @@ const (
 	ViewType            ActivityVocabularyType = "View"
 )
 
-type ActivityVocabularyTypes []ActivityVocabularyType
-
 func (a ActivityVocabularyTypes) Contains(typ ActivityVocabularyType) bool {
 	for _, v := range a {
 		if strings.ToLower(string(v)) == strings.ToLower(string(typ)) {

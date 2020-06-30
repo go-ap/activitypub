@@ -168,8 +168,8 @@ func TestActivityVocabularyTypes_Contains(t *testing.T) {
 		}
 	}
 	{
-		for _, validType := range GenericObjectTypes {
-			if !GenericObjectTypes.Contains(validType) {
+		for _, validType := range GenericTypes {
+			if !GenericTypes.Contains(validType) {
 				t.Errorf("Generic Type '%v' should be valid", validType)
 			}
 		}

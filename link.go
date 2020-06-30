@@ -1,6 +1,7 @@
 package activitypub
 
-var validLinkTypes = [...]ActivityVocabularyType{
+var LinkTypes = ActivityVocabularyTypes{
+	LinkType,
 	MentionType,
 }
 
@@ -41,19 +42,9 @@ type Link struct {
 // Mention is a specialized Link that represents an @mention.
 type Mention = Link
 
-// ValidLinkType validates a type against the valid link types
-func ValidLinkType(typ ActivityVocabularyType) bool {
-	for _, v := range validLinkTypes {
-		if v == typ {
-			return true
-		}
-	}
-	return false
-}
-
 // LinkNew initializes a new Link
 func LinkNew(id ID, typ ActivityVocabularyType) *Link {
-	if !ValidLinkType(typ) {
+	if !LinkTypes.Contains(typ) {
 		typ = LinkType
 	}
 	return &Link{ID: id, Type: typ}
@@ -66,7 +57,7 @@ func MentionNew(id ID) *Mention {
 
 // IsLink validates if current Link is a Link
 func (l Link) IsLink() bool {
-	return l.Type == LinkType || ValidLinkType(l.Type)
+	return l.Type == LinkType || LinkTypes.Contains(l.Type)
 }
 
 // IsObject validates if current Link is an GetID

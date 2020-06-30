@@ -14,7 +14,7 @@ const (
 	// SecurityContextURI the URI for the secruity namespace (for an Actor's PublicKey)
 	SecurityContextURI = IRI("https://w3id.org/security/v1")
 	// PublicNs is the reference to the Public entity in the Acitivystreams namespace
-	PublicNS = IRI(ActivityBaseURI + "#Public")
+	PublicNS = ActivityBaseURI + "#Public"
 )
 
 var JsonLDContext = []IRI{

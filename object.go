@@ -19,7 +19,7 @@ const (
 	CollectionPageType        ActivityVocabularyType = "CollectionPage"
 	OrderedCollectionPageType ActivityVocabularyType = "OrderedCollectionPage"
 
-	// Activity Pub Object Types
+	// ActivityPub Object Types
 	ArticleType      ActivityVocabularyType = "Article"
 	AudioType        ActivityVocabularyType = "Audio"
 	DocumentType     ActivityVocabularyType = "Document"
@@ -37,20 +37,12 @@ const (
 	MentionType ActivityVocabularyType = "Mention"
 )
 
-var GenericObjectTypes = ActivityVocabularyTypes{
+var GenericTypes = ActivityVocabularyTypes{
 	ActivityType,
 	IntransitiveActivityType,
 	ObjectType,
 	ActorType,
-	CollectionType,
-	OrderedCollectionType,
 }
-
-var GenericLinkTypes = ActivityVocabularyTypes{
-	LinkType,
-}
-
-var GenericTypes = append(GenericObjectTypes[:], GenericLinkTypes[:]...)
 
 var ObjectTypes = ActivityVocabularyTypes{
 	ArticleType,
@@ -66,10 +58,6 @@ var ObjectTypes = ActivityVocabularyTypes{
 	TombstoneType,
 	VideoType,
 }
-var obTypes = append(ActorTypes, ObjectTypes...)
-
-// Types contains all valid types in the ActivityPub vocab
-var Types = append(ActivityTypes, obTypes...)
 
 type (
 	// ActivityVocabularyType is the data type for an Activity type object

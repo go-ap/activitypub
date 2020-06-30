@@ -18,22 +18,6 @@ func TestLinkNew(t *testing.T) {
 	}
 }
 
-func TestValidLinkType(t *testing.T) {
-	var invalidType ActivityVocabularyType = "RandomType"
-
-	if ValidLinkType(LinkType) {
-		t.Errorf("Generic Link Type '%v' should not be valid", LinkType)
-	}
-	if ValidLinkType(invalidType) {
-		t.Errorf("Link Type '%v' should not be valid", invalidType)
-	}
-	for _, validType := range validLinkTypes {
-		if !ValidLinkType(validType) {
-			t.Errorf("Link Type '%v' should be valid", validType)
-		}
-	}
-}
-
 func TestLink_IsLink(t *testing.T) {
 	l := LinkNew("test", LinkType)
 	if !l.IsLink() {
