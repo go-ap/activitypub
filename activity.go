@@ -392,9 +392,6 @@ func (a *Activity) Recipients() ItemCollection {
 	if a.GetType() == BlockType && a.Object != nil {
 		alwaysRemove = append(alwaysRemove, a.Object)
 	}
-	if a.Actor != nil {
-		alwaysRemove = append(alwaysRemove, a.Actor)
-	}
 	if len(alwaysRemove) > 0 {
 		removeFromAudience(a, alwaysRemove...)
 	}
