@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/go-ap/activitypub v0.0.0-20200630113504-57c015a8e96f
-	github.com/go-ap/errors v0.0.0-20200610194301-39b7d0cbba26
+	github.com/go-ap/errors v0.0.0-20200702155720-f662512ba418
 	github.com/go-ap/jsonld v0.0.0-20200327122108-fafac2de2660
 	github.com/go-ap/storage v0.0.0-20200630120808-67027b158860
 )
