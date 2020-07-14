@@ -100,6 +100,19 @@ func (t CollectionTypes) Contains(typ CollectionType) bool {
 	return false
 }
 
+// Split splits the IRI in an actor IRI and its collection
+// if the collection is found in the elements in the t CollectionTypes slice
+func (t CollectionTypes) Split(i pub.IRI) (pub.IRI, CollectionType) {
+	maybeActor, maybeCol := path.Split(i.String())
+	tt := CollectionType(maybeCol)
+	if !t.Contains(tt) {
+		tt = ""
+		maybeActor = i.String()
+	}
+	iri := pub.IRI(strings.TrimRight(maybeActor, "/"))
+	return iri, tt
+}
+
 // IRIf formats an IRI from an existing IRI and the collection type
 func IRIf(i pub.IRI, t CollectionType) pub.IRI {
 	return pub.IRI(fmt.Sprintf("%s/%s", i, t))
@@ -165,12 +178,9 @@ func (t CollectionType) OfActor(i pub.IRI) (pub.IRI, error) {
 	return pub.EmptyIRI, errors.Newf("IRI does not represent a valid %s collection", t)
 }
 
-// OfActor returns the base IRI of received i, if i represents an IRI matching collection type t
+// Split returns the base IRI of received i, if i represents an IRI matching collection type t
 func Split(i pub.IRI) (pub.IRI, CollectionType) {
-	maybeActor, maybeCol := path.Split(i.String())
-	t := CollectionType(maybeCol)
-	iri := pub.IRI(strings.TrimRight(maybeActor, "/"))
-	return iri, t
+	return ActivityPubCollections.Split(i)
 }
 
 func getValidActivityCollection(t CollectionType) CollectionType {
