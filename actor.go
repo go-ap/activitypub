@@ -1,7 +1,7 @@
 package activitypub
 
 import (
-	"errors"
+	"fmt"
 	"github.com/buger/jsonparser"
 	"time"
 	"unsafe"
@@ -443,13 +443,13 @@ func ToActor(it Item) (*Actor, error) {
 	case Actor:
 		return &i, nil
 	case *Object:
-		// TODO(marius): this is unsafe as Actor has a different memory layout than Actor
+		// TODO(marius): this is unsafe as Actor has a different memory layout than Object
 		//  Everything should be fine as long as you don't try to read the Actor specific collections
 		return (*Actor)(unsafe.Pointer(i)), nil
 	case Object:
 		return (*Actor)(unsafe.Pointer(&i)), nil
 	}
-	return nil, errors.New("unable to convert object")
+	return nil, fmt.Errorf("unable to convert %T to actor", it)
 }
 
 // Equals verifies if our receiver Object is equals with the "with" Object
