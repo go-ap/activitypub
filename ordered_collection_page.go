@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"errors"
+	"reflect"
 	"time"
 )
 
@@ -236,6 +237,12 @@ func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
 		return i, nil
 	case OrderedCollectionPage:
 		return &i, nil
+	default:
+		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
+		typ := reflect.TypeOf(new(OrderedCollectionPage))
+		if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*OrderedCollectionPage); ok {
+			return i, nil
+		}
 	}
 	return nil, errors.New("unable to convert to ordered collection page")
 }

@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"errors"
+	"reflect"
 	"strings"
 	"time"
 	"unsafe"
@@ -733,6 +734,14 @@ func ToActivity(it Item) (*Activity, error) {
 		return (*Activity)(unsafe.Pointer(i)), nil
 	case Question:
 		return (*Activity)(unsafe.Pointer(&i)), nil
+	default:
+		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
+		typ := reflect.TypeOf(new(Activity))
+		if reflect.TypeOf(it).ConvertibleTo(typ) {
+			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Activity); ok {
+				return i, nil
+			}
+		}
 	}
 	return nil, errors.New("unable to convert activity")
 }

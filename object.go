@@ -3,6 +3,7 @@ package activitypub
 import (
 	"fmt"
 	"github.com/buger/jsonparser"
+	"reflect"
 	"strings"
 	"time"
 	"unsafe"
@@ -366,6 +367,14 @@ func ToObject(it Item) (*Object, error) {
 		return (*Object)(unsafe.Pointer(i)), nil
 	case OrderedCollectionPage:
 		return (*Object)(unsafe.Pointer(&i)), nil
+	default:
+		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
+		typ := reflect.TypeOf(new(Object))
+		if reflect.TypeOf(it).ConvertibleTo(typ) {
+			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Object); ok {
+				return i, nil
+			}
+		}
 	}
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }

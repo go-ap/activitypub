@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"fmt"
+	"reflect"
 	"time"
 	"unsafe"
 )
@@ -216,6 +217,14 @@ func ToPlace(it Item) (*Place, error) {
 		// FIXME(marius): **memory_safety** Place has extra properties which will point to invalid memory
 		//   we need a safe version for converting from smaller objects to larger ones
 		return (*Place)(unsafe.Pointer(&i)), nil
+	default:
+		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
+		typ := reflect.TypeOf(new(Place))
+		if reflect.TypeOf(it).ConvertibleTo(typ) {
+			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Place); ok {
+				return i, nil
+			}
+		}
 	}
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }

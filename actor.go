@@ -3,6 +3,7 @@ package activitypub
 import (
 	"fmt"
 	"github.com/buger/jsonparser"
+	"reflect"
 	"time"
 	"unsafe"
 )
@@ -448,6 +449,14 @@ func ToActor(it Item) (*Actor, error) {
 		return (*Actor)(unsafe.Pointer(i)), nil
 	case Object:
 		return (*Actor)(unsafe.Pointer(&i)), nil
+	default:
+		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
+		typ := reflect.TypeOf(new(Actor))
+		if reflect.TypeOf(it).ConvertibleTo(typ) {
+			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Actor); ok {
+				return i, nil
+			}
+		}
 	}
 	return nil, fmt.Errorf("unable to convert %T to actor", it)
 }

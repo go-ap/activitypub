@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"fmt"
+	"reflect"
 	"time"
 	"unsafe"
 )
@@ -184,6 +185,14 @@ func ToProfile(it Item) (*Profile, error) {
 		return (*Profile)(unsafe.Pointer(i)), nil
 	case Object:
 		return (*Profile)(unsafe.Pointer(&i)), nil
+	default:
+		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
+		typ := reflect.TypeOf(new(Profile))
+		if reflect.TypeOf(it).ConvertibleTo(typ) {
+			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Profile); ok {
+				return i, nil
+			}
+		}
 	}
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }

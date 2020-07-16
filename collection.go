@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"errors"
+	"reflect"
 	"time"
 	"unsafe"
 )
@@ -273,6 +274,14 @@ func ToCollection(it Item) (*Collection, error) {
 		return (*Collection)(unsafe.Pointer(i)), nil
 	case CollectionPage:
 		return (*Collection)(unsafe.Pointer(&i)), nil
+	default:
+		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
+		typ := reflect.TypeOf(new(Collection))
+		if reflect.TypeOf(it).ConvertibleTo(typ) {
+			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Collection); ok {
+				return i, nil
+			}
+		}
 	}
 	return nil, errors.New("unable to convert to collection")
 }
