@@ -58,7 +58,7 @@ func TestCreateActivityHTTPSerialization(t *testing.T) {
 	if !strings.Contains(string(data), string(obj.ID)) {
 		t.Errorf("Could not find id %#v in output %s", string(obj.ID), data)
 	}
-	if !strings.Contains(string(data), obj.Name.Get("en")) {
+	if !strings.Contains(string(data), obj.Name.Get("en").String()) {
 		t.Errorf("Could not find name %s in output %s", obj.Name.Get("en"), data)
 	}
 	if !strings.Contains(string(data), string(obj.Type)) {

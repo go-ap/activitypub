@@ -119,7 +119,7 @@ func TestLangRefValue_MarshalText(t *testing.T) {
 }
 
 func TestNaturalLanguageValue_Get(t *testing.T) {
-	testVal := "test"
+	testVal := LangVal("test")
 	a := NaturalLanguageValues{{NilLangRef, testVal}}
 	if a.Get(NilLangRef) != testVal {
 		t.Errorf("Invalid Get result. Expected %s received %s", testVal, a.Get(NilLangRef))
@@ -127,7 +127,7 @@ func TestNaturalLanguageValue_Get(t *testing.T) {
 }
 
 func TestNaturalLanguageValue_Set(t *testing.T) {
-	testVal := "test"
+	testVal := LangVal("test")
 	a := NaturalLanguageValues{{NilLangRef, "ana are mere"}}
 	err := a.Set(LangRef("en"), testVal)
 	if err != nil {
@@ -142,7 +142,7 @@ func TestNaturalLanguageValue_Append(t *testing.T) {
 		t.Errorf("Invalid initialization of %T. Size %d > 0 ", a, len(a))
 	}
 	langEn := LangRef("en")
-	valEn := "random value"
+	valEn := LangVal("random value")
 
 	a.Append(langEn, valEn)
 	if len(a) != 1 {
@@ -152,7 +152,7 @@ func TestNaturalLanguageValue_Append(t *testing.T) {
 		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langEn, valEn, a.Get(langEn))
 	}
 	langDe := LangRef("de")
-	valDe := "randomisch"
+	valDe := LangVal("randomisch")
 	a.Append(langDe, valDe)
 
 	if len(a) != 2 {
@@ -180,17 +180,17 @@ func TestLangRef_UnmarshalJSON(t *testing.T) {
 
 func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
 	langEn := "en-US"
-	valEn := "random"
+	valEn := LangVal("random")
 	langDe := "de-DE"
-	valDe := "zufällig\n"
+	valDe := LangVal("zufällig\n")
 
 	//m := make(map[string]string)
 	//m[langEn] = valEn
 	//m[langDe] = valDe
 
 	json := `{
-		"` + langEn + `": "` + valEn + `",
-		"` + langDe + `": "` + valDe + `"
+		"` + langEn + `": "` + valEn.String() + `",
+		"` + langDe + `": "` + valDe.String() + `"
 	}`
 
 	a := make(NaturalLanguageValues, 0)
@@ -387,7 +387,7 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		if j == nil {
 			t.Errorf("Error marshaling: nil value returned")
 		}
-		expected := fmt.Sprintf("{\"%s\":%s,\"%s\":%s}", nlvEn.Ref, strconv.Quote(nlvEn.Value), nlvFr.Ref, strconv.Quote(nlvFr.Value))
+		expected := fmt.Sprintf("{\"%s\":%s,\"%s\":%s}", nlvEn.Ref, strconv.Quote(nlvEn.Value.String()), nlvFr.Ref, strconv.Quote(nlvFr.Value.String()))
 		if string(j) != expected {
 			t.Errorf("Wrong value: %s, expected %s", j, expected)
 		}

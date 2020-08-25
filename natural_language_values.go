@@ -13,11 +13,12 @@ const NilLangRef LangRef = "-"
 type (
 	// LangRef is the type for a language reference code, should be an ISO639-1 language specifier.
 	LangRef string
+	LangVal string
 
 	// LangRefValue is a type for storing per language values
 	LangRefValue struct {
 		Ref   LangRef
-		Value string
+		Value LangVal
 	}
 	// NaturalLanguageValues is a mapping for multiple language values
 	NaturalLanguageValues []LangRefValue
@@ -44,7 +45,7 @@ func (n NaturalLanguageValues) String() string {
 	return s.String()
 }
 
-func (n NaturalLanguageValues) Get(ref LangRef) string {
+func (n NaturalLanguageValues) Get(ref LangRef) LangVal {
 	for _, val := range n {
 		if val.Ref == ref {
 			return val.Value
@@ -54,7 +55,7 @@ func (n NaturalLanguageValues) Get(ref LangRef) string {
 }
 
 // Set sets a language, value pair in a NaturalLanguageValues array
-func (n *NaturalLanguageValues) Set(ref LangRef, v string) error {
+func (n *NaturalLanguageValues) Set(ref LangRef, v LangVal) error {
 	found := false
 	for k, vv := range *n {
 		if vv.Ref == ref {
@@ -79,8 +80,8 @@ func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 	if l == 1 {
 		v := n[0]
 		if len(v.Value) > 0 {
-			v.Value = string(unescape([]byte(v.Value)))
-			ll, err := b.WriteString(strconv.Quote(v.Value))
+			v.Value = LangVal(unescape([]byte(v.Value)))
+			ll, err := b.WriteString(strconv.Quote(v.Value.String()))
 			if err != nil {
 				return nil, err
 			}
@@ -131,7 +132,7 @@ func (n NaturalLanguageValues) MarshalText() ([]byte, error) {
 
 // Append is syntactic sugar for resizing the NaturalLanguageValues map
 // and appending an element
-func (n *NaturalLanguageValues) Append(lang LangRef, value string) error {
+func (n *NaturalLanguageValues) Append(lang LangRef, value LangVal) error {
 	var t NaturalLanguageValues
 	if len(*n) == 0 {
 		t = make(NaturalLanguageValues, 0)
@@ -152,7 +153,7 @@ func (n *NaturalLanguageValues) Count() uint {
 // String adds support for Stringer interface. It returns the Value[LangRef] text or just Value if LangRef is NIL
 func (l LangRefValue) String() string {
 	if l.Ref == NilLangRef {
-		return l.Value
+		return l.Value.String()
 	}
 	return fmt.Sprintf("%s[%s]", l.Value, l.Ref)
 }
@@ -162,19 +163,19 @@ func (l *LangRefValue) UnmarshalJSON(data []byte) error {
 	_, typ, _, err := jsonparser.Get(data)
 	if err != nil {
 		l.Ref = NilLangRef
-		l.Value = string(unescape(data))
+		l.Value = LangVal(unescape(data))
 		return nil
 	}
 	switch typ {
 	case jsonparser.Object:
 		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
 			l.Ref = LangRef(key)
-			l.Value = string(unescape(value))
+			l.Value = LangVal(unescape(value))
 			return err
 		})
 	case jsonparser.String:
 		l.Ref = NilLangRef
-		l.Value = string(unescape(data))
+		l.Value = LangVal(unescape(data))
 	}
 
 	return nil
@@ -193,11 +194,11 @@ func (l LangRefValue) MarshalJSON() ([]byte, error) {
 			return nil, nil
 		}
 		buf.WriteByte('"')
-		buf.WriteString(string(l.Ref))
+		buf.WriteString(l.Ref.String())
 		buf.Write([]byte{'"', ':'})
 	}
-	l.Value = string(unescape([]byte(l.Value)))
-	buf.WriteString(strconv.Quote(l.Value))
+	l.Value = LangVal(unescape([]byte(l.Value)))
+	buf.WriteString(strconv.Quote(l.Value.String()))
 	return buf.Bytes(), nil
 }
 
@@ -207,10 +208,10 @@ func (l LangRefValue) MarshalText() ([]byte, error) {
 		return nil, nil
 	}
 	buf := bytes.Buffer{}
-	buf.WriteString(l.Value)
+	buf.WriteString(l.Value.String())
 	if l.Ref != NilLangRef {
 		buf.WriteByte('[')
-		buf.WriteString(string(l.Ref))
+		buf.WriteString(l.Ref.String())
 		buf.WriteByte(']')
 	}
 	return buf.Bytes(), nil
@@ -237,6 +238,21 @@ func (l *LangRef) UnmarshalText(data []byte) error {
 	return nil
 }
 
+func (l LangRef) String() string {
+	return string(l)
+}
+
+func (l *LangVal) UnmarshalJSON(data []byte) error {
+	return nil
+}
+func (l *LangVal) UnmarshalText(data []byte) error {
+	return nil
+}
+
+func (l LangVal) String() string {
+	return string(l)
+}
+
 func unescape(b []byte) []byte {
 	// FIMXE(marius): I feel like I'm missing something really obvious about encoding/decoding from Json regarding
 	//    escape characters, and that this function is just a hack. Be better future Marius, find the real problem!
@@ -256,17 +272,17 @@ func (n *NaturalLanguageValues) UnmarshalJSON(data []byte) error {
 	val, typ, _, err := jsonparser.Get(data)
 	if err != nil {
 		// try our luck if data contains an unquoted string
-		n.Append(NilLangRef, string(unescape(data)))
+		n.Append(NilLangRef, LangVal(unescape(data)))
 		return nil
 	}
 	switch typ {
 	case jsonparser.Object:
 		jsonparser.ObjectEach(data, func(key []byte, val []byte, dataType jsonparser.ValueType, offset int) error {
-			n.Append(LangRef(key), string(unescape(val)))
+			n.Append(LangRef(key), LangVal(unescape(val)))
 			return err
 		})
 	case jsonparser.String:
-		n.Append(NilLangRef, string(unescape(val)))
+		n.Append(NilLangRef, LangVal(unescape(val)))
 	case jsonparser.Array:
 		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 			l := LangRefValue{}
@@ -285,7 +301,7 @@ func (n *NaturalLanguageValues) UnmarshalText(data []byte) error {
 		if data[len(data)-1] != '"' {
 			return fmt.Errorf("invalid string value when unmarshaling %T value", n)
 		}
-		n.Append(LangRef(NilLangRef), string(data[1:len(data)-1]))
+		n.Append(LangRef(NilLangRef), LangVal(data[1:len(data)-1]))
 	}
 	return nil
 }
