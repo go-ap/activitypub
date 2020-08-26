@@ -119,7 +119,7 @@ func TestLangRefValue_MarshalText(t *testing.T) {
 }
 
 func TestNaturalLanguageValue_Get(t *testing.T) {
-	testVal := LangVal("test")
+	testVal := Content("test")
 	a := NaturalLanguageValues{{NilLangRef, testVal}}
 	if a.Get(NilLangRef) != testVal {
 		t.Errorf("Invalid Get result. Expected %s received %s", testVal, a.Get(NilLangRef))
@@ -127,7 +127,7 @@ func TestNaturalLanguageValue_Get(t *testing.T) {
 }
 
 func TestNaturalLanguageValue_Set(t *testing.T) {
-	testVal := LangVal("test")
+	testVal := Content("test")
 	a := NaturalLanguageValues{{NilLangRef, "ana are mere"}}
 	err := a.Set(LangRef("en"), testVal)
 	if err != nil {
@@ -142,7 +142,7 @@ func TestNaturalLanguageValue_Append(t *testing.T) {
 		t.Errorf("Invalid initialization of %T. Size %d > 0 ", a, len(a))
 	}
 	langEn := LangRef("en")
-	valEn := LangVal("random value")
+	valEn := Content("random value")
 
 	a.Append(langEn, valEn)
 	if len(a) != 1 {
@@ -152,7 +152,7 @@ func TestNaturalLanguageValue_Append(t *testing.T) {
 		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langEn, valEn, a.Get(langEn))
 	}
 	langDe := LangRef("de")
-	valDe := LangVal("randomisch")
+	valDe := Content("randomisch")
 	a.Append(langDe, valDe)
 
 	if len(a) != 2 {
@@ -180,9 +180,9 @@ func TestLangRef_UnmarshalJSON(t *testing.T) {
 
 func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
 	langEn := "en-US"
-	valEn := LangVal("random")
+	valEn := Content("random")
 	langDe := "de-DE"
-	valDe := LangVal("zufällig\n")
+	valDe := Content("zufällig\n")
 
 	//m := make(map[string]string)
 	//m[langEn] = valEn
@@ -526,4 +526,16 @@ func TestNaturalLanguageValues_Equals(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestContent_String(t *testing.T) {
+	t.Skip("TODO")
+}
+
+func TestContent_UnmarshalJSON(t *testing.T) {
+	t.Skip("TODO")
+}
+
+func TestContent_UnmarshalText(t *testing.T) {
+	t.Skip("TODO")
 }

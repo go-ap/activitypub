@@ -13,12 +13,12 @@ const NilLangRef LangRef = "-"
 type (
 	// LangRef is the type for a language reference code, should be an ISO639-1 language specifier.
 	LangRef string
-	LangVal string
+	Content string
 
 	// LangRefValue is a type for storing per language values
 	LangRefValue struct {
 		Ref   LangRef
-		Value LangVal
+		Value Content
 	}
 	// NaturalLanguageValues is a mapping for multiple language values
 	NaturalLanguageValues []LangRefValue
@@ -45,7 +45,7 @@ func (n NaturalLanguageValues) String() string {
 	return s.String()
 }
 
-func (n NaturalLanguageValues) Get(ref LangRef) LangVal {
+func (n NaturalLanguageValues) Get(ref LangRef) Content {
 	for _, val := range n {
 		if val.Ref == ref {
 			return val.Value
@@ -55,7 +55,7 @@ func (n NaturalLanguageValues) Get(ref LangRef) LangVal {
 }
 
 // Set sets a language, value pair in a NaturalLanguageValues array
-func (n *NaturalLanguageValues) Set(ref LangRef, v LangVal) error {
+func (n *NaturalLanguageValues) Set(ref LangRef, v Content) error {
 	found := false
 	for k, vv := range *n {
 		if vv.Ref == ref {
@@ -80,7 +80,7 @@ func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 	if l == 1 {
 		v := n[0]
 		if len(v.Value) > 0 {
-			v.Value = LangVal(unescape([]byte(v.Value)))
+			v.Value = Content(unescape([]byte(v.Value)))
 			ll, err := b.WriteString(strconv.Quote(v.Value.String()))
 			if err != nil {
 				return nil, err
@@ -132,7 +132,7 @@ func (n NaturalLanguageValues) MarshalText() ([]byte, error) {
 
 // Append is syntactic sugar for resizing the NaturalLanguageValues map
 // and appending an element
-func (n *NaturalLanguageValues) Append(lang LangRef, value LangVal) error {
+func (n *NaturalLanguageValues) Append(lang LangRef, value Content) error {
 	var t NaturalLanguageValues
 	if len(*n) == 0 {
 		t = make(NaturalLanguageValues, 0)
@@ -163,19 +163,19 @@ func (l *LangRefValue) UnmarshalJSON(data []byte) error {
 	_, typ, _, err := jsonparser.Get(data)
 	if err != nil {
 		l.Ref = NilLangRef
-		l.Value = LangVal(unescape(data))
+		l.Value = Content(unescape(data))
 		return nil
 	}
 	switch typ {
 	case jsonparser.Object:
 		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
 			l.Ref = LangRef(key)
-			l.Value = LangVal(unescape(value))
+			l.Value = Content(unescape(value))
 			return err
 		})
 	case jsonparser.String:
 		l.Ref = NilLangRef
-		l.Value = LangVal(unescape(data))
+		l.Value = Content(unescape(data))
 	}
 
 	return nil
@@ -197,7 +197,7 @@ func (l LangRefValue) MarshalJSON() ([]byte, error) {
 		buf.WriteString(l.Ref.String())
 		buf.Write([]byte{'"', ':'})
 	}
-	l.Value = LangVal(unescape([]byte(l.Value)))
+	l.Value = Content(unescape([]byte(l.Value)))
 	buf.WriteString(strconv.Quote(l.Value.String()))
 	return buf.Bytes(), nil
 }
@@ -224,7 +224,7 @@ func (l *LangRef) UnmarshalJSON(data []byte) error {
 
 // UnmarshalText implements the TextEncoder interface
 func (l *LangRef) UnmarshalText(data []byte) error {
-	*l = LangRef("")
+	*l = ""
 	if len(data) == 0 {
 		return nil
 	}
@@ -242,15 +242,26 @@ func (l LangRef) String() string {
 	return string(l)
 }
 
-func (l *LangVal) UnmarshalJSON(data []byte) error {
-	return nil
+func (c *Content) UnmarshalJSON(data []byte) error {
+	return c.UnmarshalText(data)
 }
-func (l *LangVal) UnmarshalText(data []byte) error {
+func (c *Content) UnmarshalText(data []byte) error {
+	*c = ""
+	if len(data) == 0 {
+		return nil
+	}
+	if len(data) > 2 {
+		if data[0] == '"' && data[len(data)-1] == '"' {
+			*c = Content(data[1 : len(data)-1])
+		}
+	} else {
+		*c = Content(data)
+	}
 	return nil
 }
 
-func (l LangVal) String() string {
-	return string(l)
+func (c Content) String() string {
+	return string(c)
 }
 
 func unescape(b []byte) []byte {
@@ -272,17 +283,17 @@ func (n *NaturalLanguageValues) UnmarshalJSON(data []byte) error {
 	val, typ, _, err := jsonparser.Get(data)
 	if err != nil {
 		// try our luck if data contains an unquoted string
-		n.Append(NilLangRef, LangVal(unescape(data)))
+		n.Append(NilLangRef, Content(unescape(data)))
 		return nil
 	}
 	switch typ {
 	case jsonparser.Object:
 		jsonparser.ObjectEach(data, func(key []byte, val []byte, dataType jsonparser.ValueType, offset int) error {
-			n.Append(LangRef(key), LangVal(unescape(val)))
+			n.Append(LangRef(key), Content(unescape(val)))
 			return err
 		})
 	case jsonparser.String:
-		n.Append(NilLangRef, LangVal(unescape(val)))
+		n.Append(NilLangRef, Content(unescape(val)))
 	case jsonparser.Array:
 		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 			l := LangRefValue{}
@@ -301,7 +312,7 @@ func (n *NaturalLanguageValues) UnmarshalText(data []byte) error {
 		if data[len(data)-1] != '"' {
 			return fmt.Errorf("invalid string value when unmarshaling %T value", n)
 		}
-		n.Append(LangRef(NilLangRef), LangVal(data[1:len(data)-1]))
+		n.Append(LangRef(NilLangRef), Content(data[1:len(data)-1]))
 	}
 	return nil
 }
