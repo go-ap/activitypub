@@ -207,7 +207,7 @@ var allTests = testMaps{
 			HrefLang:  pub.LangRef("en"),
 			MediaType: pub.MimeType("text/html"),
 			Name: pub.NaturalLanguageValues{{
-				pub.NilLangRef, "An example link",
+				pub.NilLangRef, pub.Content("An example link"),
 			}},
 		},
 	},
@@ -235,7 +235,7 @@ var allTests = testMaps{
 			Type: pub.ObjectType,
 			ID:   pub.ID("http://www.test.example/object/1"),
 			Name: pub.NaturalLanguageValues{{
-				pub.NilLangRef, "A Simple, non-specific object",
+				pub.NilLangRef, pub.Content("A Simple, non-specific object"),
 			}},
 		},
 	},
@@ -246,19 +246,19 @@ var allTests = testMaps{
 			Type: pub.ObjectType,
 			ID:   pub.ID("http://www.test.example/object/1"),
 			Name: pub.NaturalLanguageValues{{
-				pub.NilLangRef, "A Simple, non-specific object",
+				pub.NilLangRef, pub.Content("A Simple, non-specific object"),
 			}},
 			Tag: pub.ItemCollection{
 				&pub.Mention{
 					Name: pub.NaturalLanguageValues{{
-						pub.NilLangRef, "#my_tag",
+						pub.NilLangRef, pub.Content("#my_tag"),
 					}},
 					Type: pub.MentionType,
 					ID:   pub.ID("http://example.com/tag/my_tag"),
 				},
 				&pub.Mention{
 					Name: pub.NaturalLanguageValues{{
-						pub.NilLangRef, "@ana",
+						pub.NilLangRef, pub.Content("@ana"),
 					}},
 					Type: pub.MentionType,
 					ID:   pub.ID("http://example.com/users/ana"),
@@ -281,7 +281,7 @@ var allTests = testMaps{
 						ID:   pub.ID("http://www.test.example/object/1/replies/2"),
 						Type: pub.ArticleType,
 						Name: pub.NaturalLanguageValues{{
-							pub.NilLangRef, "Example title",
+							pub.NilLangRef, pub.Content("Example title"),
 						}},
 					},
 				},
@@ -295,14 +295,14 @@ var allTests = testMaps{
 		},
 		result: &pub.Activity{
 			Type:    pub.ActivityType,
-			Summary: pub.NaturalLanguageValues{{pub.NilLangRef, "Sally did something to a note"}},
+			Summary: pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("Sally did something to a note")}},
 			Actor: &pub.Person{
 				Type: pub.PersonType,
-				Name: pub.NaturalLanguageValues{{pub.NilLangRef, "Sally"}},
+				Name: pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("Sally")}},
 			},
 			Object: &pub.Object{
 				Type: pub.NoteType,
-				Name: pub.NaturalLanguageValues{{pub.NilLangRef, "A Note"}},
+				Name: pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("A Note")}},
 			},
 		},
 	},
@@ -312,8 +312,8 @@ var allTests = testMaps{
 		result: &pub.Person{
 			ID:                pub.ID("http://example.com/accounts/ana"),
 			Type:              pub.PersonType,
-			Name:              pub.NaturalLanguageValues{{pub.NilLangRef, "ana"}},
-			PreferredUsername: pub.NaturalLanguageValues{{pub.NilLangRef, "ana"}},
+			Name:              pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("ana")}},
+			PreferredUsername: pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("ana")}},
 			URL:               pub.IRI("http://example.com/accounts/ana"),
 			Outbox: &pub.OrderedCollection{
 				ID:   "http://example.com/accounts/ana/outbox",
@@ -334,8 +334,8 @@ var allTests = testMaps{
 				&pub.Object{
 					ID:           pub.ID("http://example.com/outbox/53c6fb47"),
 					Type:         pub.ArticleType,
-					Name:         pub.NaturalLanguageValues{{pub.NilLangRef, "Example title"}},
-					Content:      pub.NaturalLanguageValues{{pub.NilLangRef, "Example content!"}},
+					Name:         pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("Example title")}},
+					Content:      pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("Example content!")}},
 					URL:          pub.IRI("http://example.com/53c6fb47"),
 					MediaType:    pub.MimeType("text/markdown"),
 					Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
@@ -361,8 +361,8 @@ var allTests = testMaps{
 				&pub.Object{
 					ID:           pub.ID("http://example.com/outbox/53c6fb47"),
 					Type:         pub.ArticleType,
-					Name:         pub.NaturalLanguageValues{{pub.NilLangRef, "Example title"}},
-					Content:      pub.NaturalLanguageValues{{pub.NilLangRef, "Example content!"}},
+					Name:         pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("Example title")}},
+					Content:      pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("Example content!")}},
 					URL:          pub.IRI("http://example.com/53c6fb47"),
 					MediaType:    pub.MimeType("text/markdown"),
 					Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
@@ -377,12 +377,12 @@ var allTests = testMaps{
 		blank:    &pub.NaturalLanguageValues{},
 		result: &pub.NaturalLanguageValues{
 			{
-				pub.NilLangRef, `
+				pub.NilLangRef, pub.Content(`
 	
-	`},
-			{pub.LangRef("en"), "Ana got apples ⓐ"},
-			{pub.LangRef("fr"), "Aná a des pommes ⒜"},
-			{pub.LangRef("ro"), "Ana are mere"},
+	`)},
+			{pub.LangRef("en"), pub.Content("Ana got apples ⓐ")},
+			{pub.LangRef("fr"), pub.Content("Aná a des pommes ⒜")},
+			{pub.LangRef("ro"), pub.Content("Ana are mere")},
 		},
 	},
 	"activity_create_simple": {
@@ -395,7 +395,7 @@ var allTests = testMaps{
 				Type:         pub.NoteType,
 				AttributedTo: pub.IRI("https://littr.git/api/accounts/anonymous"),
 				InReplyTo:    pub.ItemCollection{pub.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff")},
-				Content:      pub.NaturalLanguageValues{{pub.NilLangRef, "<p>Hello world</p>"}},
+				Content:      pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("<p>Hello world</p>")}},
 				To:           pub.ItemCollection{pub.IRI("https://www.w3.org/ns/activitystreams#Public")},
 			},
 		},
@@ -406,12 +406,12 @@ var allTests = testMaps{
 		result: &pub.Create{
 			Type:  pub.CreateType,
 			Actor: pub.IRI("https://littr.git/api/accounts/anonymous"),
-			Object:pub.ItemCollection{
+			Object: pub.ItemCollection{
 				&pub.Object{
 					Type:         pub.NoteType,
 					AttributedTo: pub.IRI("https://littr.git/api/accounts/anonymous"),
 					InReplyTo:    pub.ItemCollection{pub.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff")},
-					Content:      pub.NaturalLanguageValues{{pub.NilLangRef, "<p>Hello world</p>"}},
+					Content:      pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("<p>Hello world</p>")}},
 					To:           pub.ItemCollection{pub.IRI("https://www.w3.org/ns/activitystreams#Public")},
 				},
 				&pub.Article{
@@ -420,7 +420,7 @@ var allTests = testMaps{
 					Name: pub.NaturalLanguageValues{
 						{
 							pub.NilLangRef,
-							"This someday will grow up to be an article",
+							pub.Content("This someday will grow up to be an article"),
 						},
 					},
 					InReplyTo: pub.ItemCollection{
@@ -461,7 +461,7 @@ var allTests = testMaps{
 			Name: pub.NaturalLanguageValues{
 				{
 					pub.NilLangRef,
-					"This someday will grow up to be an article",
+					pub.Content("This someday will grow up to be an article"),
 				},
 			},
 			InReplyTo: pub.ItemCollection{

@@ -12,8 +12,8 @@ import (
 func TestAcceptSerialization(t *testing.T) {
 	obj := pub.AcceptNew("https://localhost/myactivity", nil)
 	obj.Name = make(pub.NaturalLanguageValues, 1)
-	obj.Name.Set("en", "test")
-	obj.Name.Set("fr", "teste")
+	obj.Name.Set("en", pub.Content("test"))
+	obj.Name.Set("fr", pub.Content("teste"))
 
 	uri := "https://www.w3.org/ns/activitystreams"
 	p := j.WithContext(j.IRI(uri))
@@ -43,7 +43,7 @@ func TestAcceptSerialization(t *testing.T) {
 func TestCreateActivityHTTPSerialization(t *testing.T) {
 	id := pub.ID("test_object")
 	obj := pub.AcceptNew(id, nil)
-	obj.Name.Set("en", "Accept New")
+	obj.Name.Set("en", pub.Content("Accept New"))
 
 	uri := string(pub.ActivityBaseURI)
 

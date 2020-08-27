@@ -563,7 +563,7 @@ func TestObject_MarshalJSON(t *testing.T) {
 			name: "JustOneName",
 			fields: fields{
 				Name: NaturalLanguageValues{
-					{Ref: NilLangRef, Value: "ana"},
+					{Ref: NilLangRef, Value: Content("ana")},
 				},
 			},
 			want:    []byte(`{"name":"ana"}`),
@@ -573,8 +573,8 @@ func TestObject_MarshalJSON(t *testing.T) {
 			name: "MoreNames",
 			fields: fields{
 				Name: NaturalLanguageValues{
-					{Ref: "en", Value: "anna"},
-					{Ref: "fr", Value: "anne"},
+					{Ref: "en", Value: Content("anna")},
+					{Ref: "fr", Value: Content("anne")},
 				},
 			},
 			want:    []byte(`{"nameMap":{"en":"anna","fr":"anne"}}`),
@@ -584,7 +584,7 @@ func TestObject_MarshalJSON(t *testing.T) {
 			name: "JustOneSummary",
 			fields: fields{
 				Summary: NaturalLanguageValues{
-					{Ref: NilLangRef, Value: "test summary"},
+					{Ref: NilLangRef, Value: Content("test summary")},
 				},
 			},
 			want:    []byte(`{"summary":"test summary"}`),
@@ -594,8 +594,8 @@ func TestObject_MarshalJSON(t *testing.T) {
 			name: "MoreSummaryEntries",
 			fields: fields{
 				Summary: NaturalLanguageValues{
-					{Ref: "en", Value: "test summary"},
-					{Ref: "fr", Value: "teste summary"},
+					{Ref: "en", Value: Content("test summary")},
+					{Ref: "fr", Value: Content("teste summary")},
 				},
 			},
 			want:    []byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
@@ -605,7 +605,7 @@ func TestObject_MarshalJSON(t *testing.T) {
 			name: "JustOneContent",
 			fields: fields{
 				Content: NaturalLanguageValues{
-					{Ref: NilLangRef, Value: "test content"},
+					{Ref: NilLangRef, Value: Content("test content")},
 				},
 			},
 			want:    []byte(`{"content":"test content"}`),
@@ -615,8 +615,8 @@ func TestObject_MarshalJSON(t *testing.T) {
 			name: "MoreContentEntries",
 			fields: fields{
 				Content: NaturalLanguageValues{
-					{Ref: "en", Value: "test content"},
-					{Ref: "fr", Value: "teste content"},
+					{Ref: "en", Value: Content("test content")},
+					{Ref: "fr", Value: Content("teste content")},
 				},
 			},
 			want:    []byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),
@@ -757,7 +757,7 @@ func TestSource_MarshalJSON(t *testing.T) {
 			name: "OneContentValue",
 			fields: fields{
 				Content: NaturalLanguageValues{
-					{Value: "test"},
+					{Value: Content("test")},
 				},
 			},
 			want:    []byte(`{"content":"test"}`),
@@ -769,11 +769,11 @@ func TestSource_MarshalJSON(t *testing.T) {
 				Content: NaturalLanguageValues{
 					{
 						Ref:   "en",
-						Value: "test",
+						Value: Content("test"),
 					},
 					{
 						Ref:   "fr",
-						Value: "teste",
+						Value: Content("teste"),
 					},
 				},
 			},

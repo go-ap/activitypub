@@ -13,7 +13,7 @@ const NilLangRef LangRef = "-"
 type (
 	// LangRef is the type for a language reference code, should be an ISO639-1 language specifier.
 	LangRef string
-	Content string
+	Content []byte
 
 	// LangRefValue is a type for storing per language values
 	LangRefValue struct {
@@ -51,7 +51,7 @@ func (n NaturalLanguageValues) Get(ref LangRef) Content {
 			return val.Value
 		}
 	}
-	return ""
+	return nil
 }
 
 // Set sets a language, value pair in a NaturalLanguageValues array
@@ -75,7 +75,7 @@ func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 	if l <= 0 {
 		return nil, nil
 	}
-	
+
 	b := bytes.Buffer{}
 	if l == 1 {
 		v := n[0]
@@ -189,8 +189,8 @@ func (l *LangRefValue) UnmarshalText(data []byte) error {
 // MarshalJSON serializes the LangRefValue into JSON
 func (l LangRefValue) MarshalJSON() ([]byte, error) {
 	buf := bytes.Buffer{}
-	if l.Ref != NilLangRef && len(l.Ref) > 0{
-		if l.Value == "" {
+	if l.Ref != NilLangRef && len(l.Ref) > 0 {
+		if l.Value.Equals(Content("")) {
 			return nil, nil
 		}
 		buf.WriteByte('"')
@@ -204,7 +204,7 @@ func (l LangRefValue) MarshalJSON() ([]byte, error) {
 
 // MarshalText serializes the LangRefValue into JSON
 func (l LangRefValue) MarshalText() ([]byte, error) {
-	if l.Ref != NilLangRef && l.Value == "" {
+	if l.Ref != NilLangRef && l.Value.Equals(Content("")) {
 		return nil, nil
 	}
 	buf := bytes.Buffer{}
@@ -242,11 +242,15 @@ func (l LangRef) String() string {
 	return string(l)
 }
 
+func (l LangRefValue) Equals(other LangRefValue) bool {
+	return l.Ref == other.Ref && l.Value.Equals(other.Value)
+}
+
 func (c *Content) UnmarshalJSON(data []byte) error {
 	return c.UnmarshalText(data)
 }
 func (c *Content) UnmarshalText(data []byte) error {
-	*c = ""
+	*c = Content{}
 	if len(data) == 0 {
 		return nil
 	}
@@ -262,6 +266,10 @@ func (c *Content) UnmarshalText(data []byte) error {
 
 func (c Content) String() string {
 	return string(c)
+}
+
+func (c Content) Equals(other Content) bool {
+	return bytes.Equal(c, other)
 }
 
 func unescape(b []byte) []byte {
@@ -324,7 +332,7 @@ func (n NaturalLanguageValues) Equals(with NaturalLanguageValues) bool {
 	}
 	for _, wv := range with {
 		for _, nv := range n {
-			if nv == wv {
+			if nv.Equals(wv) {
 				continue
 			}
 			return false

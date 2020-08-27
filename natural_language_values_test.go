@@ -10,10 +10,10 @@ import (
 func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
 	p := NaturalLanguageValues{
 		{
-			"en", "the test",
+			"en", Content("the test"),
 		},
 		{
-			"fr", "le test",
+			"fr", Content("le test"),
 		},
 	}
 	js := "{\"en\":\"the test\",\"fr\":\"le test\"}"
@@ -27,7 +27,7 @@ func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
 	}
 	p1 := NaturalLanguageValues{
 		{
-			"en", "the test",
+			"en", Content("the test"),
 		},
 	}
 
@@ -46,7 +46,7 @@ func TestLangRefValue_MarshalJSON(t *testing.T) {
 	{
 		tst := LangRefValue{
 			Ref:   NilLangRef,
-			Value: "test",
+			Value: Content("test"),
 		}
 		j, err := tst.MarshalJSON()
 		if err != nil {
@@ -60,7 +60,7 @@ func TestLangRefValue_MarshalJSON(t *testing.T) {
 	{
 		tst := LangRefValue{
 			Ref:   "en",
-			Value: "test",
+			Value: Content("test"),
 		}
 		j, err := tst.MarshalJSON()
 		if err != nil {
@@ -74,7 +74,7 @@ func TestLangRefValue_MarshalJSON(t *testing.T) {
 	{
 		tst := LangRefValue{
 			Ref:   "en",
-			Value: "test\nwith characters\tneeding escaping\r\n",
+			Value: Content("test\nwith characters\tneeding escaping\r\n"),
 		}
 		j, err := tst.MarshalJSON()
 		if err != nil {
@@ -91,7 +91,7 @@ func TestLangRefValue_MarshalText(t *testing.T) {
 	{
 		tst := LangRefValue{
 			Ref:   NilLangRef,
-			Value: "test",
+			Value: Content("test"),
 		}
 		j, err := tst.MarshalText()
 		if err != nil {
@@ -105,7 +105,7 @@ func TestLangRefValue_MarshalText(t *testing.T) {
 	{
 		tst := LangRefValue{
 			Ref:   "en",
-			Value: "test",
+			Value: Content("test"),
 		}
 		j, err := tst.MarshalText()
 		if err != nil {
@@ -121,14 +121,14 @@ func TestLangRefValue_MarshalText(t *testing.T) {
 func TestNaturalLanguageValue_Get(t *testing.T) {
 	testVal := Content("test")
 	a := NaturalLanguageValues{{NilLangRef, testVal}}
-	if a.Get(NilLangRef) != testVal {
+	if !a.Get(NilLangRef).Equals(testVal) {
 		t.Errorf("Invalid Get result. Expected %s received %s", testVal, a.Get(NilLangRef))
 	}
 }
 
 func TestNaturalLanguageValue_Set(t *testing.T) {
 	testVal := Content("test")
-	a := NaturalLanguageValues{{NilLangRef, "ana are mere"}}
+	a := NaturalLanguageValues{{NilLangRef, Content("ana are mere")}}
 	err := a.Set(LangRef("en"), testVal)
 	if err != nil {
 		t.Errorf("Received error when doing Set %s", err)
@@ -148,7 +148,7 @@ func TestNaturalLanguageValue_Append(t *testing.T) {
 	if len(a) != 1 {
 		t.Errorf("Invalid append of one element to %T. Size %d != 1", a, len(a))
 	}
-	if a.Get(langEn) != valEn {
+	if !a.Get(langEn).Equals(valEn) {
 		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langEn, valEn, a.Get(langEn))
 	}
 	langDe := LangRef("de")
@@ -158,10 +158,10 @@ func TestNaturalLanguageValue_Append(t *testing.T) {
 	if len(a) != 2 {
 		t.Errorf("Invalid append of one element to %T. Size %d != 2", a, len(a))
 	}
-	if a.Get(langEn) != valEn {
+	if !a.Get(langEn).Equals(valEn) {
 		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langEn, valEn, a.Get(langEn))
 	}
-	if a.Get(langDe) != valDe {
+	if !a.Get(langDe).Equals(valDe) {
 		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langDe, valDe, a.Get(langDe))
 	}
 }
@@ -205,11 +205,11 @@ func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
 			t.Errorf("Invalid json unmarshal for %T. Expected lang %q or %q, found %q", a, langEn, langDe, lang)
 		}
 
-		if val.Ref == LangRef(langEn) && val.Value != valEn {
-			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valEn, val)
+		if val.Ref == LangRef(langEn) && !val.Value.Equals(valEn) {
+			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valEn, val.Value)
 		}
-		if val.Ref == LangRef(langDe) && val.Value != valDe {
-			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valDe, val)
+		if val.Ref == LangRef(langDe) && !val.Value.Equals(valDe) {
+			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valDe, val.Value)
 		}
 	}
 }
@@ -249,7 +249,7 @@ func TestNaturalLanguageValueNew(t *testing.T) {
 func TestNaturalLanguageValue_MarshalText(t *testing.T) {
 	nlv := LangRefValue{
 		Ref:   "en",
-		Value: "test",
+		Value: Content("test"),
 	}
 	tst := NaturalLanguageValues{nlv}
 	j, err := tst.MarshalText()
@@ -281,10 +281,10 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 	{
 		m := NaturalLanguageValues{
 			{
-				"en", "test",
+				"en", Content("test"),
 			},
 			{
-				"de", "test",
+				"de", Content("test"),
 			},
 		}
 		result, err := m.MarshalJSON()
@@ -301,7 +301,7 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		s := make(map[LangRef]string)
 		s["en"] = "test"
 		n1 := NaturalLanguageValues{{
-			"en", "test",
+			"en", Content("test"),
 		}}
 		result1, err1 := n1.MarshalJSON()
 		if err1 != nil {
@@ -315,7 +315,7 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 	{
 		nlv := LangRefValue{
 			Ref:   NilLangRef,
-			Value: "test",
+			Value: Content("test"),
 		}
 		tst := NaturalLanguageValues{nlv}
 		j, err := tst.MarshalJSON()
@@ -333,7 +333,7 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 	{
 		nlv := LangRefValue{
 			Ref:   "en",
-			Value: "test",
+			Value: Content("test"),
 		}
 		tst := NaturalLanguageValues{nlv}
 		j, err := tst.MarshalJSON()
@@ -351,11 +351,11 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 	{
 		nlvEn := LangRefValue{
 			Ref:   "en",
-			Value: "test",
+			Value: Content("test"),
 		}
 		nlvFr := LangRefValue{
 			Ref:   "fr",
-			Value: "teste",
+			Value: Content("teste"),
 		}
 		tst := NaturalLanguageValues{nlvEn, nlvFr}
 		j, err := tst.MarshalJSON()
@@ -373,11 +373,11 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 	{
 		nlvEn := LangRefValue{
 			Ref:   "en",
-			Value: "test\nwith new line",
+			Value: Content("test\nwith new line"),
 		}
 		nlvFr := LangRefValue{
 			Ref:   "fr",
-			Value: "teste\navec une ligne nouvelle",
+			Value: Content("teste\navec une ligne nouvelle"),
 		}
 		tst := NaturalLanguageValues{nlvEn, nlvFr}
 		j, err := tst.MarshalJSON()
@@ -417,7 +417,7 @@ func TestNaturalLanguageValues_UnmarshalJSON(t *testing.T) {
 			t.Errorf("Invalid number of elements %d, expected %d", n.Count(), 1)
 		}
 		l := n.First()
-		if l.Value != "ana are mere\n" {
+		if !l.Value.Equals(Content("ana are mere\n")) {
 			t.Errorf("Invalid %T value %q, expected %q", l, l.Value, "ana are mere\n")
 		}
 		if l.Ref != "en" {
@@ -441,7 +441,7 @@ func TestNaturalLanguageValues_UnmarshalJSON(t *testing.T) {
 			t.Errorf("Invalid number of elements %d, expected %d", n.Count(), 1)
 		}
 		l := n.First()
-		if l.Value != "ana are mere\n" {
+		if !l.Value.Equals(Content("ana are mere\n")) {
 			t.Errorf("Invalid %T value %q, expected %q", l, l.Value, "ana are mere\n")
 		}
 		if l.Ref != "en" {
@@ -480,12 +480,12 @@ func TestNaturalLanguageValues_Equals(t *testing.T) {
 			name: "equal-key-value",
 			n: NaturalLanguageValues{LangRefValue{
 				Ref:   "en",
-				Value: "test123#",
+				Value: Content("test123#"),
 			}},
 			args: args{
 				with: NaturalLanguageValues{LangRefValue{
 					Ref:   "en",
-					Value: "test123#",
+					Value: Content("test123#"),
 				}},
 			},
 			want: true,
@@ -494,12 +494,12 @@ func TestNaturalLanguageValues_Equals(t *testing.T) {
 			name: "not-equal-key",
 			n: NaturalLanguageValues{LangRefValue{
 				Ref:   "en",
-				Value: "test123#",
+				Value: Content("test123#"),
 			}},
 			args: args{
 				with: NaturalLanguageValues{LangRefValue{
 					Ref:   "fr",
-					Value: "test123#",
+					Value: Content("test123#"),
 				}},
 			},
 			want: false,
@@ -508,12 +508,12 @@ func TestNaturalLanguageValues_Equals(t *testing.T) {
 			name: "not-equal-value",
 			n: NaturalLanguageValues{LangRefValue{
 				Ref:   "en",
-				Value: "test123#",
+				Value: Content("test123#"),
 			}},
 			args: args{
 				with: NaturalLanguageValues{LangRefValue{
 					Ref:   "en",
-					Value: "test123",
+					Value: Content("test123"),
 				}},
 			},
 			want: false,
