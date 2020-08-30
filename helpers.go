@@ -101,7 +101,7 @@ func OnCollectionIntf(it Item, fn withCollectionInterfaceFn) error {
 		return fn(col)
 	case CollectionPageType:
 		return OnCollectionPage(it, func(p *CollectionPage) error {
-			col, err := ToCollection(p)
+			col, err := ToCollectionPage(p)
 			if err != nil {
 				return err
 			}
@@ -115,7 +115,7 @@ func OnCollectionIntf(it Item, fn withCollectionInterfaceFn) error {
 		return fn(col)
 	case OrderedCollectionPageType:
 		return OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
-			col, err := ToOrderedCollection(p)
+			col, err := ToOrderedCollectionPage(p)
 			if err != nil {
 				return err
 			}
