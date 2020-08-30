@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -137,7 +138,56 @@ func TestCollectionPage_Count(t *testing.T) {
 }
 
 func TestToCollectionPage(t *testing.T) {
-	t.Skipf("TODO")
+	err := fmt.Errorf("unable to convert to collection page")
+	tests := map[string]struct {
+		it      Item
+		want    *CollectionPage
+		wantErr error
+	}{
+		"CollectionPage": {
+			it: new(CollectionPage),
+			want: new(CollectionPage),
+			wantErr: nil,
+		},
+		"OrderedCollectionPage": {
+			it: new(OrderedCollectionPage),
+			want: new(CollectionPage),
+			wantErr: err,
+		},
+		"OrderedCollection": {
+			it: new(OrderedCollection),
+			want: new(CollectionPage),
+			wantErr: err,
+		},
+		"Collection": {
+			it: new(Collection),
+			want: new(CollectionPage),
+			wantErr: err,
+		},
+	}
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			got, err := ToCollectionPage(tt.it)
+			if tt.wantErr != nil && err == nil {
+				t.Errorf("ToCollectionPage() no error returned, wanted error = [%T]%s", tt.wantErr, tt.wantErr)
+				return
+			}
+			if err != nil {
+				if tt.wantErr == nil {
+					t.Errorf("ToCollectionPage() returned unexpected error[%T]%s", err, err)
+					return
+				}
+				if !reflect.DeepEqual(err, tt.wantErr) {
+					t.Errorf("ToCollectionPage() received error %v, wanted error %v", err, tt.wantErr)
+					return
+				}
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ToCollectionPage() got %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestCollectionPage_Contains(t *testing.T) {

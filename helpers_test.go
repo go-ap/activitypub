@@ -137,10 +137,6 @@ func TestOnCollectionPage(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestOnOrderedCollection(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestOnOrderedCollectionPage(t *testing.T) {
 	t.Skipf("TODO")
 }

@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -111,10 +112,59 @@ func TestOrderedCollectionPage_Collection(t *testing.T) {
 	}
 }
 
-func TestToOrderedCollectionPage(t *testing.T) {
+func TestOrderedCollectionPage_Contains(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestOrderedCollectionPage_Contains(t *testing.T) {
-	t.Skipf("TODO")
+func TestToOrderedCollectionPage(t *testing.T) {
+	err := fmt.Errorf("unable to convert to ordered collection page")
+	tests := map[string]struct {
+		it      Item
+		want    *OrderedCollectionPage
+		wantErr error
+	}{
+		"OrderedCollectionPage": {
+			it: new(OrderedCollectionPage),
+			want: new(OrderedCollectionPage),
+			wantErr: nil,
+		},
+		"OrderedCollection": {
+			it: new(OrderedCollection),
+			want: new(OrderedCollectionPage),
+			wantErr: err,
+		},
+		"Collection": {
+			it: new(Collection),
+			want: new(OrderedCollectionPage),
+			wantErr: err,
+		},
+		"CollectionPage": {
+			it: new(CollectionPage),
+			want: new(OrderedCollectionPage),
+			wantErr: err,
+		},
+	}
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			got, err := ToOrderedCollectionPage(tt.it)
+			if tt.wantErr != nil && err == nil {
+				t.Errorf("ToOrderedCollectionPage() no error returned, wanted error = [%T]%s", tt.wantErr, tt.wantErr)
+				return
+			} 
+			if err != nil {
+				if tt.wantErr == nil {
+					t.Errorf("ToOrderedCollectionPage() returned unexpected error[%T]%s", err, err)
+					return
+				}
+				if !reflect.DeepEqual(err, tt.wantErr) {
+					t.Errorf("ToOrderedCollectionPage() received error %v, wanted error %v", err, tt.wantErr)
+					return
+				}
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ToOrderedCollectionPage() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

@@ -285,8 +285,10 @@ func ToCollectionPage(it Item) (*CollectionPage, error) {
 	default:
 		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
 		typ := reflect.TypeOf(new(CollectionPage))
-		if reflect.TypeOf(it).ConvertibleTo(typ) {
-			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*CollectionPage); ok {
+		val := reflect.ValueOf(it)
+		if val.IsValid() && typ.Elem().Name() == val.Type().Elem().Name() {
+			conv := val.Convert(typ)
+			if i, ok := conv.Interface().(*CollectionPage); ok {
 				return i, nil
 			}
 		}

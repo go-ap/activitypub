@@ -240,8 +240,12 @@ func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
 	default:
 		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
 		typ := reflect.TypeOf(new(OrderedCollectionPage))
-		if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*OrderedCollectionPage); ok {
-			return i, nil
+		val := reflect.ValueOf(it)
+		if val.IsValid() && typ.Elem().Name() == val.Type().Elem().Name() {
+			conv := val.Convert(typ)
+			if i, ok := conv.Interface().(*OrderedCollectionPage); ok {
+				return i, nil
+			}
 		}
 	}
 	return nil, errors.New("unable to convert to ordered collection page")

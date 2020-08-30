@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -162,10 +163,6 @@ func TestCollection_Count(t *testing.T) {
 	}
 }
 
-func TestToCollection(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestCollection_Contains(t *testing.T) {
 	t.Skipf("TODO")
 }
@@ -188,4 +185,57 @@ func TestCollection_MarshalJSON(t *testing.T) {
 
 func TestCollection_ItemMatches(t *testing.T) {
 	t.Skipf("TODO")
+}
+
+func TestToCollection(t *testing.T) {
+	err := fmt.Errorf("unable to convert to collection")
+	tests := map[string]struct {
+		it      Item
+		want    *Collection
+		wantErr error
+	}{
+		"Collection": {
+			it: new(Collection),
+			want: new(Collection),
+			wantErr: nil,
+		},
+		"CollectionPage": {
+			it: new(CollectionPage),
+			want: new(Collection),
+			wantErr: nil,
+		},
+		"OrderedCollectionPage": {
+			it: new(OrderedCollectionPage),
+			want: new(Collection),
+			wantErr: err,
+		},
+		"OrderedCollection": {
+			it: new(OrderedCollection),
+			want: new(Collection),
+			wantErr: err,
+		},
+	}
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			got, err := ToCollection(tt.it)
+			if tt.wantErr != nil && err == nil {
+				t.Errorf("ToCollection() no error returned, wanted error = [%T]%s", tt.wantErr, tt.wantErr)
+				return
+			}
+			if err != nil {
+				if tt.wantErr == nil {
+					t.Errorf("ToCollection() returned unexpected error[%T]%s", err, err)
+					return
+				}
+				if !reflect.DeepEqual(err, tt.wantErr) {
+					t.Errorf("ToCollection() received error %v, wanted error %v", err, tt.wantErr)
+					return
+				}
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ToCollection() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
