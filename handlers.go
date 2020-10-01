@@ -106,6 +106,7 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if len(dat) == 0 {
 			dat = []byte("DELETED")
 		}
+		w.Header().Set("Location", it.GetLink().String())
 	default:
 		contentType = json.ContentType
 		dat, _ = pub.MarshalJSON(it)
