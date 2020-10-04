@@ -234,6 +234,9 @@ func (i ItemHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	status = http.StatusOK
+	if it.GetType() == pub.TombstoneType {
+		status = http.StatusGone
+	}
 	w.Header().Set("Content-Type", "application/activity+json")
 	w.WriteHeader(status)
 	if r.Method == http.MethodGet {
