@@ -19,7 +19,7 @@ var (
 )
 
 // ItemTyperFunc will return an instance of a struct that implements activitystreams.Item
-// The default for this package is JSONGetItemByType but can be overwritten
+// The default for this package is GetItemByType but can be overwritten
 var ItemTyperFunc TyperFn
 
 // TyperFn is the type of the function which returns an activitystreams.Item struct instance
@@ -144,6 +144,7 @@ func itemFn(data []byte) (Item, error) {
 		return nil, nil
 	}
 
+	// todo(marius): this allows passing an empty type to the typer function
 	i, err := ItemTyperFunc(JSONGetType(data))
 	if err != nil || i == nil {
 		if i, ok := asIRI(data); ok {
@@ -330,12 +331,12 @@ func JSONGetIRI(data []byte, prop string) IRI {
 // ActivityStreams object, if possible
 func UnmarshalJSON(data []byte) (Item, error) {
 	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
+		ItemTyperFunc = GetItemByType
 	}
 	return JSONUnmarshalToItem(data), nil
 }
 
-func JSONGetItemByType(typ ActivityVocabularyType) (Item, error) {
+func GetItemByType(typ ActivityVocabularyType) (Item, error) {
 	switch typ {
 	case ObjectType:
 		return ObjectNew(typ), nil
@@ -468,7 +469,7 @@ func JSONGetActorEndpoints(data []byte, prop string) *Endpoints {
 
 func loadObject(data []byte, o *Object) error {
 	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
+		ItemTyperFunc = GetItemByType
 	}
 	o.ID = JSONGetID(data)
 	o.Type = JSONGetType(data)
@@ -663,7 +664,7 @@ func loadTombstone(data []byte, t *Tombstone) error {
 
 func loadLink(data []byte, l *Link) error {
 	if ItemTyperFunc == nil {
-		ItemTyperFunc = JSONGetItemByType
+		ItemTyperFunc = GetItemByType
 	}
 	l.ID = JSONGetID(data)
 	l.Type = JSONGetType(data)

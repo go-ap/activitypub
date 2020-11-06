@@ -281,7 +281,7 @@ var tests = testPairs{
 func TestJSONGetItemByType(t *testing.T) {
 	for typ, test := range tests {
 		t.Run(string(typ), func(t *testing.T) {
-			v, err := JSONGetItemByType(typ)
+			v, err := GetItemByType(typ)
 			if err != nil {
 				t.Error(err)
 			}
