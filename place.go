@@ -228,3 +228,13 @@ func ToPlace(it Item) (*Place, error) {
 	}
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
+
+type withPlaceFn func (*Place) error
+
+func OnPlace(it Item, fn withPlaceFn) error {
+	ob, err  := ToPlace(it)
+	if err != nil {
+		return err
+	}
+	return fn(ob)
+}

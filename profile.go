@@ -196,3 +196,13 @@ func ToProfile(it Item) (*Profile, error) {
 	}
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
+
+type withProfileFn func (*Profile) error
+
+func OnProfile(it Item, fn withProfileFn) error {
+	ob, err  := ToProfile(it)
+	if err != nil {
+		return err
+	}
+	return fn(ob)
+}

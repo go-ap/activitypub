@@ -203,3 +203,13 @@ func ToTombstone(it Item) (*Tombstone, error) {
 	}
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
+
+type withTombstoneFn func (*Tombstone) error
+
+func OnTombstone(it Item, fn withTombstoneFn) error {
+	ob, err  := ToTombstone(it)
+	if err != nil {
+		return err
+	}
+	return fn(ob)
+}
