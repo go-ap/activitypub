@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+type withLinkFn func (*Link) error
 type withObjectFn func (*Object) error
 type withActivityFn func (*Activity) error
 type withIntransitiveActivityFn func (*IntransitiveActivity) error

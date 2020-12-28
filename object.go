@@ -311,6 +311,17 @@ func (m MimeType) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
+// ToLink returns a Link pointer to the data in the current Item
+func ToLink(it Item) (*Link, error) {
+	switch i := it.(type) {
+	case *Link:
+		return i, nil
+	case Link:
+		return &i, nil
+	}
+	return nil, fmt.Errorf("unable to convert %q", it.GetType())
+}
+
 // ToObject returns an Object pointer to the data in the current Item
 // It relies on the fact that all the types in this package have a data layout compatible with Object.
 func ToObject(it Item) (*Object, error) {
