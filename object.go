@@ -296,8 +296,8 @@ type (
 )
 
 // UnmarshalJSON
-func (c *MimeType) UnmarshalJSON(data []byte) error {
-	*c = MimeType(strings.Trim(string(data), "\""))
+func (m *MimeType) UnmarshalJSON(data []byte) error {
+	*m = MimeType(strings.Trim(string(data), "\""))
 	return nil
 }
 
