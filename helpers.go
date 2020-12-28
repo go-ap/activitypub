@@ -16,9 +16,18 @@ type withOrderedCollectionFn func (*OrderedCollection) error
 type withOrderedCollectionPageFn func (*OrderedCollectionPage) error
 type withItemCollectionFn func (collection *ItemCollection) error
 
+// OnLink
+func OnLink(it Item, fn withLinkFn) error {
+	ob, err := ToLink(it)
+	if err != nil {
+		return err
+	}
+	return fn(ob)
+}
+
 // OnObject
 func OnObject(it Item, fn withObjectFn) error {
-	ob, err  := ToObject(it)
+	ob, err := ToObject(it)
 	if err != nil {
 		return err
 	}
