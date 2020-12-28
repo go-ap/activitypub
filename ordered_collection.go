@@ -397,9 +397,14 @@ func SharesNew() *Shares {
 	return &i
 }
 
-// ItemMatches
-func (o OrderedCollection) ItemMatches(it Item) bool {
-	return o.OrderedItems.Contains(it)
+// ItemsMatch
+func (o OrderedCollection) ItemsMatch(col ...Item) bool {
+	for _, it := range col {
+		if match := o.OrderedItems.Contains(it); !match {
+			return false
+		}
+	}
+	return true
 }
 
 // Equals

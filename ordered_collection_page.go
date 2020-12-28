@@ -251,9 +251,14 @@ func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
 	return nil, errors.New("unable to convert to ordered collection page")
 }
 
-// ItemMatches
-func (o OrderedCollectionPage) ItemMatches(it Item) bool {
-	return o.OrderedItems.Contains(it)
+// ItemsMatch
+func (o OrderedCollectionPage) ItemsMatch(col ...Item) bool {
+	for _, it := range col {
+		if match := o.OrderedItems.Contains(it); !match {
+			return false
+		}
+	}
+	return true
 }
 
 // Equals

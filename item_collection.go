@@ -186,8 +186,14 @@ func ToItemCollection(it Item) (*ItemCollection, error) {
 	return nil, errors.New("unable to convert to item collection")
 }
 
-func (i ItemCollection) ItemMatches(it Item) bool {
-	return i.Contains(it)
+// ItemsMatch
+func (i ItemCollection) ItemsMatch(col ...Item) bool {
+	for _, it := range col {
+		if match := i.Contains(it); !match {
+			return false
+		}
+	}
+	return true
 }
 
 // Equals

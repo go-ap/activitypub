@@ -235,6 +235,11 @@ func (i IRI) Contains(what IRI, checkScheme bool) bool {
 	return strings.Contains(p, pw)
 }
 
-func (i IRI) ItemMatches(it Item) bool {
-	return it.GetLink().Contains(i, false)
+func (i IRI) ItemsMatch(col ...Item) bool {
+	for _, it := range col {
+		if match := it.GetLink().Contains(i, false); !match {
+			return false
+		}
+	}
+	return true
 }
