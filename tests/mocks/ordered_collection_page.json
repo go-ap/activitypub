@@ -5,10 +5,10 @@
   "url": "http://example.com/outbox?page=2",
   "totalItems": 1,
   "partOf":  "http://example.com/outbox",
-  "current":  "http://example.com/outbox?page=1",
+  "current":  "http://example.com/outbox?page=2",
   "next":  "http://example.com/outbox?page=3",
   "prev" : "http://example.com/outbox?page=1",
-  "startIndex": "100",
+  "startIndex": 100,
   "orderedItems": [
     {
       "id": "http://example.com/outbox/53c6fb47",
@@ -17,9 +17,9 @@
       "content": "Example content!",
       "url": "http://example.com/53c6fb47",
       "mediaType": "text/markdown",
-      "published": "2018-07-05T16:46:44.00000UTC",
+      "published": "2018-07-05T16:46:44.00000Z",
       "generator": "http://example.com",
-      "attributedTo": "http://example.com/account/alice"
+      "attributedTo": "http://example.com/accounts/alice"
     }
   ]
 }
