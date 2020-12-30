@@ -259,6 +259,16 @@ var allTests = testMaps{
 			}},
 		},
 	},
+	"object_no_type": testPair{
+		expected: true,
+		blank:    &pub.Object{},
+		result: &pub.Object{
+			ID:   pub.ID("http://www.test.example/object/1"),
+			Name: pub.NaturalLanguageValues{{
+				pub.NilLangRef, pub.Content("A Simple, non-specific object without a type"),
+			}},
+		},
+	},
 	"object_with_tags": testPair{
 		expected: true,
 		blank:    &pub.Object{},
@@ -333,7 +343,7 @@ var allTests = testMaps{
 			ID:                pub.ID("http://example.com/accounts/ana"),
 			Type:              pub.PersonType,
 			Name:              pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("ana")}},
-			PreferredUsername: pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("ana")}},
+			PreferredUsername: pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("Ana")}},
 			URL:               pub.IRI("http://example.com/accounts/ana"),
 			Outbox: &pub.OrderedCollection{
 				ID:   "http://example.com/accounts/ana/outbox",
@@ -377,6 +387,7 @@ var allTests = testMaps{
 			URL:        pub.IRI("http://example.com/outbox?page=2"),
 			Current:    pub.IRI("http://example.com/outbox?page=2"),
 			TotalItems: 1,
+			StartIndex: 100,
 			OrderedItems: pub.ItemCollection{
 				&pub.Object{
 					ID:           pub.ID("http://example.com/outbox/53c6fb47"),
@@ -394,12 +405,11 @@ var allTests = testMaps{
 	},
 	"natural_language_values": {
 		expected: true,
-		blank:    &pub.NaturalLanguageValues{},
+		blank:  &pub.NaturalLanguageValues{},
 		result: &pub.NaturalLanguageValues{
 			{
-				pub.NilLangRef, pub.Content(`
-	
-	`)},
+				pub.NilLangRef, pub.Content([]byte{'\n','\t', '\t', '\n'}),
+			},
 			{pub.LangRef("en"), pub.Content("Ana got apples ⓐ")},
 			{pub.LangRef("fr"), pub.Content("Aná a des pommes ⒜")},
 			{pub.LangRef("ro"), pub.Content("Ana are mere")},
@@ -414,7 +424,7 @@ var allTests = testMaps{
 			Object: &pub.Object{
 				Type:         pub.NoteType,
 				AttributedTo: pub.IRI("https://littr.git/api/accounts/anonymous"),
-				InReplyTo:    pub.ItemCollection{pub.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff")},
+				InReplyTo:    pub.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff"),
 				Content:      pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("<p>Hello world</p>")}},
 				To:           pub.ItemCollection{pub.IRI("https://www.w3.org/ns/activitystreams#Public")},
 			},
@@ -430,7 +440,7 @@ var allTests = testMaps{
 				&pub.Object{
 					Type:         pub.NoteType,
 					AttributedTo: pub.IRI("https://littr.git/api/accounts/anonymous"),
-					InReplyTo:    pub.ItemCollection{pub.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff")},
+					InReplyTo:    pub.IRI("https://littr.git/api/accounts/system/outbox/7ca154ff"),
 					Content:      pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("<p>Hello world</p>")}},
 					To:           pub.ItemCollection{pub.IRI("https://www.w3.org/ns/activitystreams#Public")},
 				},

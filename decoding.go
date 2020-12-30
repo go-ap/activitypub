@@ -252,7 +252,7 @@ func JSONGetItem(data []byte, prop string) Item {
 			return i
 		}
 	case jsonparser.Array:
-		fallthrough
+		return JSONGetItems(data, prop)
 	case jsonparser.Object:
 		return JSONUnmarshalToItem(val)
 	case jsonparser.Number:
@@ -322,9 +322,14 @@ func JSONGetItems(data []byte, prop string) ItemCollection {
 			}
 		}, prop)
 	case jsonparser.Object:
-		// this should never happen :)
+		it.Append(JSONGetItem(data, prop))
 	case jsonparser.String:
-		it.Append(IRI(val))
+		if len(val) > 0 {
+			it.Append(IRI(val))
+		}
+	}
+	if len(it) == 0 {
+		return nil
 	}
 	return it
 }
@@ -509,7 +514,7 @@ func loadObject(data []byte, o *Object) error {
 	o.Preview = JSONGetItem(data, "preview")
 	o.Image = JSONGetItem(data, "image")
 	o.Updated = JSONGetTime(data, "updated")
-	o.InReplyTo = JSONGetItems(data, "inReplyTo")
+	o.InReplyTo = JSONGetItem(data, "inReplyTo")
 	o.To = JSONGetItems(data, "to")
 	o.Audience = JSONGetItems(data, "audience")
 	o.Bto = JSONGetItems(data, "bto")
