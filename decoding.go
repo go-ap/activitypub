@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
+	"strconv"
 	"time"
 
 	"github.com/buger/jsonparser"
@@ -29,7 +30,7 @@ type TyperFn func(ActivityVocabularyType) (Item, error)
 func JSONGetID(data []byte) ID {
 	i, err := jsonparser.GetString(data, "id")
 	if err != nil {
-		return ID("")
+		return ""
 	}
 	return ID(i)
 }
@@ -43,24 +44,38 @@ func JSONGetType(data []byte) ActivityVocabularyType {
 	return typ
 }
 
-func JSONGetMimeType(data []byte) MimeType {
-	t, err := jsonparser.GetString(data, "mediaType")
+func JSONGetMimeType(data []byte, prop string) MimeType {
+	t, err := jsonparser.GetString(data, prop)
 	if err != nil {
-		return MimeType("")
+		return ""
 	}
 	return MimeType(t)
 }
 
 func JSONGetInt(data []byte, prop string) int64 {
+	if len(data) == 0 {
+		return 0
+	}
 	val, err := jsonparser.GetInt(data, prop)
 	if err != nil {
+		// try to load integers encapsulated in quotes
+		if sn, err := jsonparser.GetString(data, prop); err == nil {
+			val, _ = strconv.ParseInt(sn, 10, 64)
+		}
 	}
 	return val
 }
 
 func JSONGetFloat(data []byte, prop string) float64 {
+	if len(data) == 0 {
+		return 0
+	}
 	val, err := jsonparser.GetFloat(data, prop)
 	if err != nil {
+		// try to load floats encapsulated in quotes
+		if sn, err := jsonparser.GetString(data, prop); err == nil {
+			val, _ = strconv.ParseFloat(sn, 64)
+		}
 	}
 	return val
 }
@@ -117,16 +132,20 @@ func JSONGetNaturalLanguageField(data []byte, prop string) NaturalLanguageValues
 
 func JSONGetTime(data []byte, prop string) time.Time {
 	t := time.Time{}
-	str, _ := jsonparser.GetUnsafeString(data, prop)
-	t.UnmarshalText([]byte(str))
-	return t.UTC()
+	if str, _ := jsonparser.GetUnsafeString(data, prop); len(str) > 0 {
+		t.UnmarshalText([]byte(str))
+		return t.UTC()
+	}
+	return t
 }
 
 func JSONGetDuration(data []byte, prop string) time.Duration {
-	str, _ := jsonparser.GetUnsafeString(data, prop)
-	// TODO(marius): this needs to be replaced to be compatible with xsd:duration
-	d, _ := time.ParseDuration(str)
-	return d
+	if str, _ := jsonparser.GetUnsafeString(data, prop); len(str) > 0 {
+		// TODO(marius): this needs to be replaced to be compatible with xsd:duration
+		d, _ := time.ParseDuration(str)
+		return d
+	}
+	return 0
 }
 
 func JSONGetPublicKey(data []byte, prop string) PublicKey {
@@ -136,6 +155,7 @@ func JSONGetPublicKey(data []byte, prop string) PublicKey {
 }
 
 func JSONGetStreams(data []byte, prop string) []ItemCollection {
+	// TODO(marius)
 	return nil
 }
 
@@ -275,7 +295,6 @@ func JSONGetURIItem(data []byte, prop string) Item {
 			}
 			it.Append(i)
 		})
-
 		return it
 	case jsonparser.String:
 		return IRI(val)
@@ -305,8 +324,7 @@ func JSONGetItems(data []byte, prop string) ItemCollection {
 	case jsonparser.Object:
 		// this should never happen :)
 	case jsonparser.String:
-		s, _ := jsonparser.GetString(val)
-		it.Append(IRI(s))
+		it.Append(IRI(val))
 	}
 	return it
 }
@@ -322,7 +340,7 @@ func JSONGetLangRefField(data []byte, prop string) LangRef {
 func JSONGetIRI(data []byte, prop string) IRI {
 	val, err := jsonparser.GetString(data, prop)
 	if err != nil {
-		return IRI("")
+		return ""
 	}
 	return IRI(val)
 }
@@ -478,7 +496,7 @@ func loadObject(data []byte, o *Object) error {
 	o.Summary = JSONGetNaturalLanguageField(data, "summary")
 	o.Context = JSONGetItem(data, "context")
 	o.URL = JSONGetURIItem(data, "url")
-	o.MediaType = MimeType(JSONGetString(data, "mediaType"))
+	o.MediaType = JSONGetMimeType(data, "mediaType")
 	o.Generator = JSONGetItem(data, "generator")
 	o.AttributedTo = JSONGetItem(data, "attributedTo")
 	o.Attachment = JSONGetItem(data, "attachment")
@@ -491,38 +509,14 @@ func loadObject(data []byte, o *Object) error {
 	o.Preview = JSONGetItem(data, "preview")
 	o.Image = JSONGetItem(data, "image")
 	o.Updated = JSONGetTime(data, "updated")
-	inReplyTo := JSONGetItems(data, "inReplyTo")
-	if len(inReplyTo) > 0 {
-		o.InReplyTo = inReplyTo
-	}
-	to := JSONGetItems(data, "to")
-	if len(to) > 0 {
-		o.To = to
-	}
-	audience := JSONGetItems(data, "audience")
-	if len(audience) > 0 {
-		o.Audience = audience
-	}
-	bto := JSONGetItems(data, "bto")
-	if len(bto) > 0 {
-		o.Bto = bto
-	}
-	cc := JSONGetItems(data, "cc")
-	if len(cc) > 0 {
-		o.CC = cc
-	}
-	bcc := JSONGetItems(data, "bcc")
-	if len(bcc) > 0 {
-		o.BCC = bcc
-	}
-	replies := JSONGetItem(data, "replies")
-	if replies != nil {
-		o.Replies = replies
-	}
-	tag := JSONGetItems(data, "tag")
-	if len(tag) > 0 {
-		o.Tag = tag
-	}
+	o.InReplyTo = JSONGetItems(data, "inReplyTo")
+	o.To = JSONGetItems(data, "to")
+	o.Audience = JSONGetItems(data, "audience")
+	o.Bto = JSONGetItems(data, "bto")
+	o.CC = JSONGetItems(data, "cc")
+	o.BCC = JSONGetItems(data, "bcc")
+	o.Replies = JSONGetItem(data, "replies")
+	o.Tag = JSONGetItems(data, "tag")
 	o.Likes = JSONGetItem(data, "likes")
 	o.Shares = JSONGetItem(data, "shares")
 	o.Source = GetAPSource(data)
@@ -616,9 +610,7 @@ func loadOrderedCollectionPage(data []byte, c *OrderedCollectionPage) error {
 	c.Next = JSONGetItem(data, "next")
 	c.Prev = JSONGetItem(data, "prev")
 	c.PartOf = JSONGetItem(data, "partOf")
-	if si, err := jsonparser.GetInt(data, "startIndex"); err != nil {
-		c.StartIndex = uint(si)
-	}
+	c.StartIndex = uint(JSONGetInt(data, "startIndex"))
 	return nil
 }
 
@@ -668,7 +660,7 @@ func loadLink(data []byte, l *Link) error {
 	}
 	l.ID = JSONGetID(data)
 	l.Type = JSONGetType(data)
-	l.MediaType = JSONGetMimeType(data)
+	l.MediaType = JSONGetMimeType(data, "mediaType")
 	l.Preview = JSONGetItem(data, "preview")
 	h := JSONGetInt(data, "height")
 	if h != 0 {
