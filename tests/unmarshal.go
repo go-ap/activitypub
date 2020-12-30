@@ -35,18 +35,13 @@ type visit struct {
 
 type canErrorFunc func(format string, args ...interface{})
 
+// See reflect.DeepEqual
 func assertDeepEquals(t canErrorFunc, x, y interface{}) bool {
 	if x == nil || y == nil {
 		return x == y
 	}
 	v1 := reflect.ValueOf(x)
-	//if v1.CanAddr() {
-	//	v1 = v1.Addr()
-	//}
 	v2 := reflect.ValueOf(y)
-	//if v2.CanAddr() {
-	//	v2 = v2.Addr()
-	//}
 	if v1.Type() != v2.Type() {
 		t("%T != %T", x, y)
 		return false
@@ -54,6 +49,7 @@ func assertDeepEquals(t canErrorFunc, x, y interface{}) bool {
 	return deepValueEqual(t, v1, v2, make(map[visit]bool), 0)
 }
 
+// See reflect.deepValueEqual
 func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool, depth int) bool {
 	if !v1.IsValid() || !v2.IsValid() {
 		return v1.IsValid() == v2.IsValid()
@@ -63,27 +59,34 @@ func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool
 		return false
 	}
 
-	// We want to avoid putting more in the visited map than we need to.
-	// For any possible reference cycle that might be encountered,
-	// hard(t) needs to return true for at least one of the types in the cycle.
-	hard := func(k reflect.Kind) bool {
-		switch k {
-		case reflect.Map, reflect.Slice, reflect.Ptr, reflect.Interface:
-			return true
+	hard := func(v1, v2 reflect.Value) bool {
+		switch v1.Kind() {
+		case reflect.Ptr:
+			return false
+		case reflect.Map, reflect.Slice, reflect.Interface:
+			// Nil pointers cannot be cyclic. Avoid putting them in the visited map.
+			return !v1.IsNil() && !v2.IsNil()
 		}
-		//t("Invalid type for %s", k)
 		return false
 	}
 
-	if v1.CanAddr() && v2.CanAddr() && hard(v1.Kind()) {
-		addr1 := unsafe.Pointer(v1.UnsafeAddr())
-		addr2 := unsafe.Pointer(v2.UnsafeAddr())
+	if hard(v1, v2) {
+		var addr1, addr2 unsafe.Pointer
+		if v1.CanAddr() {
+			addr1 = unsafe.Pointer(v1.UnsafeAddr())
+		} else {
+			addr1 = unsafe.Pointer(v1.Pointer())
+		}
+		if v2.CanAddr() {
+			addr2 = unsafe.Pointer(v2.UnsafeAddr())
+		} else {
+			addr2 = unsafe.Pointer(v2.Pointer())
+		}
 		if uintptr(addr1) > uintptr(addr2) {
 			// Canonicalize order to reduce number of entries in visited.
 			// Assumes non-moving garbage collector.
 			addr1, addr2 = addr2, addr1
 		}
-
 		// Short circuit if references are already seen.
 		typ := v1.Type()
 		v := visit{addr1, addr2, typ}
@@ -150,9 +153,14 @@ func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool
 		return deepValueEqual(t, v1.Elem(), v2.Elem(), visited, depth+1)
 	case reflect.Struct:
 		for i, n := 0, v1.NumField(); i < n; i++ {
+			var (
+				f1 = v1.Field(i); f2 = v2.Field(i)
+				n1 = v1.Type().Field(i).Name; n2 = v2.Type().Field(i).Name
+				t1 = f1.Type().Name(); t2 = f2.Type().Name()
+			)
 			if !deepValueEqual(t, v1.Field(i), v2.Field(i), visited, depth+1) {
-				t("Struct fields at pos %d %s[%s] and %s[%s] are not deeply equal", i, v1.Type().Field(i).Name, v1.Field(i).Type().Name(), v2.Type().Field(i).Name, v2.Field(i).Type().Name())
-				if v1.Field(i).CanAddr() && v2.Field(i).CanAddr() {
+				t("Struct fields at pos %d %s[%s] and %s[%s] are not deeply equal", i, n1, t1, n2, t2)
+				if f1.CanInterface() && f2.CanInterface() {
 					t("  Values: %#v - %#v", v1.Field(i).Interface(), v2.Field(i).Interface())
 				}
 				return false
@@ -186,8 +194,20 @@ func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool
 		}
 		// Can't do better than this:
 		return false
+	case reflect.String:
+		return v1.String() == v2.String()
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return v1.Int() == v2.Int()
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return v1.Uint() == v2.Uint()
+	case reflect.Float32, reflect.Float64:
+		return v1.Float() == v2.Float()
+	case reflect.Bool:
+		return v1.Bool() == v2.Bool()
+	case reflect.Complex64, reflect.Complex128:
+		return v1.Complex() == v2.Complex()
 	}
-	return true // i guess?
+	return false
 }
 
 var zLoc, _ = time.LoadLocation("UTC")
