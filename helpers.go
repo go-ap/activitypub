@@ -37,9 +37,6 @@ func OnObject(it Item, fn withObjectFn) error {
 
 // OnActivity
 func OnActivity(it Item, fn withActivityFn) error {
-	if !(ActivityTypes.Contains(it.GetType()) || IntransitiveActivityTypes.Contains(it.GetType())) {
-		return fmt.Errorf("%T[%s] can't be converted to Activity", it, it.GetType())
-	}
 	act, err  := ToActivity(it)
 	if err != nil {
 		return err
@@ -49,9 +46,6 @@ func OnActivity(it Item, fn withActivityFn) error {
 
 // OnIntransitiveActivity
 func OnIntransitiveActivity(it Item, fn withIntransitiveActivityFn) error {
-	if it.GetType() == QuestionType {
-		fmt.Errorf("for %T[%s] you need to use OnQuestion function", it, it.GetType())
-	}
 	act, err  := ToIntransitiveActivity(it)
 	if err != nil {
 		return err
@@ -61,9 +55,6 @@ func OnIntransitiveActivity(it Item, fn withIntransitiveActivityFn) error {
 
 // OnQuestion
 func OnQuestion(it Item, fn withQuestionFn) error {
-	if it.GetType() != QuestionType {
-		fmt.Errorf("for %T[%s] can't be converted to Question", it, it.GetType())
-	}
 	act, err  := ToQuestion(it)
 	if err != nil {
 		return err
@@ -73,9 +64,6 @@ func OnQuestion(it Item, fn withQuestionFn) error {
 
 // OnActor
 func OnActor(it Item, fn withActorFn) error {
-	if !ActorTypes.Contains(it.GetType()) {
-		return fmt.Errorf("%T[%s] can't be converted to Person", it, it.GetType())
-	}
 	act, err  := ToActor(it)
 	if err != nil {
 		return err
@@ -84,9 +72,6 @@ func OnActor(it Item, fn withActorFn) error {
 }
 // OnCollection
 func OnCollection (it Item, fn withCollectionFn) error {
-	if !(ActivityVocabularyTypes{CollectionPageType, CollectionType,}).Contains(it.GetType()) {
-		return fmt.Errorf("%T[%s] can't be converted to Collection", it, it.GetType())
-	}
 	col, err := ToCollection(it)
 	if err != nil {
 		return err
@@ -138,9 +123,6 @@ func OnCollectionIntf(it Item, fn withCollectionInterfaceFn) error {
 
 // OnCollectionPage
 func OnCollectionPage(it Item, fn withCollectionPageFn) error {
-	if it.GetType() != CollectionPageType {
-		return fmt.Errorf("%T[%s] can't be converted to Collection Page", it, it.GetType())
-	}
 	col, err  := ToCollectionPage(it)
 	if err != nil {
 		return err
@@ -150,9 +132,6 @@ func OnCollectionPage(it Item, fn withCollectionPageFn) error {
 
 // OnOrderedCollection
 func OnOrderedCollection(it Item, fn withOrderedCollectionFn) error {
-	if !(ActivityVocabularyTypes{OrderedCollectionPageType, OrderedCollectionType,}).Contains(it.GetType()) {
-		return fmt.Errorf("%T[%s] can't be converted to Ordered Collection", it, it.GetType())
-	}
 	col, err := ToOrderedCollection(it)
 	if err != nil {
 		return err
@@ -162,9 +141,6 @@ func OnOrderedCollection(it Item, fn withOrderedCollectionFn) error {
 
 // OnOrderedCollectionPage executes a function on an ordered collection page type item
 func OnOrderedCollectionPage(it Item, fn withOrderedCollectionPageFn) error {
-	if it.GetType() != OrderedCollectionPageType {
-		return fmt.Errorf("%T[%s] can't be converted to OrderedCollection Page", it, it.GetType())
-	}
 	col, err  := ToOrderedCollectionPage(it)
 	if err != nil {
 		return err
