@@ -85,3 +85,19 @@ func ItemsEqual(it, with Item) bool {
 	}
 	return result
 }
+
+// IsIRI returns if the current Item interface holds an IRI
+func IsIRI(it Item) bool {
+	_, ok := it.(IRI)
+	return ok
+}
+
+// IsObject returns if the current Item interface holds an IRI
+func IsObject(it Item) bool {
+	ok := it.IsObject()
+	if it.IsLink() {
+		_, ok = it.(IRI)
+		return !ok
+	}
+	return ok
+}
