@@ -151,16 +151,16 @@ func (t Tombstone) MarshalJSON() ([]byte, error) {
 	write(&b, '{')
 
 	OnObject(t, func(o *Object) error {
-		notEmpty = writeObjectValue(&b, *o)
+		notEmpty = writeObjectJSONValue(&b, *o)
 		return nil
 	})
 	if len(t.FormerType) > 0 {
 		if v, err := t.FormerType.MarshalJSON(); err == nil && len(v) > 0 {
-			notEmpty = writeProp(&b, "formerType", v) || notEmpty
+			notEmpty = writeJSONProp(&b, "formerType", v) || notEmpty
 		}
 	}
 	if !t.Deleted.IsZero() {
-		notEmpty = writeTimeProp(&b, "deleted", t.Deleted) || notEmpty
+		notEmpty = writeTimeJSONProp(&b, "deleted", t.Deleted) || notEmpty
 	}
 	if notEmpty {
 		write(&b, '}')

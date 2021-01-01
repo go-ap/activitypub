@@ -104,7 +104,7 @@ func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 	b := make([]byte, 0)
-	writeStringValue(&b, string(a))
+	writeStringJSONValue(&b, string(a))
 	return b, nil
 }
 
@@ -257,7 +257,7 @@ func (o Object) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	write(&b, '{')
 
-	if writeObjectValue(&b, o) {
+	if writeObjectJSONValue(&b, o) {
 		write(&b, '}')
 		return b, nil
 	}
@@ -307,7 +307,7 @@ func (m MimeType) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 	b := make([]byte, 0)
-	writeStringValue(&b, string(m))
+	writeStringJSONValue(&b, string(m))
 	return b, nil
 }
 
@@ -426,11 +426,11 @@ func (s Source) MarshalJSON() ([]byte, error) {
 	write(&b, '{')
 	if len(s.MediaType) > 0 {
 		if v, err := s.MediaType.MarshalJSON(); err == nil && len(v) > 0 {
-			empty = !writeProp(&b, "mediaType", v)
+			empty = !writeJSONProp(&b, "mediaType", v)
 		}
 	}
 	if len(s.Content) > 0 {
-		empty = !writeNaturalLanguageProp(&b, "content", s.Content)
+		empty = !writeNaturalLanguageJSONProp(&b, "content", s.Content)
 	}
 	if !empty {
 		write(&b, '}')

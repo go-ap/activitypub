@@ -185,7 +185,7 @@ func (i IntransitiveActivity) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	write(&b, '{')
 
-	if !writeIntransitiveActivityValue(&b, i) {
+	if !writeIntransitiveActivityJSONValue(&b, i) {
 		return nil, nil
 	}
 	write(&b, '}')

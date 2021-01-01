@@ -90,7 +90,7 @@ func (l Link) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	write(&b, '{')
 
-	if writeLinkValue(&b, l) {
+	if writeLinkJSONValue(&b, l) {
 		write(&b, '}')
 		return b, nil
 	}

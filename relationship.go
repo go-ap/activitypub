@@ -159,18 +159,18 @@ func (r Relationship) MarshalJSON() ([]byte, error) {
 	write(&b, '{')
 
 	OnObject(r, func(o *Object) error {
-		notEmpty = writeObjectValue(&b, *o)
+		notEmpty = writeObjectJSONValue(&b, *o)
 		return nil
 	})
 
 	if r.Subject != nil {
-		notEmpty = writeItemProp(&b, "subject", r.Subject) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "subject", r.Subject) || notEmpty
 	}
 	if r.Object != nil {
-		notEmpty = writeItemProp(&b, "object", r.Object) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "object", r.Object) || notEmpty
 	}
 	if r.Relationship != nil {
-		notEmpty = writeItemProp(&b, "relationship", r.Relationship) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "relationship", r.Relationship) || notEmpty
 	}
 
 	if notEmpty {

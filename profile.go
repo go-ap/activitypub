@@ -153,7 +153,7 @@ func (p Profile) MarshalJSON() ([]byte, error) {
 	})
 
 	if p.Describes != nil {
-		notEmpty = writeItemProp(&b, "describes", p.Describes) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "describes", p.Describes) || notEmpty
 	}
 
 	if notEmpty {

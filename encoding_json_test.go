@@ -36,8 +36,8 @@ func Test_writeActivity(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeActivityValue(tt.args.b, tt.args.a); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeActivityValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeActivityJSONValue(tt.args.b, tt.args.a); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeActivityJSONValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -58,8 +58,8 @@ func Test_writeBoolProp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeBoolProp(tt.args.b, tt.args.n, tt.args.t); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeBoolProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeBoolJSONProp(tt.args.b, tt.args.n, tt.args.t); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeBoolJSONProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -96,8 +96,8 @@ func Test_writeDurationProp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeDurationProp(tt.args.b, tt.args.n, tt.args.d); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeDurationProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeDurationJSONProp(tt.args.b, tt.args.n, tt.args.d); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeDurationJSONProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -118,8 +118,8 @@ func Test_writeFloatProp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeFloatProp(tt.args.b, tt.args.n, tt.args.f); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeFloatProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeFloatJSONProp(tt.args.b, tt.args.n, tt.args.f); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeFloatJSONProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -140,8 +140,8 @@ func Test_writeIRIProp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeIRIProp(tt.args.b, tt.args.n, tt.args.i); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeIRIProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeIRIJSONProp(tt.args.b, tt.args.n, tt.args.i); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeIRIJSONProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -162,8 +162,8 @@ func Test_writeIntProp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeIntProp(tt.args.b, tt.args.n, tt.args.d); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeIntProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeIntJSONProp(tt.args.b, tt.args.n, tt.args.d); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeIntJSONProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -183,8 +183,8 @@ func Test_writeIntransitiveActivity(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeIntransitiveActivityValue(tt.args.b, tt.args.i); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeIntransitiveActivityValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeIntransitiveActivityJSONValue(tt.args.b, tt.args.i); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeIntransitiveActivityJSONValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -204,8 +204,8 @@ func Test_writeItemCollection(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeItemCollectionValue(tt.args.b, tt.args.col); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeItemCollectionValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeItemCollectionJSONValue(tt.args.b, tt.args.col); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeItemCollectionJSONValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -226,8 +226,8 @@ func Test_writeItemCollectionProp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeItemCollectionProp(tt.args.b, tt.args.n, tt.args.col); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeItemCollectionProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeItemCollectionJSONProp(tt.args.b, tt.args.n, tt.args.col); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeItemCollectionJSONProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -248,8 +248,8 @@ func Test_writeItemProp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeItemProp(tt.args.b, tt.args.n, tt.args.i); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeItemProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeItemJSONProp(tt.args.b, tt.args.n, tt.args.i); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeItemJSONProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -270,8 +270,8 @@ func Test_writeNaturalLanguageProp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeNaturalLanguageProp(tt.args.b, tt.args.n, tt.args.nl); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeNaturalLanguageProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeNaturalLanguageJSONProp(tt.args.b, tt.args.n, tt.args.nl); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeNaturalLanguageJSONProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -291,8 +291,8 @@ func Test_writeObject(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeObjectValue(tt.args.b, tt.args.o); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeObjectValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeObjectJSONValue(tt.args.b, tt.args.o); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeObjectJSONValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -313,8 +313,8 @@ func Test_writeProp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeProp(tt.args.b, tt.args.name, tt.args.val); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeJSONProp(tt.args.b, tt.args.name, tt.args.val); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeJSONProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -334,8 +334,8 @@ func Test_writePropName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writePropName(tt.args.b, tt.args.s); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writePropName() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writePropJSONName(tt.args.b, tt.args.s); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writePropJSONName() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -355,8 +355,8 @@ func Test_writeQuestion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeQuestionValue(tt.args.b, tt.args.q); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeQuestionValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeQuestionJSONValue(tt.args.b, tt.args.q); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeQuestionJSONValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -393,8 +393,8 @@ func Test_writeString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeStringValue(tt.args.b, tt.args.s); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeStringValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeStringJSONValue(tt.args.b, tt.args.s); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeStringJSONValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -415,8 +415,8 @@ func Test_writeStringProp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeStringProp(tt.args.b, tt.args.n, tt.args.s); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeStringProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeStringJSONProp(tt.args.b, tt.args.n, tt.args.s); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeStringJSONProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -437,8 +437,8 @@ func Test_writeTimeProp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeTimeProp(tt.args.b, tt.args.n, tt.args.t); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeTimeProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeTimeJSONProp(tt.args.b, tt.args.n, tt.args.t); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeTimeJSONProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}
@@ -458,8 +458,8 @@ func Test_writeValue(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := writeValue(tt.args.b, tt.args.s); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("writeValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			if gotNotEmpty := writeJSONValue(tt.args.b, tt.args.s); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("writeJSONValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
 	}

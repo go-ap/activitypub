@@ -36,7 +36,7 @@ func (i ItemCollection) IsObject() bool {
 
 func (i ItemCollection) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
-	writeItemCollectionValue(&b, i)
+	writeItemCollectionJSONValue(&b, i)
 	return b, nil
 }
 

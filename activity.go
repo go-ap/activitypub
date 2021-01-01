@@ -356,7 +356,7 @@ func removeFromCollection(col ItemCollection, items ...Item) ItemCollection {
 	for _, ob := range col {
 		found := false
 		for _, it := range items {
-			if IRI(ob.GetID()).Equals(IRI(it.GetID()), false) {
+			if ob.GetID().Equals(it.GetID(), false) {
 				found = true
 				break
 			}
@@ -751,7 +751,7 @@ func (a Activity) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	write(&b, '{')
 
-	if !writeActivityValue(&b, a) {
+	if !writeActivityJSONValue(&b, a) {
 		return nil, nil
 	}
 	write(&b, '}')

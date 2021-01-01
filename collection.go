@@ -240,21 +240,21 @@ func (c Collection) MarshalJSON() ([]byte, error) {
 	write(&b, '{')
 
 	OnObject(c, func(o *Object) error {
-		notEmpty = writeObjectValue(&b, *o)
+		notEmpty = writeObjectJSONValue(&b, *o)
 		return nil
 	})
 	if c.Current != nil {
-		notEmpty = writeItemProp(&b, "current", c.Current) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "current", c.Current) || notEmpty
 	}
 	if c.First != nil {
-		notEmpty = writeItemProp(&b, "first", c.First) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "first", c.First) || notEmpty
 	}
 	if c.Last != nil {
-		notEmpty = writeItemProp(&b, "last", c.Last) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "last", c.Last) || notEmpty
 	}
-	notEmpty = writeIntProp(&b, "totalItems", int64(c.TotalItems)) || notEmpty
+	notEmpty = writeIntJSONProp(&b, "totalItems", int64(c.TotalItems)) || notEmpty
 	if c.Items != nil {
-		notEmpty = writeItemCollectionProp(&b, "items", c.Items) || notEmpty
+		notEmpty = writeItemCollectionJSONProp(&b, "items", c.Items) || notEmpty
 	}
 	if notEmpty {
 		write(&b, '}')

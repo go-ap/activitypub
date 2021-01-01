@@ -163,26 +163,26 @@ func (p Place) MarshalJSON() ([]byte, error) {
 	write(&b, '{')
 
 	OnObject(p, func(o *Object) error {
-		notEmpty = writeObjectValue(&b, *o)
+		notEmpty = writeObjectJSONValue(&b, *o)
 		return nil
 	})
 	if p.Accuracy > 0 {
-		notEmpty = writeFloatProp(&b, "accuracy", p.Accuracy) || notEmpty
+		notEmpty = writeFloatJSONProp(&b, "accuracy", p.Accuracy) || notEmpty
 	}
 	if p.Altitude > 0 {
-		notEmpty = writeFloatProp(&b, "altitude", p.Altitude) || notEmpty
+		notEmpty = writeFloatJSONProp(&b, "altitude", p.Altitude) || notEmpty
 	}
 	if p.Latitude > 0 {
-		notEmpty = writeFloatProp(&b, "latitude", p.Latitude) || notEmpty
+		notEmpty = writeFloatJSONProp(&b, "latitude", p.Latitude) || notEmpty
 	}
 	if p.Longitude > 0 {
-		notEmpty = writeFloatProp(&b, "longitude", p.Longitude) || notEmpty
+		notEmpty = writeFloatJSONProp(&b, "longitude", p.Longitude) || notEmpty
 	}
 	if p.Radius > 0 {
-		notEmpty = writeIntProp(&b, "radius", p.Radius) || notEmpty
+		notEmpty = writeIntJSONProp(&b, "radius", p.Radius) || notEmpty
 	}
 	if len(p.Units) > 0 {
-		notEmpty = writeStringProp(&b, "radius", p.Units) || notEmpty
+		notEmpty = writeStringJSONProp(&b, "radius", p.Units) || notEmpty
 	}
 	if notEmpty {
 		write(&b, '}')

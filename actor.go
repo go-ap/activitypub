@@ -216,13 +216,13 @@ func (p PublicKey) MarshalJSON() ([]byte, error) {
 	notEmpty := true
 	write(&b, '{')
 	if v, err := p.ID.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = !writeProp(&b, "id", v)
+		notEmpty = !writeJSONProp(&b, "id", v)
 	}
 	if p.Owner != nil {
-		notEmpty = writeIRIProp(&b, "owner", p.Owner) || notEmpty
+		notEmpty = writeIRIJSONProp(&b, "owner", p.Owner) || notEmpty
 	}
 	if len(p.PublicKeyPem) > 0 {
-		notEmpty = writeIRIProp(&b, "publicKeyPem", p.Owner) || notEmpty
+		notEmpty = writeIRIJSONProp(&b, "publicKeyPem", p.Owner) || notEmpty
 	}
 
 	if notEmpty {
@@ -325,37 +325,37 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 	write(&b, '{')
 
 	OnObject(a, func(o *Object) error {
-		notEmpty = writeObjectValue(&b, *o)
+		notEmpty = writeObjectJSONValue(&b, *o)
 		return nil
 	})
 	if a.Inbox != nil {
-		notEmpty = writeItemProp(&b, "inbox", a.Inbox) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "inbox", a.Inbox) || notEmpty
 	}
 	if a.Outbox != nil {
-		notEmpty = writeItemProp(&b, "outbox", a.Outbox) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "outbox", a.Outbox) || notEmpty
 	}
 	if a.Following != nil {
-		notEmpty = writeItemProp(&b, "following", a.Following) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "following", a.Following) || notEmpty
 	}
 	if a.Followers != nil {
-		notEmpty = writeItemProp(&b, "followers", a.Followers) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "followers", a.Followers) || notEmpty
 	}
 	if a.Liked != nil {
-		notEmpty = writeItemProp(&b, "liked", a.Liked) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "liked", a.Liked) || notEmpty
 	}
 	if a.PreferredUsername != nil {
-		notEmpty = writeNaturalLanguageProp(&b, "preferredUsername", a.PreferredUsername) || notEmpty
+		notEmpty = writeNaturalLanguageJSONProp(&b, "preferredUsername", a.PreferredUsername) || notEmpty
 	}
 	if a.Endpoints != nil {
 		if v, err := a.Endpoints.MarshalJSON(); err == nil && len(v) > 0 {
-			notEmpty = writeProp(&b, "endpoints", v) || notEmpty
+			notEmpty = writeJSONProp(&b, "endpoints", v) || notEmpty
 		}
 	}
 	if len(a.Streams) > 0 {
-		writePropName(&b, "streams")
+		writePropJSONName(&b, "streams")
 		lNotEmpty := true
 		for _, ss := range a.Streams {
-			lNotEmpty = writeItemCollectionValue(&b, ss) || lNotEmpty
+			lNotEmpty = writeItemCollectionJSONValue(&b, ss) || lNotEmpty
 		}
 		notEmpty = lNotEmpty || notEmpty
 	}
@@ -412,22 +412,22 @@ func (e Endpoints) MarshalJSON() ([]byte, error) {
 
 	write(&b, '{')
 	if e.OauthAuthorizationEndpoint != nil {
-		notEmpty = writeItemProp(&b, "oauthAuthorizationEndpoint", e.OauthAuthorizationEndpoint) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "oauthAuthorizationEndpoint", e.OauthAuthorizationEndpoint) || notEmpty
 	}
 	if e.OauthTokenEndpoint != nil {
-		notEmpty = writeItemProp(&b, "oauthTokenEndpoint", e.OauthTokenEndpoint) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "oauthTokenEndpoint", e.OauthTokenEndpoint) || notEmpty
 	}
 	if e.ProvideClientKey != nil {
-		notEmpty = writeItemProp(&b, "provideClientKey", e.ProvideClientKey) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "provideClientKey", e.ProvideClientKey) || notEmpty
 	}
 	if e.SignClientKey != nil {
-		notEmpty = writeItemProp(&b, "signClientKey", e.SignClientKey) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "signClientKey", e.SignClientKey) || notEmpty
 	}
 	if e.SharedInbox != nil {
-		notEmpty = writeItemProp(&b, "sharedInbox", e.SharedInbox) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "sharedInbox", e.SharedInbox) || notEmpty
 	}
 	if e.UploadMedia != nil {
-		notEmpty = writeItemProp(&b, "uploadMedia", e.UploadMedia) || notEmpty
+		notEmpty = writeItemJSONProp(&b, "uploadMedia", e.UploadMedia) || notEmpty
 	}
 	if notEmpty {
 		write(&b, '}')
