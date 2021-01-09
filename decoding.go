@@ -5,7 +5,6 @@ import (
 	"encoding"
 	"encoding/json"
 	"fmt"
-	"errors"
 	"net/url"
 	"reflect"
 	"strconv"
@@ -170,7 +169,6 @@ func itemFn(data []byte) (Item, error) {
 		if i, ok := asIRI(data); ok {
 			return i, nil
 		}
-		return nil, errors.New("invalid IRI to load")
 	}
 	i, err := ItemTyperFunc(typ)
 	if err != nil || i == nil {
@@ -183,6 +181,9 @@ func itemFn(data []byte) (Item, error) {
 	}
 	if reflect.TypeOf(i).Implements(textUnmarshalerType) || p.Implements(textUnmarshalerType) {
 		err = i.(encoding.TextUnmarshaler).UnmarshalText(data)
+	}
+	if !NotEmpty(i) {
+		return nil, nil
 	}
 	return i, err
 }

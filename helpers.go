@@ -175,3 +175,129 @@ func ItemOrderTimestamp(i1, i2 Item) bool {
 	}
 	return t1.Sub(t2) > 0
 }
+
+func notEmptyLink (l *Link) bool {
+	return len(l.ID) > 0 ||
+		LinkTypes.Contains(l.Type) ||
+		len(l.MediaType) > 0 ||
+		l.Preview != nil ||
+		l.Name != nil ||
+		len(l.Href) > 0 ||
+		len(l.Rel) > 0 ||
+		len(l.HrefLang) > 0 ||
+		l.Height > 0 ||
+		l.Width > 0
+}
+
+func notEmptyObject(o *Object) bool {
+	if o == nil {
+		return false
+	}
+	return len(o.ID) > 0 ||
+		ActivityTypes.Contains(o.Type) ||
+		o.Content != nil ||
+		o.Attachment != nil ||
+		o.AttributedTo != nil ||
+		o.Audience != nil ||
+		o.BCC != nil ||
+		o.Bto != nil ||
+		o.CC != nil ||
+		o.Context != nil ||
+		o.Duration > 0 ||
+		!o.EndTime.IsZero() ||
+		o.Generator != nil ||
+		o.Icon != nil ||
+		o.Image != nil ||
+		o.InReplyTo != nil ||
+		o.Likes != nil ||
+		o.Location != nil ||
+		len(o.MediaType) > 0 ||
+		o.Name != nil ||
+		o.Preview != nil ||
+		!o.Published.IsZero() ||
+		o.Replies != nil ||
+		o.Shares != nil ||
+		o.Source.MediaType != "" ||
+		o.Source.Content != nil ||
+		!o.StartTime.IsZero() ||
+		o.Summary != nil ||
+		o.Tag != nil ||
+		o.To != nil ||
+		!o.Updated.IsZero() ||
+		o.URL != nil
+}
+
+func notEmptyInstransitiveActivity (i *IntransitiveActivity) bool {
+	return i.Actor != nil ||
+		i.Target != nil ||
+		i.Result != nil ||
+		i.Origin != nil ||
+		i.Instrument != nil
+}
+
+func notEmptyActivity(a *Activity) bool {
+	var notEmpty bool
+	OnIntransitiveActivity(a, func(i *IntransitiveActivity) error {
+		notEmpty = notEmptyInstransitiveActivity(i)
+		return nil
+	})
+	return notEmpty || a.Object != nil
+}
+
+func notEmptyActor(a *Actor) bool {
+	var notEmpty bool
+	OnObject(a, func(o *Object) error {
+		notEmpty = notEmptyObject(o)
+		return nil
+	})
+	return notEmpty ||
+		a.Inbox != nil ||
+		a.Outbox != nil ||
+		a.Following != nil ||
+		a.Followers != nil ||
+		a.Liked != nil ||
+		a.PreferredUsername != nil ||
+		a.Endpoints != nil ||
+		a.Streams != nil ||
+		len(a.PublicKey.ID) > 0 ||
+		(a.PublicKey.Owner != nil &&
+		len(a.PublicKey.PublicKeyPem) > 0)
+}
+
+func NotEmpty(i Item) bool {
+	if i == nil {
+		return false
+	}
+	var notEmpty bool
+	if IsIRI(i) { 
+		notEmpty = len(i.GetLink()) > 0
+	}
+	if i.IsCollection() {
+		OnCollectionIntf(i, func(c CollectionInterface) error {
+			notEmpty = c != nil || len(c.Collection()) > 0
+			return nil
+		})
+	}
+	if ActivityTypes.Contains(i.GetType()) {
+		OnActivity(i, func(a *Activity) error {
+			notEmpty = notEmptyActivity(a)
+			return nil
+		})
+	} else if ActorTypes.Contains(i.GetType()) {
+		OnActor(i, func(a *Actor) error {
+			notEmpty = notEmptyActor(a)
+			return nil
+		})
+	} else if i.IsLink() {
+		OnLink(i, func(l *Link) error {
+			notEmpty = notEmptyLink(l)
+			return nil
+		})
+	} else {
+		OnObject(i, func(o *Object) error {
+			notEmpty = notEmptyObject(o)
+			return nil
+		})
+	}
+	return notEmpty
+}
