@@ -5,6 +5,7 @@ import (
 	"encoding"
 	"encoding/json"
 	"fmt"
+	"errors"
 	"net/url"
 	"reflect"
 	"strconv"
@@ -37,11 +38,10 @@ func JSONGetID(data []byte) ID {
 
 func JSONGetType(data []byte) ActivityVocabularyType {
 	t, err := jsonparser.GetString(data, "type")
-	typ := ActivityVocabularyType(t)
 	if err != nil {
 		return ""
 	}
-	return typ
+	return ActivityVocabularyType(t)
 }
 
 func JSONGetMimeType(data []byte, prop string) MimeType {
@@ -164,13 +164,16 @@ func itemFn(data []byte) (Item, error) {
 		return nil, nil
 	}
 
-	// todo(marius): this allows passing an empty type to the typer function
-	i, err := ItemTyperFunc(JSONGetType(data))
-	if err != nil || i == nil {
+	typ := JSONGetType(data)
+	if typ == "" {
+		// try to see if it's an IRI
 		if i, ok := asIRI(data); ok {
-			// try to see if it's an IRI
 			return i, nil
 		}
+		return nil, errors.New("invalid IRI to load")
+	}
+	i, err := ItemTyperFunc(typ)
+	if err != nil || i == nil {
 		return nil, nil
 	}
 
@@ -473,9 +476,9 @@ func GetItemByType(typ ActivityVocabularyType) (Item, error) {
 		return &View{Type: typ}, nil
 	case "":
 		// when no type is available use a plain Object
-		return nil, nil
+		return &Object{}, nil
 	}
-	return nil, fmt.Errorf("unrecognized ActivityStreams type %s", typ)
+	return nil, fmt.Errorf("empty ActivityStreams type")
 }
 
 func JSONGetActorEndpoints(data []byte, prop string) *Endpoints {
