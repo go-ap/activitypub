@@ -210,6 +210,17 @@ func (i IRI) Equals(with IRI, checkScheme bool) bool {
 	return true
 }
 
+func hostSplit(h string) (string, string) {
+	pieces := strings.Split(h, ":")
+	if len(pieces) == 0 {
+		return "", ""
+	}
+	if len(pieces) == 1 {
+		return pieces[0], ""
+	}
+	return pieces[0], pieces[1]
+}
+
 func (i IRI) Contains(what IRI, checkScheme bool) bool {
 	u, e := i.URL()
 	uw, ew := what.URL()
@@ -221,7 +232,9 @@ func (i IRI) Contains(what IRI, checkScheme bool) bool {
 			return false
 		}
 	}
-	if u.Host != uw.Host {
+	uHost, _ := hostSplit(u.Host)
+	uwHost, _ := hostSplit(uw.Host)
+	if uHost != uwHost {
 		return false
 	}
 	p := u.Path
