@@ -390,36 +390,6 @@ func ToObject(it Item) (*Object, error) {
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
 
-// FlattenObjectProperties flattens the Object's properties from Object types to IRI
-func FlattenObjectProperties(o *Object) *Object {
-	o.Replies = Flatten(o.Replies)
-	o.AttributedTo = Flatten(o.AttributedTo)
-	o.To = FlattenItemCollection(o.To)
-	o.Bto = FlattenItemCollection(o.Bto)
-	o.CC = FlattenItemCollection(o.CC)
-	o.BCC = FlattenItemCollection(o.BCC)
-	o.Audience = FlattenItemCollection(o.Audience)
-	o.Tag = FlattenItemCollection(o.Tag)
-	return o
-}
-
-// FlattenProperties flattens the Item's properties from Object types to IRI
-func FlattenProperties(it Item) Item {
-	if ActivityTypes.Contains(it.GetType()) {
-		act, err := ToActivity(it)
-		if err == nil {
-			return FlattenActivityProperties(act)
-		}
-	}
-	if ActorTypes.Contains(it.GetType()) || ObjectTypes.Contains(it.GetType()) {
-		ob, err := ToObject(it)
-		if err == nil {
-			return FlattenObjectProperties(ob)
-		}
-	}
-	return it
-}
-
 // Source is intended to convey some sort of source from which the content markup was derived,
 // as a form of provenance, or to support future editing by clients.
 type Source struct {

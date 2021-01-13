@@ -746,18 +746,6 @@ func ToActivity(it Item) (*Activity, error) {
 	return nil, errors.New("unable to convert activity")
 }
 
-// FlattenActivityProperties flattens the Activity's properties from Object type to IRI
-func FlattenActivityProperties(act *Activity) *Activity {
-	act.Object = Flatten(act.Object)
-	act.Actor = Flatten(act.Actor)
-	act.Target = Flatten(act.Target)
-	act.Result = Flatten(act.Result)
-	act.Origin = Flatten(act.Origin)
-	act.Result = Flatten(act.Result)
-	act.Instrument = Flatten(act.Instrument)
-	return act
-}
-
 // MarshalJSON
 func (a Activity) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)

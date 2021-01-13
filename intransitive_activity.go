@@ -231,17 +231,6 @@ func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
 	return nil, errors.New("unable to convert to intransitive activity")
 }
 
-// FlattenIntransitiveActivityProperties flattens the IntransitiveActivity's properties from Object type to IRI
-func FlattenIntransitiveActivityProperties(act *IntransitiveActivity) *IntransitiveActivity {
-	act.Actor = Flatten(act.Actor)
-	act.Target = Flatten(act.Target)
-	act.Result = Flatten(act.Result)
-	act.Origin = Flatten(act.Origin)
-	act.Result = Flatten(act.Result)
-	act.Instrument = Flatten(act.Instrument)
-	return act
-}
-
 // ArriveNew initializes an Arrive activity
 func ArriveNew(id ID) *Arrive {
 	a := IntransitiveActivityNew(id, ArriveType)
