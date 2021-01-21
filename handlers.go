@@ -32,11 +32,11 @@ type RequestValidator interface {
 //  an IRI representing a new Object - in the case of transitive activities that had a side effect, or
 //  an error.
 // In the case of intransitive activities the iri will always be empty.
-type ActivityHandlerFn func(CollectionType, *http.Request, storage.Repository) (pub.Item, int, error)
+type ActivityHandlerFn func(CollectionType, *http.Request, storage.Store) (pub.Item, int, error)
 
-func (a ActivityHandlerFn) Storage(r *http.Request) (storage.Repository, error) {
+func (a ActivityHandlerFn) Storage(r *http.Request) (storage.Store, error) {
 	ctxVal := r.Context().Value(RepositoryKey)
-	st, ok := ctxVal.(storage.Repository)
+	st, ok := ctxVal.(storage.Store)
 	if !ok {
 		return nil, errors.Newf("Unable to find storage repository")
 	}
@@ -83,17 +83,30 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	contentType := json.ContentType
-	if act, err := pub.ToActivity(it); err == nil {
+	err = pub.OnActivity(it, func(act *pub.Activity) error {
 		if act.Object.IsLink() {
-			col, cnt, err := st.LoadObjects(act.Object)
-			if err == nil && cnt == 1 {
-				act.Object = col[0]
+			col, err := st.Load(act.Object.GetLink())
+			if err != nil {
+				return err
+			}
+			if col.IsCollection() {
+				pub.OnCollectionIntf(col, func(c pub.CollectionInterface) error {
+					act.Object = c.Collection().First()
+					return nil
+				})
+			} else {
+				act.Object = col
 			}
 		}
 		if dat, err = pub.MarshalJSON(act.Object); err != nil {
-			dat = dat[:]
-			contentType = "application/json"
+			return err
 		}
+		return nil
+	})
+	if err != nil {
+		dat = []byte(err.Error())
+		errors.HandleError(err).ServeHTTP(w, r)
+		return
 	}
 
 	switch status {
@@ -101,12 +114,16 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if len(dat) == 0 {
 			dat = []byte("CREATED")
 		}
-		w.Header().Set("Location", it.GetLink().String())
+		if len(it.GetLink()) > 0 {
+			w.Header().Set("Location", it.GetLink().String())
+		}
 	case http.StatusGone:
 		if len(dat) == 0 {
 			dat = []byte("DELETED")
 		}
-		w.Header().Set("Location", it.GetLink().String())
+		if len(it.GetLink()) > 0 {
+			w.Header().Set("Location", it.GetLink().String())
+		}
 	default:
 		contentType = json.ContentType
 		dat, _ = pub.MarshalJSON(it)
@@ -118,11 +135,11 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // CollectionHandlerFn is the type that we're using to represent handlers that will return ActivityStreams
 // Collection or OrderedCollection objects. It needs to implement the http.Handler interface.
-type CollectionHandlerFn func(CollectionType, *http.Request, storage.CollectionLoader) (pub.CollectionInterface, error)
+type CollectionHandlerFn func(CollectionType, *http.Request, storage.ReadStore) (pub.CollectionInterface, error)
 
-func (c CollectionHandlerFn) Storage(r *http.Request) (storage.CollectionLoader, error) {
+func (c CollectionHandlerFn) Storage(r *http.Request) (storage.Store, error) {
 	ctxVal := r.Context().Value(RepositoryKey)
-	repo, ok := ctxVal.(storage.CollectionLoader)
+	repo, ok := ctxVal.(storage.Store)
 	if !ok {
 		return nil, errors.Newf("Unable to find Collection storage")
 	}
@@ -181,11 +198,11 @@ func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // ItemHandlerFn is the type that we're using to represent handlers that return ActivityStreams
 // objects. It needs to implement the http.Handler interface
-type ItemHandlerFn func(*http.Request, storage.ObjectLoader) (pub.Item, error)
+type ItemHandlerFn func(*http.Request, storage.ReadStore) (pub.Item, error)
 
-func (i ItemHandlerFn) Storage(r *http.Request) (storage.ObjectLoader, error) {
+func (i ItemHandlerFn) Storage(r *http.Request) (storage.Store, error) {
 	ctxVal := r.Context().Value(RepositoryKey)
-	st, ok := ctxVal.(storage.ObjectLoader)
+	st, ok := ctxVal.(storage.Store)
 	if !ok {
 		return nil, errors.Newf("Unable to find Object storage")
 	}
