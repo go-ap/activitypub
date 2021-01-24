@@ -56,6 +56,14 @@ func TestIRIf(t *testing.T) {
 		want activitypub.IRI
 	}{
 		{
+			name: "empty iri",
+			args: args{
+				i: "",
+				t: "inbox",
+			},
+			want: "/inbox",
+		},
+		{
 			name: "plain concat",
 			args: args{
 				i: "https://example.com",
