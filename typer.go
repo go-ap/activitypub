@@ -115,6 +115,10 @@ func (t CollectionTypes) Split(i pub.IRI) (pub.IRI, CollectionType) {
 
 // IRIf formats an IRI from an existing IRI and the collection type
 func IRIf(i pub.IRI, t CollectionType) pub.IRI {
+	onePastLast := len(i)
+	if i[onePastLast-1] == '/' {
+		i = i[:onePastLast-1]
+	}
 	return pub.IRI(fmt.Sprintf("%s/%s", i, t))
 }
 
