@@ -207,6 +207,16 @@ func ToTombstone(it Item) (*Tombstone, error) {
 type withTombstoneFn func (*Tombstone) error
 
 func OnTombstone(it Item, fn withTombstoneFn) error {
+	if IsItemCollection(it) {
+		return OnItemCollection(it, func(col *ItemCollection) error {
+			for _, it := range *col {
+				if err := OnTombstone(it, fn); err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+	}
 	ob, err  := ToTombstone(it)
 	if err != nil {
 		return err

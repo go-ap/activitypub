@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -346,10 +347,6 @@ func TestActor_Clean(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestOnActor(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestToActor(t *testing.T) {
 	t.Skipf("TODO")
 }
@@ -376,4 +373,67 @@ func TestEndpoints_MarshalJSON(t *testing.T) {
 
 func TestPublicKey_MarshalJSON(t *testing.T) {
 	t.Skipf("TODO")
+}
+
+func assertPersonWithTesting(fn canErrorFunc, expected Item) withActorFn {
+	return func (p *Person) error {
+		if !assertDeepEquals(fn, p , expected) {
+			return fmt.Errorf("not equal")
+		}
+		return nil
+	}
+}
+
+func TestOnActor(t *testing.T) {
+	testPerson := Actor{
+		ID: "https://example.com",
+	}
+	type args struct {
+		it Item
+		fn func(canErrorFunc, Item) withActorFn
+	}
+	tests := []struct {
+		name     string
+		args     args
+		expected Item
+		wantErr  bool
+	}{
+		{
+			name:     "single",
+			args:     args{testPerson, assertPersonWithTesting},
+			expected: &testPerson,
+			wantErr:  false,
+		},
+		{
+			name:     "single fails",
+			args:     args{Person{ID: "https://not-equals"}, assertPersonWithTesting},
+			expected: &testPerson,
+			wantErr:  true,
+		},
+		{
+			name:     "collectionOfPersons",
+			args:     args{ItemCollection{testPerson, testPerson}, assertPersonWithTesting},
+			expected: &testPerson,
+			wantErr:  false,
+		},
+		{
+			name:     "collectionOfPersons fails",
+			args:     args{ItemCollection{testPerson, Person{ID: "https://not-equals"}}, assertPersonWithTesting},
+			expected: &testPerson,
+			wantErr:  true,
+		},
+	}
+	for _, tt := range tests {
+		var logFn canErrorFunc
+		if tt.wantErr {
+			logFn = t.Logf
+		} else {
+			logFn = t.Errorf
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			if err := OnActor(tt.args.it, tt.args.fn(logFn, tt.expected)); (err != nil) != tt.wantErr {
+				t.Errorf("OnPerson() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
 }

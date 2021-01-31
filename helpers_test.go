@@ -1,131 +1,259 @@
 package activitypub
 
 import (
+	"fmt"
 	"testing"
 )
 
-func TestOnObject(t *testing.T) {
-	ob := ObjectNew(ArticleType)
-
-	err := OnObject(ob, func(o *Object) error {
-		return nil
-	})
-
-	if err != nil {
-		t.Errorf("Unexpected error returned %s", err)
-	}
-
-	err = OnObject(ob, func(o *Object) error {
-		if o.Type != ob.Type {
-			t.Errorf("In function type %s different than expected, %s", o.Type, ob.Type)
+func assertObjectWithTesting(fn canErrorFunc, expected Item) withObjectFn {
+	return func (p *Object) error {
+		if !assertDeepEquals(fn, p , expected) {
+			return fmt.Errorf("not equal")
 		}
 		return nil
-	})
-	if err != nil {
-		t.Errorf("Unexpected error returned %s", err)
+	}
+}
+
+func TestOnObject(t *testing.T) {
+	testObject := Object{
+		ID: "https://example.com",
+	}
+	type args struct {
+		it Item
+		fn func(canErrorFunc, Item) withObjectFn
+	}
+	tests := []struct {
+		name     string
+		args     args
+		expected Item
+		wantErr  bool
+	}{
+		{
+			name:     "single",
+			args:     args{testObject, assertObjectWithTesting},
+			expected: &testObject,
+			wantErr:  false,
+		},
+		{
+			name:     "single fails",
+			args:     args{Object{ID: "https://not-equals"}, assertObjectWithTesting},
+			expected: &testObject,
+			wantErr:  true,
+		},
+		{
+			name:     "collectionOfObjects",
+			args:     args{ItemCollection{testObject, testObject}, assertObjectWithTesting},
+			expected: &testObject,
+			wantErr:  false,
+		},
+		{
+			name:     "collectionOfObjects fails",
+			args:     args{ItemCollection{testObject, Object{ID: "https://not-equals"}}, assertObjectWithTesting},
+			expected: &testObject,
+			wantErr:  true,
+		},
+	}
+	for _, tt := range tests {
+		var logFn canErrorFunc
+		if tt.wantErr {
+			logFn = t.Logf
+		} else {
+			logFn = t.Errorf
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			if err := OnObject(tt.args.it, tt.args.fn(logFn, tt.expected)); (err != nil) != tt.wantErr {
+				t.Errorf("OnObject() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func assertActivityWithTesting(fn canErrorFunc, expected Item) withActivityFn {
+	return func (p *Activity) error {
+		if !assertDeepEquals(fn, p , expected) {
+			return fmt.Errorf("not equal")
+		}
+		return nil
 	}
 }
 
 func TestOnActivity(t *testing.T) {
-	ob := ObjectNew(ArticleType)
-	act := ActivityNew("test", CreateType, ob)
-
-	err := OnActivity(act, func(a *Activity) error {
-		return nil
-	})
-
-	if err != nil {
-		t.Errorf("Unexpected error returned %s", err)
+	testActivity := Activity{
+		ID: "https://example.com",
 	}
+	type args struct {
+		it Item
+		fn func(canErrorFunc, Item) withActivityFn
+	}
+	tests := []struct {
+		name     string
+		args     args
+		expected Item
+		wantErr  bool
+	}{
+		{
+			name:     "single",
+			args:     args{testActivity, assertActivityWithTesting},
+			expected: &testActivity,
+			wantErr:  false,
+		},
+		{
+			name:     "single fails",
+			args:     args{Activity{ID: "https://not-equals"}, assertActivityWithTesting},
+			expected: &testActivity,
+			wantErr:  true,
+		},
+		{
+			name:     "collectionOfActivitys",
+			args:     args{ItemCollection{testActivity, testActivity}, assertActivityWithTesting},
+			expected: &testActivity,
+			wantErr:  false,
+		},
+		{
+			name:     "collectionOfActivitys fails",
+			args:     args{ItemCollection{testActivity, Activity{ID: "https://not-equals"}}, assertActivityWithTesting},
+			expected: &testActivity,
+			wantErr:  true,
+		},
+	}
+	for _, tt := range tests {
+		var logFn canErrorFunc
+		if tt.wantErr {
+			logFn = t.Logf
+		} else {
+			logFn = t.Errorf
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			if err := OnActivity(tt.args.it, tt.args.fn(logFn, tt.expected)); (err != nil) != tt.wantErr {
+				t.Errorf("OnActivity() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
 
-	err = OnActivity(act, func(a *Activity) error {
-		if a.Type != act.Type {
-			t.Errorf("In function type %s different than expected, %s", a.Type, act.Type)
-		}
-		if a.ID != act.ID {
-			t.Errorf("In function ID %s different than expected, %s", a.ID, act.ID)
-		}
-		if a.Object != act.Object {
-			t.Errorf("In function object %s different than expected, %s", a.Object, act.Object)
+func assertIntransitiveActivityWithTesting(fn canErrorFunc, expected Item) withIntransitiveActivityFn {
+	return func (p *IntransitiveActivity) error {
+		if !assertDeepEquals(fn, p , expected) {
+			return fmt.Errorf("not equal")
 		}
 		return nil
-	})
-	if err != nil {
-		t.Errorf("Unexpected error returned %s", err)
 	}
 }
 
 func TestOnIntransitiveActivity(t *testing.T) {
-	act := IntransitiveActivityNew("test", ArriveType)
-
-	err := OnIntransitiveActivity(act, func(a *IntransitiveActivity) error {
-		return nil
-	})
-
-	if err != nil {
-		t.Errorf("Unexpected error returned %s", err)
+	testIntransitiveActivity := IntransitiveActivity{
+		ID: "https://example.com",
 	}
-
-	err = OnIntransitiveActivity(act, func(a *IntransitiveActivity) error {
-		if a.Type != act.Type {
-			t.Errorf("In function type %s different than expected, %s", a.Type, act.Type)
+	type args struct {
+		it Item
+		fn func(canErrorFunc, Item) withIntransitiveActivityFn
+	}
+	tests := []struct {
+		name     string
+		args     args
+		expected Item
+		wantErr  bool
+	}{
+		{
+			name:     "single",
+			args:     args{testIntransitiveActivity, assertIntransitiveActivityWithTesting},
+			expected: &testIntransitiveActivity,
+			wantErr:  false,
+		},
+		{
+			name:     "single fails",
+			args:     args{IntransitiveActivity{ID: "https://not-equals"}, assertIntransitiveActivityWithTesting},
+			expected: &testIntransitiveActivity,
+			wantErr:  true,
+		},
+		{
+			name:     "collectionOfIntransitiveActivitys",
+			args:     args{ItemCollection{testIntransitiveActivity, testIntransitiveActivity}, assertIntransitiveActivityWithTesting},
+			expected: &testIntransitiveActivity,
+			wantErr:  false,
+		},
+		{
+			name:     "collectionOfIntransitiveActivitys fails",
+			args:     args{ItemCollection{testIntransitiveActivity, IntransitiveActivity{ID: "https://not-equals"}}, assertIntransitiveActivityWithTesting},
+			expected: &testIntransitiveActivity,
+			wantErr:  true,
+		},
+	}
+	for _, tt := range tests {
+		var logFn canErrorFunc
+		if tt.wantErr {
+			logFn = t.Logf
+		} else {
+			logFn = t.Errorf
 		}
-		if a.ID != act.ID {
-			t.Errorf("In function ID %s different than expected, %s", a.ID, act.ID)
+		t.Run(tt.name, func(t *testing.T) {
+			if err := OnIntransitiveActivity(tt.args.it, tt.args.fn(logFn, tt.expected)); (err != nil) != tt.wantErr {
+				t.Errorf("OnIntransitiveActivity() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func assertQuestionWithTesting(fn canErrorFunc, expected Item) withQuestionFn {
+	return func (p *Question) error {
+		if !assertDeepEquals(fn, p , expected) {
+			return fmt.Errorf("not equal")
 		}
 		return nil
-	})
-	if err != nil {
-		t.Errorf("Unexpected error returned %s", err)
 	}
 }
 
 func TestOnQuestion(t *testing.T) {
-	act := QuestionNew("test")
-
-	err := OnQuestion(act, func(a *Question) error {
-		return nil
-	})
-
-	if err != nil {
-		t.Errorf("Unexpected error returned %s", err)
+	testQuestion := Question{
+		ID: "https://example.com",
 	}
-
-	err = OnQuestion(act, func(a *Question) error {
-		if a.Type != act.Type {
-			t.Errorf("In function type %s different than expected, %s", a.Type, act.Type)
-		}
-		if a.ID != act.ID {
-			t.Errorf("In function ID %s different than expected, %s", a.ID, act.ID)
-		}
-		return nil
-	})
-	if err != nil {
-		t.Errorf("Unexpected error returned %s", err)
+	type args struct {
+		it Item
+		fn func(canErrorFunc, Item) withQuestionFn
 	}
-}
-
-func TestOnPerson(t *testing.T) {
-	pers := PersonNew("testPerson")
-	err := OnActor(pers, func(a *Person) error {
-		return nil
-	})
-
-	if err != nil {
-		t.Errorf("Unexpected error returned %s", err)
+	tests := []struct {
+		name     string
+		args     args
+		expected Item
+		wantErr  bool
+	}{
+		{
+			name:     "single",
+			args:     args{testQuestion, assertQuestionWithTesting},
+			expected: &testQuestion,
+			wantErr:  false,
+		},
+		{
+			name:     "single fails",
+			args:     args{Question{ID: "https://not-equals"}, assertQuestionWithTesting},
+			expected: &testQuestion,
+			wantErr:  true,
+		},
+		{
+			name:     "collectionOfQuestions",
+			args:     args{ItemCollection{testQuestion, testQuestion}, assertQuestionWithTesting},
+			expected: &testQuestion,
+			wantErr:  false,
+		},
+		{
+			name:     "collectionOfQuestions fails",
+			args:     args{ItemCollection{testQuestion, Question{ID: "https://not-equals"}}, assertQuestionWithTesting},
+			expected: &testQuestion,
+			wantErr:  true,
+		},
 	}
-
-	err = OnActor(pers, func(p *Person) error {
-		if p.Type != pers.Type {
-			t.Errorf("In function type %s different than expected, %s", p.Type, pers.Type)
+	for _, tt := range tests {
+		var logFn canErrorFunc
+		if tt.wantErr {
+			logFn = t.Logf
+		} else {
+			logFn = t.Errorf
 		}
-		if p.ID != pers.ID {
-			t.Errorf("In function ID %s different than expected, %s", p.ID, pers.ID)
-		}
-		return nil
-	})
-	if err != nil {
-		t.Errorf("Unexpected error returned %s", err)
+		t.Run(tt.name, func(t *testing.T) {
+			if err := OnQuestion(tt.args.it, tt.args.fn(logFn, tt.expected)); (err != nil) != tt.wantErr {
+				t.Errorf("OnQuestion() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
 	}
 }
 

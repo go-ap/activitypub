@@ -232,6 +232,16 @@ func ToPlace(it Item) (*Place, error) {
 type withPlaceFn func (*Place) error
 
 func OnPlace(it Item, fn withPlaceFn) error {
+	if IsItemCollection(it) {
+		return OnItemCollection(it, func(col *ItemCollection) error {
+			for _, it := range *col {
+				if err := OnPlace(it, fn); err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+	}
 	ob, err  := ToPlace(it)
 	if err != nil {
 		return err

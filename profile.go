@@ -200,6 +200,16 @@ func ToProfile(it Item) (*Profile, error) {
 type withProfileFn func (*Profile) error
 
 func OnProfile(it Item, fn withProfileFn) error {
+	if IsItemCollection(it) {
+		return OnItemCollection(it, func(col *ItemCollection) error {
+			for _, it := range *col {
+				if err := OnProfile(it, fn); err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+	}
 	ob, err  := ToProfile(it)
 	if err != nil {
 		return err

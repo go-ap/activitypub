@@ -73,6 +73,12 @@ func ItemsEqual(it, with Item) bool {
 	return result
 }
 
+// IsItemCollection returns if the current Item interface holds a Collection
+func IsItemCollection(it Item) bool {
+	_, ok := it.(ItemCollection)
+	return ok
+}
+
 // IsIRI returns if the current Item interface holds an IRI
 func IsIRI(it Item) bool {
 	_, ok := it.(IRI)

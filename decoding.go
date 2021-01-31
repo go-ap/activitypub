@@ -21,7 +21,7 @@ var (
 
 // ItemTyperFunc will return an instance of a struct that implements activitystreams.Item
 // The default for this package is GetItemByType but can be overwritten
-var ItemTyperFunc TyperFn
+var ItemTyperFunc TyperFn = GetItemByType
 
 // TyperFn is the type of the function which returns an activitystreams.Item struct instance
 // for a specific ActivityVocabularyType
