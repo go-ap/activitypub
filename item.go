@@ -13,7 +13,7 @@ const (
 
 // ItemsEqual checks if it and with Items are equal
 func ItemsEqual(it, with Item) bool {
-	if it == nil || with == nil{
+	if IsNil(it) || IsNil(with) {
 		return with == it
 	}
 	result := true
@@ -76,7 +76,8 @@ func ItemsEqual(it, with Item) bool {
 // IsItemCollection returns if the current Item interface holds a Collection
 func IsItemCollection(it Item) bool {
 	_, ok := it.(ItemCollection)
-	return ok
+	_, okP := it.(*ItemCollection)
+	return ok || okP
 }
 
 // IsIRI returns if the current Item interface holds an IRI
@@ -93,4 +94,25 @@ func IsObject(it Item) bool {
 		return !ok
 	}
 	return ok
+}
+
+// IsNil checks if the object matching an ObjectOrLink interface is nil
+func IsNil(it Item) bool {
+	if it == nil {
+		return true
+	}
+	// This is the default if the argument can't be casted to Object, as is the case for an ItemCollection
+	isNil := false
+	if IsItemCollection(it) {
+		OnItemCollection(it, func(c *ItemCollection) error {
+			isNil = c == nil
+			return nil
+		})
+	} else {
+		OnObject(it, func(o *Object) error {
+			isNil = o == nil
+			return nil
+		})
+	}
+	return isNil
 }

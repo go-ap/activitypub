@@ -171,7 +171,7 @@ func itemFn(data []byte) (Item, error) {
 		}
 	}
 	i, err := ItemTyperFunc(typ)
-	if err != nil || i == nil {
+	if err != nil || IsNil(i) {
 		return nil, nil
 	}
 

@@ -263,7 +263,7 @@ func (o OrderedCollectionPage) ItemsMatch(col ...Item) bool {
 
 // Equals
 func (o OrderedCollectionPage) Equals(with Item) bool {
-	if with == nil {
+	if IsNil(with) {
 		return false
 	}
 	if !with.IsCollection() {

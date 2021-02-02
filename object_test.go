@@ -427,7 +427,7 @@ func TestToObject(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error returned when calling ToObject with activity should be nil, received %s", err)
 	}
-	if a == nil {
+	if IsNil(a) {
 		t.Errorf("Invalid return by ToObject #%v, should have not been nil", a)
 	}
 }

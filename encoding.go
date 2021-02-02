@@ -97,7 +97,7 @@ func writeIRIProp(b *[]byte, n string, i LinkOrIRI) (notEmpty bool) {
 }
 
 func writeItemProp(b *[]byte, n string, i Item) (notEmpty bool) {
-	if i == nil {
+	if IsNil(i) {
 		return notEmpty
 	}
 	if im, ok := i.(json.Marshaler); ok {

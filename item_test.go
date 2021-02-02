@@ -80,3 +80,112 @@ func TestItemsEqual(t *testing.T) {
 		})
 	}
 }
+
+func TestIsNil(t *testing.T) {
+	type args struct {
+		it Item
+	}
+	var (
+		o      *Object
+		col    *ItemCollection
+		obNil  Item = o
+		colNil Item = col
+	)
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "plain-nil",
+			args: args{
+				it: nil,
+			},
+			want: true,
+		},
+		{
+			name: "interface-nil",
+			args: args{
+				it: Item(nil),
+			},
+			want: true,
+		},
+		{
+			name: "object-nil",
+			args: args{
+				it: obNil,
+			},
+			want: true,
+		},
+		{
+			name: "collection-nil",
+			args: args{
+				it: colNil,
+			},
+			want: true,
+		},
+		{
+			name: "collection-not-nil",
+			args: args{
+				it: ItemCollection{},
+			},
+			want: false,
+		},
+		{
+			name: "object-not-nil",
+			args: args{
+				it: &Object{},
+			},
+			want: false,
+		},
+		{
+			name: "place-not-nil",
+			args: args{
+				it: &Place{},
+			},
+			want: false,
+		},
+		{
+			name: "tombstone-not-nil",
+			args: args{
+				it: &Tombstone{},
+			},
+			want: false,
+		},
+		{
+			name: "collection-not-nil",
+			args: args{
+				it: &Collection{},
+			},
+			want: false,
+		},
+		{
+			name: "activity-not-nil",
+			args: args{
+				it: &Activity{},
+			},
+			want: false,
+		},
+		{
+			name: "intransitive-activity-not-nil",
+			args: args{
+				it: &IntransitiveActivity{},
+			},
+			want: false,
+		},
+		{
+			name: "actor-not-nil",
+			args: args{
+				it: &Actor{},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsNil(tt.args.it); got != tt.want {
+				t.Errorf("IsNil() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

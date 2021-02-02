@@ -25,7 +25,7 @@ S2S Server: Activities requiring the object property
 	obj := pub.MentionNew("gigel")
 
 	add := pub.AddNew("https://localhost/myactivity", obj, nil)
-	if add.Object == nil {
+	if pub.IsNil(add.Object) {
 		t.Errorf("Missing GetID in Add activity %#v", add.Object)
 	}
 	if add.Object != obj {
@@ -33,7 +33,7 @@ S2S Server: Activities requiring the object property
 	}
 
 	block := pub.BlockNew("https://localhost/myactivity", obj)
-	if block.Object == nil {
+	if pub.IsNil(block.Object) {
 		t.Errorf("Missing GetID in Add activity %#v", block.Object)
 	}
 	if block.Object != obj {
@@ -49,7 +49,7 @@ S2S Server: Activities requiring the object property
 	}
 
 	delete := pub.DeleteNew("https://localhost/myactivity", obj)
-	if delete.Object == nil {
+	if pub.IsNil(delete.Object) {
 		t.Errorf("Missing GetID in Delete activity %#v", delete.Object)
 	}
 	if delete.Object != obj {
@@ -57,7 +57,7 @@ S2S Server: Activities requiring the object property
 	}
 
 	follow := pub.FollowNew("https://localhost/myactivity", obj)
-	if follow.Object == nil {
+	if pub.IsNil(follow.Object) {
 		t.Errorf("Missing GetID in Follow activity %#v", follow.Object)
 	}
 	if follow.Object != obj {
@@ -65,7 +65,7 @@ S2S Server: Activities requiring the object property
 	}
 
 	like := pub.LikeNew("https://localhost/myactivity", obj)
-	if like.Object == nil {
+	if pub.IsNil(like.Object) {
 		t.Errorf("Missing GetID in Like activity %#v", like.Object)
 	}
 	if like.Object != obj {
@@ -73,7 +73,7 @@ S2S Server: Activities requiring the object property
 	}
 
 	update := pub.UpdateNew("https://localhost/myactivity", obj)
-	if update.Object == nil {
+	if pub.IsNil(update.Object) {
 		t.Errorf("Missing GetID in Update activity %#v", update.Object)
 	}
 	if update.Object != obj {
@@ -107,7 +107,7 @@ property: Add, Remove.
 	target := pub.MentionNew("bar")
 
 	add := pub.AddNew("https://localhost/myactivity", obj, target)
-	if add.Target == nil {
+	if pub.IsNil(add.Target) {
 		t.Errorf("Missing Target in Add activity %#v", add.Target)
 	}
 	if add.Target != target {
@@ -115,7 +115,7 @@ property: Add, Remove.
 	}
 
 	remove := pub.RemoveNew("https://localhost/myactivity", obj, target)
-	if remove.Target == nil {
+	if pub.IsNil(remove.Target) {
 		t.Errorf("Missing Target in Remove activity %#v", remove.Target)
 	}
 	if remove.Target != target {

@@ -308,7 +308,7 @@ func (c CollectionPage) ItemsMatch(col ...Item) bool {
 
 // Equals
 func (c CollectionPage) Equals(with Item) bool {
-	if with == nil {
+	if IsNil(with) {
 		return false
 	}
 	if !with.IsCollection() {

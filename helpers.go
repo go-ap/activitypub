@@ -314,8 +314,9 @@ func notEmptyActor(a *Actor) bool {
 		len(a.PublicKey.PublicKeyPem) > 0)
 }
 
+// NotEmpty
 func NotEmpty(i Item) bool {
-	if i == nil {
+	if IsNil(i) {
 		return false
 	}
 	var notEmpty bool
