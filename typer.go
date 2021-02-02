@@ -126,7 +126,7 @@ func IRIf(i pub.IRI, t CollectionType) pub.IRI {
 // or generates a new one if not found.
 func (t CollectionType) IRI(i pub.Item) pub.IRI {
 	var iri pub.IRI
-	if i == nil {
+	if pub.IsNil(i) {
 		return pub.EmptyIRI
 	}
 	if i.IsObject() {
@@ -240,26 +240,26 @@ func ValidCollectionIRI(i pub.IRI) bool {
 
 // AddTo adds collection type IRI on the corresponding property of the i Item
 func (t CollectionType) AddTo(i pub.Item) (pub.IRI, bool) {
-	if i == nil || !i.IsObject() {
+	if pub.IsNil(i) || !i.IsObject() {
 		return pub.NilIRI, false
 	}
 	status := false
 	var iri pub.IRI
 	if OnActor.Contains(t) {
 		pub.OnActor(i, func(a *pub.Actor) error {
-			if status = t == Inbox && a.Inbox == nil; status {
+			if status = t == Inbox && pub.IsNil(a.Inbox); status {
 				a.Inbox = IRIf(a.GetLink(), t)
 				iri = a.Inbox.GetLink()
-			} else if status = t == Outbox && a.Outbox == nil; status {
+			} else if status = t == Outbox && pub.IsNil(a.Outbox); status {
 				a.Outbox = IRIf(a.GetLink(), t)
 				iri = a.Outbox.GetLink()
-			} else if status = t == Liked && a.Liked == nil; status {
+			} else if status = t == Liked && pub.IsNil(a.Liked); status {
 				a.Liked = IRIf(a.GetLink(), t)
 				iri = a.Liked.GetLink()
-			} else if status = t == Following && a.Following == nil; status {
+			} else if status = t == Following && pub.IsNil(a.Following); status {
 				a.Following = IRIf(a.GetLink(), t)
 				iri = a.Following.GetLink()
-			} else if status = t == Followers && a.Followers == nil; status {
+			} else if status = t == Followers && pub.IsNil(a.Followers); status {
 				a.Followers = IRIf(a.GetLink(), t)
 				iri = a.Followers.GetLink()
 			}
@@ -267,13 +267,13 @@ func (t CollectionType) AddTo(i pub.Item) (pub.IRI, bool) {
 		})
 	} else if OnObject.Contains(t) {
 		pub.OnObject(i, func(o *pub.Object) error {
-			if status = t == Likes && o.Likes == nil; status {
+			if status = t == Likes && pub.IsNil(o.Likes); status {
 				o.Likes = IRIf(o.GetLink(), t)
 				iri = o.Likes.GetLink()
-			} else if status = t == Shares && o.Shares == nil; status {
+			} else if status = t == Shares && pub.IsNil(o.Shares); status {
 				o.Shares = IRIf(o.GetLink(), t)
 				iri = o.Shares.GetLink()
-			} else if status = t == Replies && o.Replies == nil; status {
+			} else if status = t == Replies && pub.IsNil(o.Replies); status {
 				o.Replies = IRIf(o.GetLink(), t)
 				iri = o.Replies.GetLink()
 			}
