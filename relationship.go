@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"time"
@@ -178,6 +179,26 @@ func (r Relationship) MarshalJSON() ([]byte, error) {
 		return b, nil
 	}
 	return nil, nil
+}
+
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (r *Relationship) UnmarshalBinary(data []byte) error {
+	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *r))
+}
+
+// MarshalBinary implements the encoding.BinaryMarshaler interface.
+func (r Relationship) MarshalBinary() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", r))
+}
+
+// GobEncode
+func (r Relationship) GobEncode() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", r))
+}
+
+// GobDecode
+func (r *Relationship) GobDecode([]byte) error {
+	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *r))
 }
 
 // Recipients performs recipient de-duplication on the Relationship object's To, Bto, CC and BCC properties

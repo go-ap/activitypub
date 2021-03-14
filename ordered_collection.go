@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"time"
 	"unsafe"
@@ -10,7 +11,7 @@ import (
 // OrderedCollection is a subtype of Collection in which members of the logical
 // collection are assumed to always be strictly ordered.
 type OrderedCollection struct {
-	// ID provides the globally unique identifier for anActivity Pub Object or Link.
+	// ID provides the globally unique identifier for an Activity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
 	Type ActivityVocabularyType `jsonld:"type,omitempty"`
@@ -257,6 +258,26 @@ func (o OrderedCollection) MarshalJSON() ([]byte, error) {
 		return b, nil
 	}
 	return nil, nil
+}
+
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (o *OrderedCollection) UnmarshalBinary(data []byte) error {
+	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *o))
+}
+
+// MarshalBinary implements the encoding.BinaryMarshaler interface.
+func (o OrderedCollection) MarshalBinary() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", o))
+}
+
+// GobEncode
+func (o OrderedCollection) GobEncode() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", o))
+}
+
+// GobDecode
+func (o *OrderedCollection) GobDecode([]byte) error {
+	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *o))
 }
 
 // OrderedCollectionPageNew initializes a new OrderedCollectionPage

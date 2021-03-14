@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -756,6 +757,26 @@ func (a Activity) MarshalJSON() ([]byte, error) {
 	}
 	write(&b, '}')
 	return b, nil
+}
+
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (a *Activity) UnmarshalBinary(data []byte) error {
+	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *a))
+}
+
+// MarshalBinary implements the encoding.BinaryMarshaler interface.
+func (a Activity) MarshalBinary() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", a))
+}
+
+// GobEncode
+func (a Activity) GobEncode() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", a))
+}
+
+// GobDecode
+func (a *Activity) GobDecode([]byte) error {
+	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *a))
 }
 
 // Equals verifies if our receiver Object is equals with the "with" Object

@@ -1,5 +1,10 @@
 package activitypub
 
+import (
+	"errors"
+	"fmt"
+)
+
 var LinkTypes = ActivityVocabularyTypes{
 	LinkType,
 	MentionType,
@@ -102,3 +107,20 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 	return loadLink(data, l)
 }
 
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (l *Link) UnmarshalBinary(data []byte) error {
+	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *l))
+}
+
+// MarshalBinary implements the encoding.BinaryMarshaler interface.
+func (l Link) MarshalBinary() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", l))
+}
+
+func (l Link) GobEncode() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", l))
+}
+
+func (l *Link) GobDecode([]byte) error {
+	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *l))
+}

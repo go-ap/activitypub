@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"time"
 	"unsafe"
@@ -190,6 +191,24 @@ func (i IntransitiveActivity) MarshalJSON() ([]byte, error) {
 	}
 	write(&b, '}')
 	return b, nil
+}
+
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (i *IntransitiveActivity) UnmarshalBinary(data []byte) error {
+	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *i))
+}
+
+// MarshalBinary implements the encoding.BinaryMarshaler interface.
+func (i IntransitiveActivity) MarshalBinary() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", i))
+}
+
+func (i IntransitiveActivity) GobEncode() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", i))
+}
+
+func (i *IntransitiveActivity) GobDecode([]byte) error {
+	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *i))
 }
 
 // IntransitiveActivityNew initializes a intransitive activity

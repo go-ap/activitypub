@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"time"
 )
@@ -176,6 +177,26 @@ func (q Question) MarshalJSON() ([]byte, error) {
 	}
 	write(&b, '}')
 	return b, nil
+}
+
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (q *Question) UnmarshalBinary(data []byte) error {
+	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *q))
+}
+
+// MarshalBinary implements the encoding.BinaryMarshaler interface.
+func (q Question) MarshalBinary() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", q))
+}
+
+// GobEncode
+func (q Question) GobEncode() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", q))
+}
+
+// GobDecode
+func (q *Question) GobDecode([]byte) error {
+	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *q))
 }
 
 // QuestionNew initializes a Question activity

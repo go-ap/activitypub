@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"time"
 	"unsafe"
@@ -261,6 +262,24 @@ func (c Collection) MarshalJSON() ([]byte, error) {
 		return b, nil
 	}
 	return nil, nil
+}
+
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (c *Collection) UnmarshalBinary(data []byte) error {
+	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *c))
+}
+
+// MarshalBinary implements the encoding.BinaryMarshaler interface.
+func (c Collection) MarshalBinary() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", c))
+}
+
+func (c Collection) GobEncode() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", c))
+}
+
+func (c *Collection) GobDecode([]byte) error {
+	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *c))
 }
 
 // ToCollection

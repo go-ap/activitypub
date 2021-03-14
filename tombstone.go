@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"time"
@@ -167,6 +168,26 @@ func (t Tombstone) MarshalJSON() ([]byte, error) {
 		return b, nil
 	}
 	return nil, nil
+}
+
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (t *Tombstone) UnmarshalBinary(data []byte) error {
+	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *t))
+}
+
+// MarshalBinary implements the encoding.BinaryMarshaler interface.
+func (t Tombstone) MarshalBinary() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", t))
+}
+
+// GobEncode
+func (t Tombstone) GobEncode() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", t))
+}
+
+// GobDecode
+func (t *Tombstone) GobDecode([]byte) error {
+	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *t))
 }
 
 // Recipients performs recipient de-duplication on the Tombstone object's To, Bto, CC and BCC properties

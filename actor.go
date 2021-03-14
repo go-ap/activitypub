@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"errors"
 	"fmt"
 	"github.com/buger/jsonparser"
 	"reflect"
@@ -230,6 +231,24 @@ func (p PublicKey) MarshalJSON() ([]byte, error) {
 		return b, nil
 	}
 	return nil, nil
+}
+
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (a *Actor) UnmarshalBinary(data []byte) error {
+	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *a))
+}
+
+// MarshalBinary implements the encoding.BinaryMarshaler interface.
+func (a Actor) MarshalBinary() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", a))
+}
+
+func (a Actor) GobEncode() ([]byte, error) {
+	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", a))
+}
+
+func (a *Actor) GobDecode([]byte) error {
+	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *a))
 }
 
 type (
