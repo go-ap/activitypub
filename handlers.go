@@ -6,6 +6,7 @@ import (
 	json "github.com/go-ap/jsonld"
 	"github.com/go-ap/storage"
 	"net/http"
+	"time"
 )
 
 // CtxtKey type alias for the key under which we're storing the Collection Storage in the Request's context
@@ -188,6 +189,16 @@ func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pub.OnObject(col, func(o *pub.Object) error {
+		updatedAt := o.Published
+		if !o.Updated.IsZero() {
+			updatedAt = o.Updated
+		}
+		if !updatedAt.IsZero() {
+			w.Header().Set("Last-Modified", updatedAt.Format(time.RFC1123))
+		}
+		return nil
+	})
 	status = http.StatusOK
 	w.Header().Set("Content-Type", "application/activity+json")
 	w.WriteHeader(status)
@@ -250,6 +261,16 @@ func (i ItemHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pub.OnObject(it, func(o *pub.Object) error {
+		updatedAt := o.Published
+		if !o.Updated.IsZero() {
+			updatedAt = o.Updated
+		}
+		if !updatedAt.IsZero() {
+			w.Header().Set("Last-Modified", updatedAt.Format(time.RFC1123))
+		}
+		return nil
+	})
 	status = http.StatusOK
 	if it.GetType() == pub.TombstoneType {
 		status = http.StatusGone
