@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"fmt"
+	"net/http"
+	"time"
+
 	pub "github.com/go-ap/activitypub"
 	"github.com/go-ap/errors"
 	json "github.com/go-ap/jsonld"
 	"github.com/go-ap/storage"
-	"net/http"
-	"time"
 )
 
 // CtxtKey type alias for the key under which we're storing the Collection Storage in the Request's context
@@ -201,6 +203,7 @@ func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 	status = http.StatusOK
 	w.Header().Set("Content-Type", "application/activity+json")
+	w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%d", int(24*time.Hour.Seconds())))
 	w.WriteHeader(status)
 	if r.Method == http.MethodGet {
 		w.Write(dat)
@@ -268,6 +271,11 @@ func (i ItemHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		if !updatedAt.IsZero() {
 			w.Header().Set("Last-Modified", updatedAt.Format(time.RFC1123))
+		}
+		if pub.ActivityTypes.Contains(o.Type) {
+			w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%d, immutable", int(8766*time.Hour.Seconds())))
+		} else {
+			w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%d", int(24*time.Hour.Seconds())))
 		}
 		return nil
 	})
