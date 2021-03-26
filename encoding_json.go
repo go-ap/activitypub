@@ -80,10 +80,11 @@ func writeFloatJSONProp(b *[]byte, n string, f float64) (notEmpty bool) {
 }
 
 func writeTimeJSONProp(b *[]byte, n string, t time.Time) (notEmpty bool) {
-	if v, err := t.UTC().MarshalJSON(); err == nil {
-		return writeJSONProp(b, n, v)
-	}
-	return false
+	var tb []byte
+	write(&tb, '"')
+	writeS(&tb, t.UTC().Format(time.RFC3339))
+	write(&tb, '"')
+	return writeJSONProp(b, n, tb)
 }
 
 func writeDurationJSONProp(b *[]byte, n string, d time.Duration) (notEmpty bool) {
