@@ -16,7 +16,7 @@ func ItemsEqual(it, with Item) bool {
 	if IsNil(it) || IsNil(with) {
 		return with == it
 	}
-	result := true
+	result := false
 	if it.IsCollection() {
 		if it.GetType() == CollectionOfItems {
 			OnItemCollection(it, func(c *ItemCollection) error {

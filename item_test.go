@@ -189,3 +189,60 @@ func TestIsNil(t *testing.T) {
 		})
 	}
 }
+
+func TestItemsEqual1(t *testing.T) {
+	type args struct {
+		it   Item
+		with Item
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "nil",
+			args: args{},
+			want: true,
+		},
+		{
+			name: "equal empty items",
+			args: args{
+				it:   &Object{},
+				with: &Actor{},
+			},
+			want: true,
+		},
+		{
+			name: "equal same ID items",
+			args: args{
+				it:   &Object{ID: "example-1"},
+				with: &Object{ID: "example-1"},
+			},
+			want: true,
+		},
+		{
+			name: "different IDs",
+			args: args{
+				it:   &Object{ID: "example-1"},
+				with: &Object{ID: "example-2"},
+			},
+			want: false,
+		},
+		{
+			name: "different properties",
+			args: args{
+				it:   &Object{ID: "example-1"},
+				with: &Object{Type: ArticleType},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ItemsEqual(tt.args.it, tt.args.with); got != tt.want {
+				t.Errorf("ItemsEqual() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
