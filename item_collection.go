@@ -89,7 +89,7 @@ func (i ItemCollection) Contains(r Item) bool {
 	return false
 }
 
-// Contains verifies if IRIs array contains the received one
+// Remove removes the r Item from the i ItemCollection if it contains it
 func (i *ItemCollection) Remove(r Item) {
 	li := len(*i)
 	if li == 0 {
