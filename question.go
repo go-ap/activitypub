@@ -2,7 +2,6 @@ package activitypub
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"time"
 )
@@ -179,6 +178,7 @@ func (q Question) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
+/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (q *Question) UnmarshalBinary(data []byte) error {
 	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *q))
@@ -198,6 +198,7 @@ func (q Question) GobEncode() ([]byte, error) {
 func (q *Question) GobDecode([]byte) error {
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *q))
 }
+*/
 
 // QuestionNew initializes a Question activity
 func QuestionNew(id ID) *Question {

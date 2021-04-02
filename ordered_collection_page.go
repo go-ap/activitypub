@@ -2,7 +2,6 @@ package activitypub
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"time"
 )
@@ -231,6 +230,7 @@ func (o OrderedCollectionPage) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 
+/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (o *OrderedCollectionPage) UnmarshalBinary(data []byte) error {
 	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *o))
@@ -250,6 +250,7 @@ func (o OrderedCollectionPage) GobEncode() ([]byte, error) {
 func (o *OrderedCollectionPage) GobDecode([]byte) error {
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *o))
 }
+*/
 
 // ToOrderedCollectionPage
 func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {

@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"time"
@@ -164,6 +163,7 @@ func (p Profile) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 
+/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (p *Profile) UnmarshalBinary(data []byte) error {
 	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *p))
@@ -183,6 +183,7 @@ func (p Profile) GobEncode() ([]byte, error) {
 func (p *Profile) GobDecode([]byte) error {
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *p))
 }
+*/
 
 // Recipients performs recipient de-duplication on the Profile object's To, Bto, CC and BCC properties
 func (p *Profile) Recipients() ItemCollection {

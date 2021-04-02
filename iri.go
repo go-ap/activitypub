@@ -1,8 +1,6 @@
 package activitypub
 
 import (
-	"bytes"
-	"errors"
 	"fmt"
 	"github.com/buger/jsonparser"
 	"net/url"
@@ -63,7 +61,7 @@ func (i IRI) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
-
+/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (i *IRI) UnmarshalBinary(data []byte) error {
 	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *i))
@@ -71,22 +69,27 @@ func (i *IRI) UnmarshalBinary(data []byte) error {
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (i IRI) MarshalBinary() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", i))
+	if len(i) == 0 {
+		return nil, nil
+	}
+	w := &bytes.Buffer{}
+	enc := gobEncoder{ w: w, enc: gob.NewEncoder(w) }
+	if err := enc.writeS(i.String()); err != nil {
+		return nil, err
+	}
+	return w.Bytes(), nil
 }
 
 // GobEncode
 func (i IRI) GobEncode() ([]byte, error) {
-	buf := bytes.NewBuffer(make([]byte, 0))
-	if _, err := writeIRIGobProp(buf, i); err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
+	return i.MarshalBinary()
 }
 
 // GobDecode
 func (i *IRI) GobDecode([]byte) error {
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *i))
 }
+ */
 
 // AddPath concatenates el elements as a path to i
 func (i IRI) AddPath(el ...string) IRI {

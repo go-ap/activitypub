@@ -6,10 +6,14 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"reflect"
 	"time"
 )
 
+type typeId int32
+
 type gobEncoder struct {
+	sent map[reflect.Type]typeId // which types we've already sent
 	w   *bytes.Buffer
 	enc *gob.Encoder
 }
@@ -33,15 +37,18 @@ func (e *gobEncoder) encode (it Item) ([]byte, error) {
 //	return enc.encode(it)
 //}
 
-func (e *gobEncoder) writeIRIProp(i IRI) (bool, error) {
-	if len(i) == 0 {
-		return true, nil
-	}
-	return false, e.enc.Encode(i)
+func (e *gobEncoder) writeS(s string) error {
+	return e.enc.Encode(s)
 }
 
-func (e *gobEncoder)writeGobProp (p string, b []byte) bool {
-	return true
+func (e *gobEncoder) writeIRIProp(i IRI) error {
+	return e.enc.Encode(i.String())
+}
+
+func (e *gobEncoder) writeGobProp (p string, b []byte) bool {
+	c, _ := e.w.Write([]byte(p))
+	d, _ := e.w.Write(b)
+	return c+d > 0
 }
 func (e *gobEncoder)writeItemGobProp (p string, it Item) bool {
 	return true
@@ -59,14 +66,11 @@ func (e *gobEncoder)writeDurationGobProp (p string, d time.Duration) bool {
 	return true
 }
 
-func writeIRIGobProp(buf io.Writer, i IRI) (int, error) {
-	return 0, errors.New(fmt.Sprintf("writeIRIGobProp is not implemented for %T", i))
-}
-
 func writeObjectGobValue(buf io.Writer, o *Object) (int, error) {
 	return 0, errors.New(fmt.Sprintf("writeObjectGobValue is not implemented for %T", *o))
 }
 
+/*
 func (e *gobEncoder) writeObjectGobValue(o Object) (bool, error) {
 	notEmpty := true
 	if v, err := o.ID.GobEncode(); err == nil && len(v) > 0 {
@@ -166,3 +170,4 @@ func (e *gobEncoder) writeObjectGobValue(o Object) (bool, error) {
 	}
 	return notEmpty, nil
 }
+ */

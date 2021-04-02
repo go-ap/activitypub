@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"errors"
 	"fmt"
 	"github.com/buger/jsonparser"
 	"reflect"
@@ -109,6 +108,7 @@ func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
+/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (a *ActivityVocabularyType) UnmarshalBinary(data []byte) error {
 	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *a))
@@ -121,13 +121,22 @@ func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
 
 // GobEncode
 func (a ActivityVocabularyType) GobEncode() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", a))
+	if len(a) == 0 {
+		return nil, nil
+	}
+	w := &bytes.Buffer{}
+	enc := gobEncoder{ w: w, enc: gob.NewEncoder(w) }
+	if err := enc.writeS(string(a)); err != nil {
+		return nil, err
+	}
+	return w.Bytes(), nil
 }
 
 // GobDecode
 func (a *ActivityVocabularyType) GobDecode([]byte) error {
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *a))
 }
+*/
 
 // Object describes an ActivityPub object of any kind.
 // It serves as the base type for most of the other kinds of objects defined in the Activity
@@ -285,6 +294,7 @@ func (o Object) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 
+/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (o *Object) UnmarshalBinary(data []byte) error {
 	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *o))
@@ -292,7 +302,12 @@ func (o *Object) UnmarshalBinary(data []byte) error {
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (o Object) MarshalBinary() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", o))
+	w := &bytes.Buffer{}
+	enc := gobEncoder{ w: w, enc: gob.NewEncoder(w) }
+	if _, err := enc.writeObjectGobValue(o); err != nil {
+		return nil, err
+	}
+	return w.Bytes(), nil
 }
 
 // GobEncode
@@ -304,6 +319,7 @@ func (o Object) GobEncode() ([]byte, error) {
 func (o *Object) GobDecode(data []byte) error {
 	return o.UnmarshalBinary(data)
 }
+*/
 
 // Recipients performs recipient de-duplication on the Object's To, Bto, CC and BCC properties
 func (o *Object) Recipients() ItemCollection {
@@ -352,6 +368,7 @@ func (m MimeType) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
+/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (m *MimeType) UnmarshalBinary(data []byte) error {
 	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *m))
@@ -369,6 +386,7 @@ func (m MimeType) GobEncode() ([]byte, error) {
 	}
 	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", m))
 }
+ */
 
 // ToLink returns a Link pointer to the data in the current Item
 func ToLink(it Item) (*Link, error) {
@@ -498,6 +516,7 @@ func (s Source) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 
+/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (s *Source) UnmarshalBinary(data []byte) error {
 	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *s))
@@ -517,6 +536,7 @@ func (s *Source) GobDecode([]byte) error {
 func (s Source) GobEncode() ([]byte, error) {
 	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", s))
 }
+ */
 
 // Equals verifies if our receiver Object is equals with the "with" Object
 func (o Object) Equals(with Item) bool {

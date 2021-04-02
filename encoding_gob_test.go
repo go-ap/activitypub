@@ -3,7 +3,7 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"reflect"
+	"errors"
 	"testing"
 )
 
@@ -12,7 +12,7 @@ func TestMarshalGob(t *testing.T) {
 		name    string
 		it      Item
 		want    []byte
-		wantErr bool
+		wantErr error
 	}{
 		{
 			name:    "empty object",
@@ -20,28 +20,28 @@ func TestMarshalGob(t *testing.T) {
 				ID: "test",
 			},
 			want:    []byte{},
-			wantErr: true,
+			wantErr: nil,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			//got, err := MarshalGob(tt.it)
 			buf := bytes.NewBuffer(make([]byte,0))
 			err := gob.NewEncoder(buf).Encode(tt.it)
-			got := buf.Bytes()
-			
-			it := new(Object)
-			gob.NewDecoder(bytes.NewReader(got)).Decode(it)
-			if it.ID == tt.it.GetID() {
-				t.Logf("Yay!")
-			}
-			
-			if (err != nil) != tt.wantErr {
+
+			if !errors.Is(err, tt.wantErr){
 				t.Errorf("MarshalGob() error = %s, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !tt.wantErr && !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MarshalGob() got = %#v, want %#v", got, tt.want)
+
+			it := new(Object)
+			got := buf.Bytes()
+			if err := gob.NewDecoder(bytes.NewReader(got)).Decode(it); err != nil {
+				t.Errorf("Gob Decoding failed for previously generated output %v", err)
+			}
+			if tt.wantErr == nil {
+				if !assertDeepEquals(t.Errorf, it, tt.it) {
+					t.Errorf("Gob Decoded value is different got = %#v, want %#v", it, tt.it)
+				}
 			}
 		})
 	}
