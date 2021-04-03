@@ -107,7 +107,7 @@ func (i *ItemCollection) Remove(r Item) {
 	if remIdx == -1 {
 		return
 	}
-	if remIdx < li - 1 {
+	if remIdx < li-1 {
 		*i = append((*i)[:remIdx], (*i)[remIdx+1:]...)
 	} else {
 		*i = (*i)[:remIdx]
@@ -155,16 +155,6 @@ func ItemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
 		}
 	}
 	return rec
-}
-
-// FlattenItemCollection flattens the Collection's properties from Object type to IRI
-func FlattenItemCollection(c ItemCollection) ItemCollection {
-	if c != nil && len(c) > 0 {
-		for i, it := range c {
-			c[i] = FlattenToIRI(it)
-		}
-	}
-	return c
 }
 
 // ToItemCollection

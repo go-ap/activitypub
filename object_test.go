@@ -436,10 +436,6 @@ func TestFlattenObjectProperties(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestFlattenProperties(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestToTombstone(t *testing.T) {
 	t.Skipf("TODO")
 }

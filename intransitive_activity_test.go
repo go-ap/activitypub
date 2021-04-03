@@ -221,10 +221,6 @@ func TestToIntransitiveActivity(t *testing.T) {
 	}
 }
 
-func TestFlattenIntransitiveActivityProperties(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestIntransitiveActivity_Clean(t *testing.T) {
 	t.Skipf("TODO")
 }

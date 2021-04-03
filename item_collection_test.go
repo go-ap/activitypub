@@ -34,10 +34,6 @@ func TestItemCollection_First(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestFlattenItemCollection(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestItemCollection_Count(t *testing.T) {
 	t.Skipf("TODO")
 }
@@ -62,13 +58,13 @@ func TestItemCollection_Remove(t *testing.T) {
 	}{
 		{
 			name: "empty_collection_nil_item",
-			i: ItemCollection{},
-			arg: nil,
+			i:    ItemCollection{},
+			arg:  nil,
 		},
 		{
 			name: "empty_collection_non_nil_item",
-			i: ItemCollection{},
-			arg: &Object{},
+			i:    ItemCollection{},
+			arg:  &Object{},
 		},
 		{
 			name: "non_empty_collection_nil_item",
@@ -140,7 +136,7 @@ func TestItemCollection_Remove(t *testing.T) {
 				t.Errorf("%T should%s contain %T, but it does%s: %#v", tt.i, should, tt.arg, does, tt.i)
 			}
 			if origContains {
-				if tt.i.Count() > origLen - 1 {
+				if tt.i.Count() > origLen-1 {
 					t.Errorf("%T should have a count lower than %d, got %d", tt.i, origLen, tt.i.Count())
 				}
 			} else {

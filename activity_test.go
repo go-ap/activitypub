@@ -953,10 +953,6 @@ func TestToActivity(t *testing.T) {
 	}
 }
 
-func TestFlattenActivityProperties(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestValidEventRSVPActivityType(t *testing.T) {
 	t.Skipf("TODO")
 }
