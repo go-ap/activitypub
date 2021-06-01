@@ -203,7 +203,9 @@ func (c CollectionHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 	status = http.StatusOK
 	w.Header().Set("Content-Type", "application/activity+json")
-	w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%d", int(24*time.Hour.Seconds())))
+	if w.Header().Get("Cache-Control") == "" {
+		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%d", int(24*time.Hour.Seconds())))
+	}
 	w.WriteHeader(status)
 	if r.Method == http.MethodGet {
 		w.Write(dat)
