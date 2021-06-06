@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	// ActivityBaseURI the URI for the activity streams namespace
+	// ActivityBaseURI the URI for the ActivityStreams namespace
 	ActivityBaseURI = IRI("https://www.w3.org/ns/activitystreams")
-	// SecurityContextURI the URI for the secruity namespace (for an Actor's PublicKey)
+	// SecurityContextURI the URI for the security namespace (for an Actor's PublicKey)
 	SecurityContextURI = IRI("https://w3id.org/security/v1")
-	// PublicNs is the reference to the Public entity in the Acitivystreams namespace
+	// PublicNS is the reference to the Public entity in the ActivityStreams namespace
 	PublicNS = ActivityBaseURI + "#Public"
 )
 
@@ -123,7 +123,7 @@ func (i IRI) IsCollection() bool {
 
 // FlattenToIRI checks if Item can be flatten to an IRI and returns it if so
 func FlattenToIRI(it Item) Item {
-	if it != nil && it.IsObject() && len(it.GetLink()) > 0 {
+	if !IsNil(it) && it.IsObject() && len(it.GetLink()) > 0 {
 		return it.GetLink()
 	}
 	return it

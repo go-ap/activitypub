@@ -107,7 +107,7 @@ func FlattenProperties(it Item) Item {
 
 // Flatten checks if Item can be flatten to an IRI or array of IRIs and returns it if so
 func Flatten(it Item) Item {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	if it.IsCollection() {
@@ -115,7 +115,7 @@ func Flatten(it Item) Item {
 			it = FlattenItemCollection(c.Collection())
 		}
 	}
-	if it != nil && len(it.GetLink()) > 0 {
+	if len(it.GetLink()) > 0 {
 		return it.GetLink()
 	}
 	return it
