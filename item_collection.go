@@ -55,6 +55,9 @@ func (i *ItemCollection) Append(o Item) error {
 
 // Count returns the length of Items in the item collection
 func (i *ItemCollection) Count() uint {
+	if i == nil {
+		return 0
+	}
 	return uint(len(*i))
 }
 

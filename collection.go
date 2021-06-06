@@ -209,6 +209,9 @@ func (c *Collection) Append(ob Item) error {
 
 // Count returns the maximum between the length of Items in collection and its TotalItems property
 func (c *Collection) Count() uint {
+	if c == nil {
+		return 0
+	}
 	if c.TotalItems > 0 {
 		return c.TotalItems
 	}

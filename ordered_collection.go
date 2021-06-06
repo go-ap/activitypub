@@ -212,6 +212,9 @@ func (o OrderedCollection) Contains(r Item) bool {
 
 // Count returns the maximum between the length of Items in collection and its TotalItems property
 func (o *OrderedCollection) Count() uint {
+	if o == nil {
+		return 0
+	}
 	if o.TotalItems > 0 {
 		return o.TotalItems
 	}

@@ -3,9 +3,10 @@ package activitypub
 import (
 	"bytes"
 	"fmt"
-	"github.com/buger/jsonparser"
 	"strconv"
 	"strings"
+
+	"github.com/buger/jsonparser"
 )
 
 const NilLangRef LangRef = "-"
@@ -147,6 +148,9 @@ func (n *NaturalLanguageValues) Append(lang LangRef, value Content) error {
 
 // Count returns the length of Items in the item collection
 func (n *NaturalLanguageValues) Count() uint {
+	if n == nil {
+		return 0
+	}
 	return uint(len(*n))
 }
 

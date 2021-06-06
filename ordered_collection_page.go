@@ -161,6 +161,9 @@ func (o OrderedCollectionPage) Collection() ItemCollection {
 
 // Count returns the maximum between the length of Items in the collection page and its TotalItems property
 func (o *OrderedCollectionPage) Count() uint {
+	if o == nil {
+		return 0
+	}
 	if o.TotalItems > 0 {
 		return o.TotalItems
 	}

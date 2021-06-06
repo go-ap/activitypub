@@ -158,6 +158,9 @@ func (c CollectionPage) Collection() ItemCollection {
 
 // Count returns the maximum between the length of Items in the collection page and its TotalItems property
 func (c *CollectionPage) Count() uint {
+	if c == nil {
+		return 0
+	}
 	if c.TotalItems > 0 {
 		return c.TotalItems
 	}
