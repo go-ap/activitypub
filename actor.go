@@ -1,11 +1,13 @@
 package activitypub
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/buger/jsonparser"
 	"reflect"
 	"time"
 	"unsafe"
+
+	"github.com/buger/jsonparser"
 )
 
 // CanReceiveActivities Types
@@ -222,7 +224,9 @@ func (p PublicKey) MarshalJSON() ([]byte, error) {
 		notEmpty = writeIRIJSONProp(&b, "owner", p.Owner) || notEmpty
 	}
 	if len(p.PublicKeyPem) > 0 {
-		notEmpty = writeIRIJSONProp(&b, "publicKeyPem", p.Owner) || notEmpty
+		if pem, err := json.Marshal(p.PublicKeyPem); err == nil {
+			notEmpty = writeJSONProp(&b, "publicKeyPem", pem) || notEmpty
+		}
 	}
 
 	if notEmpty {
@@ -378,6 +382,11 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 			lNotEmpty = writeItemCollectionJSONValue(&b, ss) || lNotEmpty
 		}
 		notEmpty = lNotEmpty || notEmpty
+	}
+	if len(a.PublicKey.PublicKeyPem)+len(a.PublicKey.ID) > 0 {
+		if v, err := a.PublicKey.MarshalJSON(); err == nil && len(v) > 0 {
+			notEmpty = writeJSONProp(&b, "publicKey", v) || notEmpty
+		}
 	}
 
 	if notEmpty {
