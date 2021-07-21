@@ -375,7 +375,7 @@ func TestPublicKey_MarshalJSON(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func assertPersonWithTesting(fn canErrorFunc, expected Item) withActorFn {
+func assertPersonWithTesting(fn canErrorFunc, expected Item) WithActorFn {
 	return func (p *Person) error {
 		if !assertDeepEquals(fn, p , expected) {
 			return fmt.Errorf("not equal")
@@ -390,7 +390,7 @@ func TestOnActor(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(canErrorFunc, Item) withActorFn
+		fn func(canErrorFunc, Item) WithActorFn
 	}
 	tests := []struct {
 		name     string

@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func assertObjectWithTesting(fn canErrorFunc, expected Item) withObjectFn {
+func assertObjectWithTesting(fn canErrorFunc, expected Item) WithObjectFn {
 	return func (p *Object) error {
 		if !assertDeepEquals(fn, p , expected) {
 			return fmt.Errorf("not equal")
@@ -20,7 +20,7 @@ func TestOnObject(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(canErrorFunc, Item) withObjectFn
+		fn func(canErrorFunc, Item) WithObjectFn
 	}
 	tests := []struct {
 		name     string
@@ -68,7 +68,7 @@ func TestOnObject(t *testing.T) {
 	}
 }
 
-func assertActivityWithTesting(fn canErrorFunc, expected Item) withActivityFn {
+func assertActivityWithTesting(fn canErrorFunc, expected Item) WithActivityFn {
 	return func (p *Activity) error {
 		if !assertDeepEquals(fn, p , expected) {
 			return fmt.Errorf("not equal")
@@ -83,7 +83,7 @@ func TestOnActivity(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(canErrorFunc, Item) withActivityFn
+		fn func(canErrorFunc, Item) WithActivityFn
 	}
 	tests := []struct {
 		name     string
@@ -131,7 +131,7 @@ func TestOnActivity(t *testing.T) {
 	}
 }
 
-func assertIntransitiveActivityWithTesting(fn canErrorFunc, expected Item) withIntransitiveActivityFn {
+func assertIntransitiveActivityWithTesting(fn canErrorFunc, expected Item) WithIntransitiveActivityFn {
 	return func (p *IntransitiveActivity) error {
 		if !assertDeepEquals(fn, p , expected) {
 			return fmt.Errorf("not equal")
@@ -146,7 +146,7 @@ func TestOnIntransitiveActivity(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(canErrorFunc, Item) withIntransitiveActivityFn
+		fn func(canErrorFunc, Item) WithIntransitiveActivityFn
 	}
 	tests := []struct {
 		name     string
@@ -194,7 +194,7 @@ func TestOnIntransitiveActivity(t *testing.T) {
 	}
 }
 
-func assertQuestionWithTesting(fn canErrorFunc, expected Item) withQuestionFn {
+func assertQuestionWithTesting(fn canErrorFunc, expected Item) WithQuestionFn {
 	return func (p *Question) error {
 		if !assertDeepEquals(fn, p , expected) {
 			return fmt.Errorf("not equal")
@@ -209,7 +209,7 @@ func TestOnQuestion(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(canErrorFunc, Item) withQuestionFn
+		fn func(canErrorFunc, Item) WithQuestionFn
 	}
 	tests := []struct {
 		name     string

@@ -4,21 +4,21 @@ import (
 	"fmt"
 )
 
-type withLinkFn func (*Link) error
-type withObjectFn func (*Object) error
-type withActivityFn func (*Activity) error
-type withIntransitiveActivityFn func (*IntransitiveActivity) error
-type withQuestionFn func (*Question) error
-type withActorFn func (*Actor) error
-type withCollectionInterfaceFn func (collection CollectionInterface) error
-type withCollectionFn func (collection *Collection) error
-type withCollectionPageFn func (*CollectionPage) error
-type withOrderedCollectionFn func (*OrderedCollection) error
-type withOrderedCollectionPageFn func (*OrderedCollectionPage) error
-type withItemCollectionFn func (collection *ItemCollection) error
+type WithLinkFn func(*Link) error
+type WithObjectFn func(*Object) error
+type WithActivityFn func(*Activity) error
+type WithIntransitiveActivityFn func(*IntransitiveActivity) error
+type WithQuestionFn func(*Question) error
+type WithActorFn func(*Actor) error
+type WithCollectionInterfaceFn func(CollectionInterface) error
+type WithCollectionFn func(*Collection) error
+type WithCollectionPageFn func(*CollectionPage) error
+type WithOrderedCollectionFn func(*OrderedCollection) error
+type WithOrderedCollectionPageFn func(*OrderedCollectionPage) error
+type WithItemCollectionFn func(*ItemCollection) error
 
 // OnLink
-func OnLink(it Item, fn withLinkFn) error {
+func OnLink(it Item, fn WithLinkFn) error {
 	ob, err := ToLink(it)
 	if err != nil {
 		return err
@@ -27,7 +27,7 @@ func OnLink(it Item, fn withLinkFn) error {
 }
 
 // OnObject
-func OnObject(it Item, fn withObjectFn) error {
+func OnObject(it Item, fn WithObjectFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
@@ -46,7 +46,7 @@ func OnObject(it Item, fn withObjectFn) error {
 }
 
 // OnActivity
-func OnActivity(it Item, fn withActivityFn) error {
+func OnActivity(it Item, fn WithActivityFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
@@ -65,7 +65,7 @@ func OnActivity(it Item, fn withActivityFn) error {
 }
 
 // OnIntransitiveActivity
-func OnIntransitiveActivity(it Item, fn withIntransitiveActivityFn) error {
+func OnIntransitiveActivity(it Item, fn WithIntransitiveActivityFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
@@ -84,7 +84,7 @@ func OnIntransitiveActivity(it Item, fn withIntransitiveActivityFn) error {
 }
 
 // OnQuestion
-func OnQuestion(it Item, fn withQuestionFn) error {
+func OnQuestion(it Item, fn WithQuestionFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
@@ -103,7 +103,7 @@ func OnQuestion(it Item, fn withQuestionFn) error {
 }
 
 // OnActor
-func OnActor(it Item, fn withActorFn) error {
+func OnActor(it Item, fn WithActorFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
@@ -121,7 +121,7 @@ func OnActor(it Item, fn withActorFn) error {
 	return fn(act)
 }
 // OnCollection
-func OnCollection (it Item, fn withCollectionFn) error {
+func OnCollection (it Item, fn WithCollectionFn) error {
 	col, err := ToCollection(it)
 	if err != nil {
 		return err
@@ -130,7 +130,7 @@ func OnCollection (it Item, fn withCollectionFn) error {
 }
 
 // OnCollectionIntf
-func OnCollectionIntf(it Item, fn withCollectionInterfaceFn) error {
+func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 	switch it.GetType() {
 	case CollectionOfItems:
 		col, err := ToItemCollection(it)
@@ -172,7 +172,7 @@ func OnCollectionIntf(it Item, fn withCollectionInterfaceFn) error {
 }
 
 // OnCollectionPage
-func OnCollectionPage(it Item, fn withCollectionPageFn) error {
+func OnCollectionPage(it Item, fn WithCollectionPageFn) error {
 	col, err := ToCollectionPage(it)
 	if err != nil {
 		return err
@@ -181,7 +181,7 @@ func OnCollectionPage(it Item, fn withCollectionPageFn) error {
 }
 
 // OnOrderedCollection
-func OnOrderedCollection(it Item, fn withOrderedCollectionFn) error {
+func OnOrderedCollection(it Item, fn WithOrderedCollectionFn) error {
 	col, err := ToOrderedCollection(it)
 	if err != nil {
 		return err
@@ -190,7 +190,7 @@ func OnOrderedCollection(it Item, fn withOrderedCollectionFn) error {
 }
 
 // OnOrderedCollectionPage executes a function on an ordered collection page type item
-func OnOrderedCollectionPage(it Item, fn withOrderedCollectionPageFn) error {
+func OnOrderedCollectionPage(it Item, fn WithOrderedCollectionPageFn) error {
 	col, err := ToOrderedCollectionPage(it)
 	if err != nil {
 		return err
@@ -199,7 +199,7 @@ func OnOrderedCollectionPage(it Item, fn withOrderedCollectionPageFn) error {
 }
 
 // OnItemCollection executes a function on a collection type item
-func OnItemCollection(it Item, fn withItemCollectionFn) error {
+func OnItemCollection(it Item, fn WithItemCollectionFn) error {
 	col, err := ToItemCollection(it)
 	if err != nil {
 		return err
