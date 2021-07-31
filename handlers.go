@@ -88,17 +88,15 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	contentType := json.ContentType
 	err = pub.OnActivity(it, func(act *pub.Activity) error {
 		if act.Object.IsLink() {
-			col, err := st.Load(act.Object.GetLink())
-			if err != nil {
-				return err
-			}
-			if col.IsCollection() {
-				pub.OnCollectionIntf(col, func(c pub.CollectionInterface) error {
-					act.Object = c.Collection().First()
-					return nil
-				})
-			} else {
-				act.Object = col
+			if it, _ := st.Load(act.Object.GetLink()); it != nil {
+				if it.IsCollection() {
+					pub.OnCollectionIntf(it, func(c pub.CollectionInterface) error {
+						act.Object = c.Collection()
+						return nil
+					})
+				} else {
+					act.Object = it
+				}
 			}
 		}
 		if dat, err = pub.MarshalJSON(act.Object); err != nil {
