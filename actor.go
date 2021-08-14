@@ -7,7 +7,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/buger/jsonparser"
+	"github.com/valyala/fastjson"
 )
 
 // CanReceiveActivities Types
@@ -195,20 +195,14 @@ type PublicKey struct {
 }
 
 func (p *PublicKey) UnmarshalJSON(data []byte) error {
-	if id, err := jsonparser.GetString(data, "id"); err == nil {
+	if id := fastjson.GetString(data, "id"); len(id) > 0 {
 		p.ID = ID(id)
-	} else {
-		return err
 	}
-	if o, err := jsonparser.GetString(data, "owner"); err == nil {
+	if o := fastjson.GetString(data, "owner"); len(o) > 0 {
 		p.Owner = IRI(o)
-	} else {
-		return err
 	}
-	if pub, err := jsonparser.GetString(data, "publicKeyPem"); err == nil {
+	if pub := fastjson.GetString(data, "publicKeyPem"); len(pub) > 0 {
 		p.PublicKeyPem = pub
-	} else {
-		return err
 	}
 	return nil
 }

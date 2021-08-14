@@ -7,10 +7,9 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
-	"strconv"
 	"time"
 
-	"github.com/buger/jsonparser"
+	"github.com/valyala/fastjson"
 )
 
 var (
@@ -28,26 +27,17 @@ var ItemTyperFunc TyperFn = GetItemByType
 type TyperFn func(ActivityVocabularyType) (Item, error)
 
 func JSONGetID(data []byte) ID {
-	i, err := jsonparser.GetString(data, "id")
-	if err != nil {
-		return ""
-	}
+	i := fastjson.GetString(data, "id")
 	return ID(i)
 }
 
 func JSONGetType(data []byte) ActivityVocabularyType {
-	t, err := jsonparser.GetString(data, "type")
-	if err != nil {
-		return ""
-	}
+	t := fastjson.GetBytes(data, "type")
 	return ActivityVocabularyType(t)
 }
 
 func JSONGetMimeType(data []byte, prop string) MimeType {
-	t, err := jsonparser.GetString(data, prop)
-	if err != nil {
-		return ""
-	}
+	t := fastjson.GetString(data, prop)
 	return MimeType(t)
 }
 
@@ -55,73 +45,59 @@ func JSONGetInt(data []byte, prop string) int64 {
 	if len(data) == 0 {
 		return 0
 	}
-	val, err := jsonparser.GetInt(data, prop)
-	if err != nil {
-		// try to load integers encapsulated in quotes
-		if sn, err := jsonparser.GetString(data, prop); err == nil {
-			val, _ = strconv.ParseInt(sn, 10, 64)
-		}
-	}
-	return val
+	val := fastjson.GetInt(data, prop)
+	return int64(val)
 }
 
 func JSONGetFloat(data []byte, prop string) float64 {
 	if len(data) == 0 {
 		return 0
 	}
-	val, err := jsonparser.GetFloat(data, prop)
-	if err != nil {
-		// try to load floats encapsulated in quotes
-		if sn, err := jsonparser.GetString(data, prop); err == nil {
-			val, _ = strconv.ParseFloat(sn, 64)
-		}
-	}
+	val := fastjson.GetFloat64(data, prop)
 	return val
 }
 
 func JSONGetString(data []byte, prop string) string {
-	val, err := jsonparser.GetString(data, prop)
-	if err != nil {
-	}
+	val := fastjson.GetString(data, prop)
 	return val
 }
 
 func JSONGetBytes(data []byte, prop string) []byte {
-	val, _, _, err := jsonparser.Get(data, prop)
-	if err != nil {
-	}
+	val := fastjson.GetBytes(data, prop)
 	return val
 }
 
 func JSONGetBoolean(data []byte, prop string) bool {
-	val, err := jsonparser.GetBoolean(data, prop)
-	if err != nil {
-	}
+	val := fastjson.GetBool(data, prop)
 	return val
 }
 
 func JSONGetNaturalLanguageField(data []byte, prop string) NaturalLanguageValues {
 	n := NaturalLanguageValues{}
-	val, typ, _, err := jsonparser.Get(data, prop)
-	if err != nil || val == nil {
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+	if err != nil {
 		return nil
 	}
-	switch typ {
-	case jsonparser.Object:
-		jsonparser.ObjectEach(val, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
-			if dataType == jsonparser.String {
-				l := LangRefValue{}
-				if err := l.UnmarshalJSON(value); err == nil {
-					if l.Ref != NilLangRef || len(l.Value) > 0 {
-						n = append(n, l)
-					}
+	v := val.Get(prop)
+	if v == nil {
+		return nil
+	}
+	switch v.Type() {
+	case fastjson.TypeObject:
+		ob, _ := v.Object()
+		ob.Visit(func(key []byte, v *fastjson.Value) {
+			l := LangRefValue{}
+			l.Ref = LangRef(key)
+			if err := l.Value.UnmarshalJSON(v.GetStringBytes()); err == nil {
+				if l.Ref != NilLangRef || len(l.Value) > 0 {
+					n = append(n, l)
 				}
 			}
-			return err
 		})
-	case jsonparser.String:
+	case fastjson.TypeString:
 		l := LangRefValue{}
-		if err := l.UnmarshalJSON(val); err == nil {
+		if err := l.UnmarshalJSON(v.GetStringBytes()); err == nil {
 			n = append(n, l)
 		}
 	}
@@ -131,15 +107,15 @@ func JSONGetNaturalLanguageField(data []byte, prop string) NaturalLanguageValues
 
 func JSONGetTime(data []byte, prop string) time.Time {
 	t := time.Time{}
-	if str, _ := jsonparser.GetUnsafeString(data, prop); len(str) > 0 {
-		t.UnmarshalText([]byte(str))
+	if str := fastjson.GetBytes(data, prop); len(str) > 0 {
+		t.UnmarshalText(str)
 		return t.UTC()
 	}
 	return t
 }
 
 func JSONGetDuration(data []byte, prop string) time.Duration {
-	if str, _ := jsonparser.GetUnsafeString(data, prop); len(str) > 0 {
+	if str := fastjson.GetString(data, prop); len(str) > 0 {
 		// TODO(marius): this needs to be replaced to be compatible with xsd:duration
 		d, _ := time.ParseDuration(str)
 		return d
@@ -195,31 +171,32 @@ func JSONUnmarshalToItem(data []byte) Item {
 	if ItemTyperFunc == nil {
 		return nil
 	}
-	val, typ, _, err := jsonparser.Get(data)
-	if err != nil || len(val) == 0 {
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+	if err != nil {
 		return nil
 	}
-
 	var i Item
-	switch typ {
-	case jsonparser.Array:
+	switch val.Type() {
+	case fastjson.TypeArray:
 		items := make(ItemCollection, 0)
-		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		for _, v :=  range val.GetArray() {
 			var it Item
-			it, err = itemFn(value)
+			it, err = itemFn(v.GetStringBytes())
 			if it != nil && err == nil {
 				items.Append(it)
 			}
-		})
+
+		}
 		if len(items) == 1 {
 			i = items.First()
 		}
 		if len(items) > 1 {
 			i = items
 		}
-	case jsonparser.Object:
+	case fastjson.TypeObject:
 		i, err = itemFn(data)
-	case jsonparser.String:
+	case fastjson.TypeString:
 		if iri, ok := asIRI(data); ok {
 			// try to see if it's an IRI
 			i = iri
@@ -245,27 +222,28 @@ func asIRI(val []byte) (IRI, bool) {
 }
 
 func JSONGetItem(data []byte, prop string) Item {
-	val, typ, _, err := jsonparser.Get(data, prop)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
 	if err != nil {
 		return nil
 	}
-	switch typ {
-	case jsonparser.String:
-		if i, ok := asIRI(val); ok {
+	val = val.Get(prop)
+	if val == nil {
+		return nil
+	}
+	switch val.Type() {
+	case fastjson.TypeString:
+		if i, ok := asIRI(val.GetStringBytes()); ok {
 			// try to see if it's an IRI
 			return i
 		}
-	case jsonparser.Array:
+	case fastjson.TypeArray:
 		return JSONGetItems(data, prop)
-	case jsonparser.Object:
-		return JSONUnmarshalToItem(val)
-	case jsonparser.Number:
+	case fastjson.TypeObject:
+		return JSONUnmarshalToItem(val.GetStringBytes())
+	case fastjson.TypeNumber:
 		fallthrough
-	case jsonparser.Boolean:
-		fallthrough
-	case jsonparser.Null:
-		fallthrough
-	case jsonparser.Unknown:
+	case fastjson.TypeNull:
 		fallthrough
 	default:
 		return nil
@@ -274,34 +252,40 @@ func JSONGetItem(data []byte, prop string) Item {
 }
 
 func JSONGetURIItem(data []byte, prop string) Item {
-	val, typ, _, err := jsonparser.Get(data, prop)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
 	if err != nil {
 		return nil
 	}
+	v := val.Get(prop)
+	if v == nil {
+		return nil
+	}
 
-	switch typ {
-	case jsonparser.Object:
+	switch v.Type() {
+	case fastjson.TypeObject:
 		return JSONGetItem(data, prop)
-	case jsonparser.Array:
+	case fastjson.TypeArray:
 		it := make(ItemCollection, 0)
-		jsonparser.ArrayEach(val, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		for _, ob := range v.GetArray() {
+			value := ob.GetStringBytes()
 			if i, ok := asIRI(value); ok {
 				it.Append(i)
-				return
+				continue
 			}
 			i, err := ItemTyperFunc(JSONGetType(value))
 			if err != nil {
-				return
+				continue
 			}
-			err = i.(json.Unmarshaler).UnmarshalJSON(value)
-			if err != nil {
-				return
+			if err = i.(json.Unmarshaler).UnmarshalJSON(value); err != nil {
+				continue
 			}
 			it.Append(i)
-		})
+
+		}
 		return it
-	case jsonparser.String:
-		return IRI(val)
+	case fastjson.TypeString:
+		return IRI(val.String())
 	}
 
 	return nil
@@ -311,25 +295,32 @@ func JSONGetItems(data []byte, prop string) ItemCollection {
 	if len(data) == 0 {
 		return nil
 	}
-	val, typ, _, err := jsonparser.Get(data, prop)
-	if err != nil || len(val) == 0 {
+	p := fastjson.Parser{}
+
+	v, err := p.ParseBytes(data)
+	if err != nil {
 		return nil
 	}
 
 	it := make(ItemCollection, 0)
-	switch typ {
-	case jsonparser.Array:
-		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			i, err := itemFn(value)
-			if i != nil && err == nil {
+	switch v.Type() {
+	case fastjson.TypeArray:
+		val := v.GetArray(prop)
+		if len(val) == 0 {
+			return nil
+		}
+		for _, v := range val {
+			if i, err := itemFn(v.GetStringBytes()); i != nil && err == nil {
 				it.Append(i)
 			}
-		}, prop)
-	case jsonparser.Object:
-		it.Append(JSONGetItem(data, prop))
-	case jsonparser.String:
-		if len(val) > 0 {
-			it.Append(IRI(val))
+		}
+	case fastjson.TypeObject:
+		if i := JSONGetItem(data, prop); i != nil {
+			it.Append(i)
+		}
+	case fastjson.TypeString:
+		if iri := v.GetStringBytes(); len(iri) > 0 {
+			it.Append(IRI(iri))
 		}
 	}
 	if len(it) == 0 {
@@ -339,18 +330,12 @@ func JSONGetItems(data []byte, prop string) ItemCollection {
 }
 
 func JSONGetLangRefField(data []byte, prop string) LangRef {
-	val, err := jsonparser.GetString(data, prop)
-	if err != nil {
-		return ""
-	}
+	val := fastjson.GetString(data, prop)
 	return LangRef(val)
 }
 
 func JSONGetIRI(data []byte, prop string) IRI {
-	val, err := jsonparser.GetString(data, prop)
-	if err != nil {
-		return ""
-	}
+	val := fastjson.GetString(data, prop)
 	return IRI(val)
 }
 
@@ -483,12 +468,12 @@ func GetItemByType(typ ActivityVocabularyType) (Item, error) {
 }
 
 func JSONGetActorEndpoints(data []byte, prop string) *Endpoints {
-	str, _ := jsonparser.GetUnsafeString(data, prop)
+	str := fastjson.GetBytes(data, prop)
 
 	var e *Endpoints
 	if len(str) > 0 {
 		e = &Endpoints{}
-		e.UnmarshalJSON([]byte(str))
+		e.UnmarshalJSON(str)
 	}
 
 	return e

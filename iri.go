@@ -2,10 +2,11 @@ package activitypub
 
 import (
 	"fmt"
-	"github.com/buger/jsonparser"
 	"net/url"
 	"path"
 	"strings"
+
+	"github.com/valyala/fastjson"
 )
 
 const (
@@ -154,21 +155,22 @@ func (i *IRIs) UnmarshalJSON(data []byte) error {
 	if i == nil {
 		return nil
 	}
-	value, typ, _, err := jsonparser.Get(data)
+	p := fastjson.Parser{}
+	value, err := p.ParseBytes(data)
 	if err != nil {
 		return err
 	}
-	switch typ {
-	case jsonparser.String:
-		if iri, ok := asIRI(value); ok {
+	switch value.Type() {
+	case fastjson.TypeString:
+		if iri, ok := asIRI(value.GetStringBytes()); ok && len(iri) > 0 {
 			*i = append(*i, iri)
 		}
-	case jsonparser.Array:
-		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			if iri, ok := asIRI(value); ok {
+	case fastjson.TypeArray:
+		for _, v := range value.GetArray() {
+			if iri, ok := asIRI(v.GetStringBytes()); ok && len(iri) > 0 {
 				*i = append(*i, iri)
 			}
-		})
+		}
 	}
 	return nil
 }

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/buger/jsonparser"
+	"github.com/valyala/fastjson"
 )
 
 const NilLangRef LangRef = "-"
@@ -164,22 +164,23 @@ func (l LangRefValue) String() string {
 
 // UnmarshalJSON implements the JsonEncoder interface
 func (l *LangRefValue) UnmarshalJSON(data []byte) error {
-	_, typ, _, err := jsonparser.Get(data)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
 	if err != nil {
 		l.Ref = NilLangRef
-		l.Value = Content(unescape(data))
+		l.Value = unescape(data)
 		return nil
 	}
-	switch typ {
-	case jsonparser.Object:
-		jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
+	switch val.Type() {
+	case fastjson.TypeObject:
+		o, _ := val.Object()
+		o.Visit(func(key []byte, v *fastjson.Value) {
 			l.Ref = LangRef(key)
-			l.Value = Content(unescape(value))
-			return err
+			l.Value = unescape(v.GetStringBytes())
 		})
-	case jsonparser.String:
+	case fastjson.TypeString:
 		l.Ref = NilLangRef
-		l.Value = Content(unescape(data))
+		l.Value = unescape(val.GetStringBytes())
 	}
 
 	return nil
@@ -187,6 +188,8 @@ func (l *LangRefValue) UnmarshalJSON(data []byte) error {
 
 // UnmarshalText implements the TextEncoder interface
 func (l *LangRefValue) UnmarshalText(data []byte) error {
+	l.Ref = NilLangRef
+	l.Value = unescape(data)
 	return nil
 }
 
@@ -277,7 +280,7 @@ func (c Content) Equals(other Content) bool {
 }
 
 func unescape(b []byte) []byte {
-	// FIMXE(marius): I feel like I'm missing something really obvious about encoding/decoding from Json regarding
+	// FIXME(marius): I feel like I'm missing something really obvious about encoding/decoding from Json regarding
 	//    escape characters, and that this function is just a hack. Be better future Marius, find the real problem!
 	b = bytes.ReplaceAll(b, []byte{'\\', 'a'}, []byte{'\a'})
 	b = bytes.ReplaceAll(b, []byte{'\\', 'f'}, []byte{'\f'})
@@ -292,26 +295,33 @@ func unescape(b []byte) []byte {
 
 // UnmarshalJSON tries to load the NaturalLanguage array from the incoming json value
 func (n *NaturalLanguageValues) UnmarshalJSON(data []byte) error {
-	val, typ, _, err := jsonparser.Get(data)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
 	if err != nil {
 		// try our luck if data contains an unquoted string
-		n.Append(NilLangRef, Content(unescape(data)))
+		n.Append(NilLangRef, unescape(data))
 		return nil
 	}
-	switch typ {
-	case jsonparser.Object:
-		jsonparser.ObjectEach(data, func(key []byte, val []byte, dataType jsonparser.ValueType, offset int) error {
-			n.Append(LangRef(key), Content(unescape(val)))
-			return err
+	switch val.Type() {
+	case fastjson.TypeObject:
+		ob, _ := val.Object()
+		ob.Visit(func(key []byte, v *fastjson.Value) {
+			if dat := v.GetStringBytes(); len(dat) > 0 {
+				n.Append(LangRef(key), unescape(dat))
+			}
 		})
-	case jsonparser.String:
-		n.Append(NilLangRef, Content(unescape(val)))
-	case jsonparser.Array:
-		jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+	case fastjson.TypeString:
+		if dat := val.GetStringBytes(); len(dat) > 0 {
+			n.Append(NilLangRef, unescape(dat))
+		}
+	case fastjson.TypeArray:
+		for _, v := range val.GetArray() {
 			l := LangRefValue{}
-			l.UnmarshalJSON(value)
-			n.Append(l.Ref, l.Value)
-		})
+			l.UnmarshalJSON([]byte(v.String()))
+			if len(l.Value) > 0 {
+				n.Append(l.Ref, l.Value)
+			}
+		}
 	}
 
 	return nil

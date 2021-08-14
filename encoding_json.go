@@ -3,9 +3,10 @@ package activitypub
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"git.sr.ht/~mariusor/go-xsd-duration"
 	"github.com/go-ap/jsonld"
-	"time"
 )
 
 func writeComma(b *[]byte) {

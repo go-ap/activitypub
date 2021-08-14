@@ -2,11 +2,12 @@ package activitypub
 
 import (
 	"fmt"
-	"github.com/buger/jsonparser"
 	"reflect"
 	"strings"
 	"time"
 	"unsafe"
+
+	"github.com/valyala/fastjson"
 )
 
 const (
@@ -480,10 +481,10 @@ type Source struct {
 func GetAPSource(data []byte) Source {
 	s := Source{}
 
-	if contBytes, _, _, err := jsonparser.Get(data, "source", "content"); err == nil {
+	if contBytes := fastjson.GetBytes(data, "source", "content"); len(contBytes) > 0 {
 		s.Content.UnmarshalJSON(contBytes)
 	}
-	if mimeBytes, _, _, err := jsonparser.Get(data, "source", "mediaType"); err == nil {
+	if mimeBytes := fastjson.GetBytes(data, "source", "mediaType"); len(mimeBytes) > 0 {
 		s.MediaType.UnmarshalJSON(mimeBytes)
 	}
 

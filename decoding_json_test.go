@@ -313,40 +313,49 @@ func TestJSONGetItemByType(t *testing.T) {
 }
 
 func TestUnmarshalJSON(t *testing.T) {
-	type args struct {
-		d []byte
-	}
 	tests := []struct {
-		name    string
-		args    args
-		want    Item
+		name string
+		data []byte
+		want Item
 		err     error
 	}{
 		{
-			name:    "empty",
-			args:    args{[]byte{'{', '}'}},
-			want:    nil,
-			err:     nil,
+			name: "empty",
+			data: []byte{'{', '}'},
+			want: nil,
+			err:  nil,
 		},
 		{
-			name:    "IRI",
-			args:    args{[]byte("\"http://example.com\"")},
-			want:    IRI("http://example.com"),
-			err:     nil,
+			name: "IRI",
+			data: []byte(`"http://example.com"`),
+			want: IRI("http://example.com"),
+			err:  nil,
 		},
 		{
-			name:    "IRIs",
-			args:    args{[]byte(fmt.Sprintf("[%q, %q]", "http://example.com", "http://example.net"))},
+			name: "IRIs",
+			data: []byte(fmt.Sprintf("[%q, %q]", "http://example.com", "http://example.net")),
 			want:    ItemCollection{
 				IRI("http://example.com"),
 				IRI("http://example.net"),
 			},
 			err:     nil,
 		},
+		{
+			name: "object",
+			data: []byte(`{"type":"Note"}`),
+			want: &Object{Type: NoteType},
+			err:  nil,
+		},
+		{
+			name: "activity",
+			data: []byte(`{"type":"Like"}`),
+			want: &Activity{Type: LikeType},
+			err:  nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := UnmarshalJSON(tt.args.d)
+			got, err := UnmarshalJSON(tt.data)
 			if (err != nil && tt.err == nil) || (err == nil && tt.err != nil) {
 				if !errors.Is(err, tt.err) {
 					t.Errorf("UnmarshalJSON() error = %v, wantErr %v", err, tt.err)
