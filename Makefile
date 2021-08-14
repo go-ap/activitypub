@@ -1,6 +1,6 @@
 TEST := go test
 TEST_FLAGS ?= -v
-TEST_TARGET ?= ./...
+TEST_TARGET ?= .
 GO111MODULE = on
 PROJECT_NAME := $(shell basename $(PWD))
 
@@ -15,4 +15,3 @@ coverage: test
 
 clean:
 	$(RM) -v *.coverprofile
-
