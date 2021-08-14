@@ -302,6 +302,11 @@ func JSONGetItems(data []byte, prop string) ItemCollection {
 		return nil
 	}
 
+	v = v.Get(prop)
+	if v == nil {
+		return nil
+	}
+
 	it := make(ItemCollection, 0)
 	switch v.Type() {
 	case fastjson.TypeArray:
