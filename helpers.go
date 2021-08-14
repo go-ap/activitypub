@@ -244,6 +244,7 @@ func notEmptyObject(o *Object) bool {
 		return false
 	}
 	return len(o.ID) > 0 ||
+		len(o.Type) > 0 ||
 		ActivityTypes.Contains(o.Type) ||
 		o.Content != nil ||
 		o.Attachment != nil ||
@@ -278,11 +279,19 @@ func notEmptyObject(o *Object) bool {
 }
 
 func notEmptyInstransitiveActivity (i *IntransitiveActivity) bool {
-	return i.Actor != nil ||
+	notEmpty := i.Actor != nil ||
 		i.Target != nil ||
 		i.Result != nil ||
 		i.Origin != nil ||
 		i.Instrument != nil
+	if notEmpty {
+		return true
+	}
+	OnObject(i, func(ob *Object) error {
+		notEmpty = notEmptyObject(ob)
+		return nil
+	})
+	return notEmpty
 }
 
 func notEmptyActivity(a *Activity) bool {
