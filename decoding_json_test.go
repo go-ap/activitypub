@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+	"time"
 	"unsafe"
 )
 
@@ -350,6 +351,39 @@ func TestUnmarshalJSON(t *testing.T) {
 			name: "activity",
 			data: []byte(`{"type":"Like"}`),
 			want: &Activity{Type: LikeType},
+			err:  nil,
+		},
+		{
+			name: "collection-2-items",
+			data: []byte(`{ "@context": "https://www.w3.org/ns/activitystreams", "id": "https://federated.git/inbox", "type": "OrderedCollection", "updated": "2021-08-08T16:09:05Z", "first": "https://federated.git/inbox?maxItems=100", "totalItems": 2, "orderedItems": [ { "id": "https://federated.git/activities/07440c39-64b2-4492-89cf-f5c2872cf4ff", "type": "Create", "attributedTo": "https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91", "to": [ "https://www.w3.org/ns/activitystreams#Public" ], "cc": [ "https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91/followers" ], "published": "2021-08-08T16:09:05Z", "actor": "https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91", "object": "https://federated.git/objects/3eb69f77-3b08-4bf1-8760-c7333e2900c4" }, { "id": "https://federated.git/activities/ab9a5511-cdb5-4585-8a48-775d1bf20121", "type": "Like", "attributedTo": "https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91", "to": [ "https://www.w3.org/ns/activitystreams#Public", "https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91" ], "published": "2021-08-08T16:09:05Z", "actor": "https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91", "object": "https://federated.git/objects/3eb69f77-3b08-4bf1-8760-c7333e2900c4" }]}`),
+			want: &OrderedCollection{
+				ID: "https://federated.git/inbox",
+				Type: OrderedCollectionType,
+				Updated: time.Date(2021, 8, 8, 16, 9, 5, 0, time.UTC),
+				First: IRI("https://federated.git/inbox?maxItems=100"),
+				OrderedItems: ItemCollection{
+					&Activity{
+						ID: "https://federated.git/activities/07440c39-64b2-4492-89cf-f5c2872cf4ff",
+						Type: CreateType,
+						AttributedTo: IRI("https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91"),
+						To: ItemCollection{PublicNS},
+						CC: ItemCollection{ IRI("https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91/followers") },
+						Published: time.Date(2021,8,8, 16, 9, 5, 0, time.UTC),
+						Actor: IRI("https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91"),
+						Object: IRI("https://federated.git/objects/3eb69f77-3b08-4bf1-8760-c7333e2900c4"),
+					},
+					&Activity{
+						ID: "https://federated.git/activities/ab9a5511-cdb5-4585-8a48-775d1bf20121",
+						Type: LikeType,
+						AttributedTo: IRI("https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91"),
+						To: ItemCollection{PublicNS, IRI("https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91")},
+						Published: time.Date(2021,8,8, 16, 9, 5, 0, time.UTC),
+						Actor: IRI("https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91"),
+						Object: IRI("https://federated.git/objects/3eb69f77-3b08-4bf1-8760-c7333e2900c4"),
+					},
+				},
+				TotalItems: 2,
+			},
 			err:  nil,
 		},
 	}

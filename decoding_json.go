@@ -182,7 +182,10 @@ func JSONUnmarshalToItem(data []byte) Item {
 		items := make(ItemCollection, 0)
 		for _, v :=  range val.GetArray() {
 			var it Item
-			it, err = itemFn(v.GetStringBytes())
+			// NOTE(marius): I'm sure that using v.String here slows us down and undoes any benefits that fastjson
+			// might bring
+			v.Object()
+			it, err = itemFn([]byte(v.String()))
 			if it != nil && err == nil {
 				items.Append(it)
 			}
@@ -297,25 +300,21 @@ func JSONGetItems(data []byte, prop string) ItemCollection {
 	}
 	p := fastjson.Parser{}
 
-	v, err := p.ParseBytes(data)
+	val, err := p.ParseBytes(data)
 	if err != nil {
 		return nil
 	}
 
-	v = v.Get(prop)
-	if v == nil {
+	val = val.Get(prop)
+	if val == nil {
 		return nil
 	}
 
 	it := make(ItemCollection, 0)
-	switch v.Type() {
+	switch val.Type() {
 	case fastjson.TypeArray:
-		val := v.GetArray(prop)
-		if len(val) == 0 {
-			return nil
-		}
-		for _, v := range val {
-			if i, err := itemFn(v.GetStringBytes()); i != nil && err == nil {
+		for _, v := range val.GetArray() {
+			if i, err := itemFn([]byte(v.String())); i != nil && err == nil {
 				it.Append(i)
 			}
 		}
@@ -324,7 +323,7 @@ func JSONGetItems(data []byte, prop string) ItemCollection {
 			it.Append(i)
 		}
 	case fastjson.TypeString:
-		if iri := v.GetStringBytes(); len(iri) > 0 {
+		if iri := val.GetStringBytes(); len(iri) > 0 {
 			it.Append(IRI(iri))
 		}
 	}
