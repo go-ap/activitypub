@@ -27,7 +27,7 @@ var ItemTyperFunc TyperFn = GetItemByType
 type TyperFn func(ActivityVocabularyType) (Item, error)
 
 func JSONGetID(val *fastjson.Value) ID {
-	i  := val.Get("id").GetStringBytes()
+	i := val.Get("id").GetStringBytes()
 	return ID(i)
 }
 
@@ -37,7 +37,7 @@ func JSONGetType(val *fastjson.Value) ActivityVocabularyType {
 }
 
 func JSONGetMimeType(val *fastjson.Value, prop string) MimeType {
-	t := val.Get(prop).GetStringBytes()
+	t := val.GetStringBytes(prop)
 	return MimeType(t)
 }
 
@@ -144,7 +144,7 @@ func itemFn(val *fastjson.Value) (Item, error) {
 	}
 
 	switch typ {
-	case ObjectType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
+	case ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
 		err = OnObject(i, func(ob *Object) error {
 			return loadObject(val, ob)
 		})
@@ -162,7 +162,7 @@ func itemFn(val *fastjson.Value) (Item, error) {
 		err = OnIntransitiveActivity(i, func(act *IntransitiveActivity) error {
 			return loadIntransitiveActivity(val, act)
 		})
-	case ActorType, ArticleType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType:
+	case ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType:
 		err = OnActor(i, func(a *Actor) error {
 			return loadActor(val, a)
 		})
@@ -220,24 +220,17 @@ func JSONUnmarshalToItem(val *fastjson.Value) Item {
 	)
 	switch val.Type() {
 	case fastjson.TypeArray:
+		arr := val.GetArray()
+		if len(arr) == 1 {
+			i, _ = itemFn(arr[0])
+		}
 		items := make(ItemCollection, 0)
-		for _, v :=  range val.GetArray() {
-			var it Item
-			// NOTE(marius): I'm sure that using v.String here slows us down and undoes any benefits that fastjson
-			// might bring
-			v.Object()
-			it, err = itemFn(v)
-			if it != nil && err == nil {
+		for _, v := range arr {
+			if it, _ := itemFn(v); it != nil {
 				items.Append(it)
 			}
-
 		}
-		if len(items) == 1 {
-			i = items.First()
-		}
-		if len(items) > 1 {
-			i = items
-		}
+		i = items
 	case fastjson.TypeObject:
 		i, err = itemFn(val)
 	case fastjson.TypeString:
@@ -290,26 +283,27 @@ func JSONGetItem(val *fastjson.Value, prop string) Item {
 }
 
 func JSONGetURIItem(val *fastjson.Value, prop string) Item {
-	v := val.Get(prop)
-	if v == nil {
+	if val == nil {
 		return nil
 	}
-
-	switch v.Type() {
+	if val = val.Get(prop); val == nil {
+		return nil
+	}
+	switch val.Type() {
 	case fastjson.TypeObject:
-		return JSONGetItem(val, prop)
+		if it, _ := itemFn(val); it != nil {
+			return it
+		}
 	case fastjson.TypeArray:
 		it := make(ItemCollection, 0)
-		for _, val := range v.GetArray() {
-			i, err := itemFn(val)
-			if err != nil {
-				continue
+		for _, val := range val.GetArray(prop) {
+			if i, _ := itemFn(val); i != nil {
+				it.Append(i)
 			}
-			it.Append(i)
 		}
 		return it
 	case fastjson.TypeString:
-		return IRI(val.String())
+		return IRI(val.GetStringBytes())
 	}
 
 	return nil
@@ -327,7 +321,7 @@ func JSONGetItems(val *fastjson.Value, prop string) ItemCollection {
 	switch val.Type() {
 	case fastjson.TypeArray:
 		for _, v := range val.GetArray() {
-			if i, err := itemFn(v); i != nil && err == nil {
+			if i, _ := itemFn(v); i != nil {
 				it.Append(i)
 			}
 		}
@@ -370,15 +364,17 @@ func UnmarshalJSON(data []byte) (Item, error) {
 
 func GetItemByType(typ ActivityVocabularyType) (Item, error) {
 	switch typ {
-	case ObjectType:
+	case ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
 		return ObjectNew(typ), nil
-	case LinkType:
+	case LinkType, MentionType:
 		return &Link{Type: typ}, nil
-	case ActivityType:
+	case ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
+		FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
+		RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType:
 		return &Activity{Type: typ}, nil
-	case IntransitiveActivityType:
+	case IntransitiveActivityType, ArriveType, TravelType:
 		return &IntransitiveActivity{Type: typ}, nil
-	case ActorType:
+	case ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType:
 		return &Actor{Type: typ}, nil
 	case CollectionType:
 		return &Collection{Type: typ}, nil
@@ -388,20 +384,6 @@ func GetItemByType(typ ActivityVocabularyType) (Item, error) {
 		return &CollectionPage{Type: typ}, nil
 	case OrderedCollectionPageType:
 		return &OrderedCollectionPage{Type: typ}, nil
-	case ArticleType:
-		return ObjectNew(typ), nil
-	case AudioType:
-		return ObjectNew(typ), nil
-	case DocumentType:
-		return ObjectNew(typ), nil
-	case EventType:
-		return ObjectNew(typ), nil
-	case ImageType:
-		return ObjectNew(typ), nil
-	case NoteType:
-		return ObjectNew(typ), nil
-	case PageType:
-		return ObjectNew(typ), nil
 	case PlaceType:
 		return &Place{Type: typ}, nil
 	case ProfileType:
@@ -410,76 +392,8 @@ func GetItemByType(typ ActivityVocabularyType) (Item, error) {
 		return &Relationship{Type: typ}, nil
 	case TombstoneType:
 		return &Tombstone{Type: typ}, nil
-	case VideoType:
-		return ObjectNew(typ), nil
-	case MentionType:
-		return &Mention{Type: typ}, nil
-	case ApplicationType:
-		return &Application{Type: typ}, nil
-	case GroupType:
-		return &Group{Type: typ}, nil
-	case OrganizationType:
-		return &Organization{Type: typ}, nil
-	case PersonType:
-		return &Person{Type: typ}, nil
-	case ServiceType:
-		return &Service{Type: typ}, nil
-	case AcceptType:
-		return &Accept{Type: typ}, nil
-	case AddType:
-		return &Add{Type: typ}, nil
-	case AnnounceType:
-		return &Announce{Type: typ}, nil
-	case ArriveType:
-		return &Arrive{Type: typ}, nil
-	case BlockType:
-		return &Block{Type: typ}, nil
-	case CreateType:
-		return &Create{Type: typ}, nil
-	case DeleteType:
-		return &Delete{Type: typ}, nil
-	case DislikeType:
-		return &Dislike{Type: typ}, nil
-	case FlagType:
-		return &Flag{Type: typ}, nil
-	case FollowType:
-		return &Follow{Type: typ}, nil
-	case IgnoreType:
-		return &Ignore{Type: typ}, nil
-	case InviteType:
-		return &Invite{Type: typ}, nil
-	case JoinType:
-		return &Join{Type: typ}, nil
-	case LeaveType:
-		return &Leave{Type: typ}, nil
-	case LikeType:
-		return &Like{Type: typ}, nil
-	case ListenType:
-		return &Listen{Type: typ}, nil
-	case MoveType:
-		return &Move{Type: typ}, nil
-	case OfferType:
-		return &Offer{Type: typ}, nil
 	case QuestionType:
 		return &Question{Type: typ}, nil
-	case RejectType:
-		return &Reject{Type: typ}, nil
-	case ReadType:
-		return &Read{Type: typ}, nil
-	case RemoveType:
-		return &Remove{Type: typ}, nil
-	case TentativeRejectType:
-		return &TentativeReject{Type: typ}, nil
-	case TentativeAcceptType:
-		return &TentativeAccept{Type: typ}, nil
-	case TravelType:
-		return &Travel{Type: typ}, nil
-	case UndoType:
-		return &Undo{Type: typ}, nil
-	case UpdateType:
-		return &Update{Type: typ}, nil
-	case ViewType:
-		return &View{Type: typ}, nil
 	case "":
 		// when no type is available use a plain Object
 		return &Object{}, nil
