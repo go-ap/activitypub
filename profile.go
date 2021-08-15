@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"time"
 	"unsafe"
+
+	"github.com/valyala/fastjson"
 )
 
 // Profile a Profile is a content object that describes another Object,
@@ -139,7 +141,12 @@ func (p Profile) GetID() ID {
 
 // UnmarshalJSON
 func (p *Profile) UnmarshalJSON(data []byte) error {
-	return loadProfile(data, p)
+	par := fastjson.Parser{}
+	val, err := par.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadProfile(val, p)
 }
 
 // MarshalJSON

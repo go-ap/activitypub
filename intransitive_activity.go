@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"time"
 	"unsafe"
+
+	"github.com/valyala/fastjson"
 )
 
 // IntransitiveActivity Instances of IntransitiveActivity are a subtype of Activity representing intransitive actions.
@@ -177,7 +179,12 @@ func (i IntransitiveActivity) IsCollection() bool {
 
 // UnmarshalJSON
 func (i *IntransitiveActivity) UnmarshalJSON(data []byte) error {
-	return loadIntransitiveActivity(data, i)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadIntransitiveActivity(val, i)
 }
 
 // MarshalJSON

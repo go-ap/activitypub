@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"time"
 	"unsafe"
+
+	"github.com/valyala/fastjson"
 )
 
 // Relationship describes a relationship between two individuals.
@@ -149,7 +151,12 @@ func (r Relationship) GetID() ID {
 
 // UnmarshalJSON
 func (r *Relationship) UnmarshalJSON(data []byte) error {
-	return loadRelationship(data, r)
+	par := fastjson.Parser{}
+	val, err := par.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadRelationship(val, r)
 }
 
 // MarshalJSON

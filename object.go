@@ -280,7 +280,12 @@ func (o Object) IsCollection() bool {
 
 // UnmarshalJSON
 func (o *Object) UnmarshalJSON(data []byte) error {
-	return loadObject(data, o)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadObject(val, o)
 }
 
 // MarshalJSON
@@ -478,13 +483,16 @@ type Source struct {
 }
 
 // GetAPSource
-func GetAPSource(data []byte) Source {
+func GetAPSource(val *fastjson.Value) Source {
 	s := Source{}
+	if val == nil {
+		return s
+	}
 
-	if contBytes := fastjson.GetBytes(data, "source", "content"); len(contBytes) > 0 {
+	if contBytes := val.Get("source", "content").GetStringBytes(); len(contBytes) > 0 {
 		s.Content.UnmarshalJSON(contBytes)
 	}
-	if mimeBytes := fastjson.GetBytes(data, "source", "mediaType"); len(mimeBytes) > 0 {
+	if mimeBytes := val.Get("source", "mediaType").GetStringBytes(); len(mimeBytes) > 0 {
 		s.MediaType.UnmarshalJSON(mimeBytes)
 	}
 
@@ -493,7 +501,12 @@ func GetAPSource(data []byte) Source {
 
 // UnmarshalJSON
 func (s *Source) UnmarshalJSON(data []byte) error {
-	*s = GetAPSource(data)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	*s = GetAPSource(val)
 	return nil
 }
 

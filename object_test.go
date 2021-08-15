@@ -4,6 +4,8 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/valyala/fastjson"
 )
 
 func TestObjectNew(t *testing.T) {
@@ -471,7 +473,10 @@ func TestSource_UnmarshalJSON(t *testing.T) {
 func TestGetAPSource(t *testing.T) {
 	data := []byte(`{"source": {"content": "test", "mediaType": "text/plain" }}`)
 
-	a := GetAPSource(data)
+
+	par := fastjson.Parser{}
+	val, _ := par.ParseBytes(data)
+	a := GetAPSource(val)
 
 	if a.Content.First().String() != "test" {
 		t.Errorf("Content didn't match test value. Received %q, expecting %q", a.Content, "test")

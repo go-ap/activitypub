@@ -4,6 +4,8 @@ import (
 	"errors"
 	"reflect"
 	"time"
+
+	"github.com/valyala/fastjson"
 )
 
 // Question represents a question being asked. Question objects are an extension of IntransitiveActivity.
@@ -164,7 +166,12 @@ func (q Question) IsCollection() bool {
 
 // UnmarshalJSON
 func (q *Question) UnmarshalJSON(data []byte) error {
-	return loadQuestion(data, q)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadQuestion(val, q)
 }
 
 func (q Question) MarshalJSON() ([]byte, error) {

@@ -4,6 +4,8 @@ import (
 	"errors"
 	"reflect"
 	"time"
+
+	"github.com/valyala/fastjson"
 )
 
 // OrderedCollectionPage type extends from both CollectionPage and OrderedCollection.
@@ -191,7 +193,12 @@ func (o OrderedCollectionPage) Contains(r Item) bool {
 
 // UnmarshalJSON
 func (o *OrderedCollectionPage) UnmarshalJSON(data []byte) error {
-	return loadOrderedCollectionPage(data, o)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadOrderedCollectionPage(val, o)
 }
 
 // MarshalJSON

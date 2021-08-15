@@ -4,6 +4,8 @@ import (
 	"errors"
 	"reflect"
 	"time"
+
+	"github.com/valyala/fastjson"
 )
 
 // CollectionPage is a Collection that contains a large number of items and when it becomes impractical
@@ -188,7 +190,12 @@ func (c CollectionPage) Contains(r Item) bool {
 
 // UnmarshalJSON
 func (c *CollectionPage) UnmarshalJSON(data []byte) error {
-	return loadCollectionPage(data, c)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadCollectionPage(val, c)
 }
 
 // MarshalJSON

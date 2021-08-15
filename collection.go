@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"time"
 	"unsafe"
+
+	"github.com/valyala/fastjson"
 )
 
 const CollectionOfItems ActivityVocabularyType = "ItemCollection"
@@ -233,7 +235,12 @@ func (c Collection) Contains(r Item) bool {
 
 // UnmarshalJSON
 func (c *Collection) UnmarshalJSON(data []byte) error {
-	return loadCollection(data, c)
+	par := fastjson.Parser{}
+	val, err := par.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadCollection(val, c)
 }
 
 // MarshalJSON

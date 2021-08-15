@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 	"unsafe"
+
+	"github.com/valyala/fastjson"
 )
 
 // Activity Types
@@ -716,7 +718,12 @@ func ActivityNew(id ID, typ ActivityVocabularyType, ob Item) *Activity {
 
 // UnmarshalJSON
 func (a *Activity) UnmarshalJSON(data []byte) error {
-	return loadActivity(data, a)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadActivity(val, a)
 }
 
 // ToActivity

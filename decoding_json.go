@@ -1,12 +1,12 @@
 package activitypub
 
 import (
-	"bytes"
 	"encoding"
 	"encoding/json"
 	"fmt"
 	"net/url"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/valyala/fastjson"
@@ -26,58 +26,50 @@ var ItemTyperFunc TyperFn = GetItemByType
 // for a specific ActivityVocabularyType
 type TyperFn func(ActivityVocabularyType) (Item, error)
 
-func JSONGetID(data []byte) ID {
-	i := fastjson.GetString(data, "id")
+func JSONGetID(val *fastjson.Value) ID {
+	i  := val.Get("id").GetStringBytes()
 	return ID(i)
 }
 
-func JSONGetType(data []byte) ActivityVocabularyType {
-	t := fastjson.GetBytes(data, "type")
+func JSONGetType(val *fastjson.Value) ActivityVocabularyType {
+	t := val.Get("type").GetStringBytes()
 	return ActivityVocabularyType(t)
 }
 
-func JSONGetMimeType(data []byte, prop string) MimeType {
-	t := fastjson.GetString(data, prop)
+func JSONGetMimeType(val *fastjson.Value, prop string) MimeType {
+	t := val.Get(prop).GetStringBytes()
 	return MimeType(t)
 }
 
-func JSONGetInt(data []byte, prop string) int64 {
-	if len(data) == 0 {
-		return 0
-	}
-	val := fastjson.GetInt(data, prop)
-	return int64(val)
+func JSONGetInt(val *fastjson.Value, prop string) int64 {
+	i := val.Get(prop).GetInt64()
+	return i
 }
 
-func JSONGetFloat(data []byte, prop string) float64 {
-	if len(data) == 0 {
-		return 0
-	}
-	val := fastjson.GetFloat64(data, prop)
-	return val
+func JSONGetFloat(val *fastjson.Value, prop string) float64 {
+	f := val.Get(prop).GetFloat64()
+	return f
 }
 
-func JSONGetString(data []byte, prop string) string {
-	val := fastjson.GetString(data, prop)
-	return val
+func JSONGetString(val *fastjson.Value, prop string) string {
+	s := val.Get(prop).GetStringBytes()
+	return string(s)
 }
 
-func JSONGetBytes(data []byte, prop string) []byte {
-	val := fastjson.GetBytes(data, prop)
-	return val
+func JSONGetBytes(val *fastjson.Value, prop string) []byte {
+	s := val.Get(prop).GetStringBytes()
+	return s
 }
 
-func JSONGetBoolean(data []byte, prop string) bool {
-	val := fastjson.GetBool(data, prop)
-	return val
+func JSONGetBoolean(val *fastjson.Value, prop string) bool {
+	t, _ := val.Get(prop).Bool()
+	return t
 }
 
-func JSONGetNaturalLanguageField(data []byte, prop string) NaturalLanguageValues {
+func JSONGetNaturalLanguageField(val *fastjson.Value, prop string) NaturalLanguageValues {
 	n := NaturalLanguageValues{}
-	p := fastjson.Parser{}
-	val, err := p.ParseBytes(data)
-	if err != nil {
-		return nil
+	if val == nil {
+		return n
 	}
 	v := val.Get(prop)
 	if v == nil {
@@ -105,44 +97,44 @@ func JSONGetNaturalLanguageField(data []byte, prop string) NaturalLanguageValues
 	return n
 }
 
-func JSONGetTime(data []byte, prop string) time.Time {
+func JSONGetTime(val *fastjson.Value, prop string) time.Time {
 	t := time.Time{}
-	if str := fastjson.GetBytes(data, prop); len(str) > 0 {
+	if val == nil {
+		return t
+	}
+
+	if str := val.Get(prop).GetStringBytes(); len(str) > 0 {
 		t.UnmarshalText(str)
 		return t.UTC()
 	}
 	return t
 }
 
-func JSONGetDuration(data []byte, prop string) time.Duration {
-	if str := fastjson.GetString(data, prop); len(str) > 0 {
+func JSONGetDuration(val *fastjson.Value, prop string) time.Duration {
+	if str := val.Get(prop).GetStringBytes(); len(str) > 0 {
 		// TODO(marius): this needs to be replaced to be compatible with xsd:duration
-		d, _ := time.ParseDuration(str)
+		d, _ := time.ParseDuration(string(str))
 		return d
 	}
 	return 0
 }
 
-func JSONGetPublicKey(data []byte, prop string) PublicKey {
+func JSONGetPublicKey(val *fastjson.Value, prop string) PublicKey {
 	key := PublicKey{}
-	key.UnmarshalJSON(JSONGetBytes(data, prop))
+	key.UnmarshalJSON(JSONGetBytes(val, prop))
 	return key
 }
 
-func JSONGetStreams(data []byte, prop string) []ItemCollection {
+func JSONGetStreams(val *fastjson.Value, prop string) []ItemCollection {
 	// TODO(marius)
 	return nil
 }
 
-func itemFn(data []byte) (Item, error) {
-	if len(data) == 0 {
-		return nil, nil
-	}
-
-	typ := JSONGetType(data)
+func itemFn(val *fastjson.Value) (Item, error) {
+	typ := JSONGetType(val)
 	if typ == "" {
 		// try to see if it's an IRI
-		if i, ok := asIRI(data); ok {
+		if i, ok := asIRI(val); ok {
 			return i, nil
 		}
 	}
@@ -151,32 +143,81 @@ func itemFn(data []byte) (Item, error) {
 		return nil, nil
 	}
 
-	p := reflect.PtrTo(reflect.TypeOf(i))
-	if reflect.TypeOf(i).Implements(unmarshalerType) || p.Implements(unmarshalerType) {
-		err = i.(json.Unmarshaler).UnmarshalJSON(data)
+	switch typ {
+	case ObjectType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
+		err = OnObject(i, func(ob *Object) error {
+			return loadObject(val, ob)
+		})
+	case LinkType, MentionType:
+		err = OnLink(i, func(l *Link) error {
+			return loadLink(val, l)
+		})
+	case ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
+		FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
+		RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType:
+		err = OnActivity(i, func(act *Activity) error {
+			return loadActivity(val, act)
+		})
+	case IntransitiveActivityType, ArriveType, TravelType:
+		err = OnIntransitiveActivity(i, func(act *IntransitiveActivity) error {
+			return loadIntransitiveActivity(val, act)
+		})
+	case ActorType, ArticleType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType:
+		err = OnActor(i, func(a *Actor) error {
+			return loadActor(val, a)
+		})
+	case CollectionType:
+		err = OnCollection(i, func(c *Collection) error {
+			return loadCollection(val, c)
+		})
+	case OrderedCollectionType:
+		err = OnOrderedCollection(i, func(c *OrderedCollection) error {
+			return loadOrderedCollection(val, c)
+		})
+	case CollectionPageType:
+		err = OnCollectionPage(i, func(p *CollectionPage) error {
+			return loadCollectionPage(val, p)
+		})
+	case OrderedCollectionPageType:
+		err = OnOrderedCollectionPage(i, func(p *OrderedCollectionPage) error {
+			return loadOrderedCollectionPage(val, p)
+		})
+	case PlaceType:
+		err = OnPlace(i, func(p *Place) error {
+			return loadPlace(val, p)
+		})
+	case ProfileType:
+		err = OnProfile(i, func(p *Profile) error {
+			return loadProfile(val, p)
+		})
+	case RelationshipType:
+		err = OnRelationship(i, func(r *Relationship) error {
+			return loadRelationship(val, r)
+		})
+	case TombstoneType:
+		err = OnTombstone(i, func(t *Tombstone) error {
+			return loadTombstone(val, t)
+		})
+	case QuestionType:
+		err = OnQuestion(i, func(q *Question) error {
+			return loadQuestion(val, q)
+		})
 	}
-	if reflect.TypeOf(i).Implements(textUnmarshalerType) || p.Implements(textUnmarshalerType) {
-		err = i.(encoding.TextUnmarshaler).UnmarshalText(data)
-	}
+
 	if !NotEmpty(i) {
 		return nil, nil
 	}
 	return i, err
 }
 
-func JSONUnmarshalToItem(data []byte) Item {
-	if len(data) == 0 {
-		return nil
-	}
+func JSONUnmarshalToItem(val *fastjson.Value) Item {
 	if ItemTyperFunc == nil {
 		return nil
 	}
-	p := fastjson.Parser{}
-	val, err := p.ParseBytes(data)
-	if err != nil {
-		return nil
-	}
-	var i Item
+	var (
+		i   Item
+		err error
+	)
 	switch val.Type() {
 	case fastjson.TypeArray:
 		items := make(ItemCollection, 0)
@@ -185,7 +226,7 @@ func JSONUnmarshalToItem(data []byte) Item {
 			// NOTE(marius): I'm sure that using v.String here slows us down and undoes any benefits that fastjson
 			// might bring
 			v.Object()
-			it, err = itemFn([]byte(v.String()))
+			it, err = itemFn(v)
 			if it != nil && err == nil {
 				items.Append(it)
 			}
@@ -198,9 +239,9 @@ func JSONUnmarshalToItem(data []byte) Item {
 			i = items
 		}
 	case fastjson.TypeObject:
-		i, err = itemFn(data)
+		i, err = itemFn(val)
 	case fastjson.TypeString:
-		if iri, ok := asIRI(data); ok {
+		if iri, ok := asIRI(val); ok {
 			// try to see if it's an IRI
 			i = iri
 		}
@@ -211,39 +252,33 @@ func JSONUnmarshalToItem(data []byte) Item {
 	return i
 }
 
-func asIRI(val []byte) (IRI, bool) {
-	if len(val) == 0 {
+func asIRI(val *fastjson.Value) (IRI, bool) {
+	if val == nil {
 		return NilIRI, true
 	}
-	val = bytes.Trim(val, string('"'))
-	u, err := url.ParseRequestURI(string(val))
+	s := strings.Trim(val.String(), `"`)
+	u, err := url.ParseRequestURI(s)
 	if err == nil && len(u.Scheme) > 0 && len(u.Host) > 0 {
 		// try to see if it's an IRI
-		return IRI(val), true
+		return IRI(s), true
 	}
 	return EmptyIRI, false
 }
 
-func JSONGetItem(data []byte, prop string) Item {
-	p := fastjson.Parser{}
-	val, err := p.ParseBytes(data)
-	if err != nil {
-		return nil
-	}
-	val = val.Get(prop)
-	if val == nil {
+func JSONGetItem(val *fastjson.Value, prop string) Item {
+	if val = val.Get(prop); val == nil {
 		return nil
 	}
 	switch val.Type() {
 	case fastjson.TypeString:
-		if i, ok := asIRI(val.GetStringBytes()); ok {
+		if i, ok := asIRI(val); ok {
 			// try to see if it's an IRI
 			return i
 		}
 	case fastjson.TypeArray:
-		return JSONGetItems(data, prop)
+		return JSONGetItems(val, prop)
 	case fastjson.TypeObject:
-		return JSONUnmarshalToItem(val.GetStringBytes())
+		return JSONUnmarshalToItem(val)
 	case fastjson.TypeNumber:
 		fallthrough
 	case fastjson.TypeNull:
@@ -254,12 +289,7 @@ func JSONGetItem(data []byte, prop string) Item {
 	return nil
 }
 
-func JSONGetURIItem(data []byte, prop string) Item {
-	p := fastjson.Parser{}
-	val, err := p.ParseBytes(data)
-	if err != nil {
-		return nil
-	}
+func JSONGetURIItem(val *fastjson.Value, prop string) Item {
 	v := val.Get(prop)
 	if v == nil {
 		return nil
@@ -267,24 +297,15 @@ func JSONGetURIItem(data []byte, prop string) Item {
 
 	switch v.Type() {
 	case fastjson.TypeObject:
-		return JSONGetItem(data, prop)
+		return JSONGetItem(val, prop)
 	case fastjson.TypeArray:
 		it := make(ItemCollection, 0)
-		for _, ob := range v.GetArray() {
-			value := ob.GetStringBytes()
-			if i, ok := asIRI(value); ok {
-				it.Append(i)
-				continue
-			}
-			i, err := ItemTyperFunc(JSONGetType(value))
+		for _, val := range v.GetArray() {
+			i, err := itemFn(val)
 			if err != nil {
 				continue
 			}
-			if err = i.(json.Unmarshaler).UnmarshalJSON(value); err != nil {
-				continue
-			}
 			it.Append(i)
-
 		}
 		return it
 	case fastjson.TypeString:
@@ -294,19 +315,11 @@ func JSONGetURIItem(data []byte, prop string) Item {
 	return nil
 }
 
-func JSONGetItems(data []byte, prop string) ItemCollection {
-	if len(data) == 0 {
-		return nil
-	}
-	p := fastjson.Parser{}
-
-	val, err := p.ParseBytes(data)
-	if err != nil {
-		return nil
-	}
-
-	val = val.Get(prop)
+func JSONGetItems(val *fastjson.Value, prop string) ItemCollection {
 	if val == nil {
+		return nil
+	}
+	if val = val.Get(prop); val == nil {
 		return nil
 	}
 
@@ -314,12 +327,12 @@ func JSONGetItems(data []byte, prop string) ItemCollection {
 	switch val.Type() {
 	case fastjson.TypeArray:
 		for _, v := range val.GetArray() {
-			if i, err := itemFn([]byte(v.String())); i != nil && err == nil {
+			if i, err := itemFn(v); i != nil && err == nil {
 				it.Append(i)
 			}
 		}
 	case fastjson.TypeObject:
-		if i := JSONGetItem(data, prop); i != nil {
+		if i := JSONGetItem(val, prop); i != nil {
 			it.Append(i)
 		}
 	case fastjson.TypeString:
@@ -333,14 +346,14 @@ func JSONGetItems(data []byte, prop string) ItemCollection {
 	return it
 }
 
-func JSONGetLangRefField(data []byte, prop string) LangRef {
-	val := fastjson.GetString(data, prop)
-	return LangRef(val)
+func JSONGetLangRefField(val *fastjson.Value, prop string) LangRef {
+	s := val.Get(prop).GetStringBytes()
+	return LangRef(s)
 }
 
-func JSONGetIRI(data []byte, prop string) IRI {
-	val := fastjson.GetString(data, prop)
-	return IRI(val)
+func JSONGetIRI(val *fastjson.Value, prop string) IRI {
+	s := val.Get(prop).GetStringBytes()
+	return IRI(s)
 }
 
 // UnmarshalJSON tries to detect the type of the object in the json data and then outputs a matching
@@ -349,7 +362,10 @@ func UnmarshalJSON(data []byte) (Item, error) {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = GetItemByType
 	}
-	return JSONUnmarshalToItem(data), nil
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+
+	return JSONUnmarshalToItem(val), err
 }
 
 func GetItemByType(typ ActivityVocabularyType) (Item, error) {
@@ -471,8 +487,8 @@ func GetItemByType(typ ActivityVocabularyType) (Item, error) {
 	return nil, fmt.Errorf("empty ActivityStreams type")
 }
 
-func JSONGetActorEndpoints(data []byte, prop string) *Endpoints {
-	str := fastjson.GetBytes(data, prop)
+func JSONGetActorEndpoints(val *fastjson.Value, prop string) *Endpoints {
+	str := val.Get(prop).GetStringBytes()
 
 	var e *Endpoints
 	if len(str) > 0 {
@@ -483,204 +499,204 @@ func JSONGetActorEndpoints(data []byte, prop string) *Endpoints {
 	return e
 }
 
-func loadObject(data []byte, o *Object) error {
+func loadObject(val *fastjson.Value, o *Object) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = GetItemByType
 	}
-	o.ID = JSONGetID(data)
-	o.Type = JSONGetType(data)
-	o.Name = JSONGetNaturalLanguageField(data, "name")
-	o.Content = JSONGetNaturalLanguageField(data, "content")
-	o.Summary = JSONGetNaturalLanguageField(data, "summary")
-	o.Context = JSONGetItem(data, "context")
-	o.URL = JSONGetURIItem(data, "url")
-	o.MediaType = JSONGetMimeType(data, "mediaType")
-	o.Generator = JSONGetItem(data, "generator")
-	o.AttributedTo = JSONGetItem(data, "attributedTo")
-	o.Attachment = JSONGetItem(data, "attachment")
-	o.Location = JSONGetItem(data, "location")
-	o.Published = JSONGetTime(data, "published")
-	o.StartTime = JSONGetTime(data, "startTime")
-	o.EndTime = JSONGetTime(data, "endTime")
-	o.Duration = JSONGetDuration(data, "duration")
-	o.Icon = JSONGetItem(data, "icon")
-	o.Preview = JSONGetItem(data, "preview")
-	o.Image = JSONGetItem(data, "image")
-	o.Updated = JSONGetTime(data, "updated")
-	o.InReplyTo = JSONGetItem(data, "inReplyTo")
-	o.To = JSONGetItems(data, "to")
-	o.Audience = JSONGetItems(data, "audience")
-	o.Bto = JSONGetItems(data, "bto")
-	o.CC = JSONGetItems(data, "cc")
-	o.BCC = JSONGetItems(data, "bcc")
-	o.Replies = JSONGetItem(data, "replies")
-	o.Tag = JSONGetItems(data, "tag")
-	o.Likes = JSONGetItem(data, "likes")
-	o.Shares = JSONGetItem(data, "shares")
-	o.Source = GetAPSource(data)
+	o.ID = JSONGetID(val)
+	o.Type = JSONGetType(val)
+	o.Name = JSONGetNaturalLanguageField(val, "name")
+	o.Content = JSONGetNaturalLanguageField(val, "content")
+	o.Summary = JSONGetNaturalLanguageField(val, "summary")
+	o.Context = JSONGetItem(val, "context")
+	o.URL = JSONGetURIItem(val, "url")
+	o.MediaType = JSONGetMimeType(val, "mediaType")
+	o.Generator = JSONGetItem(val, "generator")
+	o.AttributedTo = JSONGetItem(val, "attributedTo")
+	o.Attachment = JSONGetItem(val, "attachment")
+	o.Location = JSONGetItem(val, "location")
+	o.Published = JSONGetTime(val, "published")
+	o.StartTime = JSONGetTime(val, "startTime")
+	o.EndTime = JSONGetTime(val, "endTime")
+	o.Duration = JSONGetDuration(val, "duration")
+	o.Icon = JSONGetItem(val, "icon")
+	o.Preview = JSONGetItem(val, "preview")
+	o.Image = JSONGetItem(val, "image")
+	o.Updated = JSONGetTime(val, "updated")
+	o.InReplyTo = JSONGetItem(val, "inReplyTo")
+	o.To = JSONGetItems(val, "to")
+	o.Audience = JSONGetItems(val, "audience")
+	o.Bto = JSONGetItems(val, "bto")
+	o.CC = JSONGetItems(val, "cc")
+	o.BCC = JSONGetItems(val, "bcc")
+	o.Replies = JSONGetItem(val, "replies")
+	o.Tag = JSONGetItems(val, "tag")
+	o.Likes = JSONGetItem(val, "likes")
+	o.Shares = JSONGetItem(val, "shares")
+	o.Source = GetAPSource(val)
 	return nil
 }
 
-func loadIntransitiveActivity(data []byte, i *IntransitiveActivity) error {
+func loadIntransitiveActivity(val *fastjson.Value, i *IntransitiveActivity) error {
 	OnObject(i, func(o *Object) error {
-		return loadObject(data, o)
+		return loadObject(val, o)
 	})
-	i.Actor = JSONGetItem(data, "actor")
-	i.Target = JSONGetItem(data, "target")
-	i.Result = JSONGetItem(data, "result")
-	i.Origin = JSONGetItem(data, "origin")
-	i.Instrument = JSONGetItem(data, "instrument")
+	i.Actor = JSONGetItem(val, "actor")
+	i.Target = JSONGetItem(val, "target")
+	i.Result = JSONGetItem(val, "result")
+	i.Origin = JSONGetItem(val, "origin")
+	i.Instrument = JSONGetItem(val, "instrument")
 	return nil
 }
 
-func loadActivity(data []byte, a *Activity) error {
+func loadActivity(val *fastjson.Value, a *Activity) error {
 	OnIntransitiveActivity(a, func(i *IntransitiveActivity) error {
-		return loadIntransitiveActivity(data, i)
+		return loadIntransitiveActivity(val, i)
 	})
-	a.Object = JSONGetItem(data, "object")
+	a.Object = JSONGetItem(val, "object")
 	return nil
 }
 
-func loadQuestion(data []byte, q *Question) error {
+func loadQuestion(val *fastjson.Value, q *Question) error {
 	OnIntransitiveActivity(q, func(i *IntransitiveActivity) error {
-		return loadIntransitiveActivity(data, i)
+		return loadIntransitiveActivity(val, i)
 	})
-	q.OneOf = JSONGetItem(data, "oneOf")
-	q.AnyOf = JSONGetItem(data, "anyOf")
-	q.Closed = JSONGetBoolean(data, "closed")
+	q.OneOf = JSONGetItem(val, "oneOf")
+	q.AnyOf = JSONGetItem(val, "anyOf")
+	q.Closed = JSONGetBoolean(val, "closed")
 	return nil
 }
 
-func loadActor(data []byte, a *Actor) error {
+func loadActor(val *fastjson.Value, a *Actor) error {
 	OnObject(a, func(o *Object) error {
-		return loadObject(data, o)
+		return loadObject(val, o)
 	})
-	a.PreferredUsername = JSONGetNaturalLanguageField(data, "preferredUsername")
-	a.Followers = JSONGetItem(data, "followers")
-	a.Following = JSONGetItem(data, "following")
-	a.Inbox = JSONGetItem(data, "inbox")
-	a.Outbox = JSONGetItem(data, "outbox")
-	a.Liked = JSONGetItem(data, "liked")
-	a.Endpoints = JSONGetActorEndpoints(data, "endpoints")
-	a.Streams = JSONGetStreams(data, "streams")
-	a.PublicKey = JSONGetPublicKey(data, "publicKey")
+	a.PreferredUsername = JSONGetNaturalLanguageField(val, "preferredUsername")
+	a.Followers = JSONGetItem(val, "followers")
+	a.Following = JSONGetItem(val, "following")
+	a.Inbox = JSONGetItem(val, "inbox")
+	a.Outbox = JSONGetItem(val, "outbox")
+	a.Liked = JSONGetItem(val, "liked")
+	a.Endpoints = JSONGetActorEndpoints(val, "endpoints")
+	a.Streams = JSONGetStreams(val, "streams")
+	a.PublicKey = JSONGetPublicKey(val, "publicKey")
 	return nil
 }
 
-func loadCollection(data []byte, c *Collection) error {
+func loadCollection(val *fastjson.Value, c *Collection) error {
 	OnObject(c, func(o *Object) error {
-		return loadObject(data, o)
+		return loadObject(val, o)
 	})
-	c.Current = JSONGetItem(data, "current")
-	c.First = JSONGetItem(data, "first")
-	c.Last = JSONGetItem(data, "last")
-	c.TotalItems = uint(JSONGetInt(data, "totalItems"))
-	c.Items = JSONGetItems(data, "items")
+	c.Current = JSONGetItem(val, "current")
+	c.First = JSONGetItem(val, "first")
+	c.Last = JSONGetItem(val, "last")
+	c.TotalItems = uint(JSONGetInt(val, "totalItems"))
+	c.Items = JSONGetItems(val, "items")
 	return nil
 }
 
-func loadCollectionPage(data []byte, c *CollectionPage) error {
+func loadCollectionPage(val *fastjson.Value, c *CollectionPage) error {
 	OnCollection(c, func(c *Collection) error {
-		return loadCollection(data, c)
+		return loadCollection(val, c)
 	})
-	c.Next = JSONGetItem(data, "next")
-	c.Prev = JSONGetItem(data, "prev")
-	c.PartOf = JSONGetItem(data, "partOf")
+	c.Next = JSONGetItem(val, "next")
+	c.Prev = JSONGetItem(val, "prev")
+	c.PartOf = JSONGetItem(val, "partOf")
 	return nil
 }
 
-func loadOrderedCollection(data []byte, c *OrderedCollection) error {
+func loadOrderedCollection(val *fastjson.Value, c *OrderedCollection) error {
 	OnObject(c, func(o *Object) error {
-		return loadObject(data, o)
+		return loadObject(val, o)
 	})
-	c.Current = JSONGetItem(data, "current")
-	c.First = JSONGetItem(data, "first")
-	c.Last = JSONGetItem(data, "last")
-	c.TotalItems = uint(JSONGetInt(data, "totalItems"))
-	c.OrderedItems = JSONGetItems(data, "orderedItems")
+	c.Current = JSONGetItem(val, "current")
+	c.First = JSONGetItem(val, "first")
+	c.Last = JSONGetItem(val, "last")
+	c.TotalItems = uint(JSONGetInt(val, "totalItems"))
+	c.OrderedItems = JSONGetItems(val, "orderedItems")
 	return nil
 }
 
-func loadOrderedCollectionPage(data []byte, c *OrderedCollectionPage) error {
+func loadOrderedCollectionPage(val *fastjson.Value, c *OrderedCollectionPage) error {
 	OnOrderedCollection(c, func(c *OrderedCollection) error {
-		return loadOrderedCollection(data, c)
+		return loadOrderedCollection(val, c)
 	})
-	c.Next = JSONGetItem(data, "next")
-	c.Prev = JSONGetItem(data, "prev")
-	c.PartOf = JSONGetItem(data, "partOf")
-	c.StartIndex = uint(JSONGetInt(data, "startIndex"))
+	c.Next = JSONGetItem(val, "next")
+	c.Prev = JSONGetItem(val, "prev")
+	c.PartOf = JSONGetItem(val, "partOf")
+	c.StartIndex = uint(JSONGetInt(val, "startIndex"))
 	return nil
 }
 
-func loadPlace(data []byte, p *Place) error {
+func loadPlace(val *fastjson.Value, p *Place) error {
 	OnObject(p, func(o *Object) error {
-		return loadObject(data, o)
+		return loadObject(val, o)
 	})
-	p.Accuracy = JSONGetFloat(data, "accuracy")
-	p.Altitude = JSONGetFloat(data, "altitude")
-	p.Latitude = JSONGetFloat(data, "latitude")
-	p.Longitude = JSONGetFloat(data, "longitude")
-	p.Radius = JSONGetInt(data, "radius")
-	p.Units = JSONGetString(data, "units")
+	p.Accuracy = JSONGetFloat(val, "accuracy")
+	p.Altitude = JSONGetFloat(val, "altitude")
+	p.Latitude = JSONGetFloat(val, "latitude")
+	p.Longitude = JSONGetFloat(val, "longitude")
+	p.Radius = JSONGetInt(val, "radius")
+	p.Units = JSONGetString(val, "units")
 	return nil
 }
 
-func loadProfile(data []byte, p *Profile) error {
+func loadProfile(val *fastjson.Value, p *Profile) error {
 	OnObject(p, func(o *Object) error {
-		return loadObject(data, o)
+		return loadObject(val, o)
 	})
-	p.Describes = JSONGetItem(data, "describes")
+	p.Describes = JSONGetItem(val, "describes")
 	return nil
 }
 
-func loadRelationship(data []byte, r *Relationship) error {
+func loadRelationship(val *fastjson.Value, r *Relationship) error {
 	OnObject(r, func(o *Object) error {
-		return loadObject(data, o)
+		return loadObject(val, o)
 	})
-	r.Subject = JSONGetItem(data, "subject")
-	r.Object = JSONGetItem(data, "object")
-	r.Relationship = JSONGetItem(data, "relationship")
+	r.Subject = JSONGetItem(val, "subject")
+	r.Object = JSONGetItem(val, "object")
+	r.Relationship = JSONGetItem(val, "relationship")
 	return nil
 }
 
-func loadTombstone(data []byte, t *Tombstone) error {
+func loadTombstone(val *fastjson.Value, t *Tombstone) error {
 	OnObject(t, func(o *Object) error {
-		return loadObject(data, o)
+		return loadObject(val, o)
 	})
-	t.FormerType = ActivityVocabularyType(JSONGetString(data, "formerType"))
-	t.Deleted = JSONGetTime(data, "deleted")
+	t.FormerType = ActivityVocabularyType(JSONGetString(val, "formerType"))
+	t.Deleted = JSONGetTime(val, "deleted")
 	return nil
 }
 
-func loadLink(data []byte, l *Link) error {
+func loadLink(val *fastjson.Value, l *Link) error {
 	if ItemTyperFunc == nil {
 		ItemTyperFunc = GetItemByType
 	}
-	l.ID = JSONGetID(data)
-	l.Type = JSONGetType(data)
-	l.MediaType = JSONGetMimeType(data, "mediaType")
-	l.Preview = JSONGetItem(data, "preview")
-	h := JSONGetInt(data, "height")
+	l.ID = JSONGetID(val)
+	l.Type = JSONGetType(val)
+	l.MediaType = JSONGetMimeType(val, "mediaType")
+	l.Preview = JSONGetItem(val, "preview")
+	h := JSONGetInt(val, "height")
 	if h != 0 {
 		l.Height = uint(h)
 	}
-	w := JSONGetInt(data, "width")
+	w := JSONGetInt(val, "width")
 	if w != 0 {
 		l.Width = uint(w)
 	}
-	l.Name = JSONGetNaturalLanguageField(data, "name")
-	hrefLang := JSONGetLangRefField(data, "hrefLang")
+	l.Name = JSONGetNaturalLanguageField(val, "name")
+	hrefLang := JSONGetLangRefField(val, "hrefLang")
 	if len(hrefLang) > 0 {
 		l.HrefLang = hrefLang
 	}
-	href := JSONGetURIItem(data, "href")
+	href := JSONGetURIItem(val, "href")
 	if href != nil {
 		ll := href.GetLink()
 		if len(ll) > 0 {
 			l.Href = ll
 		}
 	}
-	rel := JSONGetURIItem(data, "rel")
+	rel := JSONGetURIItem(val, "rel")
 	if rel != nil {
 		rr := rel.GetLink()
 		if len(rr) > 0 {

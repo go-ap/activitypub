@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"time"
 	"unsafe"
+
+	"github.com/valyala/fastjson"
 )
 
 // Place represents a logical or physical location. See 5.3 Representing Places for additional information.
@@ -153,7 +155,12 @@ func (p Place) GetID() ID {
 
 // UnmarshalJSON
 func (p *Place) UnmarshalJSON(data []byte) error {
-	return loadPlace(data, p)
+	par := fastjson.Parser{}
+	val, err := par.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadPlace(val, p)
 }
 
 // MarshalJSON

@@ -156,18 +156,18 @@ func (i *IRIs) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 	p := fastjson.Parser{}
-	value, err := p.ParseBytes(data)
+	val, err := p.ParseBytes(data)
 	if err != nil {
 		return err
 	}
-	switch value.Type() {
+	switch val.Type() {
 	case fastjson.TypeString:
-		if iri, ok := asIRI(value.GetStringBytes()); ok && len(iri) > 0 {
+		if iri, ok := asIRI(val); ok && len(iri) > 0 {
 			*i = append(*i, iri)
 		}
 	case fastjson.TypeArray:
-		for _, v := range value.GetArray() {
-			if iri, ok := asIRI(v.GetStringBytes()); ok && len(iri) > 0 {
+		for _, v := range val.GetArray() {
+			if iri, ok := asIRI(v); ok && len(iri) > 0 {
 				*i = append(*i, iri)
 			}
 		}

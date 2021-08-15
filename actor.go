@@ -334,7 +334,12 @@ func (a *Actor) Clean() {
 }
 
 func (a *Actor) UnmarshalJSON(data []byte) error {
-	return loadActor(data, a)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadActor(val, a)
 }
 
 func (a Actor) MarshalJSON() ([]byte, error) {
@@ -419,12 +424,17 @@ type Endpoints struct {
 
 // UnmarshalJSON
 func (e *Endpoints) UnmarshalJSON(data []byte) error {
-	e.OauthAuthorizationEndpoint = JSONGetItem(data, "oauthAuthorizationEndpoint")
-	e.OauthTokenEndpoint = JSONGetItem(data, "oauthTokenEndpoint")
-	e.UploadMedia = JSONGetItem(data, "uploadMedia")
-	e.ProvideClientKey = JSONGetItem(data, "provideClientKey")
-	e.SignClientKey = JSONGetItem(data, "signClientKey")
-	e.SharedInbox = JSONGetItem(data, "sharedInbox")
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	e.OauthAuthorizationEndpoint = JSONGetItem(val, "oauthAuthorizationEndpoint")
+	e.OauthTokenEndpoint = JSONGetItem(val, "oauthTokenEndpoint")
+	e.UploadMedia = JSONGetItem(val, "uploadMedia")
+	e.ProvideClientKey = JSONGetItem(val, "provideClientKey")
+	e.SignClientKey = JSONGetItem(val, "signClientKey")
+	e.SharedInbox = JSONGetItem(val, "sharedInbox")
 	return nil
 }
 

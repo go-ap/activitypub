@@ -3,6 +3,8 @@ package activitypub
 import (
 	"errors"
 	"fmt"
+
+	"github.com/valyala/fastjson"
 )
 
 var LinkTypes = ActivityVocabularyTypes{
@@ -104,7 +106,12 @@ func (l Link) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON
 func (l *Link) UnmarshalJSON(data []byte) error {
-	return loadLink(data, l)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadLink(val, l)
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.

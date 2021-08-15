@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"time"
 	"unsafe"
+
+	"github.com/valyala/fastjson"
 )
 
 // Tombstone a Tombstone represents a content object that has been deleted.
@@ -141,7 +143,12 @@ func (t Tombstone) GetID() ID {
 
 // UnmarshalJSON
 func (t *Tombstone) UnmarshalJSON(data []byte) error {
-	return loadTombstone(data, t)
+	par := fastjson.Parser{}
+	val, err := par.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadTombstone(val, t)
 }
 
 // MarshalJSON

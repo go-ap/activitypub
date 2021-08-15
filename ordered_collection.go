@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"time"
 	"unsafe"
+
+	"github.com/valyala/fastjson"
 )
 
 // OrderedCollection is a subtype of Collection in which members of the logical
@@ -229,7 +231,12 @@ func (o *OrderedCollection) Append(ob Item) error {
 
 // UnmarshalJSON
 func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
-	return loadOrderedCollection(data, o)
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(data)
+	if err != nil {
+		return err
+	}
+	return loadOrderedCollection(val, o)
 }
 
 // MarshalJSON
