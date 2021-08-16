@@ -195,16 +195,13 @@ type PublicKey struct {
 }
 
 func (p *PublicKey) UnmarshalJSON(data []byte) error {
-	if id := fastjson.GetString(data, "id"); len(id) > 0 {
-		p.ID = ID(id)
+	par := fastjson.Parser{}
+	val, err := par.ParseBytes(data)
+	if err != nil {
+		return err
 	}
-	if o := fastjson.GetString(data, "owner"); len(o) > 0 {
-		p.Owner = IRI(o)
-	}
-	if pub := fastjson.GetString(data, "publicKeyPem"); len(pub) > 0 {
-		p.PublicKeyPem = pub
-	}
-	return nil
+
+	return loadPublicKey(val, p)
 }
 
 func (p PublicKey) MarshalJSON() ([]byte, error) {

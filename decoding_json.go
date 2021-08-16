@@ -121,7 +121,14 @@ func JSONGetDuration(val *fastjson.Value, prop string) time.Duration {
 
 func JSONGetPublicKey(val *fastjson.Value, prop string) PublicKey {
 	key := PublicKey{}
-	key.UnmarshalJSON(JSONGetBytes(val, prop))
+	if val == nil {
+		return key
+	}
+	val = val.Get(prop)
+	if val == nil {
+		return key
+	}
+	loadPublicKey(val, &key)
 	return key
 }
 
@@ -616,6 +623,19 @@ func loadLink(val *fastjson.Value, l *Link) error {
 		if len(rr) > 0 {
 			l.Rel = rr
 		}
+	}
+	return nil
+}
+
+func loadPublicKey(val *fastjson.Value, p *PublicKey) error {
+	if id := val.GetStringBytes("id"); len(id) > 0 {
+		p.ID = ID(id)
+	}
+	if o := val.GetStringBytes("owner"); len(o) > 0 {
+		p.Owner = IRI(o)
+	}
+	if pub := val.GetStringBytes("publicKeyPem"); len(pub) > 0 {
+		p.PublicKeyPem = string(pub)
 	}
 	return nil
 }
