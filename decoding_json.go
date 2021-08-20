@@ -137,6 +137,23 @@ func JSONGetStreams(val *fastjson.Value, prop string) []ItemCollection {
 	return nil
 }
 
+func itemsFn(val *fastjson.Value) (Item, error) {
+	if val.Type() == fastjson.TypeArray {
+		it := val.GetArray()
+		if len(it) == 1 {
+			return itemFn(it[0])
+		}
+		items := make(ItemCollection, 0)
+		for _, v := range it {
+			if it, _ := itemFn(v); it != nil {
+				items.Append(it)
+			}
+		}
+		return items, nil
+	}
+	return itemFn(val)
+}
+
 func itemFn(val *fastjson.Value) (Item, error) {
 	typ := JSONGetType(val)
 	if typ == "" {
@@ -227,17 +244,7 @@ func JSONUnmarshalToItem(val *fastjson.Value) Item {
 	)
 	switch val.Type() {
 	case fastjson.TypeArray:
-		arr := val.GetArray()
-		if len(arr) == 1 {
-			i, _ = itemFn(arr[0])
-		}
-		items := make(ItemCollection, 0)
-		for _, v := range arr {
-			if it, _ := itemFn(v); it != nil {
-				items.Append(it)
-			}
-		}
-		i = items
+		i, err = itemsFn(val)
 	case fastjson.TypeObject:
 		i, err = itemFn(val)
 	case fastjson.TypeString:
@@ -266,6 +273,9 @@ func asIRI(val *fastjson.Value) (IRI, bool) {
 }
 
 func JSONGetItem(val *fastjson.Value, prop string) Item {
+	if val == nil {
+		return nil
+	}
 	if val = val.Get(prop); val == nil {
 		return nil
 	}
@@ -276,9 +286,11 @@ func JSONGetItem(val *fastjson.Value, prop string) Item {
 			return i
 		}
 	case fastjson.TypeArray:
-		return JSONGetItems(val, prop)
+		it, _ := itemsFn(val)
+		return it
 	case fastjson.TypeObject:
-		return JSONUnmarshalToItem(val)
+		it, _ := itemFn(val)
+		return it
 	case fastjson.TypeNumber:
 		fallthrough
 	case fastjson.TypeNull:
@@ -302,13 +314,9 @@ func JSONGetURIItem(val *fastjson.Value, prop string) Item {
 			return it
 		}
 	case fastjson.TypeArray:
-		it := make(ItemCollection, 0)
-		for _, val := range val.GetArray(prop) {
-			if i, _ := itemFn(val); i != nil {
-				it.Append(i)
-			}
+		if it, _ := itemsFn(val); it != nil {
+			return it
 		}
-		return it
 	case fastjson.TypeString:
 		return IRI(val.GetStringBytes())
 	}
