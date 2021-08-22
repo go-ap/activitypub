@@ -156,7 +156,7 @@ func itemsFn(val *fastjson.Value) (Item, error) {
 
 func itemFn(val *fastjson.Value) (Item, error) {
 	typ := JSONGetType(val)
-	if typ == "" {
+	if typ == "" && val.Type() == fastjson.TypeString {
 		// try to see if it's an IRI
 		if i, ok := asIRI(val); ok {
 			return i, nil
@@ -168,6 +168,9 @@ func itemFn(val *fastjson.Value) (Item, error) {
 	}
 
 	switch typ {
+	case "":
+		// NOTE(marius): this handles Tags, that don't have types
+		fallthrough
 	case ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
 		err = OnObject(i, func(ob *Object) error {
 			return loadObject(val, ob)
