@@ -43,13 +43,7 @@ func (i ItemCollection) MarshalJSON() ([]byte, error) {
 // Append facilitates adding elements to Item arrays
 // and ensures ItemCollection implements the Collection interface
 func (i *ItemCollection) Append(o Item) error {
-	oldLen := len(*i)
-	d := make(ItemCollection, oldLen+1)
-	for k, it := range *i {
-		d[k] = it
-	}
-	d[oldLen] = o
-	*i = d
+	*i = append(*i, o)
 	return nil
 }
 
