@@ -376,8 +376,10 @@ func UnmarshalJSON(data []byte) (Item, error) {
 	}
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
-
-	return JSONUnmarshalToItem(val), err
+	if err != nil {
+		return nil, err
+	}
+	return JSONUnmarshalToItem(val), nil
 }
 
 func GetItemByType(typ ActivityVocabularyType) (Item, error) {
