@@ -204,11 +204,10 @@ func (t *Tombstone) Recipients() ItemCollection {
 }
 
 // Clean removes Bto and BCC properties
-func (t *Tombstone) Clean(){
+func (t *Tombstone) Clean() {
 	t.BCC = nil
 	t.Bto = nil
 }
-
 
 // ToTombstone
 func ToTombstone(it Item) (*Tombstone, error) {
@@ -233,9 +232,12 @@ func ToTombstone(it Item) (*Tombstone, error) {
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
 
-type withTombstoneFn func (*Tombstone) error
+type withTombstoneFn func(*Tombstone) error
 
 func OnTombstone(it Item, fn withTombstoneFn) error {
+	if it == nil {
+		return nil
+	}
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
@@ -246,7 +248,7 @@ func OnTombstone(it Item, fn withTombstoneFn) error {
 			return nil
 		})
 	}
-	ob, err  := ToTombstone(it)
+	ob, err := ToTombstone(it)
 	if err != nil {
 		return err
 	}

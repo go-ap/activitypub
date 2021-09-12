@@ -258,9 +258,12 @@ func ToPlace(it Item) (*Place, error) {
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
 
-type withPlaceFn func (*Place) error
+type withPlaceFn func(*Place) error
 
 func OnPlace(it Item, fn withPlaceFn) error {
+	if it == nil {
+		return nil
+	}
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
@@ -271,7 +274,7 @@ func OnPlace(it Item, fn withPlaceFn) error {
 			return nil
 		})
 	}
-	ob, err  := ToPlace(it)
+	ob, err := ToPlace(it)
 	if err != nil {
 		return err
 	}

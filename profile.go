@@ -198,7 +198,7 @@ func (p *Profile) Recipients() ItemCollection {
 }
 
 // Clean removes Bto and BCC properties
-func (p *Profile) Clean(){
+func (p *Profile) Clean() {
 	p.BCC = nil
 	p.Bto = nil
 }
@@ -226,9 +226,12 @@ func ToProfile(it Item) (*Profile, error) {
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
 
-type withProfileFn func (*Profile) error
+type withProfileFn func(*Profile) error
 
 func OnProfile(it Item, fn withProfileFn) error {
+	if it == nil {
+		return nil
+	}
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
@@ -239,7 +242,7 @@ func OnProfile(it Item, fn withProfileFn) error {
 			return nil
 		})
 	}
-	ob, err  := ToProfile(it)
+	ob, err := ToProfile(it)
 	if err != nil {
 		return err
 	}

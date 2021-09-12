@@ -241,10 +241,13 @@ func ToRelationship(it Item) (*Relationship, error) {
 	return nil, fmt.Errorf("unable to convert %q", it.GetType())
 }
 
-type withRelationshipFn func (*Relationship) error
+type withRelationshipFn func(*Relationship) error
 
 func OnRelationship(it Item, fn withRelationshipFn) error {
-	ob, err  := ToRelationship(it)
+	if it == nil {
+		return nil
+	}
+	ob, err := ToRelationship(it)
 	if err != nil {
 		return err
 	}

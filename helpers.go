@@ -19,6 +19,9 @@ type WithItemCollectionFn func(*ItemCollection) error
 
 // OnLink
 func OnLink(it Item, fn WithLinkFn) error {
+	if it == nil {
+		return nil
+	}
 	ob, err := ToLink(it)
 	if err != nil {
 		return err
@@ -28,6 +31,9 @@ func OnLink(it Item, fn WithLinkFn) error {
 
 // OnObject
 func OnObject(it Item, fn WithObjectFn) error {
+	if it == nil {
+		return nil
+	}
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
@@ -47,6 +53,9 @@ func OnObject(it Item, fn WithObjectFn) error {
 
 // OnActivity
 func OnActivity(it Item, fn WithActivityFn) error {
+	if it == nil {
+		return nil
+	}
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
@@ -66,6 +75,9 @@ func OnActivity(it Item, fn WithActivityFn) error {
 
 // OnIntransitiveActivity
 func OnIntransitiveActivity(it Item, fn WithIntransitiveActivityFn) error {
+	if it == nil {
+		return nil
+	}
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
@@ -85,6 +97,9 @@ func OnIntransitiveActivity(it Item, fn WithIntransitiveActivityFn) error {
 
 // OnQuestion
 func OnQuestion(it Item, fn WithQuestionFn) error {
+	if it == nil {
+		return nil
+	}
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
@@ -104,6 +119,9 @@ func OnQuestion(it Item, fn WithQuestionFn) error {
 
 // OnActor
 func OnActor(it Item, fn WithActorFn) error {
+	if it == nil {
+		return nil
+	}
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
@@ -120,8 +138,12 @@ func OnActor(it Item, fn WithActorFn) error {
 	}
 	return fn(act)
 }
+
 // OnCollection
-func OnCollection (it Item, fn WithCollectionFn) error {
+func OnCollection(it Item, fn WithCollectionFn) error {
+	if it == nil {
+		return nil
+	}
 	col, err := ToCollection(it)
 	if err != nil {
 		return err
@@ -131,6 +153,9 @@ func OnCollection (it Item, fn WithCollectionFn) error {
 
 // OnCollectionIntf
 func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
+	if it == nil {
+		return nil
+	}
 	switch it.GetType() {
 	case CollectionOfItems:
 		col, err := ToItemCollection(it)
@@ -173,6 +198,9 @@ func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 
 // OnCollectionPage
 func OnCollectionPage(it Item, fn WithCollectionPageFn) error {
+	if it == nil {
+		return nil
+	}
 	col, err := ToCollectionPage(it)
 	if err != nil {
 		return err
@@ -182,6 +210,9 @@ func OnCollectionPage(it Item, fn WithCollectionPageFn) error {
 
 // OnOrderedCollection
 func OnOrderedCollection(it Item, fn WithOrderedCollectionFn) error {
+	if it == nil {
+		return nil
+	}
 	col, err := ToOrderedCollection(it)
 	if err != nil {
 		return err
@@ -191,6 +222,9 @@ func OnOrderedCollection(it Item, fn WithOrderedCollectionFn) error {
 
 // OnOrderedCollectionPage executes a function on an ordered collection page type item
 func OnOrderedCollectionPage(it Item, fn WithOrderedCollectionPageFn) error {
+	if it == nil {
+		return nil
+	}
 	col, err := ToOrderedCollectionPage(it)
 	if err != nil {
 		return err
@@ -200,6 +234,9 @@ func OnOrderedCollectionPage(it Item, fn WithOrderedCollectionPageFn) error {
 
 // OnItemCollection executes a function on a collection type item
 func OnItemCollection(it Item, fn WithItemCollectionFn) error {
+	if it == nil {
+		return nil
+	}
 	col, err := ToItemCollection(it)
 	if err != nil {
 		return err
@@ -226,7 +263,7 @@ func ItemOrderTimestamp(i1, i2 Item) bool {
 	return t1.Sub(t2) > 0
 }
 
-func notEmptyLink (l *Link) bool {
+func notEmptyLink(l *Link) bool {
 	return len(l.ID) > 0 ||
 		LinkTypes.Contains(l.Type) ||
 		len(l.MediaType) > 0 ||
@@ -278,7 +315,7 @@ func notEmptyObject(o *Object) bool {
 		o.URL != nil
 }
 
-func notEmptyInstransitiveActivity (i *IntransitiveActivity) bool {
+func notEmptyInstransitiveActivity(i *IntransitiveActivity) bool {
 	notEmpty := i.Actor != nil ||
 		i.Target != nil ||
 		i.Result != nil ||
@@ -320,7 +357,7 @@ func notEmptyActor(a *Actor) bool {
 		a.Streams != nil ||
 		len(a.PublicKey.ID) > 0 ||
 		(a.PublicKey.Owner != nil &&
-		len(a.PublicKey.PublicKeyPem) > 0)
+			len(a.PublicKey.PublicKeyPem) > 0)
 }
 
 // NotEmpty
@@ -329,7 +366,7 @@ func NotEmpty(i Item) bool {
 		return false
 	}
 	var notEmpty bool
-	if IsIRI(i) { 
+	if IsIRI(i) {
 		notEmpty = len(i.GetLink()) > 0
 	}
 	if i.IsCollection() {
