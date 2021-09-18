@@ -166,9 +166,6 @@ func (o *OrderedCollectionPage) Count() uint {
 	if o == nil {
 		return 0
 	}
-	if o.TotalItems > 0 {
-		return o.TotalItems
-	}
 	return uint(len(o.OrderedItems))
 }
 

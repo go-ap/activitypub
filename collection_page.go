@@ -163,9 +163,6 @@ func (c *CollectionPage) Count() uint {
 	if c == nil {
 		return 0
 	}
-	if c.TotalItems > 0 {
-		return c.TotalItems
-	}
 	return uint(len(c.Items))
 }
 
