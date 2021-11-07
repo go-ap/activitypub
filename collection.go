@@ -19,6 +19,10 @@ var CollectionTypes = ActivityVocabularyTypes{
 	OrderedCollectionPageType,
 }
 
+type Collections interface {
+	~Collection | ~CollectionPage | ~OrderedCollection | ~OrderedCollectionPage | ~CollectionOfItems
+}
+
 type CollectionInterface interface {
 	ObjectOrLink
 	Collection() ItemCollection

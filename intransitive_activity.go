@@ -9,6 +9,10 @@ import (
 	"github.com/valyala/fastjson"
 )
 
+type IntransitiveActivities interface {
+	~IntransitiveActivity | ~Question
+}
+
 // IntransitiveActivity Instances of IntransitiveActivity are a subtype of Activity representing intransitive actions.
 // The object property is therefore inappropriate for these activities.
 type IntransitiveActivity struct {

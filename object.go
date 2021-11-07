@@ -139,6 +139,15 @@ func (a *ActivityVocabularyType) GobDecode([]byte) error {
 }
 */
 
+type Objects interface {
+	//go1.18: Object | Activity | IRI ...
+	~Object | ~Tombstone | ~Place | ~Profile | ~Relationship |
+		Activities |
+		IntransitiveActivities |
+		Collections |
+		IRI
+}
+
 // Object describes an ActivityPub object of any kind.
 // It serves as the base type for most of the other kinds of objects defined in the Activity
 // Vocabulary, including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.

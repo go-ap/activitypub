@@ -197,6 +197,10 @@ type HasRecipients interface {
 	Clean()
 }
 
+type Activities interface {
+	~Activity
+}
+
 // Activity is a subtype of Object that describes some form of action that may happen,
 // is currently happening, or has already happened.
 // The Activity type itself serves as an abstract base type for all types of activities.
