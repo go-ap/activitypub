@@ -392,7 +392,7 @@ func (m MimeType) GobEncode() ([]byte, error) {
 	}
 	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", m))
 }
- */
+*/
 
 // ToLink returns a Link pointer to the data in the current Item
 func ToLink(it Item) (*Link, error) {
@@ -550,7 +550,7 @@ func (s *Source) GobDecode([]byte) error {
 func (s Source) GobEncode() ([]byte, error) {
 	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", s))
 }
- */
+*/
 
 // Equals verifies if our receiver Object is equals with the "with" Object
 func (o Object) Equals(with Item) bool {

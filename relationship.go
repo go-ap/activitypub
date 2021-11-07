@@ -11,11 +11,11 @@ import (
 
 // Relationship describes a relationship between two individuals.
 // The subject and object properties are used to identify the connected individuals.
-//See 5.2 Representing Relationships Between Entities for additional information.
-// 5.2: The relationship property specifies the kind of relationship that exists between the two individuals identified
-// by the subject and object properties. Used together, these three properties form what is commonly known
-// as a "reified statement" where subject identifies the subject, relationship identifies the predicate,
-// and object identifies the object.
+// See 5.2 Representing Relationships Between Entities for additional information.
+//  5.2: The relationship property specifies the kind of relationship that exists between the two individuals identified
+//  by the subject and object properties. Used together, these three properties form what is commonly known
+//  as a "reified statement" where subject identifies the subject, relationship identifies the predicate,
+//  and object identifies the object.
 type Relationship struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
