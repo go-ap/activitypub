@@ -8,12 +8,20 @@ sources:
 environment:
   GO111MODULE: 'on'
 tasks:
+  - install_go_tip: |
+      go install golang.org/dl/gotip@latest
+      export PATH=$PATH:$(go env GOPATH)/bin
+      gotip download
   - tests: |
       cd activitypub
-      go mod vendor
+      export PATH=$PATH:$(go env GOPATH)/bin
+      export GO=gotip
+      gotip mod tidy
       make test
   - coverage: |
       set -a +x
+      export PATH=$PATH:$(go env GOPATH)/bin
+      export GO=gotip
       cd activitypub && make coverage
       GIT_SHA=$(git rev-parse --verify HEAD)
       GIT_BRANCH=$(git name-rev --name-only HEAD)
