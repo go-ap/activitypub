@@ -35,7 +35,7 @@ var ActorTypes = ActivityVocabularyTypes{
 type CanReceiveActivities Item
 
 type Actors interface {
-	~Actor
+	Actor
 }
 
 // Actor is generally one of the ActivityStreams actor Types, but they don't have to be.

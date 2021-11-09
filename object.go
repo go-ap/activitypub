@@ -141,7 +141,7 @@ func (a *ActivityVocabularyType) GobDecode([]byte) error {
 
 type Objects interface {
 	//go1.18: Object | Activity | IRI ...
-	~Object | ~Tombstone | ~Place | ~Profile | ~Relationship |
+	Object | Tombstone | Place | Profile | Relationship |
 		Activities |
 		IntransitiveActivities |
 		Collections |

@@ -10,7 +10,7 @@ import (
 )
 
 type IntransitiveActivities interface {
-	~IntransitiveActivity | ~Question
+	IntransitiveActivity | Question
 }
 
 // IntransitiveActivity Instances of IntransitiveActivity are a subtype of Activity representing intransitive actions.

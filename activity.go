@@ -198,7 +198,7 @@ type HasRecipients interface {
 }
 
 type Activities interface {
-	~Activity
+	Activity
 }
 
 // Activity is a subtype of Object that describes some form of action that may happen,

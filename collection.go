@@ -20,7 +20,7 @@ var CollectionTypes = ActivityVocabularyTypes{
 }
 
 type Collections interface {
-	~Collection | ~CollectionPage | ~OrderedCollection | ~OrderedCollectionPage | ~CollectionOfItems
+	Collection | CollectionPage | OrderedCollection | OrderedCollectionPage | ItemCollection
 }
 
 type CollectionInterface interface {
