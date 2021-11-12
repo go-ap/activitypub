@@ -106,7 +106,7 @@ type CollectionPage struct {
 	Source Source `jsonld:"source,omitempty"`
 	// In a paged Collection, indicates the page that contains the most recently updated member items.
 	Current ObjectOrLink `jsonld:"current,omitempty"`
-	// In a paged Collection, indicates the furthest preceeding page of items in the collection.
+	// In a paged Collection, indicates the furthest preceding page of items in the collection.
 	First ObjectOrLink `jsonld:"first,omitempty"`
 	// In a paged Collection, indicates the furthest proceeding page of the collection.
 	Last ObjectOrLink `jsonld:"last,omitempty"`

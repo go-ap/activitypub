@@ -222,7 +222,7 @@ func TestIRI_Equals(t *testing.T) {
 	{
 		i1 := IRI("http://example.com/ana/are/mere?foo=bar&ana=mere")
 		i2 := IRI("https://example.com/ana/are/mere?ana=mere&foo1=bar")
-		// same host, different scheme and same path, differnt query key different order
+		// same host, different scheme and same path, different query key different order
 		if i1.Equals(i2, false) {
 			t.Errorf("%s should not equal %s", i1, i2)
 		}
