@@ -419,7 +419,7 @@ type Endpoints struct {
 	SharedInbox Item `jsonld:"sharedInbox,omitempty"`
 }
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (e *Endpoints) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
@@ -435,7 +435,7 @@ func (e *Endpoints) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (e Endpoints) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false

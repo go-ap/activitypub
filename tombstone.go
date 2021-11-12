@@ -141,7 +141,7 @@ func (t Tombstone) GetID() ID {
 	return t.ID
 }
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (t *Tombstone) UnmarshalJSON(data []byte) error {
 	par := fastjson.Parser{}
 	val, err := par.ParseBytes(data)
@@ -151,7 +151,7 @@ func (t *Tombstone) UnmarshalJSON(data []byte) error {
 	return loadTombstone(val, t)
 }
 
-// MarshalJSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (t Tombstone) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
@@ -179,22 +179,22 @@ func (t Tombstone) MarshalJSON() ([]byte, error) {
 /*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (t *Tombstone) UnmarshalBinary(data []byte) error {
-	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *t))
+	return fmt.Errorf("UnmarshalBinary is not implemented for %T", *t)
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (t Tombstone) MarshalBinary() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", t))
+	return nil, fmt.Errorf("MarshalBinary is not implemented for %T", t)
 }
 
 // GobEncode
 func (t Tombstone) GobEncode() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", t))
+	return nil, fmt.Errorf("GobEncode is not implemented for %T", t)
 }
 
 // GobDecode
 func (t *Tombstone) GobDecode([]byte) error {
-	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *t))
+	return fmt.Errorf("GobDecode is not implemented for %T", *t)
 }
 */
 

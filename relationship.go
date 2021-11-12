@@ -149,7 +149,7 @@ func (r Relationship) GetID() ID {
 	return r.ID
 }
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (r *Relationship) UnmarshalJSON(data []byte) error {
 	par := fastjson.Parser{}
 	val, err := par.ParseBytes(data)
@@ -159,7 +159,7 @@ func (r *Relationship) UnmarshalJSON(data []byte) error {
 	return loadRelationship(val, r)
 }
 
-// MarshalJSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (r Relationship) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false

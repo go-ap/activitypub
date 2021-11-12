@@ -44,13 +44,13 @@ func (i IRI) URL() (*url.URL, error) {
 	return url.Parse(i.String())
 }
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (i *IRI) UnmarshalJSON(s []byte) error {
 	*i = IRI(strings.Trim(string(s), "\""))
 	return nil
 }
 
-// MarshalJSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (i IRI) MarshalJSON() ([]byte, error) {
 	if i == "" {
 		return nil, nil

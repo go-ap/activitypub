@@ -4,20 +4,43 @@ import (
 	"fmt"
 )
 
+// WithLinkFn represents a function type that can be used as a parameter for OnLink helper function
 type WithLinkFn func(*Link) error
+
+// WithObjectFn represents a function type that can be used as a parameter for OnObject helper function
 type WithObjectFn func(*Object) error
+
+// WithActivityFn represents a function type that can be used as a parameter for OnActivity helper function
 type WithActivityFn func(*Activity) error
+
+// WithIntransitiveActivityFn represents a function type that can be used as a parameter for OnIntransitiveActivity helper function
 type WithIntransitiveActivityFn func(*IntransitiveActivity) error
+
+// WithQuestionFn represents a function type that can be used as a parameter for OnQuestion helper function
 type WithQuestionFn func(*Question) error
+
+// WithActorFn represents a function type that can be used as a parameter for OnActor helper function
 type WithActorFn func(*Actor) error
+
+// WithCollectionInterfaceFn represents a function type that can be used as a parameter for OnCollectionIntf helper function
 type WithCollectionInterfaceFn func(CollectionInterface) error
+
+// WithCollectionFn represents a function type that can be used as a parameter for OnCollection helper function
 type WithCollectionFn func(*Collection) error
+
+// WithCollectionPageFn represents a function type that can be used as a parameter for OnCollectionPage helper function
 type WithCollectionPageFn func(*CollectionPage) error
+
+// WithOrderedCollectionFn represents a function type that can be used as a parameter for OnOrderedCollection helper function
 type WithOrderedCollectionFn func(*OrderedCollection) error
+
+// WithOrderedCollectionPageFn represents a function type that can be used as a parameter for OnOrderedCollectionPage helper function
 type WithOrderedCollectionPageFn func(*OrderedCollectionPage) error
+
+// WithItemCollectionFn represents a function type that can be used as a parameter for OnItemCollection helper function
 type WithItemCollectionFn func(*ItemCollection) error
 
-// OnLink
+// OnLink calls function fn on it Item if it can be asserted to type Link
 func OnLink(it Item, fn WithLinkFn) error {
 	if it == nil {
 		return nil
@@ -29,7 +52,7 @@ func OnLink(it Item, fn WithLinkFn) error {
 	return fn(ob)
 }
 
-// OnObject
+// OnObject calls function fn on it Item if it can be asserted to type Object
 func OnObject(it Item, fn WithObjectFn) error {
 	if it == nil {
 		return nil
@@ -51,7 +74,7 @@ func OnObject(it Item, fn WithObjectFn) error {
 	return fn(ob)
 }
 
-// OnActivity
+// OnActivity calls function fn on it Item if it can be asserted to type Activity
 func OnActivity(it Item, fn WithActivityFn) error {
 	if it == nil {
 		return nil
@@ -73,7 +96,7 @@ func OnActivity(it Item, fn WithActivityFn) error {
 	return fn(act)
 }
 
-// OnIntransitiveActivity
+// OnIntransitiveActivity calls function fn on it Item if it can be asserted to type IntransitiveActivity
 func OnIntransitiveActivity(it Item, fn WithIntransitiveActivityFn) error {
 	if it == nil {
 		return nil
@@ -95,7 +118,7 @@ func OnIntransitiveActivity(it Item, fn WithIntransitiveActivityFn) error {
 	return fn(act)
 }
 
-// OnQuestion
+// OnQuestion calls function fn on it Item if it can be asserted to type Question
 func OnQuestion(it Item, fn WithQuestionFn) error {
 	if it == nil {
 		return nil
@@ -117,7 +140,7 @@ func OnQuestion(it Item, fn WithQuestionFn) error {
 	return fn(act)
 }
 
-// OnActor
+// OnActor calls function fn on it Item if it can be asserted to type Actor
 func OnActor(it Item, fn WithActorFn) error {
 	if it == nil {
 		return nil
@@ -139,7 +162,7 @@ func OnActor(it Item, fn WithActorFn) error {
 	return fn(act)
 }
 
-// OnCollection
+// OnCollection calls function fn on it Item if it can be asserted to type Collection
 func OnCollection(it Item, fn WithCollectionFn) error {
 	if it == nil {
 		return nil
@@ -151,7 +174,7 @@ func OnCollection(it Item, fn WithCollectionFn) error {
 	return fn(col)
 }
 
-// OnCollectionIntf
+// OnCollectionIntf calls function fn on it Item if it can be asserted to one of the Collection types
 func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 	if it == nil {
 		return nil
@@ -192,11 +215,11 @@ func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 			return fn(col)
 		})
 	default:
-		return fmt.Errorf("%T[%s] can't be converted to Collection", it, it.GetType())
+		return fmt.Errorf("%T[%s] can't be converted to a Collection type", it, it.GetType())
 	}
 }
 
-// OnCollectionPage
+// OnCollectionPage calls function fn on it Item if it can be asserted to type CollectionPage
 func OnCollectionPage(it Item, fn WithCollectionPageFn) error {
 	if it == nil {
 		return nil
@@ -208,7 +231,7 @@ func OnCollectionPage(it Item, fn WithCollectionPageFn) error {
 	return fn(col)
 }
 
-// OnOrderedCollection
+// OnOrderedCollection calls function fn on it Item if it can be asserted to type OrderedCollection
 func OnOrderedCollection(it Item, fn WithOrderedCollectionFn) error {
 	if it == nil {
 		return nil
@@ -220,7 +243,7 @@ func OnOrderedCollection(it Item, fn WithOrderedCollectionFn) error {
 	return fn(col)
 }
 
-// OnOrderedCollectionPage executes a function on an ordered collection page type item
+// OnOrderedCollectionPage calls function fn on it Item if it can be asserted to type OrderedCollectionPage
 func OnOrderedCollectionPage(it Item, fn WithOrderedCollectionPageFn) error {
 	if it == nil {
 		return nil
@@ -232,7 +255,7 @@ func OnOrderedCollectionPage(it Item, fn WithOrderedCollectionPageFn) error {
 	return fn(col)
 }
 
-// OnItemCollection executes a function on a collection type item
+// OnItemCollection calls function fn on it Item if it can be asserted to type ItemCollection
 func OnItemCollection(it Item, fn WithItemCollectionFn) error {
 	if it == nil {
 		return nil
@@ -360,7 +383,8 @@ func notEmptyActor(a *Actor) bool {
 			len(a.PublicKey.PublicKeyPem) > 0)
 }
 
-// NotEmpty
+// NotEmpty tells us if a Item interface value has a non nil value for various types
+// that implement
 func NotEmpty(i Item) bool {
 	if IsNil(i) {
 		return false

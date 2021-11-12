@@ -151,7 +151,7 @@ type (
 	// the contents of the outbox are filtered by the permissions of the person reading it).
 	OutboxStream = Outbox
 
-	// outbox is a type alias for an Ordered Collection
+	// Outbox is a type alias for an Ordered Collection
 	Outbox = OrderedCollection
 
 	// SharesCollection is a list of all Announce activities with this object as the object property,
@@ -194,12 +194,12 @@ func (o OrderedCollection) Collection() ItemCollection {
 	return o.OrderedItems
 }
 
-// IsCollection returns true for OrderedCollection objects
+// IsCollection returns true for OrderedCollection objects.
 func (o OrderedCollection) IsCollection() bool {
 	return true
 }
 
-// Contains verifies if OrderedCollection array contains the received one
+// Contains verifies if OrderedCollection array contains the received item r.
 func (o OrderedCollection) Contains(r Item) bool {
 	if len(o.OrderedItems) == 0 {
 		return false
@@ -220,13 +220,13 @@ func (o *OrderedCollection) Count() uint {
 	return uint(len(o.OrderedItems))
 }
 
-// Append adds an element to an OrderedCollection
+// Append adds an element to an the receiver collection object.
 func (o *OrderedCollection) Append(ob Item) error {
 	o.OrderedItems = append(o.OrderedItems, ob)
 	return nil
 }
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
@@ -236,7 +236,7 @@ func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
 	return loadOrderedCollection(val, o)
 }
 
-// MarshalJSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (o OrderedCollection) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false

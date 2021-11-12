@@ -716,7 +716,7 @@ func ActivityNew(id ID, typ ActivityVocabularyType, ob Item) *Activity {
 	return &a
 }
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (a *Activity) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
@@ -753,7 +753,7 @@ func ToActivity(it Item) (*Activity, error) {
 	return nil, errors.New("unable to convert activity")
 }
 
-// MarshalJSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (a Activity) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	write(&b, '{')

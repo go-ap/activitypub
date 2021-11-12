@@ -139,7 +139,7 @@ func (p Profile) GetID() ID {
 	return p.ID
 }
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (p *Profile) UnmarshalJSON(data []byte) error {
 	par := fastjson.Parser{}
 	val, err := par.ParseBytes(data)
@@ -149,7 +149,7 @@ func (p *Profile) UnmarshalJSON(data []byte) error {
 	return loadProfile(val, p)
 }
 
-// MarshalJSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (p Profile) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false

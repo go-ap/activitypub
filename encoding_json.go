@@ -354,7 +354,7 @@ func writeLinkJSONValue(b *[]byte, l Link) (notEmpty bool) {
 	return notEmpty
 }
 
-// MarshalJSON wraps the jsonld.Marshal function
+// MarshalJSON represents just a wrapper for the jsonld.Marshal function
 func MarshalJSON(it Item) ([]byte, error) {
 	return jsonld.Marshal(it)
 }

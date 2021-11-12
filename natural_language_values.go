@@ -70,7 +70,7 @@ func (n *NaturalLanguageValues) Set(ref LangRef, v Content) error {
 	return nil
 }
 
-// MarshalJSON serializes the NaturalLanguageValues into JSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 	l := len(n)
 	if l <= 0 {
@@ -162,7 +162,7 @@ func (l LangRefValue) String() string {
 	return fmt.Sprintf("%s[%s]", l.Value, l.Ref)
 }
 
-// UnmarshalJSON implements the JsonEncoder interface
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (l *LangRefValue) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
@@ -193,7 +193,7 @@ func (l *LangRefValue) UnmarshalText(data []byte) error {
 	return nil
 }
 
-// MarshalJSON serializes the LangRefValue into JSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (l LangRefValue) MarshalJSON() ([]byte, error) {
 	buf := bytes.Buffer{}
 	if l.Ref != NilLangRef && len(l.Ref) > 0 {
@@ -224,7 +224,7 @@ func (l LangRefValue) MarshalText() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// UnmarshalJSON implements the JsonEncoder interface
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (l *LangRef) UnmarshalJSON(data []byte) error {
 	return l.UnmarshalText(data)
 }
@@ -293,7 +293,7 @@ func unescape(b []byte) []byte {
 	return b
 }
 
-// UnmarshalJSON tries to load the NaturalLanguage array from the incoming json value
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (n *NaturalLanguageValues) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)

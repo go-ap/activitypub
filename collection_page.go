@@ -185,7 +185,7 @@ func (c CollectionPage) Contains(r Item) bool {
 	return false
 }
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (c *CollectionPage) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
@@ -195,7 +195,7 @@ func (c *CollectionPage) UnmarshalJSON(data []byte) error {
 	return loadCollectionPage(val, c)
 }
 
-// MarshalJSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (c CollectionPage) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false

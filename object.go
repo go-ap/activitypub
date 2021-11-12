@@ -278,7 +278,7 @@ func (o Object) IsCollection() bool {
 	return false
 }
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (o *Object) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
@@ -288,7 +288,7 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	return loadObject(val, o)
 }
 
-// MarshalJSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (o Object) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	write(&b, '{')
@@ -358,13 +358,13 @@ type (
 	Video = Document
 )
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (m *MimeType) UnmarshalJSON(data []byte) error {
 	*m = MimeType(strings.Trim(string(data), "\""))
 	return nil
 }
 
-// MarshalJSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (m MimeType) MarshalJSON() ([]byte, error) {
 	if len(m) == 0 {
 		return nil, nil
@@ -499,7 +499,7 @@ func GetAPSource(val *fastjson.Value) Source {
 	return s
 }
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (s *Source) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
@@ -510,7 +510,7 @@ func (s *Source) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (s Source) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	empty := true

@@ -164,7 +164,7 @@ func (q Question) IsCollection() bool {
 	return false
 }
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (q *Question) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
@@ -174,6 +174,7 @@ func (q *Question) UnmarshalJSON(data []byte) error {
 	return loadQuestion(val, q)
 }
 
+// MarshalJSON encodes the receiver object to a JSON document.
 func (q Question) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	write(&b, '{')

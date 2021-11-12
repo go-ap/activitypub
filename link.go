@@ -92,7 +92,7 @@ func (l Link) GetType() ActivityVocabularyType {
 	return l.Type
 }
 
-// MarshalJSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (l Link) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	write(&b, '{')
@@ -104,7 +104,7 @@ func (l Link) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (l *Link) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)

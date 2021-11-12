@@ -3,7 +3,6 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
 	"fmt"
 	"io"
 	"reflect"
@@ -66,7 +65,7 @@ func (e *gobEncoder) writeDurationGobProp(p string, d time.Duration) bool {
 }
 
 func writeObjectGobValue(buf io.Writer, o *Object) (int, error) {
-	return 0, errors.New(fmt.Sprintf("writeObjectGobValue is not implemented for %T", *o))
+	return 0, fmt.Errorf("writeObjectGobValue is not implemented for %T", *o)
 }
 
 /*

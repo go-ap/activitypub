@@ -177,7 +177,7 @@ func (i IntransitiveActivity) IsCollection() bool {
 	return false
 }
 
-// UnmarshalJSON
+// UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (i *IntransitiveActivity) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
@@ -187,7 +187,7 @@ func (i *IntransitiveActivity) UnmarshalJSON(data []byte) error {
 	return loadIntransitiveActivity(val, i)
 }
 
-// MarshalJSON
+// MarshalJSON encodes the receiver object to a JSON document.
 func (i IntransitiveActivity) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	write(&b, '{')
