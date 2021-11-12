@@ -252,7 +252,7 @@ func (c CollectionPage) GobEncode() ([]byte, error) {
 func (c *CollectionPage) GobDecode([]byte) error {
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *c))
 }
- */
+*/
 
 // CollectionNew initializes a new CollectionPage
 func CollectionPageNew(parent CollectionInterface) *CollectionPage {

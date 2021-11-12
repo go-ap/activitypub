@@ -15,8 +15,8 @@ func TestMarshalGob(t *testing.T) {
 		wantErr error
 	}{
 		{
-			name:    "empty object",
-			it:      &Object{
+			name: "empty object",
+			it: &Object{
 				ID: "test",
 			},
 			want:    []byte{},
@@ -25,10 +25,10 @@ func TestMarshalGob(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			buf := bytes.NewBuffer(make([]byte,0))
+			buf := bytes.NewBuffer(make([]byte, 0))
 			err := gob.NewEncoder(buf).Encode(tt.it)
 
-			if !errors.Is(err, tt.wantErr){
+			if !errors.Is(err, tt.wantErr) {
 				t.Errorf("MarshalGob() error = %s, wantErr %v", err, tt.wantErr)
 				return
 			}

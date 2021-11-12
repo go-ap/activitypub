@@ -51,7 +51,7 @@ func ItemsEqual(it, with Item) bool {
 	}
 	if it.IsObject() {
 		if ActivityTypes.Contains(with.GetType()) {
-			OnActivity(it, func(i*Activity) error {
+			OnActivity(it, func(i *Activity) error {
 				result = i.Equals(with)
 				return nil
 			})

@@ -376,8 +376,8 @@ func TestPublicKey_MarshalJSON(t *testing.T) {
 }
 
 func assertPersonWithTesting(fn canErrorFunc, expected Item) WithActorFn {
-	return func (p *Person) error {
-		if !assertDeepEquals(fn, p , expected) {
+	return func(p *Person) error {
+		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
 		}
 		return nil

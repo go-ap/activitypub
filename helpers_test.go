@@ -6,8 +6,8 @@ import (
 )
 
 func assertObjectWithTesting(fn canErrorFunc, expected Item) WithObjectFn {
-	return func (p *Object) error {
-		if !assertDeepEquals(fn, p , expected) {
+	return func(p *Object) error {
+		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
 		}
 		return nil
@@ -69,8 +69,8 @@ func TestOnObject(t *testing.T) {
 }
 
 func assertActivityWithTesting(fn canErrorFunc, expected Item) WithActivityFn {
-	return func (p *Activity) error {
-		if !assertDeepEquals(fn, p , expected) {
+	return func(p *Activity) error {
+		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
 		}
 		return nil
@@ -132,8 +132,8 @@ func TestOnActivity(t *testing.T) {
 }
 
 func assertIntransitiveActivityWithTesting(fn canErrorFunc, expected Item) WithIntransitiveActivityFn {
-	return func (p *IntransitiveActivity) error {
-		if !assertDeepEquals(fn, p , expected) {
+	return func(p *IntransitiveActivity) error {
+		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
 		}
 		return nil
@@ -195,8 +195,8 @@ func TestOnIntransitiveActivity(t *testing.T) {
 }
 
 func assertQuestionWithTesting(fn canErrorFunc, expected Item) WithQuestionFn {
-	return func (p *Question) error {
-		if !assertDeepEquals(fn, p , expected) {
+	return func(p *Question) error {
+		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
 		}
 		return nil

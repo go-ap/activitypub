@@ -136,9 +136,12 @@ func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool
 	case reflect.Struct:
 		for i, n := 0, v1.NumField(); i < n; i++ {
 			var (
-				f1 = v1.Field(i); f2 = v2.Field(i)
-				n1 = v1.Type().Field(i).Name; n2 = v2.Type().Field(i).Name
-				t1 = f1.Type().Name(); t2 = f2.Type().Name()
+				f1 = v1.Field(i)
+				f2 = v2.Field(i)
+				n1 = v1.Type().Field(i).Name
+				n2 = v2.Type().Field(i).Name
+				t1 = f1.Type().Name()
+				t2 = f2.Type().Name()
 			)
 			if !deepValueEqual(t, v1.Field(i), v2.Field(i), visited, depth+1) {
 				t("Struct fields at pos %d %s[%s] and %s[%s] are not deeply equal", i, n1, t1, n2, t2)
@@ -318,7 +321,7 @@ func TestUnmarshalJSON(t *testing.T) {
 		name string
 		data []byte
 		want Item
-		err     error
+		err  error
 	}{
 		{
 			name: "empty",
@@ -335,11 +338,11 @@ func TestUnmarshalJSON(t *testing.T) {
 		{
 			name: "IRIs",
 			data: []byte(fmt.Sprintf("[%q, %q]", "http://example.com", "http://example.net")),
-			want:    ItemCollection{
+			want: ItemCollection{
 				IRI("http://example.com"),
 				IRI("http://example.net"),
 			},
-			err:     nil,
+			err: nil,
 		},
 		{
 			name: "object",
@@ -357,10 +360,10 @@ func TestUnmarshalJSON(t *testing.T) {
 			name: "collection-2-items",
 			data: []byte(`{ "@context": "https://www.w3.org/ns/activitystreams", "id": "https://federated.git/inbox", "type": "OrderedCollection", "updated": "2021-08-08T16:09:05Z", "first": "https://federated.git/inbox?maxItems=100", "totalItems": 2, "orderedItems": [ { "id": "https://federated.git/activities/07440c39-64b2-4492-89cf-f5c2872cf4ff", "type": "Create", "attributedTo": "https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91", "to": [ "https://www.w3.org/ns/activitystreams#Public" ], "cc": [ "https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91/followers" ], "published": "2021-08-08T16:09:05Z", "actor": "https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91", "object": "https://federated.git/objects/3eb69f77-3b08-4bf1-8760-c7333e2900c4" }, { "id": "https://federated.git/activities/ab9a5511-cdb5-4585-8a48-775d1bf20121", "type": "Like", "attributedTo": "https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91", "to": [ "https://www.w3.org/ns/activitystreams#Public", "https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91" ], "published": "2021-08-08T16:09:05Z", "actor": "https://federated.git/actors/b1757243-080a-49dc-b832-42905d554b91", "object": "https://federated.git/objects/3eb69f77-3b08-4bf1-8760-c7333e2900c4" }]}`),
 			want: &OrderedCollection{
-				ID: "https://federated.git/inbox",
-				Type: OrderedCollectionType,
+				ID:      "https://federated.git/inbox",
+				Type:    OrderedCollectionType,
 				Updated: time.Date(2021, 8, 8, 16, 9, 5, 0, time.UTC),
-				First: IRI("https://federated.git/inbox?maxItems=100"),
+				First:   IRI("https://federated.git/inbox?maxItems=100"),
 				OrderedItems: ItemCollection{
 					&Activity{
 						ID:           "https://federated.git/activities/07440c39-64b2-4492-89cf-f5c2872cf4ff",
@@ -384,7 +387,7 @@ func TestUnmarshalJSON(t *testing.T) {
 				},
 				TotalItems: 2,
 			},
-			err:  nil,
+			err: nil,
 		},
 	}
 	for _, tt := range tests {

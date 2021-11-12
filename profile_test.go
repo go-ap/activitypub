@@ -46,8 +46,8 @@ func TestProfile_Clean(t *testing.T) {
 }
 
 func assertProfileWithTesting(fn canErrorFunc, expected *Profile) withProfileFn {
-	return func (p *Profile) error {
-		if !assertDeepEquals(fn, p , expected) {
+	return func(p *Profile) error {
+		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
 		}
 		return nil

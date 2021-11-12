@@ -124,23 +124,23 @@ func TestToOrderedCollectionPage(t *testing.T) {
 		wantErr error
 	}{
 		"OrderedCollectionPage": {
-			it: new(OrderedCollectionPage),
-			want: new(OrderedCollectionPage),
+			it:      new(OrderedCollectionPage),
+			want:    new(OrderedCollectionPage),
 			wantErr: nil,
 		},
 		"OrderedCollection": {
-			it: new(OrderedCollection),
-			want: new(OrderedCollectionPage),
+			it:      new(OrderedCollection),
+			want:    new(OrderedCollectionPage),
 			wantErr: err,
 		},
 		"Collection": {
-			it: new(Collection),
-			want: new(OrderedCollectionPage),
+			it:      new(Collection),
+			want:    new(OrderedCollectionPage),
 			wantErr: err,
 		},
 		"CollectionPage": {
-			it: new(CollectionPage),
-			want: new(OrderedCollectionPage),
+			it:      new(CollectionPage),
+			want:    new(OrderedCollectionPage),
 			wantErr: err,
 		},
 	}
@@ -150,7 +150,7 @@ func TestToOrderedCollectionPage(t *testing.T) {
 			if tt.wantErr != nil && err == nil {
 				t.Errorf("ToOrderedCollectionPage() no error returned, wanted error = [%T]%s", tt.wantErr, tt.wantErr)
 				return
-			} 
+			}
 			if err != nil {
 				if tt.wantErr == nil {
 					t.Errorf("ToOrderedCollectionPage() returned unexpected error[%T]%s", err, err)

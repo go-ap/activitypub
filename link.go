@@ -132,4 +132,4 @@ func (l Link) GobEncode() ([]byte, error) {
 func (l *Link) GobDecode([]byte) error {
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *l))
 }
- */
+*/

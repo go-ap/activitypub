@@ -195,23 +195,23 @@ func TestToCollection(t *testing.T) {
 		wantErr error
 	}{
 		"Collection": {
-			it: new(Collection),
-			want: new(Collection),
+			it:      new(Collection),
+			want:    new(Collection),
 			wantErr: nil,
 		},
 		"CollectionPage": {
-			it: new(CollectionPage),
-			want: new(Collection),
+			it:      new(CollectionPage),
+			want:    new(Collection),
 			wantErr: nil,
 		},
 		"OrderedCollectionPage": {
-			it: new(OrderedCollectionPage),
-			want: new(Collection),
+			it:      new(OrderedCollectionPage),
+			want:    new(Collection),
 			wantErr: err,
 		},
 		"OrderedCollection": {
-			it: new(OrderedCollection),
-			want: new(Collection),
+			it:      new(OrderedCollection),
+			want:    new(Collection),
 			wantErr: err,
 		},
 	}

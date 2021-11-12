@@ -245,7 +245,7 @@ func (a Actor) GobEncode() ([]byte, error) {
 func (a *Actor) GobDecode([]byte) error {
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *a))
 }
- */
+*/
 
 type (
 	// Application describes a software application.

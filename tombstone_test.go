@@ -37,8 +37,8 @@ func TestTombstone_Clean(t *testing.T) {
 	t.Skipf("TODO")
 }
 func assertTombstoneWithTesting(fn canErrorFunc, expected *Tombstone) withTombstoneFn {
-	return func (p *Tombstone) error {
-		if !assertDeepEquals(fn, p , expected) {
+	return func(p *Tombstone) error {
+		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
 		}
 		return nil

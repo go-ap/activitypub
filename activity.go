@@ -785,7 +785,7 @@ func (a Activity) GobEncode() ([]byte, error) {
 func (a *Activity) GobDecode([]byte) error {
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *a))
 }
- */
+*/
 
 // Equals verifies if our receiver Object is equals with the "with" Object
 func (a Activity) Equals(with Item) bool {

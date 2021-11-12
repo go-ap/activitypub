@@ -90,7 +90,7 @@ func (i IRI) GobEncode() ([]byte, error) {
 func (i *IRI) GobDecode([]byte) error {
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *i))
 }
- */
+*/
 
 // AddPath concatenates el elements as a path to i
 func (i IRI) AddPath(el ...string) IRI {

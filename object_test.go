@@ -473,7 +473,6 @@ func TestSource_UnmarshalJSON(t *testing.T) {
 func TestGetAPSource(t *testing.T) {
 	data := []byte(`{"source": {"content": "test", "mediaType": "text/plain" }}`)
 
-
 	par := fastjson.Parser{}
 	val, _ := par.ParseBytes(data)
 	a := GetAPSource(val)

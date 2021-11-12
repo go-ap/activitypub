@@ -55,7 +55,6 @@ func TestQuestion_GetType(t *testing.T) {
 	}
 }
 
-
 func TestToQuestion(t *testing.T) {
 	var it Item
 	act := QuestionNew("test")

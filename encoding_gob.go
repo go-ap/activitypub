@@ -14,18 +14,17 @@ type typeId int32
 
 type gobEncoder struct {
 	sent map[reflect.Type]typeId // which types we've already sent
-	w   *bytes.Buffer
-	enc *gob.Encoder
+	w    *bytes.Buffer
+	enc  *gob.Encoder
 }
 
-func (e *gobEncoder) encode (it Item) ([]byte, error) {
+func (e *gobEncoder) encode(it Item) ([]byte, error) {
 	err := e.enc.Encode(it)
 	if err != nil {
 		return nil, err
 	}
 	return e.w.Bytes(), nil
 }
-
 
 //// GobEncode
 //func GobEncode(it Item) ([]byte, error) {
@@ -45,24 +44,24 @@ func (e *gobEncoder) writeIRIProp(i IRI) error {
 	return e.enc.Encode(i.String())
 }
 
-func (e *gobEncoder) writeGobProp (p string, b []byte) bool {
+func (e *gobEncoder) writeGobProp(p string, b []byte) bool {
 	c, _ := e.w.Write([]byte(p))
 	d, _ := e.w.Write(b)
 	return c+d > 0
 }
-func (e *gobEncoder)writeItemGobProp (p string, it Item) bool {
+func (e *gobEncoder) writeItemGobProp(p string, it Item) bool {
 	return true
 }
-func (e *gobEncoder)writeNaturalLanguageGobProp (p string, v NaturalLanguageValues) bool {
+func (e *gobEncoder) writeNaturalLanguageGobProp(p string, v NaturalLanguageValues) bool {
 	return true
 }
-func (e *gobEncoder)writeIRIGobProp (p string, i LinkOrIRI) bool {
+func (e *gobEncoder) writeIRIGobProp(p string, i LinkOrIRI) bool {
 	return true
 }
-func (e *gobEncoder)writeTimeGobProp (p string, t time.Time) bool {
+func (e *gobEncoder) writeTimeGobProp(p string, t time.Time) bool {
 	return true
 }
-func (e *gobEncoder)writeDurationGobProp (p string, d time.Duration) bool {
+func (e *gobEncoder) writeDurationGobProp(p string, d time.Duration) bool {
 	return true
 }
 
@@ -170,4 +169,4 @@ func (e *gobEncoder) writeObjectGobValue(o Object) (bool, error) {
 	}
 	return notEmpty, nil
 }
- */
+*/

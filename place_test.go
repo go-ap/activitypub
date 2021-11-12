@@ -46,8 +46,8 @@ func TestPlace_Clean(t *testing.T) {
 }
 
 func assertPlaceWithTesting(fn canErrorFunc, expected *Place) withPlaceFn {
-	return func (p *Place) error {
-		if !assertDeepEquals(fn, p , expected) {
+	return func(p *Place) error {
+		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
 		}
 		return nil
@@ -69,22 +69,22 @@ func TestOnPlace(t *testing.T) {
 	}{
 		{
 			name:    "single",
-			args:    args{ testPlace, assertPlaceWithTesting },
+			args:    args{testPlace, assertPlaceWithTesting},
 			wantErr: false,
 		},
 		{
 			name:    "single fails",
-			args:    args{ Place{ID: "https://not-equals"}, assertPlaceWithTesting },
+			args:    args{Place{ID: "https://not-equals"}, assertPlaceWithTesting},
 			wantErr: true,
 		},
 		{
 			name:    "collectionOfPlaces",
-			args:    args{ItemCollection{testPlace, testPlace}, assertPlaceWithTesting },
+			args:    args{ItemCollection{testPlace, testPlace}, assertPlaceWithTesting},
 			wantErr: false,
 		},
 		{
 			name:    "collectionOfPlaces fails",
-			args:    args{ ItemCollection{testPlace, Place{ID: "https://not-equals"}}, assertPlaceWithTesting },
+			args:    args{ItemCollection{testPlace, Place{ID: "https://not-equals"}}, assertPlaceWithTesting},
 			wantErr: true,
 		},
 	}

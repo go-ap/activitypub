@@ -221,23 +221,23 @@ func TestToOrderedCollection(t *testing.T) {
 		wantErr error
 	}{
 		"OrderedCollection": {
-			it: new(OrderedCollection),
-			want: new(OrderedCollection),
+			it:      new(OrderedCollection),
+			want:    new(OrderedCollection),
 			wantErr: nil,
 		},
 		"OrderedCollectionPage": {
-			it: new(OrderedCollectionPage),
-			want: new(OrderedCollection),
+			it:      new(OrderedCollectionPage),
+			want:    new(OrderedCollection),
 			wantErr: nil,
 		},
 		"Collection": {
-			it: new(Collection),
-			want: new(OrderedCollection),
+			it:      new(Collection),
+			want:    new(OrderedCollection),
 			wantErr: err,
 		},
 		"CollectionPage": {
-			it: new(CollectionPage),
-			want: new(OrderedCollection),
+			it:      new(CollectionPage),
+			want:    new(OrderedCollection),
 			wantErr: err,
 		},
 	}

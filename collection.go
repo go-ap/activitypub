@@ -288,7 +288,7 @@ func (c Collection) GobEncode() ([]byte, error) {
 func (c *Collection) GobDecode([]byte) error {
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *c))
 }
- */
+*/
 
 // ToCollection
 func ToCollection(it Item) (*Collection, error) {
