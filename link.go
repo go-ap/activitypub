@@ -1,12 +1,12 @@
 package activitypub
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/valyala/fastjson"
 )
 
+// LinkTypes represent the valid values for a Link object
 var LinkTypes = ActivityVocabularyTypes{
 	LinkType,
 	MentionType,
@@ -116,7 +116,7 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (l *Link) UnmarshalBinary(data []byte) error {
-	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *l))
+	return fmt.Errorf("UnmarshalBinary is not implemented for %T", *l)
 }
 
 /*

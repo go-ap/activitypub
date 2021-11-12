@@ -203,7 +203,7 @@ func (p *Profile) Clean() {
 	p.Bto = nil
 }
 
-// ToProfile
+// ToProfile tries to convert the it Item to a Profile object
 func ToProfile(it Item) (*Profile, error) {
 	switch i := it.(type) {
 	case *Profile:

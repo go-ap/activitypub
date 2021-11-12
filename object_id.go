@@ -14,6 +14,7 @@ package activitypub
 // (a part of its parent context)
 type ID = IRI
 
+// IsValid returns if the receiver pointer is not nil and if dereferenced it has a positive length.
 func (i *ID) IsValid() bool {
 	return i != nil && len(*i) > 0
 }

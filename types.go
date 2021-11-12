@@ -1,8 +1,9 @@
 package activitypub
 
+// ActivityVocabularyTypes is a type alias for a slice of ActivityVocabularyType elements
 type ActivityVocabularyTypes []ActivityVocabularyType
 
-// Types contains all valid types in the ActivityPub vocab
+// Types contains all valid types in the ActivityPub vocabulary
 var Types = ActivityVocabularyTypes{
 	LinkType,
 	MentionType,

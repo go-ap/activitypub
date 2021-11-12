@@ -220,7 +220,7 @@ func (r *Relationship) Clean() {
 	r.Bto = nil
 }
 
-// ToRelationship
+// ToRelationship tries to convert the it Item to a Relationship object.
 func ToRelationship(it Item) (*Relationship, error) {
 	switch i := it.(type) {
 	case *Relationship:

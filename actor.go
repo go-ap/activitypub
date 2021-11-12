@@ -19,6 +19,7 @@ const (
 	ServiceType      ActivityVocabularyType = "Service"
 )
 
+// ActorTypes represent the valid Actor types.
 var ActorTypes = ActivityVocabularyTypes{
 	ApplicationType,
 	GroupType,

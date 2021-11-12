@@ -1,10 +1,6 @@
 package activitypub
 
-import (
-	"bytes"
-	"encoding/gob"
-)
-
+/*
 func GobEncode(it Item) ([]byte, error) {
 	b := new(bytes.Buffer)
 	err := gob.NewEncoder(b).Encode(it)
@@ -42,3 +38,4 @@ func UnmarshalGob(data []byte) (Item, error) {
 	}
 	return GobUnmarshalToItem(data), nil
 }
+*/

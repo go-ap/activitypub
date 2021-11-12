@@ -216,7 +216,7 @@ func QuestionNew(id ID) *Question {
 	return &q
 }
 
-// ToQuestion
+// ToQuestion tries to convert the it Item to a Question object.
 func ToQuestion(it Item) (*Question, error) {
 	switch i := it.(type) {
 	case *Question:
@@ -232,5 +232,5 @@ func ToQuestion(it Item) (*Question, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert to question activity")
+	return nil, errors.New("unable to convert to Question activity")
 }

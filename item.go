@@ -4,11 +4,16 @@ package activitypub
 type Item = ObjectOrLink
 
 const (
+	// EmptyIRI represents a zero length IRI
 	EmptyIRI IRI = ""
-	NilIRI   IRI = "-"
+	// NilIRI represents by convention an IRI which is nil
+	// Its use is mostly to check if a property of an ActivityPub Item is nil
+	NilIRI IRI = "-"
 
+	// EmptyID represents a zero length ID
 	EmptyID = EmptyIRI
-	NilID   = NilIRI
+	// NilID represents by convention an ID which is nil, see details of NilIRI
+	NilID = NilIRI
 )
 
 // ItemsEqual checks if it and with Items are equal

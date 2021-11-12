@@ -18,6 +18,11 @@ const (
 	PublicNS = ActivityBaseURI + "#Public"
 )
 
+// JsonLDContext is a slice of IRIs that form the default context for the objects in the
+// GoActivitypub vocabulary.
+// It does not represent just the default ActivityStreams public namespace, but it also
+// has the W3 Permanent Identifier Community Group's Security namespace, which appears
+// in the Actor type objects, which contain public key related data.
 var JsonLDContext = []IRI{
 	ActivityBaseURI,
 	SecurityContextURI,

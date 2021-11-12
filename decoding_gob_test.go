@@ -1,10 +1,6 @@
 package activitypub
 
-import (
-	"reflect"
-	"testing"
-)
-
+/*
 func TestGobEncode(t *testing.T) {
 	type args struct {
 		it Item
@@ -61,3 +57,4 @@ func TestUnmarshalGob(t *testing.T) {
 		})
 	}
 }
+*/

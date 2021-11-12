@@ -9,6 +9,8 @@ import (
 	"github.com/valyala/fastjson"
 )
 
+// NilLangRef represents a convention for a nil language reference.
+// It is used for LangRefValue objects without an explicit language key.
 const NilLangRef LangRef = "-"
 
 type (

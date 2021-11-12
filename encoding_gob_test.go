@@ -1,12 +1,6 @@
 package activitypub
 
-import (
-	"bytes"
-	"encoding/gob"
-	"errors"
-	"testing"
-)
-
+/*
 func TestMarshalGob(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -46,3 +40,4 @@ func TestMarshalGob(t *testing.T) {
 		})
 	}
 }
+*/

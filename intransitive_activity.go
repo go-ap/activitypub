@@ -231,7 +231,7 @@ func IntransitiveActivityNew(id ID, typ ActivityVocabularyType) *IntransitiveAct
 	return &i
 }
 
-// ToIntransitiveActivity
+// ToIntransitiveActivity tries to convert it Item to an IntransitiveActivity object
 func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
 	switch i := it.(type) {
 	case *Activity:
