@@ -5,9 +5,9 @@
 [![Test Coverage](https://img.shields.io/codecov/c/github/go-ap/activitypub.svg)](https://codecov.io/gh/go-ap/activitypub)
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-ap/activitypub)](https://goreportcard.com/report/github.com/go-ap/activitypub)
 
-Basic lib for using [activity pub](https://www.w3.org/TR/activitypub/#Overview) API in Go.
+Basic package for using [ActivityPub](https://www.w3.org/TR/activitypub/#Overview) API in Go.
 
-It contains types for most of the ActivityStreams vocabulary and the ActivityPub extension. 
+It contains types for most of the ActivityStreams vocabulary and the ActivityPub extension.
 They are documented accordingly with annotations from the specification.
 
 ## Usage
