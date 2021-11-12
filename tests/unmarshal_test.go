@@ -154,9 +154,12 @@ func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool
 	case reflect.Struct:
 		for i, n := 0, v1.NumField(); i < n; i++ {
 			var (
-				f1 = v1.Field(i); f2 = v2.Field(i)
-				n1 = v1.Type().Field(i).Name; n2 = v2.Type().Field(i).Name
-				t1 = f1.Type().Name(); t2 = f2.Type().Name()
+				f1 = v1.Field(i)
+				f2 = v2.Field(i)
+				n1 = v1.Type().Field(i).Name
+				n2 = v2.Type().Field(i).Name
+				t1 = f1.Type().Name()
+				t2 = f2.Type().Name()
 			)
 			if !deepValueEqual(t, v1.Field(i), v2.Field(i), visited, depth+1) {
 				t("Struct fields at pos %d %s[%s] and %s[%s] are not deeply equal", i, n1, t1, n2, t2)
