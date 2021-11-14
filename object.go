@@ -140,12 +140,11 @@ func (a *ActivityVocabularyType) GobDecode([]byte) error {
 */
 
 type Objects interface {
-	//go1.18: Object | Activity | IRI ...
 	Object | Tombstone | Place | Profile | Relationship |
-		Activities |
-		IntransitiveActivities |
-		Collections |
-		IRI
+	Activities |
+	IntransitiveActivities |
+	Collections |
+	IRI
 }
 
 // Object describes an ActivityPub object of any kind.
