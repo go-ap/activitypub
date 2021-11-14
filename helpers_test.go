@@ -268,3 +268,49 @@ func TestOnCollectionPage(t *testing.T) {
 func TestOnOrderedCollectionPage(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+type args[T Objects] struct {
+	it T
+	fn func (fn canErrorFunc, expected T) func(*T) error
+}
+
+type testPair[T Objects] struct {
+	name     string
+	args     args[T]
+	expected T
+	wantErr  bool
+}
+
+func assert[T Objects](fn canErrorFunc, expected T) func(*T) error {
+	return func(p *T) error {
+		if !assertDeepEquals(fn, *p, expected) {
+			return fmt.Errorf("not equal")
+		}
+		return nil
+	}
+}
+
+func TestOn(t *testing.T) {
+	testQuestion := Object{ID: "https://example.com"}
+	var tests []testPair[Object] = []testPair[Object]{
+		{
+			name:     "single",
+			args:     args[Object]{testQuestion, assert[Object]},
+			expected: testQuestion,
+			wantErr:  true,
+		},
+	}
+	for _, tt := range tests {
+		var logFn canErrorFunc
+		if tt.wantErr {
+			logFn = t.Logf
+		} else {
+			logFn = t.Errorf
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			if err := On(tt.args.it, tt.args.fn(logFn, tt.expected)); (err != nil) != tt.wantErr {
+				t.Errorf("On[%T]() error = %v, wantErr %v", tt.args.it, err, tt.wantErr)
+			}
+		})
+	}
+}
