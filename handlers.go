@@ -259,6 +259,10 @@ func (i ItemHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
+	if it == nil {
+		errors.HandleError(errors.NotFoundf("")).ServeHTTP(w, r)
+		return
+	}
 	if dat, err = json.WithContext(json.IRI(pub.ActivityBaseURI)).Marshal(it); err != nil {
 		errors.HandleError(err).ServeHTTP(w, r)
 		return
