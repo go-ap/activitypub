@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"bytes"
+	"encoding/gob"
 	"fmt"
 	"strconv"
 	"strings"
@@ -258,6 +259,7 @@ func (l LangRefValue) Equals(other LangRefValue) bool {
 func (c *Content) UnmarshalJSON(data []byte) error {
 	return c.UnmarshalText(data)
 }
+
 func (c *Content) UnmarshalText(data []byte) error {
 	*c = Content{}
 	if len(data) == 0 {
@@ -270,6 +272,28 @@ func (c *Content) UnmarshalText(data []byte) error {
 	} else {
 		*c = Content(data)
 	}
+	return nil
+}
+
+func (c Content) GobEncode() ([]byte, error) {
+	b := new(bytes.Buffer)
+	gg := gob.NewEncoder(b)
+	if err := gg.Encode([]byte(c)); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+func (c *Content) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		// NOTE(marius): this behaviour diverges from vanilla gob package
+		return nil
+	}
+	bb := make([]byte, 0)
+	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
+		return err
+	}
+	*c = bb
 	return nil
 }
 

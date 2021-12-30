@@ -1,10 +1,14 @@
 package activitypub
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
-	json "github.com/go-ap/jsonld"
+	"reflect"
 	"strconv"
 	"testing"
+
+	json "github.com/go-ap/jsonld"
 )
 
 func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
@@ -538,4 +542,86 @@ func TestContent_UnmarshalJSON(t *testing.T) {
 
 func TestContent_UnmarshalText(t *testing.T) {
 	t.Skip("TODO")
+}
+
+func gobValue(a interface{}) []byte {
+	b := bytes.Buffer{}
+	gg := gob.NewEncoder(&b)
+	gg.Encode(a)
+	return b.Bytes()
+}
+
+func TestContent_GobEncode(t *testing.T) {
+	tests := []struct {
+		name    string
+		c       Content
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			c:       Content{},
+			want:    gobValue([]byte{}),
+			wantErr: false,
+		},
+		{
+			name:    "empty value",
+			c:       Content{'0'},
+			want:    gobValue([]byte{'0'}),
+			wantErr: false,
+		},
+		{
+			name:    "some text",
+			c:       Content{'a', 'n', 'a', ' ', 'a', 'r', 'e'},
+			want:    gobValue([]byte{'a', 'n', 'a', ' ', 'a', 'r', 'e'}),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.c.GobEncode()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GobEncode() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GobEncode() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestContent_GobDecode(t *testing.T) {
+	tests := []struct {
+		name    string
+		c       Content
+		data    []byte
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			c:       Content{},
+			data:    []byte{},
+			wantErr: false,
+		},
+		{
+			name:    "empty value",
+			c:       Content{'0'},
+			data:    gobValue([]byte{'0'}),
+			wantErr: false,
+		},
+		{
+			name:    "some text",
+			c:       Content{'a', 'n', 'a', ' ', 'a', 'r', 'e'},
+			data:    gobValue([]byte{'a', 'n', 'a', ' ', 'a', 'r', 'e'}),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.c.GobDecode(tt.data); (err != nil) != tt.wantErr {
+				t.Errorf("GobDecode() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
 }
