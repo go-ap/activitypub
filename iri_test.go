@@ -3,6 +3,7 @@ package activitypub
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -313,4 +314,67 @@ func TestIRI_AddPath(t *testing.T) {
 
 func TestIRI_ItemMatches(t *testing.T) {
 	t.Skip("TODO")
+}
+
+func TestIRI_GobDecode(t *testing.T) {
+	tests := []struct {
+		name    string
+		i       IRI
+		data    []byte
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			i:       "",
+			data:    []byte{},
+			wantErr: false,
+		},
+		{
+			name:    "some iri",
+			i:       "https://example.com",
+			data:    gobValue("https://example.com"),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.i.GobDecode(tt.data); (err != nil) != tt.wantErr {
+				t.Errorf("GobDecode() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestIRI_GobEncode(t *testing.T) {
+	tests := []struct {
+		name    string
+		i       IRI
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			i:       "",
+			want:    []byte{},
+			wantErr: false,
+		},
+		{
+			name:    "some iri",
+			i:       "https://example.com",
+			want:    gobValue([]byte("https://example.com")),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.i.GobEncode()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GobEncode() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GobEncode() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

@@ -1,6 +1,8 @@
 package activitypub
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"net/url"
 	"path"
@@ -67,35 +69,42 @@ func (i IRI) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
-/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (i *IRI) UnmarshalBinary(data []byte) error {
-	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *i))
+	return i.GobDecode(data)
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (i IRI) MarshalBinary() ([]byte, error) {
-	if len(i) == 0 {
-		return nil, nil
-	}
-	w := &bytes.Buffer{}
-	enc := gobEncoder{ w: w, enc: gob.NewEncoder(w) }
-	if err := enc.writeS(i.String()); err != nil {
-		return nil, err
-	}
-	return w.Bytes(), nil
+	return i.GobEncode()
 }
 
 // GobEncode
 func (i IRI) GobEncode() ([]byte, error) {
-	return i.MarshalBinary()
+	if len(i) == 0 {
+		return []byte{}, nil
+	}
+	b := bytes.Buffer{}
+	gg := gob.NewEncoder(&b)
+	if err := encodeGobStringLikeType(gg, []byte(i)); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
 }
 
 // GobDecode
-func (i *IRI) GobDecode([]byte) error {
-	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *i))
+func (i *IRI) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		// NOTE(marius): this behaviour diverges from vanilla gob package
+		return nil
+	}
+	var bb string
+	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
+		return err
+	}
+	*i = IRI(bb)
+	return nil
 }
-*/
 
 // AddPath concatenates el elements as a path to i
 func (i IRI) AddPath(el ...string) IRI {
