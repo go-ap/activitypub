@@ -435,6 +435,37 @@ func (n *NaturalLanguageValues) UnmarshalText(data []byte) error {
 	return nil
 }
 
+func (n NaturalLanguageValues) GobEncode() ([]byte, error) {
+	if len(n) == 0 {
+		return []byte{}, nil
+	}
+	b := new(bytes.Buffer)
+	gg := gob.NewEncoder(b)
+	mm := make([]kv, len(n))
+	for i, l := range n {
+		mm[i] = kv{K: []byte(l.Ref), V: l.Value}
+	}
+	if err := gg.Encode(mm); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+func (n *NaturalLanguageValues) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		// NOTE(marius): this behaviour diverges from vanilla gob package
+		return nil
+	}
+	mm := make([]kv, 0)
+	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&mm); err != nil {
+		return err
+	}
+	for _, m := range mm {
+		*n = append(*n, LangRefValue{Ref: LangRef(m.K), Value: m.V})
+	}
+	return nil
+}
+
 // Equals
 func (n NaturalLanguageValues) Equals(with NaturalLanguageValues) bool {
 	if n.Count() != with.Count() {
