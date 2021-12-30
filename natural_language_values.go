@@ -196,6 +196,35 @@ func (l *LangRefValue) UnmarshalText(data []byte) error {
 	return nil
 }
 
+func encodeGobStringLikeType(g *gob.Encoder, s []byte) error {
+	if err := g.Encode(s); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (l LangRef) GobEncode() ([]byte, error) {
+	b := new(bytes.Buffer)
+	gg := gob.NewEncoder(b)
+	if err := encodeGobStringLikeType(gg, []byte(l)); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+func (l *LangRef) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		// NOTE(marius): this behaviour diverges from vanilla gob package
+		return nil
+	}
+	var bb []byte
+	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
+		return err
+	}
+	*l = LangRef(bb)
+	return nil
+}
+
 // MarshalJSON encodes the receiver object to a JSON document.
 func (l LangRefValue) MarshalJSON() ([]byte, error) {
 	buf := bytes.Buffer{}
@@ -278,7 +307,7 @@ func (c *Content) UnmarshalText(data []byte) error {
 func (c Content) GobEncode() ([]byte, error) {
 	b := new(bytes.Buffer)
 	gg := gob.NewEncoder(b)
-	if err := gg.Encode([]byte(c)); err != nil {
+	if err := encodeGobStringLikeType(gg, []byte(c)); err != nil {
 		return nil, err
 	}
 	return b.Bytes(), nil
