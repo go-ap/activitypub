@@ -204,6 +204,9 @@ func encodeGobStringLikeType(g *gob.Encoder, s []byte) error {
 }
 
 func (l LangRef) GobEncode() ([]byte, error) {
+	if len(l) == 0 {
+		return []byte{}, nil
+	}
 	b := new(bytes.Buffer)
 	gg := gob.NewEncoder(b)
 	if err := encodeGobStringLikeType(gg, []byte(l)); err != nil {
@@ -262,6 +265,9 @@ type kv struct {
 }
 
 func (l LangRefValue) GobEncode() ([]byte, error) {
+	if len(l.Value) == 0 && len(l.Ref) == 0 {
+		return []byte{}, nil
+	}
 	b := new(bytes.Buffer)
 	gg := gob.NewEncoder(b)
 	mm := kv{
@@ -337,9 +343,12 @@ func (c *Content) UnmarshalText(data []byte) error {
 }
 
 func (c Content) GobEncode() ([]byte, error) {
+	if len(c) == 0 {
+		return []byte{}, nil
+	}
 	b := new(bytes.Buffer)
 	gg := gob.NewEncoder(b)
-	if err := encodeGobStringLikeType(gg, []byte(c)); err != nil {
+	if err := encodeGobStringLikeType(gg, c); err != nil {
 		return nil, err
 	}
 	return b.Bytes(), nil

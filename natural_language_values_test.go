@@ -561,7 +561,7 @@ func TestContent_GobEncode(t *testing.T) {
 		{
 			name:    "empty",
 			c:       Content{},
-			want:    gobValue([]byte{}),
+			want:    []byte{},
 			wantErr: false,
 		},
 		{
@@ -665,7 +665,7 @@ func TestLangRef_GobEncode(t *testing.T) {
 		{
 			name:    "empty",
 			l:       "",
-			want:    gobValue([]byte{}),
+			want:    []byte{},
 			wantErr: false,
 		},
 		{
@@ -703,7 +703,7 @@ func TestLangRefValue_GobEncode(t *testing.T) {
 		{
 			name:    "empty",
 			fields:  fields{},
-			want:    gobValue(kv{}),
+			want:    []byte{},
 			wantErr: false,
 		},
 		{
