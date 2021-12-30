@@ -111,35 +111,42 @@ func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
-/*
+// GobEncode
+func (a ActivityVocabularyType) GobEncode() ([]byte, error) {
+	if len(a) == 0 {
+		return []byte{}, nil
+	}
+	b := bytes.Buffer{}
+	gg := gob.NewEncoder(&b)
+	if err := encodeGobStringLikeType(gg, []byte(a)); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+// GobDecode
+func (a *ActivityVocabularyType) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		// NOTE(marius): this behaviour diverges from vanilla gob package
+		return nil
+	}
+	var bb string
+	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
+		return err
+	}
+	*a = ActivityVocabularyType(bb)
+	return nil
+}
+
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (a *ActivityVocabularyType) UnmarshalBinary(data []byte) error {
-	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *a))
+	return a.GobDecode(data)
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", a))
+	return a.GobEncode()
 }
-
-// GobEncode
-func (a ActivityVocabularyType) GobEncode() ([]byte, error) {
-	if len(a) == 0 {
-		return nil, nil
-	}
-	w := &bytes.Buffer{}
-	enc := gobEncoder{ w: w, enc: gob.NewEncoder(w) }
-	if err := enc.writeS(string(a)); err != nil {
-		return nil, err
-	}
-	return w.Bytes(), nil
-}
-
-// GobDecode
-func (a *ActivityVocabularyType) GobDecode([]byte) error {
-	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *a))
-}
-*/
 
 // Object describes an ActivityPub object of any kind.
 // It serves as the base type for most of the other kinds of objects defined in the Activity

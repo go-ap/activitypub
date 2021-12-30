@@ -560,6 +560,69 @@ func TestActivityVocabularyType_MarshalJSON(t *testing.T) {
 	t.Skip("TODO")
 }
 
+func TestActivityVocabularyType_GobDecode(t *testing.T) {
+	tests := []struct {
+		name    string
+		t       ActivityVocabularyType
+		data    []byte
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			t:       "",
+			data:    []byte{},
+			wantErr: false,
+		},
+		{
+			name:    "some activity type",
+			t:       PersonType,
+			data:    gobValue("Person"),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.t.GobDecode(tt.data); (err != nil) != tt.wantErr {
+				t.Errorf("GobDecode() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestActivityVocabularyType_GobEncode(t *testing.T) {
+	tests := []struct {
+		name    string
+		t       ActivityVocabularyType
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			t:       "",
+			want:    []byte{},
+			wantErr: false,
+		},
+		{
+			name:    "some activity type",
+			t:       ActivityType,
+			want:    gobValue([]byte("Activity")),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.t.GobEncode()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GobEncode() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GobEncode() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestObject_MarshalJSON(t *testing.T) {
 	type fields struct {
 		ID           ID
