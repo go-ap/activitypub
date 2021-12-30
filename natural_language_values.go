@@ -256,6 +256,38 @@ func (l LangRefValue) MarshalText() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+type kv struct {
+	K []byte
+	V []byte
+}
+
+func (l LangRefValue) GobEncode() ([]byte, error) {
+	b := new(bytes.Buffer)
+	gg := gob.NewEncoder(b)
+	mm := kv{
+		K: []byte(l.Ref),
+		V: []byte(l.Value),
+	}
+	if err := gg.Encode(mm); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+func (l *LangRefValue) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		// NOTE(marius): this behaviour diverges from vanilla gob package
+		return nil
+	}
+	mm := kv{}
+	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&mm); err != nil {
+		return err
+	}
+	l.Ref = LangRef(mm.K)
+	l.Value = mm.V
+	return nil
+}
+
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (l *LangRef) UnmarshalJSON(data []byte) error {
 	return l.UnmarshalText(data)

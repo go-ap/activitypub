@@ -688,3 +688,88 @@ func TestLangRef_GobEncode(t *testing.T) {
 		})
 	}
 }
+
+func TestLangRefValue_GobEncode(t *testing.T) {
+	type fields struct {
+		Ref   LangRef
+		Value Content
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			fields:  fields{},
+			want:    gobValue(kv{}),
+			wantErr: false,
+		},
+		{
+			name: "some values",
+			fields: fields{
+				Ref:   "ana",
+				Value: Content("are mere"),
+			},
+			want:    gobValue(kv{K: []byte("ana"), V: []byte("are mere")}),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := LangRefValue{
+				Ref:   tt.fields.Ref,
+				Value: tt.fields.Value,
+			}
+			got, err := l.GobEncode()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GobEncode() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GobEncode() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestLangRefValue_GobDecode(t *testing.T) {
+	type fields struct {
+		Ref   LangRef
+		Value Content
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		data    []byte
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			fields:  fields{},
+			data:    gobValue(kv{}),
+			wantErr: false,
+		},
+		{
+			name: "some values",
+			fields: fields{
+				Ref:   "ana",
+				Value: Content("are mere"),
+			},
+			data:    gobValue(kv{K: []byte("ana"), V: []byte("are mere")}),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := &LangRefValue{
+				Ref:   tt.fields.Ref,
+				Value: tt.fields.Value,
+			}
+			if err := l.GobDecode(tt.data); (err != nil) != tt.wantErr {
+				t.Errorf("GobDecode() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
