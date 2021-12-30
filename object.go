@@ -1,6 +1,8 @@
 package activitypub
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"reflect"
 	"strings"
@@ -374,25 +376,42 @@ func (m MimeType) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
-/*
+// GobEncode
+func (m MimeType) GobEncode() ([]byte, error) {
+	if len(m) == 0 {
+		return []byte{}, nil
+	}
+	b := bytes.Buffer{}
+	gg := gob.NewEncoder(&b)
+	if err := encodeGobStringLikeType(gg, []byte(m)); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+// GobDecode
+func (m *MimeType) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		// NOTE(marius): this behaviour diverges from vanilla gob package
+		return nil
+	}
+	var bb string
+	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
+		return err
+	}
+	*m = MimeType(bb)
+	return nil
+}
+
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (m *MimeType) UnmarshalBinary(data []byte) error {
-	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *m))
+	return m.GobDecode(data)
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (m MimeType) MarshalBinary() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", m))
+	return m.GobEncode()
 }
-
-// GobEncode
-func (m MimeType) GobEncode() ([]byte, error) {
-	if len(m) == 0 {
-		return nil, nil
-	}
-	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", m))
-}
-*/
 
 // ToLink returns a Link pointer to the data in the current Item
 func ToLink(it Item) (*Link, error) {

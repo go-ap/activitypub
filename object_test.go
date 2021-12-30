@@ -361,6 +361,69 @@ func TestMimeType_UnmarshalJSON(t *testing.T) {
 	}
 }
 
+func TestMimeType_GobDecode(t *testing.T) {
+	tests := []struct {
+		name    string
+		m       MimeType
+		data    []byte
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			m:       "",
+			data:    []byte{},
+			wantErr: false,
+		},
+		{
+			name:    "some mime-type",
+			m:       "application/json",
+			data:    gobValue("application/json"),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.m.GobDecode(tt.data); (err != nil) != tt.wantErr {
+				t.Errorf("GobDecode() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestMimeType_GobEncode(t *testing.T) {
+	tests := []struct {
+		name    string
+		m       MimeType
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			m:       "",
+			want:    []byte{},
+			wantErr: false,
+		},
+		{
+			name:    "some mime-type",
+			m:       "application/json",
+			want:    gobValue([]byte("application/json")),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.m.GobEncode()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GobEncode() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GobEncode() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestLangRefValue_String(t *testing.T) {
 	t.Skipf("TODO")
 }
