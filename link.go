@@ -1,6 +1,9 @@
 package activitypub
 
 import (
+	"bytes"
+	"encoding/gob"
+	"errors"
 	"fmt"
 
 	"github.com/valyala/fastjson"
@@ -116,20 +119,150 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (l *Link) UnmarshalBinary(data []byte) error {
-	return fmt.Errorf("UnmarshalBinary is not implemented for %T", *l)
+	return l.GobDecode(data)
 }
 
-/*
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (l Link) MarshalBinary() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", l))
+	return l.GobEncode()
+}
+
+// TODO(marius): when migrating to go1.18, use a numeric constraint for this
+func gobEncodeUint(i uint) ([]byte, error) {
+	b := bytes.Buffer{}
+	gg := gob.NewEncoder(&b)
+	if err := gg.Encode(i); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
 }
 
 func (l Link) GobEncode() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", l))
+	var (
+		mm      = make(map[string][]byte)
+		err     error
+		hasData bool
+	)
+	if len(l.ID) > 0 {
+		if mm["id"], err = l.ID.GobEncode(); err != nil {
+			return nil, err
+		}
+		hasData = true
+	}
+	if len(l.Type) > 0 {
+		if mm["type"], err = l.Type.GobEncode(); err != nil {
+			return nil, err
+		}
+		hasData = true
+	}
+	if len(l.MediaType) > 0 {
+		if mm["mediaType"], err = l.MediaType.GobEncode(); err != nil {
+			return nil, err
+		}
+		hasData = true
+	}
+	if len(l.Href) > 0 {
+		if mm["href"], err = l.Href.GobEncode(); err != nil {
+			return nil, err
+		}
+		hasData = true
+	}
+	if len(l.HrefLang) > 0 {
+		if mm["hrefLang"], err = l.HrefLang.GobEncode(); err != nil {
+			return nil, err
+		}
+		hasData = true
+	}
+	if len(l.Name) > 0 {
+		if mm["name"], err = l.Name.GobEncode(); err != nil {
+			return nil, err
+		}
+		hasData = true
+	}
+	if len(l.Rel) > 0 {
+		if mm["rel"], err = l.Rel.GobEncode(); err != nil {
+			return nil, err
+		}
+		hasData = true
+	}
+	if l.Width > 0 {
+		if mm["width"], err = gobEncodeUint(l.Width); err != nil {
+			return nil, err
+		}
+		hasData = true
+	}
+	if l.Height > 0 {
+		if mm["height"], err = gobEncodeUint(l.Height); err != nil {
+			return nil, err
+		}
+		hasData = true
+	}
+	if !hasData {
+		return []byte{}, nil
+	}
+	bb := bytes.Buffer{}
+	g := gob.NewEncoder(&bb)
+	if err := g.Encode(mm); err != nil {
+		return nil, err
+	}
+	return bb.Bytes(), nil
 }
 
-func (l *Link) GobDecode([]byte) error {
+func gobDecodeUint(i *uint, data []byte) error {
+	g := gob.NewDecoder(bytes.NewReader(data))
+	return g.Decode(i)
+}
+
+func (l *Link) GobDecode(data []byte) error {
+	mm := make(map[string][]byte)
+	g := gob.NewDecoder(bytes.NewReader(data))
+	if err := g.Decode(&mm); err != nil {
+		return err
+	}
+	if raw, ok := mm["id"]; ok {
+		if err := l.ID.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["type"]; ok {
+		if err := l.Type.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["mediaType"]; ok {
+		if err := l.MediaType.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["href"]; ok {
+		if err := l.Href.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["hrefLang"]; ok {
+		if err := l.HrefLang.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["name"]; ok {
+		if err := l.Name.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["rel"]; ok {
+		if err := l.Rel.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["width"]; ok {
+		if err := gobDecodeUint(&l.Width, raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["height"]; ok {
+		if err := gobDecodeUint(&l.Height, raw); err != nil {
+			return err
+		}
+	}
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *l))
 }
-*/
