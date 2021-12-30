@@ -130,7 +130,7 @@ func (a *ActivityVocabularyType) GobDecode(data []byte) error {
 		// NOTE(marius): this behaviour diverges from vanilla gob package
 		return nil
 	}
-	var bb string
+	var bb []byte
 	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
 		return err
 	}
@@ -402,7 +402,7 @@ func (m *MimeType) GobDecode(data []byte) error {
 		// NOTE(marius): this behaviour diverges from vanilla gob package
 		return nil
 	}
-	var bb string
+	var bb []byte
 	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
 		return err
 	}

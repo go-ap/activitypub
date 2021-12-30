@@ -332,7 +332,7 @@ func TestIRI_GobDecode(t *testing.T) {
 		{
 			name:    "some iri",
 			i:       "https://example.com",
-			data:    gobValue("https://example.com"),
+			data:    gobValue([]byte("https://example.com")),
 			wantErr: false,
 		},
 	}

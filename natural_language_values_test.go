@@ -642,7 +642,7 @@ func TestLangRef_GobDecode(t *testing.T) {
 		{
 			name:    "some text",
 			l:       LangRef("ana are"),
-			data:    gobValue([]byte{'a', 'n', 'a', ' ', 'a', 'r', 'e'}),
+			data:    gobValue([]byte("ana are")),
 			wantErr: false,
 		},
 	}

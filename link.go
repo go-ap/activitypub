@@ -3,9 +3,6 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
-	"fmt"
-
 	"github.com/valyala/fastjson"
 )
 
@@ -214,6 +211,9 @@ func gobDecodeUint(i *uint, data []byte) error {
 }
 
 func (l *Link) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
 	mm := make(map[string][]byte)
 	g := gob.NewDecoder(bytes.NewReader(data))
 	if err := g.Decode(&mm); err != nil {
@@ -264,5 +264,5 @@ func (l *Link) GobDecode(data []byte) error {
 			return err
 		}
 	}
-	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *l))
+	return nil
 }

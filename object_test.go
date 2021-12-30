@@ -377,7 +377,7 @@ func TestMimeType_GobDecode(t *testing.T) {
 		{
 			name:    "some mime-type",
 			m:       "application/json",
-			data:    gobValue("application/json"),
+			data:    gobValue([]byte("application/json")),
 			wantErr: false,
 		},
 	}
@@ -576,7 +576,7 @@ func TestActivityVocabularyType_GobDecode(t *testing.T) {
 		{
 			name:    "some activity type",
 			t:       PersonType,
-			data:    gobValue("Person"),
+			data:    gobValue([]byte("Person")),
 			wantErr: false,
 		},
 	}
