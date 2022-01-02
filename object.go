@@ -309,32 +309,389 @@ func (o Object) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 
-/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (o *Object) UnmarshalBinary(data []byte) error {
-	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *o))
+	return o.GobDecode(data)
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (o Object) MarshalBinary() ([]byte, error) {
-	w := &bytes.Buffer{}
-	enc := gobEncoder{ w: w, enc: gob.NewEncoder(w) }
-	if _, err := enc.writeObjectGobValue(o); err != nil {
-		return nil, err
+	return o.GobEncode()
+}
+
+func gobDecodeItem(it Item, data []byte) error {
+	return nil
+}
+
+func gobEncodeItemCollection(g *gob.Encoder, col ItemCollection) error {
+	return g.Encode(col)
+}
+
+func gobEncodeItem(it Item) ([]byte, error) {
+	b := bytes.Buffer{}
+	var err error
+	if IsIRI(it) {
+		g := gob.NewEncoder(&b)
+		err = gobEncodeStringLikeType(g, []byte(it.GetLink()))
 	}
-	return w.Bytes(), nil
+	if IsItemCollection(it) {
+		g := gob.NewEncoder(&b)
+		err = OnItemCollection(it, func(col *ItemCollection) error {
+			return gobEncodeItemCollection(g, *col)
+		})
+	}
+	switch it.GetType() {
+	case "", ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
+		err = OnObject(it, func(ob *Object) error {
+			bytes, err := ob.GobEncode()
+			b.Write(bytes)
+			return err
+		})
+	case LinkType, MentionType:
+		err = OnLink(it, func(l *Link) error {
+			bytes, err := l.GobEncode()
+			b.Write(bytes)
+			return err
+		})
+	case ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
+		FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
+		RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType:
+		err = OnActivity(it, func(act *Activity) error {
+			bytes, err := act.GobEncode()
+			b.Write(bytes)
+			return err
+		})
+	case IntransitiveActivityType, ArriveType, TravelType:
+		err = OnIntransitiveActivity(it, func(act *IntransitiveActivity) error {
+			bytes, err := act.GobEncode()
+			b.Write(bytes)
+			return err
+		})
+	case ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType:
+		err = OnActor(it, func(a *Actor) error {
+			bytes, err := a.GobEncode()
+			b.Write(bytes)
+			return err
+		})
+	case CollectionType:
+		err = OnCollection(it, func(c *Collection) error {
+			return nil
+		})
+	case OrderedCollectionType:
+		err = OnOrderedCollection(it, func(c *OrderedCollection) error {
+			return nil
+		})
+	case CollectionPageType:
+		err = OnCollectionPage(it, func(p *CollectionPage) error {
+			return nil
+		})
+	case OrderedCollectionPageType:
+		err = OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
+			return nil
+		})
+	case PlaceType:
+		err = OnPlace(it, func(p *Place) error {
+			return nil
+		})
+	case ProfileType:
+		err = OnProfile(it, func(p *Profile) error {
+			return nil
+		})
+	case RelationshipType:
+		err = OnRelationship(it, func(r *Relationship) error {
+			return nil
+		})
+	case TombstoneType:
+		err = OnTombstone(it, func(t *Tombstone) error {
+			return nil
+		})
+	case QuestionType:
+		err = OnQuestion(it, func(q *Question) error {
+			return nil
+		})
+	}
+	return b.Bytes(), err
+}
+
+func mapObjectProperties(mm map[string][]byte, o *Object) (hasData bool, err error) {
+	if len(o.ID) > 0 {
+		if mm["id"], err = o.ID.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if len(o.Type) > 0 {
+		if mm["type"], err = o.Type.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if len(o.MediaType) > 0 {
+		if mm["mediaType"], err = o.MediaType.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if len(o.Name) > 0 {
+		if mm["name"], err = o.Name.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Attachment != nil {
+		if mm["attachment"], err = gobEncodeItem(o.Attachment); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.AttributedTo != nil {
+		if mm["attributedTo"], err = gobEncodeItem(o.AttributedTo); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Audience != nil {
+		if mm["audience"], err = gobEncodeItem(o.Audience); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Content != nil {
+		if mm["content"], err = o.Content.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Context != nil {
+		if mm["context"], err = gobEncodeItem(o.Context); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if len(o.MediaType) > 0 {
+		if mm["mediaType"], err = o.MediaType.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if !o.EndTime.IsZero() {
+		if mm["endTime"], err = o.EndTime.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Generator != nil {
+		if mm["generator"], err = gobEncodeItem(o.Generator); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Icon != nil {
+		if mm["icon"], err = gobEncodeItem(o.Icon); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Image != nil {
+		if mm["image"], err = gobEncodeItem(o.Image); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.InReplyTo != nil {
+		if mm["inReplyTo"], err = gobEncodeItem(o.InReplyTo); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Location != nil {
+		if mm["location"], err = gobEncodeItem(o.Location); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Preview != nil {
+		if mm["preview"], err = gobEncodeItem(o.Preview); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if !o.Published.IsZero() {
+		if mm["published"], err = o.Published.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Replies != nil {
+		if mm["replies"], err = gobEncodeItem(o.Replies); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if !o.StartTime.IsZero() {
+		if mm["startTime"], err = o.StartTime.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if len(o.Summary) > 0 {
+		if mm["summary"], err = o.Summary.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Tag != nil {
+		if mm["tag"], err = gobEncodeItem(o.Tag); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if !o.Updated.IsZero() {
+		if mm["updated"], err = o.Updated.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Tag != nil {
+		if mm["tag"], err = gobEncodeItem(o.Tag); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if !o.Updated.IsZero() {
+		if mm["updated"], err = o.Updated.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.URL != nil {
+		if mm["url"], err = gobEncodeItem(o.URL); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.To != nil {
+		if mm["to"], err = gobEncodeItem(o.To); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Bto != nil {
+		if mm["bto"], err = gobEncodeItem(o.Bto); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.CC != nil {
+		if mm["cc"], err = gobEncodeItem(o.CC); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.BCC != nil {
+		if mm["bcc"], err = gobEncodeItem(o.BCC); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Duration > 0 {
+		if mm["duration"], err = gobEncodeInt64(int64(o.Duration)); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Likes != nil {
+		if mm["likes"], err = gobEncodeItem(o.Likes); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Shares != nil {
+		if mm["shares"], err = gobEncodeItem(o.Shares); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if o.Shares != nil {
+		if mm["shares"], err = gobEncodeItem(o.Shares); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if len(o.Source.MediaType)+len(o.Source.Content) > 0 {
+		if mm["source"], err = o.Source.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+
+	return hasData, nil
 }
 
 // GobEncode
 func (o Object) GobEncode() ([]byte, error) {
-	return o.MarshalBinary()
+	mm := make(map[string][]byte)
+	hasData, err := mapObjectProperties(mm, &o)
+	if err != nil {
+		return nil, err
+	}
+	if !hasData {
+		return []byte{}, nil
+	}
+	bb := bytes.Buffer{}
+	g := gob.NewEncoder(&bb)
+	if err := g.Encode(mm); err != nil {
+		return nil, err
+	}
+	return bb.Bytes(), nil
+}
+
+func unmapObjectProperties(mm map[string][]byte, o *Object) error {
+	if raw, ok := mm["id"]; ok {
+		if err := o.ID.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["type"]; ok {
+		if err := o.Type.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["mediaType"]; ok {
+		if err := o.MediaType.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["name"]; ok {
+		if err := o.Name.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["attachment"]; ok {
+		if err := gobDecodeItem(o.Attachment, raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["source"]; ok {
+		if err := o.Source.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // GobDecode
 func (o *Object) GobDecode(data []byte) error {
-	return o.UnmarshalBinary(data)
+	if len(data) == 0 {
+		return nil
+	}
+	mm := make(map[string][]byte)
+	g := gob.NewDecoder(bytes.NewReader(data))
+	if err := g.Decode(&mm); err != nil {
+		return err
+	}
+	return unmapObjectProperties(mm, o)
 }
-*/
 
 // Recipients performs recipient de-duplication on the Object's To, Bto, CC and BCC properties
 func (o *Object) Recipients() ItemCollection {

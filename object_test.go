@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"reflect"
 	"testing"
 	"time"
@@ -972,6 +973,108 @@ func TestObject_Equals(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.o.Equals(tt.args.with); got != tt.want {
 				t.Errorf("Equals() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestObject_GobEncode(t *testing.T) {
+	type fields struct {
+		ID           ID
+		Type         ActivityVocabularyType
+		Name         NaturalLanguageValues
+		Attachment   Item
+		AttributedTo Item
+		Audience     ItemCollection
+		Content      NaturalLanguageValues
+		Context      Item
+		MediaType    MimeType
+		EndTime      time.Time
+		Generator    Item
+		Icon         Item
+		Image        Item
+		InReplyTo    Item
+		Location     Item
+		Preview      Item
+		Published    time.Time
+		Replies      Item
+		StartTime    time.Time
+		Summary      NaturalLanguageValues
+		Tag          ItemCollection
+		Updated      time.Time
+		URL          Item
+		To           ItemCollection
+		Bto          ItemCollection
+		CC           ItemCollection
+		BCC          ItemCollection
+		Duration     time.Duration
+		Likes        Item
+		Shares       Item
+		Source       Source
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			fields:  fields{},
+			want:    []byte{},
+			wantErr: false,
+		},
+		// NOTE(marius): this doesn't really work because the types are not consistent between gobValue
+		// and our used encoding method
+		//{
+		//	name:    "with ID",
+		//	fields:  fields{ID: ID("https://example.com")},
+		//	want:    gobValue(Object{ID: "https://example.com"}),
+		//	wantErr: false,
+		//},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			o := Object{
+				ID:           tt.fields.ID,
+				Type:         tt.fields.Type,
+				Name:         tt.fields.Name,
+				Attachment:   tt.fields.Attachment,
+				AttributedTo: tt.fields.AttributedTo,
+				Audience:     tt.fields.Audience,
+				Content:      tt.fields.Content,
+				Context:      tt.fields.Context,
+				MediaType:    tt.fields.MediaType,
+				EndTime:      tt.fields.EndTime,
+				Generator:    tt.fields.Generator,
+				Icon:         tt.fields.Icon,
+				Image:        tt.fields.Image,
+				InReplyTo:    tt.fields.InReplyTo,
+				Location:     tt.fields.Location,
+				Preview:      tt.fields.Preview,
+				Published:    tt.fields.Published,
+				Replies:      tt.fields.Replies,
+				StartTime:    tt.fields.StartTime,
+				Summary:      tt.fields.Summary,
+				Tag:          tt.fields.Tag,
+				Updated:      tt.fields.Updated,
+				URL:          tt.fields.URL,
+				To:           tt.fields.To,
+				Bto:          tt.fields.Bto,
+				CC:           tt.fields.CC,
+				BCC:          tt.fields.BCC,
+				Duration:     tt.fields.Duration,
+				Likes:        tt.fields.Likes,
+				Shares:       tt.fields.Shares,
+				Source:       tt.fields.Source,
+			}
+			got, err := o.GobEncode()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GobEncode() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("GobEncode() got/want =\n%v\n%v\n", got, tt.want)
 			}
 		})
 	}
