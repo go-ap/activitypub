@@ -647,7 +647,7 @@ func TestObject_MarshalJSON(t *testing.T) {
 		Summary      NaturalLanguageValues
 		Tag          ItemCollection
 		Updated      time.Time
-		URL          LinkOrIRI
+		URL          Item
 		To           ItemCollection
 		Bto          ItemCollection
 		CC           ItemCollection
