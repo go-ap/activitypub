@@ -196,7 +196,7 @@ func (l *LangRefValue) UnmarshalText(data []byte) error {
 	return nil
 }
 
-func encodeGobStringLikeType(g *gob.Encoder, s []byte) error {
+func gobEncodeStringLikeType(g *gob.Encoder, s []byte) error {
 	if err := g.Encode(s); err != nil {
 		return err
 	}
@@ -209,7 +209,7 @@ func (l LangRef) GobEncode() ([]byte, error) {
 	}
 	b := new(bytes.Buffer)
 	gg := gob.NewEncoder(b)
-	if err := encodeGobStringLikeType(gg, []byte(l)); err != nil {
+	if err := gobEncodeStringLikeType(gg, []byte(l)); err != nil {
 		return nil, err
 	}
 	return b.Bytes(), nil
@@ -348,7 +348,7 @@ func (c Content) GobEncode() ([]byte, error) {
 	}
 	b := new(bytes.Buffer)
 	gg := gob.NewEncoder(b)
-	if err := encodeGobStringLikeType(gg, c); err != nil {
+	if err := gobEncodeStringLikeType(gg, c); err != nil {
 		return nil, err
 	}
 	return b.Bytes(), nil

@@ -86,7 +86,7 @@ func (i IRI) GobEncode() ([]byte, error) {
 	}
 	b := bytes.Buffer{}
 	gg := gob.NewEncoder(&b)
-	if err := encodeGobStringLikeType(gg, []byte(i)); err != nil {
+	if err := gobEncodeStringLikeType(gg, []byte(i)); err != nil {
 		return nil, err
 	}
 	return b.Bytes(), nil

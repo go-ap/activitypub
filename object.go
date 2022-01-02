@@ -118,7 +118,7 @@ func (a ActivityVocabularyType) GobEncode() ([]byte, error) {
 	}
 	b := bytes.Buffer{}
 	gg := gob.NewEncoder(&b)
-	if err := encodeGobStringLikeType(gg, []byte(a)); err != nil {
+	if err := gobEncodeStringLikeType(gg, []byte(a)); err != nil {
 		return nil, err
 	}
 	return b.Bytes(), nil
@@ -390,7 +390,7 @@ func (m MimeType) GobEncode() ([]byte, error) {
 	}
 	b := bytes.Buffer{}
 	gg := gob.NewEncoder(&b)
-	if err := encodeGobStringLikeType(gg, []byte(m)); err != nil {
+	if err := gobEncodeStringLikeType(gg, []byte(m)); err != nil {
 		return nil, err
 	}
 	return b.Bytes(), nil
