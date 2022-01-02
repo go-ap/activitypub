@@ -189,10 +189,12 @@ func (a Actor) IsCollection() bool {
 }
 
 // PublicKey holds the ActivityPub compatible public key data
+// The document reference can be found at:
+// https://web-payments.org/vocabs/security#publicKey
 type PublicKey struct {
-	ID           ID           `jsonld:"id,omitempty"`
-	Owner        ObjectOrLink `jsonld:"owner,omitempty"`
-	PublicKeyPem string       `jsonld:"publicKeyPem,omitempty"`
+	ID           ID     `jsonld:"id,omitempty"`
+	Owner        IRI    `jsonld:"owner,omitempty"`
+	PublicKeyPem string `jsonld:"publicKeyPem,omitempty"`
 }
 
 func (p *PublicKey) UnmarshalJSON(data []byte) error {
@@ -212,7 +214,7 @@ func (p PublicKey) MarshalJSON() ([]byte, error) {
 	if v, err := p.ID.MarshalJSON(); err == nil && len(v) > 0 {
 		notEmpty = !writeJSONProp(&b, "id", v)
 	}
-	if p.Owner != nil {
+	if len(p.Owner) > 0 {
 		notEmpty = writeIRIJSONProp(&b, "owner", p.Owner) || notEmpty
 	}
 	if len(p.PublicKeyPem) > 0 {

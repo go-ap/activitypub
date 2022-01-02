@@ -378,9 +378,7 @@ func notEmptyActor(a *Actor) bool {
 		a.PreferredUsername != nil ||
 		a.Endpoints != nil ||
 		a.Streams != nil ||
-		len(a.PublicKey.ID) > 0 ||
-		(a.PublicKey.Owner != nil &&
-			len(a.PublicKey.PublicKeyPem) > 0)
+		len(a.PublicKey.ID)+len(a.PublicKey.Owner)+len(a.PublicKey.PublicKeyPem) > 0
 }
 
 // NotEmpty tells us if a Item interface value has a non nil value for various types
