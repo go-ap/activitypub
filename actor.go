@@ -1,7 +1,10 @@
 package activitypub
 
 import (
+	"bytes"
+	"encoding/gob"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"time"
@@ -230,25 +233,104 @@ func (p PublicKey) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 
-/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (a *Actor) UnmarshalBinary(data []byte) error {
-	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *a))
+	return a.GobDecode(data)
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (a Actor) MarshalBinary() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", a))
+	return a.GobEncode()
+}
+
+func mapActorProperties(mm map[string][]byte, a *Actor) (hasData bool, err error) {
+	err = OnObject(a, func(o *Object) error {
+		hasData, err = mapObjectProperties(mm, o)
+		return err
+	})
+	if a.Inbox != nil {
+		if mm["inbox"], err = gobEncodeItem(a.Inbox); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if a.Inbox != nil {
+		if mm["inbox"], err = gobEncodeItem(a.Inbox); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if a.Outbox != nil {
+		if mm["outbox"], err = gobEncodeItem(a.Outbox); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if a.Following != nil {
+		if mm["following"], err = gobEncodeItem(a.Following); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if a.Followers != nil {
+		if mm["followers"], err = gobEncodeItem(a.Followers); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if a.Liked != nil {
+		if mm["liked"], err = gobEncodeItem(a.Liked); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if len(a.PreferredUsername) > 0 {
+		if mm["preferredUsername"], err = a.PreferredUsername.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if a.Endpoints != nil {
+		if mm["endpoints"], err = a.Endpoints.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if len(a.Streams) > 0 {
+		//if mm["streams"], err = gobDecodeItem(a.Streams); err != nil {
+		//	return hasData, err
+		//}
+		//hasData = true
+	}
+	if len(a.PublicKey.PublicKeyPem)+len(a.PublicKey.ID) > 0 {
+		if mm["publicKey"], err = a.PublicKey.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	return hasData, err
 }
 
 func (a Actor) GobEncode() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", a))
+	var mm = make(map[string][]byte)
+	hasData, err := mapActorProperties(mm, &a)
+	if err != nil {
+		return nil, err
+	}
+	if !hasData {
+		return []byte{}, nil
+	}
+	bb := bytes.Buffer{}
+	g := gob.NewEncoder(&bb)
+	if err := g.Encode(mm); err != nil {
+		return nil, err
+	}
+	return bb.Bytes(), nil
 }
 
 func (a *Actor) GobDecode([]byte) error {
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *a))
 }
-*/
 
 type (
 	// Application describes a software application.
@@ -508,4 +590,49 @@ func (a Actor) Equals(with Item) bool {
 		return nil
 	})
 	return result
+}
+
+func (e Endpoints) GobEncode() ([]byte, error) {
+	return nil, nil
+}
+
+func (e *Endpoints) GobDecode(data []byte) error {
+	return nil
+}
+
+func (p PublicKey) GobEncode() ([]byte, error) {
+	var (
+		mm      = make(map[string][]byte)
+		err     error
+		hasData bool
+	)
+	if len(p.ID) > 0 {
+		if mm["id"], err = p.ID.GobEncode(); err != nil {
+			return nil, err
+		}
+		hasData = true
+	}
+	if len(p.PublicKeyPem) > 0 {
+		mm["publicKeyPem"] = []byte(p.PublicKeyPem)
+		hasData = true
+	}
+	if len(p.Owner) > 0 {
+		if mm["owner"], err = gobEncodeItem(p.Owner); err != nil {
+			return nil, err
+		}
+		hasData = true
+	}
+	if !hasData {
+		return []byte{}, nil
+	}
+	bb := bytes.Buffer{}
+	g := gob.NewEncoder(&bb)
+	if err := g.Encode(mm); err != nil {
+		return nil, err
+	}
+	return bb.Bytes(), nil
+}
+
+func (p *PublicKey) GobDecode(data []byte) error {
+	return nil
 }
