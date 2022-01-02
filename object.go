@@ -556,27 +556,68 @@ func (s Source) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 
-/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (s *Source) UnmarshalBinary(data []byte) error {
-	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *s))
+	return s.GobDecode(data)
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (s Source) MarshalBinary() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", s))
+	return s.GobEncode()
 }
 
 // GobDecode
-func (s *Source) GobDecode([]byte) error {
-	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *s))
+func (s *Source) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
+	mm := make(map[string][]byte)
+	g := gob.NewDecoder(bytes.NewReader(data))
+	if err := g.Decode(&mm); err != nil {
+		return err
+	}
+	if raw, ok := mm["mediaType"]; ok {
+		if err := s.MediaType.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["content"]; ok {
+		if err := s.Content.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // GobEncode
 func (s Source) GobEncode() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", s))
+	var (
+		mm      = make(map[string][]byte)
+		err     error
+		hasData bool
+	)
+	if len(s.MediaType) > 0 {
+		if mm["mediaType"], err = s.MediaType.GobEncode(); err != nil {
+			return nil, err
+		}
+		hasData = true
+	}
+	if len(s.Content) > 0 {
+		if mm["content"], err = s.Content.GobEncode(); err != nil {
+			return nil, err
+		}
+		hasData = true
+	}
+	if !hasData {
+		return []byte{}, nil
+	}
+	bb := bytes.Buffer{}
+	g := gob.NewEncoder(&bb)
+	if err := g.Encode(mm); err != nil {
+		return nil, err
+	}
+	return bb.Bytes(), nil
 }
-*/
 
 // Equals verifies if our receiver Object is equals with the "with" Object
 func (o Object) Equals(with Item) bool {
