@@ -124,16 +124,6 @@ func (l Link) MarshalBinary() ([]byte, error) {
 	return l.GobEncode()
 }
 
-// TODO(marius): when migrating to go1.18, use a numeric constraint for this
-func gobEncodeUint(i uint) ([]byte, error) {
-	b := bytes.Buffer{}
-	gg := gob.NewEncoder(&b)
-	if err := gg.Encode(i); err != nil {
-		return nil, err
-	}
-	return b.Bytes(), nil
-}
-
 func (l Link) GobEncode() ([]byte, error) {
 	var (
 		mm      = make(map[string][]byte)

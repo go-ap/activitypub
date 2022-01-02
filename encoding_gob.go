@@ -25,6 +25,26 @@ func (e *gobEncoder) encode(it Item) ([]byte, error) {
 	return e.w.Bytes(), nil
 }
 
+// TODO(marius): when migrating to go1.18, use a numeric constraint for this
+func gobEncodeInt64(i int64) ([]byte, error) {
+	b := bytes.Buffer{}
+	gg := gob.NewEncoder(&b)
+	if err := gg.Encode(i); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+// TODO(marius): when migrating to go1.18, use a numeric constraint for this
+func gobEncodeUint(i uint) ([]byte, error) {
+	b := bytes.Buffer{}
+	gg := gob.NewEncoder(&b)
+	if err := gg.Encode(i); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
 //// GobEncode
 //func GobEncode(it Item) ([]byte, error) {
 //	w := bytes.NewBuffer(make([]byte, 0))
