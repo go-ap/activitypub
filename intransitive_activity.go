@@ -1,7 +1,10 @@
 package activitypub
 
 import (
+	"bytes"
+	"encoding/gob"
 	"errors"
+	"fmt"
 	"reflect"
 	"time"
 	"unsafe"
@@ -199,25 +202,36 @@ func (i IntransitiveActivity) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
-/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (i *IntransitiveActivity) UnmarshalBinary(data []byte) error {
-	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *i))
+	return i.GobDecode(data)
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (i IntransitiveActivity) MarshalBinary() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", i))
+	return i.GobEncode()
 }
 
 func (i IntransitiveActivity) GobEncode() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", i))
+	var mm = make(map[string][]byte)
+	hasData, err := mapIntransitiveActivityProperties(mm, &i)
+	if err != nil {
+		return nil, err
+	}
+	if !hasData {
+		return []byte{}, nil
+	}
+	bb := bytes.Buffer{}
+	g := gob.NewEncoder(&bb)
+	if err := g.Encode(mm); err != nil {
+		return nil, err
+	}
+	return bb.Bytes(), nil
 }
 
 func (i *IntransitiveActivity) GobDecode([]byte) error {
 	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *i))
 }
-*/
 
 // IntransitiveActivityNew initializes a intransitive activity
 func IntransitiveActivityNew(id ID, typ ActivityVocabularyType) *IntransitiveActivity {
