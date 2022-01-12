@@ -92,6 +92,23 @@ func (i IRI) GobEncode() ([]byte, error) {
 	return b.Bytes(), nil
 }
 
+// GobEncode
+func (i IRIs) GobEncode() ([]byte, error) {
+	if len(i) == 0 {
+		return []byte{}, nil
+	}
+	b := bytes.Buffer{}
+	gg := gob.NewEncoder(&b)
+	bb := make([][]byte, 0)
+	for _, iri := range i {
+		bb = append(bb, []byte(iri))
+	}
+	if err := gg.Encode(bb); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
 // GobDecode
 func (i *IRI) GobDecode(data []byte) error {
 	if len(data) == 0 {
@@ -103,6 +120,21 @@ func (i *IRI) GobDecode(data []byte) error {
 		return err
 	}
 	*i = IRI(bb)
+	return nil
+}
+
+func (i *IRIs) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		// NOTE(marius): this behaviour diverges from vanilla gob package
+		return nil
+	}
+	bb := make([][]byte, 0)
+	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
+		return err
+	}
+	for _, b := range bb {
+		*i = append(*i, IRI(b))
+	}
 	return nil
 }
 
