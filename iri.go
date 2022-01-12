@@ -118,7 +118,7 @@ func (i IRI) GetID() ID {
 
 // GetType
 func (i IRI) GetType() ActivityVocabularyType {
-	return LinkType
+	return IRIType
 }
 
 // IsLink

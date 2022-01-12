@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	IRIType                   ActivityVocabularyType = "IRI"
 	ObjectType                ActivityVocabularyType = "Object"
 	LinkType                  ActivityVocabularyType = "Link"
 	ActivityType              ActivityVocabularyType = "Activity"
