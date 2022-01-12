@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"bytes"
 	"reflect"
 	"testing"
 	"time"
@@ -1015,23 +1014,48 @@ func TestObject_GobEncode(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		want    []byte
 		wantErr bool
 	}{
 		{
 			name:    "empty",
 			fields:  fields{},
-			want:    []byte{},
 			wantErr: false,
 		},
-		// NOTE(marius): this doesn't really work because the types are not consistent between gobValue
-		// and our used encoding method
-		//{
-		//	name:    "with ID",
-		//	fields:  fields{ID: ID("https://example.com")},
-		//	want:    gobValue(Object{ID: "https://example.com"}),
-		//	wantErr: false,
-		//},
+		{
+			name:    "with ID",
+			fields:  fields{ID: ID("https://example.com")},
+			wantErr: false,
+		},
+		{
+			name:    "with ID, type",
+			fields:  fields{ID: ID("https://example.com"), Type: ObjectType},
+			wantErr: false,
+		},
+		{
+			name:    "with ID, type, name",
+			fields:  fields{ID: ID("https://example.com"), Type: ObjectType, Name: NaturalLanguageValues{LangRefValue{LangRef("en"), Content("ana")}}},
+			wantErr: false,
+		},
+		{
+			name:    "with Source",
+			fields:  fields{Source: Source{MediaType: "image/svg+xml", Content: NaturalLanguageValues{{NilLangRef, Content("data:image/svg+xml,%3csvg%3e %3c/svg%3e")}}}},
+			wantErr: false,
+		},
+		{
+			name:    "with IRI AttributedTo",
+			fields:  fields{AttributedTo: IRI("https://example.com/1")},
+			wantErr: false,
+		},
+		{
+			name:    "with multiple IRIs AttributedTo",
+			fields:  fields{AttributedTo: ItemCollection{IRI("https://example.com/1"), IRI("https://example.com/2")}},
+			wantErr: false,
+		},
+		{
+			name:    "with multiple IRIs AttributedTo",
+			fields:  fields{AttributedTo: Object{ID: "https://example.com/1"}},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -1073,8 +1097,13 @@ func TestObject_GobEncode(t *testing.T) {
 				t.Errorf("GobEncode() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !bytes.Equal(got, tt.want) {
-				t.Errorf("GobEncode() got/want =\n%v\n%v\n", got, tt.want)
+			ob := Object{}
+			if err = ob.GobDecode(got); (err != nil) != tt.wantErr {
+				t.Errorf("GobDecode() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(ob, o) {
+				t.Errorf("GobEncode() got/want =\n%#v\n%#v\n", ob, o)
 			}
 		})
 	}

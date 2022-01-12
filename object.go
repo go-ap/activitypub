@@ -3,6 +3,7 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -320,12 +321,60 @@ func (o Object) MarshalBinary() ([]byte, error) {
 	return o.GobEncode()
 }
 
-func gobDecodeItem(it Item, data []byte) error {
+func tryDecodeObject(ob *Object, data []byte) error {
+	if err := ob.GobDecode(data); err != nil {
+		return err
+	}
 	return nil
 }
 
-func gobEncodeItemCollection(g *gob.Encoder, col ItemCollection) error {
-	return g.Encode(col)
+func tryDecodeItems(items *ItemCollection, data []byte) error {
+	tt := make([][]byte, 0)
+	g := gob.NewDecoder(bytes.NewReader(data))
+	if err := g.Decode(&tt); err != nil {
+		return err
+	}
+	for _, it := range tt {
+		ob, err := gobDecodeItem(it)
+		if err != nil {
+			return err
+		}
+		*items = append(*items, ob)
+	}
+	return nil
+}
+
+func tryDecodeIRIs(iris *IRIs, data []byte) error {
+	return iris.GobDecode(data)
+}
+
+func tryDecodeIRI(iri *IRI, data []byte) error {
+	return iri.GobDecode(data)
+}
+
+func gobDecodeItem(data []byte) (Item, error) {
+	iri := IRI("")
+	if err := tryDecodeIRI(&iri, data); err == nil {
+		return iri, err
+	}
+	ob := Object{}
+	if err := tryDecodeObject(&ob, data); err == nil {
+		return ob, nil
+	}
+	items := make(ItemCollection, 0)
+	if err := tryDecodeItems(&items, data); err == nil {
+		return items, nil
+	}
+	iris := make(IRIs, 0)
+	if err := tryDecodeIRIs(&iris, data); err == nil {
+		it := make(ItemCollection, len(iris))
+		for i, iri := range iris {
+			it[i] = iri
+		}
+		return it, nil
+	}
+
+	return nil, errors.New("unable to decode to any known ActivityPub types")
 }
 
 func gobEncodeItem(it Item) ([]byte, error) {
@@ -337,11 +386,21 @@ func gobEncodeItem(it Item) ([]byte, error) {
 	}
 	if IsItemCollection(it) {
 		g := gob.NewEncoder(&b)
+		tt := make([][]byte, 0)
 		err = OnItemCollection(it, func(col *ItemCollection) error {
-			return gobEncodeItemCollection(g, *col)
+			for _, it := range col.Collection() {
+				single, _ := gobEncodeItem(it)
+				tt = append(tt, single)
+			}
+			return nil
 		})
+		err = g.Encode(tt)
 	}
 	switch it.GetType() {
+	case IRIType:
+		var bytes []byte
+		bytes, err = it.(IRI).GobEncode()
+		b.Write(bytes)
 	case "", ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
 		err = OnObject(it, func(ob *Object) error {
 			bytes, err := ob.GobEncode()
@@ -668,8 +727,14 @@ func unmapObjectProperties(mm map[string][]byte, o *Object) error {
 			return err
 		}
 	}
+	var err error
 	if raw, ok := mm["attachment"]; ok {
-		if err := gobDecodeItem(o.Attachment, raw); err != nil {
+		if o.Attachment, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["attributedTo"]; ok {
+		if o.AttributedTo, err = gobDecodeItem(raw); err != nil {
 			return err
 		}
 	}
