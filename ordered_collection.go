@@ -1,6 +1,8 @@
 package activitypub
 
 import (
+	"bytes"
+	"encoding/gob"
 	"errors"
 	"reflect"
 	"time"
@@ -266,27 +268,45 @@ func (o OrderedCollection) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 
-/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (o *OrderedCollection) UnmarshalBinary(data []byte) error {
-	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *o))
+	return o.GobDecode(data)
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (o OrderedCollection) MarshalBinary() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", o))
+	return o.GobEncode()
 }
 
 // GobEncode
 func (o OrderedCollection) GobEncode() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", o))
+	var mm = make(map[string][]byte)
+	hasData, err := mapOrderedCollectionProperties(mm, o)
+	if err != nil {
+		return nil, err
+	}
+	if !hasData {
+		return []byte{}, nil
+	}
+	bb := bytes.Buffer{}
+	g := gob.NewEncoder(&bb)
+	if err := g.Encode(mm); err != nil {
+		return nil, err
+	}
+	return bb.Bytes(), nil
 }
 
 // GobDecode
-func (o *OrderedCollection) GobDecode([]byte) error {
-	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *o))
+func (o *OrderedCollection) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
+	mm, err := gobDecodeObjectAsMap(data)
+	if err != nil {
+		return err
+	}
+	return unmapOrderedCollectionProperties(mm, o)
 }
-*/
 
 // OrderedCollectionPageNew initializes a new OrderedCollectionPage
 func OrderedCollectionPageNew(parent CollectionInterface) *OrderedCollectionPage {

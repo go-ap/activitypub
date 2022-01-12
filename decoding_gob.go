@@ -481,3 +481,111 @@ func gobDecodeObjectAsMap(data []byte) (map[string][]byte, error) {
 	}
 	return mm, nil
 }
+
+func unmapIncompleteCollectionProperties(mm map[string][]byte, c *Collection) error {
+	err := OnObject(c, func(ob *Object) error {
+		return unmapObjectProperties(mm, ob)
+	})
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["current"]; ok {
+		if c.Current, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["first"]; ok {
+		if c.First, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["last"]; ok {
+		if c.Last, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["totalItems"]; ok {
+		if err = gobDecodeUint(&c.TotalItems, raw); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func unmapCollectionProperties(mm map[string][]byte, c *Collection) error {
+	err := unmapIncompleteCollectionProperties(mm, c)
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["items"]; ok {
+		if c.Items, err = gobDecodeItems(raw); err != nil {
+			return err
+		}
+	}
+	return err
+}
+
+func unmapCollectionPageProperties(mm map[string][]byte, c *CollectionPage) error {
+	err := OnCollection(c, func(c *Collection) error {
+		return unmapCollectionProperties(mm, c)
+	})
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["partOf"]; ok {
+		if c.PartOf, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["next"]; ok {
+		if c.Next, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["prev"]; ok {
+		if c.Prev, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	return err
+}
+
+func unmapOrderedCollectionProperties(mm map[string][]byte, o *OrderedCollection) error {
+	err := OnCollection(o, func(c *Collection) error {
+		return unmapIncompleteCollectionProperties(mm, c)
+	})
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["orderedItems"]; ok {
+		if o.OrderedItems, err = gobDecodeItems(raw); err != nil {
+			return err
+		}
+	}
+	return err
+}
+
+func unmapOrderedCollectionPageProperties(mm map[string][]byte, c *OrderedCollectionPage) error {
+	err := OnOrderedCollection(c, func(c *OrderedCollection) error {
+		return unmapOrderedCollectionProperties(mm, c)
+	})
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["partOf"]; ok {
+		if c.PartOf, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["next"]; ok {
+		if c.Next, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["prev"]; ok {
+		if c.Prev, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	return err
+}

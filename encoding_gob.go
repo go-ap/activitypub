@@ -26,6 +26,20 @@ func gobEncodeUint(i uint) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
+func gobEncodeItems(col ItemCollection) ([]byte, error) {
+	b := bytes.Buffer{}
+	tt := make([][]byte, 0)
+	for _, it := range col.Collection() {
+		single, err := gobEncodeItem(it)
+		if err != nil {
+			return nil, err
+		}
+		tt = append(tt, single)
+	}
+	err := gob.NewEncoder(&b).Encode(tt)
+	return b.Bytes(), err
+}
+
 func gobEncodeItem(it Item) ([]byte, error) {
 	b := bytes.Buffer{}
 	var err error
@@ -34,16 +48,11 @@ func gobEncodeItem(it Item) ([]byte, error) {
 		err = gobEncodeStringLikeType(g, []byte(it.GetLink()))
 	}
 	if IsItemCollection(it) {
-		g := gob.NewEncoder(&b)
-		tt := make([][]byte, 0)
 		err = OnItemCollection(it, func(col *ItemCollection) error {
-			for _, it := range col.Collection() {
-				single, _ := gobEncodeItem(it)
-				tt = append(tt, single)
-			}
-			return nil
+			bytes, err := gobEncodeItems(*col)
+			b.Write(bytes)
+			return err
 		})
-		err = g.Encode(tt)
 	}
 	switch it.GetType() {
 	case IRIType:
@@ -84,19 +93,27 @@ func gobEncodeItem(it Item) ([]byte, error) {
 		})
 	case CollectionType:
 		err = OnCollection(it, func(c *Collection) error {
-			return fmt.Errorf("TODO: Implement encode of %T", c)
+			bytes, err := c.GobEncode()
+			b.Write(bytes)
+			return err
 		})
 	case OrderedCollectionType:
 		err = OnOrderedCollection(it, func(c *OrderedCollection) error {
-			return fmt.Errorf("TODO: Implement encode of %T", c)
+			bytes, err := c.GobEncode()
+			b.Write(bytes)
+			return err
 		})
 	case CollectionPageType:
 		err = OnCollectionPage(it, func(p *CollectionPage) error {
-			return fmt.Errorf("TODO: Implement encode of %T", p)
+			bytes, err := p.GobEncode()
+			b.Write(bytes)
+			return err
 		})
 	case OrderedCollectionPageType:
 		err = OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
-			return fmt.Errorf("TODO: Implement encode of %T", p)
+			bytes, err := p.GobEncode()
+			b.Write(bytes)
+			return err
 		})
 	case PlaceType:
 		err = OnPlace(it, func(p *Place) error {
@@ -403,4 +420,116 @@ func mapActorProperties(mm map[string][]byte, a *Actor) (hasData bool, err error
 		hasData = true
 	}
 	return hasData, err
+}
+
+func mapIncompleteCollectionProperties(mm map[string][]byte, c Collection) (hasData bool, err error) {
+	err = OnObject(c, func(o *Object) error {
+		hasData, err = mapObjectProperties(mm, o)
+		return err
+	})
+	if c.Current != nil {
+		if mm["current"], err = gobEncodeItem(c.Current); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if c.First != nil {
+		if mm["first"], err = gobEncodeItem(c.First); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if c.Last != nil {
+		if mm["last"], err = gobEncodeItem(c.Last); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if c.TotalItems > 0 {
+		hasData = true
+	}
+	if mm["totalItems"], err = gobEncodeUint(c.TotalItems); err != nil {
+		return hasData, err
+	}
+	return
+}
+
+func mapCollectionProperties(mm map[string][]byte, c Collection) (hasData bool, err error) {
+	hasData, err = mapIncompleteCollectionProperties(mm, c)
+	if err != nil {
+		return hasData, err
+	}
+	if c.Items != nil {
+		if mm["items"], err = gobEncodeItems(c.Items); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	return
+}
+
+func mapOrderedCollectionProperties(mm map[string][]byte, c OrderedCollection) (hasData bool, err error) {
+	err = OnCollection(c, func(c *Collection) error {
+		hasData, err = mapIncompleteCollectionProperties(mm, *c)
+		return err
+	})
+	if c.OrderedItems != nil {
+		if mm["orderedItems"], err = gobEncodeItems(c.OrderedItems); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	return
+}
+
+func mapCollectionPageProperties(mm map[string][]byte, c CollectionPage) (hasData bool, err error) {
+	err = OnCollection(c, func(c *Collection) error {
+		hasData, err = mapCollectionProperties(mm, *c)
+		return err
+	})
+	if c.PartOf != nil {
+		if mm["partOf"], err = gobEncodeItem(c.PartOf); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if c.Next != nil {
+		if mm["next"], err = gobEncodeItem(c.Next); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if c.Prev != nil {
+		if mm["prev"], err = gobEncodeItem(c.Prev); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	return
+}
+
+func mapOrderedCollectionPageProperties(mm map[string][]byte, c OrderedCollectionPage) (hasData bool, err error) {
+	err = OnOrderedCollection(c, func(c *OrderedCollection) error {
+		hasData, err = mapOrderedCollectionProperties(mm, *c)
+		return err
+	})
+	if c.PartOf != nil {
+		if mm["partOf"], err = gobEncodeItem(c.PartOf); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if c.Next != nil {
+		if mm["next"], err = gobEncodeItem(c.Next); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if c.Prev != nil {
+		if mm["prev"], err = gobEncodeItem(c.Prev); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	return
 }
