@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -843,8 +842,15 @@ func (a Activity) GobEncode() ([]byte, error) {
 }
 
 // GobDecode
-func (a *Activity) GobDecode([]byte) error {
-	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *a))
+func (a *Activity) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
+	mm, err := gobDecodeObjectAsMap(data)
+	if err != nil {
+		return err
+	}
+	return unmapActivityProperties(mm, a)
 }
 
 // Equals verifies if our receiver Object is equals with the "with" Object

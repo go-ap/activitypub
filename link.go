@@ -204,55 +204,9 @@ func (l *Link) GobDecode(data []byte) error {
 	if len(data) == 0 {
 		return nil
 	}
-	mm := make(map[string][]byte)
-	g := gob.NewDecoder(bytes.NewReader(data))
-	if err := g.Decode(&mm); err != nil {
+	mm, err := gobDecodeObjectAsMap(data)
+	if err != nil {
 		return err
 	}
-	if raw, ok := mm["id"]; ok {
-		if err := l.ID.GobDecode(raw); err != nil {
-			return err
-		}
-	}
-	if raw, ok := mm["type"]; ok {
-		if err := l.Type.GobDecode(raw); err != nil {
-			return err
-		}
-	}
-	if raw, ok := mm["mediaType"]; ok {
-		if err := l.MediaType.GobDecode(raw); err != nil {
-			return err
-		}
-	}
-	if raw, ok := mm["href"]; ok {
-		if err := l.Href.GobDecode(raw); err != nil {
-			return err
-		}
-	}
-	if raw, ok := mm["hrefLang"]; ok {
-		if err := l.HrefLang.GobDecode(raw); err != nil {
-			return err
-		}
-	}
-	if raw, ok := mm["name"]; ok {
-		if err := l.Name.GobDecode(raw); err != nil {
-			return err
-		}
-	}
-	if raw, ok := mm["rel"]; ok {
-		if err := l.Rel.GobDecode(raw); err != nil {
-			return err
-		}
-	}
-	if raw, ok := mm["width"]; ok {
-		if err := gobDecodeUint(&l.Width, raw); err != nil {
-			return err
-		}
-	}
-	if raw, ok := mm["height"]; ok {
-		if err := gobDecodeUint(&l.Height, raw); err != nil {
-			return err
-		}
-	}
-	return nil
+	return unmapLinkProperties(mm, l)
 }

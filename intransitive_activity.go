@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"errors"
-	"fmt"
 	"reflect"
 	"time"
 	"unsafe"
@@ -229,8 +228,15 @@ func (i IntransitiveActivity) GobEncode() ([]byte, error) {
 	return bb.Bytes(), nil
 }
 
-func (i *IntransitiveActivity) GobDecode([]byte) error {
-	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *i))
+func (i *IntransitiveActivity) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
+	mm, err := gobDecodeObjectAsMap(data)
+	if err != nil {
+		return err
+	}
+	return unmapIntransitiveActivityProperties(mm, i)
 }
 
 // IntransitiveActivityNew initializes a intransitive activity

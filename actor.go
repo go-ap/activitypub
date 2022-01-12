@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"reflect"
 	"time"
@@ -243,74 +242,6 @@ func (a Actor) MarshalBinary() ([]byte, error) {
 	return a.GobEncode()
 }
 
-func mapActorProperties(mm map[string][]byte, a *Actor) (hasData bool, err error) {
-	err = OnObject(a, func(o *Object) error {
-		hasData, err = mapObjectProperties(mm, o)
-		return err
-	})
-	if a.Inbox != nil {
-		if mm["inbox"], err = gobEncodeItem(a.Inbox); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	if a.Inbox != nil {
-		if mm["inbox"], err = gobEncodeItem(a.Inbox); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	if a.Outbox != nil {
-		if mm["outbox"], err = gobEncodeItem(a.Outbox); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	if a.Following != nil {
-		if mm["following"], err = gobEncodeItem(a.Following); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	if a.Followers != nil {
-		if mm["followers"], err = gobEncodeItem(a.Followers); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	if a.Liked != nil {
-		if mm["liked"], err = gobEncodeItem(a.Liked); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	if len(a.PreferredUsername) > 0 {
-		if mm["preferredUsername"], err = a.PreferredUsername.GobEncode(); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	if a.Endpoints != nil {
-		if mm["endpoints"], err = a.Endpoints.GobEncode(); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	if len(a.Streams) > 0 {
-		//if mm["streams"], err = gobDecodeItem(a.Streams); err != nil {
-		//	return hasData, err
-		//}
-		//hasData = true
-	}
-	if len(a.PublicKey.PublicKeyPem)+len(a.PublicKey.ID) > 0 {
-		if mm["publicKey"], err = a.PublicKey.GobEncode(); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	return hasData, err
-}
-
 func (a Actor) GobEncode() ([]byte, error) {
 	var mm = make(map[string][]byte)
 	hasData, err := mapActorProperties(mm, &a)
@@ -328,8 +259,15 @@ func (a Actor) GobEncode() ([]byte, error) {
 	return bb.Bytes(), nil
 }
 
-func (a *Actor) GobDecode([]byte) error {
-	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *a))
+func (a *Actor) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
+	mm, err := gobDecodeObjectAsMap(data)
+	if err != nil {
+		return err
+	}
+	return unmapActorProperties(mm, a)
 }
 
 type (

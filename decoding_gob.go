@@ -9,16 +9,157 @@ import (
 )
 
 func unmapActorProperties(mm map[string][]byte, a *Actor) error {
-	return errors.New("TODO unmapActorProperties")
+	err := OnObject(a, func(ob *Object) error {
+		return unmapObjectProperties(mm, ob)
+	})
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["inbox"]; ok {
+		if a.Inbox, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["outbox"]; ok {
+		if a.Outbox, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["following"]; ok {
+		if a.Following, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["followers"]; ok {
+		if a.Followers, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["liked"]; ok {
+		if a.Liked, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["preferredUsername"]; ok {
+		if a.PreferredUsername, err = gobDecodeNaturalLanguageValues(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["endpoints"]; ok {
+		if err = a.Endpoints.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	//if raw, ok := mm["streams"]; ok {
+	//	if err = a.Streams.GobDecode(raw); err != nil {
+	//		return err
+	//	}
+	//}
+	if raw, ok := mm["publicKey"]; ok {
+		if err = a.PublicKey.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	return nil
 }
+
 func unmapIntransitiveActivityProperties(mm map[string][]byte, act *IntransitiveActivity) error {
-	return errors.New("TODO unmapIntransitiveActivityProperties")
+	err := OnObject(act, func(ob *Object) error {
+		return unmapObjectProperties(mm, ob)
+	})
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["actor"]; ok {
+		if act.Actor, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["target"]; ok {
+		if act.Target, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["result"]; ok {
+		if act.Result, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["origin"]; ok {
+		if act.Origin, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["instrument"]; ok {
+		if act.Instrument, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	return nil
 }
+
 func unmapActivityProperties(mm map[string][]byte, act *Activity) error {
-	return errors.New("TODO unmapActivityProperties")
+	err := OnIntransitiveActivity(act, func(act *IntransitiveActivity) error {
+		return unmapIntransitiveActivityProperties(mm, act)
+	})
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["object"]; ok {
+		if act.Object, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	return nil
 }
+
 func unmapLinkProperties(mm map[string][]byte, l *Link) error {
-	return errors.New("TODO unmapLinkProperties")
+	if raw, ok := mm["id"]; ok {
+		if err := l.ID.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["type"]; ok {
+		if err := l.Type.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["mediaType"]; ok {
+		if err := l.MediaType.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["href"]; ok {
+		if err := l.Href.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["hrefLang"]; ok {
+		if err := l.HrefLang.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["name"]; ok {
+		if err := l.Name.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["rel"]; ok {
+		if err := l.Rel.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["width"]; ok {
+		if err := gobDecodeUint(&l.Width, raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["height"]; ok {
+		if err := gobDecodeUint(&l.Height, raw); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func unmapObjectProperties(mm map[string][]byte, o *Object) error {
@@ -329,7 +470,7 @@ func gobDecodeItem(data []byte) (Item, error) {
 		return it, err
 	}
 
-	return nil, errors.New("unable to decode to any known ActivityPub types")
+	return nil, errors.New("unable to gob decode to any known ActivityPub types")
 }
 
 func gobDecodeObjectAsMap(data []byte) (map[string][]byte, error) {
