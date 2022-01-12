@@ -343,9 +343,8 @@ func (o *Object) GobDecode(data []byte) error {
 	if len(data) == 0 {
 		return nil
 	}
-	mm := make(map[string][]byte)
-	g := gob.NewDecoder(bytes.NewReader(data))
-	if err := g.Decode(&mm); err != nil {
+	mm, err := gobDecodeObjectAsMap(data)
+	if err != nil {
 		return err
 	}
 	return unmapObjectProperties(mm, o)

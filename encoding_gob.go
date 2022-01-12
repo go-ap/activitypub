@@ -3,6 +3,7 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
+	"fmt"
 )
 
 // TODO(marius): when migrating to go1.18, use a numeric constraint for this
@@ -83,39 +84,39 @@ func gobEncodeItem(it Item) ([]byte, error) {
 		})
 	case CollectionType:
 		err = OnCollection(it, func(c *Collection) error {
-			return nil
+			return fmt.Errorf("TODO: Implement encode of %T", c)
 		})
 	case OrderedCollectionType:
 		err = OnOrderedCollection(it, func(c *OrderedCollection) error {
-			return nil
+			return fmt.Errorf("TODO: Implement encode of %T", c)
 		})
 	case CollectionPageType:
 		err = OnCollectionPage(it, func(p *CollectionPage) error {
-			return nil
+			return fmt.Errorf("TODO: Implement encode of %T", p)
 		})
 	case OrderedCollectionPageType:
 		err = OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
-			return nil
+			return fmt.Errorf("TODO: Implement encode of %T", p)
 		})
 	case PlaceType:
 		err = OnPlace(it, func(p *Place) error {
-			return nil
+			return fmt.Errorf("TODO: Implement encode of %T", p)
 		})
 	case ProfileType:
 		err = OnProfile(it, func(p *Profile) error {
-			return nil
+			return fmt.Errorf("TODO: Implement encode of %T", p)
 		})
 	case RelationshipType:
 		err = OnRelationship(it, func(r *Relationship) error {
-			return nil
+			return fmt.Errorf("TODO: Implement encode of %T", r)
 		})
 	case TombstoneType:
 		err = OnTombstone(it, func(t *Tombstone) error {
-			return nil
+			return fmt.Errorf("TODO: Implement encode of %T", t)
 		})
 	case QuestionType:
 		err = OnQuestion(it, func(q *Question) error {
-			return nil
+			return fmt.Errorf("TODO: Implement encode of %T", q)
 		})
 	}
 	return b.Bytes(), err

@@ -4,8 +4,22 @@ import (
 	"bytes"
 	"encoding/gob"
 	"errors"
+	"fmt"
 	"time"
 )
+
+func unmapActorProperties(mm map[string][]byte, a *Actor) error {
+	return errors.New("TODO unmapActorProperties")
+}
+func unmapIntransitiveActivityProperties(mm map[string][]byte, act *IntransitiveActivity) error {
+	return errors.New("TODO unmapIntransitiveActivityProperties")
+}
+func unmapActivityProperties(mm map[string][]byte, act *Activity) error {
+	return errors.New("TODO unmapActivityProperties")
+}
+func unmapLinkProperties(mm map[string][]byte, l *Link) error {
+	return errors.New("TODO unmapLinkProperties")
+}
 
 func unmapObjectProperties(mm map[string][]byte, o *Object) error {
 	var err error
@@ -219,14 +233,6 @@ func gobDecodeItems(data []byte) (ItemCollection, error) {
 }
 
 func gobDecodeItem(data []byte) (Item, error) {
-	iri := IRI("")
-	if err := tryDecodeIRI(&iri, data); err == nil {
-		return iri, err
-	}
-	ob := Object{}
-	if err := tryDecodeObject(&ob, data); err == nil {
-		return ob, nil
-	}
 	items := make(ItemCollection, 0)
 	if err := tryDecodeItems(&items, data); err == nil {
 		return items, nil
@@ -239,6 +245,98 @@ func gobDecodeItem(data []byte) (Item, error) {
 		}
 		return it, nil
 	}
+	iri := IRI("")
+	if err := tryDecodeIRI(&iri, data); err == nil {
+		return iri, err
+	}
+	mm, err := gobDecodeObjectAsMap(data)
+	if err != nil {
+		return nil, err
+	}
+	typ := ObjectType
+	sTyp, isObject := mm["type"]
+	if isObject {
+		typ = ActivityVocabularyType(sTyp)
+	} else {
+		_, isObject = mm["id"]
+	}
+	if isObject {
+		it, err := GetItemByType(typ)
+		if err != nil {
+			return nil, err
+		}
+		switch it.GetType() {
+		case IRIType:
+		case "", ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
+			err = OnObject(it, func(ob *Object) error {
+				return unmapObjectProperties(mm, ob)
+			})
+		case LinkType, MentionType:
+			err = OnLink(it, func(l *Link) error {
+				return unmapLinkProperties(mm, l)
+			})
+		case ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
+			FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
+			RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType:
+			err = OnActivity(it, func(act *Activity) error {
+				return unmapActivityProperties(mm, act)
+			})
+		case IntransitiveActivityType, ArriveType, TravelType:
+			err = OnIntransitiveActivity(it, func(act *IntransitiveActivity) error {
+				return unmapIntransitiveActivityProperties(mm, act)
+			})
+		case ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType:
+			err = OnActor(it, func(a *Actor) error {
+				return unmapActorProperties(mm, a)
+			})
+		case CollectionType:
+			err = OnCollection(it, func(c *Collection) error {
+				return fmt.Errorf("TODO: Implement decode of %T", c)
+			})
+		case OrderedCollectionType:
+			err = OnOrderedCollection(it, func(c *OrderedCollection) error {
+				return fmt.Errorf("TODO: Implement decode of %T", c)
+			})
+		case CollectionPageType:
+			err = OnCollectionPage(it, func(p *CollectionPage) error {
+				return fmt.Errorf("TODO: Implement decode of %T", p)
+			})
+		case OrderedCollectionPageType:
+			err = OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
+				return fmt.Errorf("TODO: Implement decode of %T", p)
+			})
+		case PlaceType:
+			err = OnPlace(it, func(p *Place) error {
+				return fmt.Errorf("TODO: Implement decode of %T", p)
+			})
+		case ProfileType:
+			err = OnProfile(it, func(p *Profile) error {
+				return fmt.Errorf("TODO: Implement decode of %T", p)
+			})
+		case RelationshipType:
+			err = OnRelationship(it, func(r *Relationship) error {
+				return fmt.Errorf("TODO: Implement decode of %T", r)
+			})
+		case TombstoneType:
+			err = OnTombstone(it, func(t *Tombstone) error {
+				return fmt.Errorf("TODO: Implement decode of %T", t)
+			})
+		case QuestionType:
+			err = OnQuestion(it, func(q *Question) error {
+				return fmt.Errorf("TODO: Implement decode of %T", q)
+			})
+		}
+		return it, err
+	}
 
 	return nil, errors.New("unable to decode to any known ActivityPub types")
+}
+
+func gobDecodeObjectAsMap(data []byte) (map[string][]byte, error) {
+	mm := make(map[string][]byte)
+	g := gob.NewDecoder(bytes.NewReader(data))
+	if err := g.Decode(&mm); err != nil {
+		return nil, err
+	}
+	return mm, nil
 }

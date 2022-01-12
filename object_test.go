@@ -1052,7 +1052,7 @@ func TestObject_GobEncode(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "with multiple IRIs AttributedTo",
+			name:    "with single object AttributedTo",
 			fields:  fields{AttributedTo: Object{ID: "https://example.com/1"}},
 			wantErr: false,
 		},
@@ -1102,7 +1102,7 @@ func TestObject_GobEncode(t *testing.T) {
 				t.Errorf("GobDecode() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(ob, o) {
+			if !ItemsEqual(ob, o) {
 				t.Errorf("GobEncode() got/want =\n%#v\n%#v\n", ob, o)
 			}
 		})
