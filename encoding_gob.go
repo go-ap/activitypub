@@ -3,7 +3,6 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"fmt"
 )
 
 // TODO(marius): when migrating to go1.18, use a numeric constraint for this
@@ -151,23 +150,33 @@ func gobEncodeItem(it Item) ([]byte, error) {
 		})
 	case PlaceType:
 		err = OnPlace(it, func(p *Place) error {
-			return fmt.Errorf("TODO: Implement encode of %T", p)
+			bytes, err := p.GobEncode()
+			b.Write(bytes)
+			return err
 		})
 	case ProfileType:
 		err = OnProfile(it, func(p *Profile) error {
-			return fmt.Errorf("TODO: Implement encode of %T", p)
+			bytes, err := p.GobEncode()
+			b.Write(bytes)
+			return err
 		})
 	case RelationshipType:
 		err = OnRelationship(it, func(r *Relationship) error {
-			return fmt.Errorf("TODO: Implement encode of %T", r)
+			bytes, err := r.GobEncode()
+			b.Write(bytes)
+			return err
 		})
 	case TombstoneType:
 		err = OnTombstone(it, func(t *Tombstone) error {
-			return fmt.Errorf("TODO: Implement encode of %T", t)
+			bytes, err := t.GobEncode()
+			b.Write(bytes)
+			return err
 		})
 	case QuestionType:
 		err = OnQuestion(it, func(q *Question) error {
-			return fmt.Errorf("TODO: Implement encode of %T", q)
+			bytes, err := q.GobEncode()
+			b.Write(bytes)
+			return err
 		})
 	}
 	return b.Bytes(), err

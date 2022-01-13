@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"errors"
-	"fmt"
 	"time"
 )
 
@@ -457,39 +456,39 @@ func gobDecodeItem(data []byte) (Item, error) {
 			})
 		case CollectionType:
 			err = OnCollection(it, func(c *Collection) error {
-				return fmt.Errorf("TODO: Implement decode of %T", c)
+				return unmapCollectionProperties(mm, c)
 			})
 		case OrderedCollectionType:
 			err = OnOrderedCollection(it, func(c *OrderedCollection) error {
-				return fmt.Errorf("TODO: Implement decode of %T", c)
+				return unmapOrderedCollectionProperties(mm, c)
 			})
 		case CollectionPageType:
 			err = OnCollectionPage(it, func(p *CollectionPage) error {
-				return fmt.Errorf("TODO: Implement decode of %T", p)
+				return unmapCollectionPageProperties(mm, p)
 			})
 		case OrderedCollectionPageType:
 			err = OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
-				return fmt.Errorf("TODO: Implement decode of %T", p)
+				return unmapOrderedCollectionPageProperties(mm, p)
 			})
 		case PlaceType:
 			err = OnPlace(it, func(p *Place) error {
-				return fmt.Errorf("TODO: Implement decode of %T", p)
+				return unmapPlaceProperties(mm, p)
 			})
 		case ProfileType:
 			err = OnProfile(it, func(p *Profile) error {
-				return fmt.Errorf("TODO: Implement decode of %T", p)
+				return unmapProfileProperties(mm, p)
 			})
 		case RelationshipType:
 			err = OnRelationship(it, func(r *Relationship) error {
-				return fmt.Errorf("TODO: Implement decode of %T", r)
+				return unmapRelationshipProperties(mm, r)
 			})
 		case TombstoneType:
 			err = OnTombstone(it, func(t *Tombstone) error {
-				return fmt.Errorf("TODO: Implement decode of %T", t)
+				return unmapTombstoneProperties(mm, t)
 			})
 		case QuestionType:
 			err = OnQuestion(it, func(q *Question) error {
-				return fmt.Errorf("TODO: Implement decode of %T", q)
+				return unmapQuestionProperties(mm, q)
 			})
 		}
 		return it, err
