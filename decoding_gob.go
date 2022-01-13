@@ -7,6 +7,10 @@ import (
 	"time"
 )
 
+func GobDecode(data []byte) (Item, error) {
+	return gobDecodeItem(data)
+}
+
 func gobDecodeUint(i *uint, data []byte) error {
 	g := gob.NewDecoder(bytes.NewReader(data))
 	return g.Decode(i)

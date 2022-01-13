@@ -5,6 +5,10 @@ import (
 	"encoding/gob"
 )
 
+func GobEncode(it Item) ([]byte, error) {
+	return gobEncodeItem(it)
+}
+
 // TODO(marius): when migrating to go1.18, use a numeric constraint for this
 func gobEncodeInt64(i int64) ([]byte, error) {
 	b := bytes.Buffer{}
