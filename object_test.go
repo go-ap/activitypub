@@ -605,7 +605,7 @@ func TestActivityVocabularyType_GobEncode(t *testing.T) {
 		{
 			name:    "some activity type",
 			t:       ActivityType,
-			want:    gobValue([]byte("Activity")),
+			want:    []byte("Activity"),
 			wantErr: false,
 		},
 	}
