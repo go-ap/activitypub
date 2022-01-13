@@ -427,7 +427,7 @@ func gobDecodeItem(data []byte) (Item, error) {
 		_, isObject = mm["id"]
 	}
 	if isObject {
-		it, err := GetItemByType(typ)
+		it, err := ItemTyperFunc(typ)
 		if err != nil {
 			return nil, err
 		}
