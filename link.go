@@ -125,64 +125,10 @@ func (l Link) MarshalBinary() ([]byte, error) {
 }
 
 func (l Link) GobEncode() ([]byte, error) {
-	var (
-		mm      = make(map[string][]byte)
-		err     error
-		hasData bool
-	)
-	if len(l.ID) > 0 {
-		if mm["id"], err = l.ID.GobEncode(); err != nil {
-			return nil, err
-		}
-		hasData = true
-	}
-	if len(l.Type) > 0 {
-		if mm["type"], err = l.Type.GobEncode(); err != nil {
-			return nil, err
-		}
-		hasData = true
-	}
-	if len(l.MediaType) > 0 {
-		if mm["mediaType"], err = l.MediaType.GobEncode(); err != nil {
-			return nil, err
-		}
-		hasData = true
-	}
-	if len(l.Href) > 0 {
-		if mm["href"], err = l.Href.GobEncode(); err != nil {
-			return nil, err
-		}
-		hasData = true
-	}
-	if len(l.HrefLang) > 0 {
-		if mm["hrefLang"], err = l.HrefLang.GobEncode(); err != nil {
-			return nil, err
-		}
-		hasData = true
-	}
-	if len(l.Name) > 0 {
-		if mm["name"], err = l.Name.GobEncode(); err != nil {
-			return nil, err
-		}
-		hasData = true
-	}
-	if len(l.Rel) > 0 {
-		if mm["rel"], err = l.Rel.GobEncode(); err != nil {
-			return nil, err
-		}
-		hasData = true
-	}
-	if l.Width > 0 {
-		if mm["width"], err = gobEncodeUint(l.Width); err != nil {
-			return nil, err
-		}
-		hasData = true
-	}
-	if l.Height > 0 {
-		if mm["height"], err = gobEncodeUint(l.Height); err != nil {
-			return nil, err
-		}
-		hasData = true
+	mm := make(map[string][]byte)
+	hasData, err := mapLinkProperties(mm, l)
+	if err != nil {
+		return nil, err
 	}
 	if !hasData {
 		return []byte{}, nil
@@ -193,11 +139,6 @@ func (l Link) GobEncode() ([]byte, error) {
 		return nil, err
 	}
 	return bb.Bytes(), nil
-}
-
-func gobDecodeUint(i *uint, data []byte) error {
-	g := gob.NewDecoder(bytes.NewReader(data))
-	return g.Decode(i)
 }
 
 func (l *Link) GobDecode(data []byte) error {

@@ -1,6 +1,8 @@
 package activitypub
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"reflect"
 	"time"
@@ -170,27 +172,45 @@ func (p Profile) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 
-/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (p *Profile) UnmarshalBinary(data []byte) error {
-	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *p))
+	return p.GobDecode(data)
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (p Profile) MarshalBinary() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", p))
+	return p.GobEncode()
 }
 
 // GobEncode
 func (p Profile) GobEncode() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", p))
+	mm := make(map[string][]byte)
+	hasData, err := mapProfileProperties(mm, p)
+	if err != nil {
+		return nil, err
+	}
+	if !hasData {
+		return []byte{}, nil
+	}
+	bb := bytes.Buffer{}
+	g := gob.NewEncoder(&bb)
+	if err := g.Encode(mm); err != nil {
+		return nil, err
+	}
+	return bb.Bytes(), nil
 }
 
 // GobDecode
-func (p *Profile) GobDecode([]byte) error {
-	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *p))
+func (p *Profile) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
+	mm, err := gobDecodeObjectAsMap(data)
+	if err != nil {
+		return err
+	}
+	return unmapProfileProperties(mm, p)
 }
-*/
 
 // Recipients performs recipient de-duplication on the Profile object's To, Bto, CC and BCC properties
 func (p *Profile) Recipients() ItemCollection {

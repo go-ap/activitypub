@@ -1,6 +1,8 @@
 package activitypub
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"reflect"
 	"time"
@@ -187,27 +189,45 @@ func (r Relationship) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 
-/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (r *Relationship) UnmarshalBinary(data []byte) error {
-	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *r))
+	return r.GobDecode(data)
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (r Relationship) MarshalBinary() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", r))
+	return r.GobEncode()
 }
 
 // GobEncode
 func (r Relationship) GobEncode() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", r))
+	mm := make(map[string][]byte)
+	hasData, err := mapRelationshipProperties(mm, r)
+	if err != nil {
+		return nil, err
+	}
+	if !hasData {
+		return []byte{}, nil
+	}
+	bb := bytes.Buffer{}
+	g := gob.NewEncoder(&bb)
+	if err := g.Encode(mm); err != nil {
+		return nil, err
+	}
+	return bb.Bytes(), nil
 }
 
 // GobDecode
-func (r *Relationship) GobDecode([]byte) error {
-	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *r))
+func (r *Relationship) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
+	mm, err := gobDecodeObjectAsMap(data)
+	if err != nil {
+		return err
+	}
+	return unmapRelationshipProperties(mm, r)
 }
-*/
 
 // Recipients performs recipient de-duplication on the Relationship object's To, Bto, CC and BCC properties
 func (r *Relationship) Recipients() ItemCollection {

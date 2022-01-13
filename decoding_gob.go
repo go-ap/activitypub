@@ -8,6 +8,31 @@ import (
 	"time"
 )
 
+func gobDecodeUint(i *uint, data []byte) error {
+	g := gob.NewDecoder(bytes.NewReader(data))
+	return g.Decode(i)
+}
+
+func gobDecodeFloat64(f *float64, data []byte) error {
+	g := gob.NewDecoder(bytes.NewReader(data))
+	return g.Decode(f)
+}
+
+func gobDecodeInt64(i *int64, data []byte) error {
+	g := gob.NewDecoder(bytes.NewReader(data))
+	return g.Decode(i)
+}
+
+func gobDecodeString(s *string, data []byte) error {
+	g := gob.NewDecoder(bytes.NewReader(data))
+	return g.Decode(s)
+}
+
+func gobDecodeBool(b *bool, data []byte) error {
+	g := gob.NewDecoder(bytes.NewReader(data))
+	return g.Decode(b)
+}
+
 func unmapActorProperties(mm map[string][]byte, a *Actor) error {
 	err := OnObject(a, func(ob *Object) error {
 		return unmapObjectProperties(mm, ob)
@@ -588,4 +613,124 @@ func unmapOrderedCollectionPageProperties(mm map[string][]byte, c *OrderedCollec
 		}
 	}
 	return err
+}
+
+func unmapPlaceProperties(mm map[string][]byte, p *Place) error {
+	err := OnObject(p, func(ob *Object) error {
+		return unmapObjectProperties(mm, ob)
+	})
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["accuracy"]; ok {
+		if err = gobDecodeFloat64(&p.Accuracy, raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["altitude"]; ok {
+		if err = gobDecodeFloat64(&p.Altitude, raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["latitude"]; ok {
+		if err = gobDecodeFloat64(&p.Latitude, raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["radius"]; ok {
+		if err = gobDecodeInt64(&p.Radius, raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["units"]; ok {
+		if err = gobDecodeString(&p.Units, raw); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func unmapProfileProperties(mm map[string][]byte, p *Profile) error {
+	err := OnObject(p, func(ob *Object) error {
+		return unmapObjectProperties(mm, ob)
+	})
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["Describes"]; ok {
+		if p.Describes, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func unmapRelationshipProperties(mm map[string][]byte, r *Relationship) error {
+	err := OnObject(r, func(ob *Object) error {
+		return unmapObjectProperties(mm, ob)
+	})
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["subject"]; ok {
+		if r.Subject, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["object"]; ok {
+		if r.Object, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["relationship"]; ok {
+		if r.Relationship, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func unmapTombstoneProperties(mm map[string][]byte, t *Tombstone) error {
+	err := OnObject(t, func(ob *Object) error {
+		return unmapObjectProperties(mm, ob)
+	})
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["formerType"]; ok {
+		if err = t.FormerType.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["deleted"]; ok {
+		if err = t.Deleted.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func unmapQuestionProperties(mm map[string][]byte, q *Question) error {
+	err := OnIntransitiveActivity(q, func(act *IntransitiveActivity) error {
+		return unmapIntransitiveActivityProperties(mm, act)
+	})
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["oneOf"]; ok {
+		if q.OneOf, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["anyOf"]; ok {
+		if q.AnyOf, err = gobDecodeItem(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["closed"]; ok {
+		if err = gobDecodeBool(&q.Closed, raw); err != nil {
+			return err
+		}
+	}
+	return nil
 }

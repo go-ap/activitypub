@@ -1,6 +1,8 @@
 package activitypub
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"reflect"
 	"time"
@@ -176,27 +178,45 @@ func (t Tombstone) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 
-/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (t *Tombstone) UnmarshalBinary(data []byte) error {
-	return fmt.Errorf("UnmarshalBinary is not implemented for %T", *t)
+	return t.GobDecode(data)
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (t Tombstone) MarshalBinary() ([]byte, error) {
-	return nil, fmt.Errorf("MarshalBinary is not implemented for %T", t)
+	return t.GobEncode()
 }
 
 // GobEncode
 func (t Tombstone) GobEncode() ([]byte, error) {
-	return nil, fmt.Errorf("GobEncode is not implemented for %T", t)
+	mm := make(map[string][]byte)
+	hasData, err := mapTombstoneProperties(mm, t)
+	if err != nil {
+		return nil, err
+	}
+	if !hasData {
+		return []byte{}, nil
+	}
+	bb := bytes.Buffer{}
+	g := gob.NewEncoder(&bb)
+	if err := g.Encode(mm); err != nil {
+		return nil, err
+	}
+	return bb.Bytes(), nil
 }
 
 // GobDecode
-func (t *Tombstone) GobDecode([]byte) error {
-	return fmt.Errorf("GobDecode is not implemented for %T", *t)
+func (t *Tombstone) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
+	mm, err := gobDecodeObjectAsMap(data)
+	if err != nil {
+		return err
+	}
+	return unmapTombstoneProperties(mm, t)
 }
-*/
 
 // Recipients performs recipient de-duplication on the Tombstone object's To, Bto, CC and BCC properties
 func (t *Tombstone) Recipients() ItemCollection {

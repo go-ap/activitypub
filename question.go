@@ -1,6 +1,8 @@
 package activitypub
 
 import (
+	"bytes"
+	"encoding/gob"
 	"errors"
 	"reflect"
 	"time"
@@ -186,27 +188,45 @@ func (q Question) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
-/*
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (q *Question) UnmarshalBinary(data []byte) error {
-	return errors.New(fmt.Sprintf("UnmarshalBinary is not implemented for %T", *q))
+	return q.GobDecode(data)
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (q Question) MarshalBinary() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("MarshalBinary is not implemented for %T", q))
+	return q.GobEncode()
 }
 
 // GobEncode
 func (q Question) GobEncode() ([]byte, error) {
-	return nil, errors.New(fmt.Sprintf("GobEncode is not implemented for %T", q))
+	mm := make(map[string][]byte)
+	hasData, err := mapQuestionProperties(mm, q)
+	if err != nil {
+		return nil, err
+	}
+	if !hasData {
+		return []byte{}, nil
+	}
+	bb := bytes.Buffer{}
+	g := gob.NewEncoder(&bb)
+	if err := g.Encode(mm); err != nil {
+		return nil, err
+	}
+	return bb.Bytes(), nil
 }
 
 // GobDecode
-func (q *Question) GobDecode([]byte) error {
-	return errors.New(fmt.Sprintf("GobDecode is not implemented for %T", *q))
+func (q *Question) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
+	mm, err := gobDecodeObjectAsMap(data)
+	if err != nil {
+		return err
+	}
+	return unmapQuestionProperties(mm, q)
 }
-*/
 
 // QuestionNew initializes a Question activity
 func QuestionNew(id ID) *Question {

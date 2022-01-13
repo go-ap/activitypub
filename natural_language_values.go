@@ -196,13 +196,6 @@ func (l *LangRefValue) UnmarshalText(data []byte) error {
 	return nil
 }
 
-func gobEncodeStringLikeType(g *gob.Encoder, s []byte) error {
-	if err := g.Encode(s); err != nil {
-		return err
-	}
-	return nil
-}
-
 func (l LangRef) GobEncode() ([]byte, error) {
 	if len(l) == 0 {
 		return []byte{}, nil

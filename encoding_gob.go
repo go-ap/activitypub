@@ -26,6 +26,40 @@ func gobEncodeUint(i uint) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
+func gobEncodeFloat64(f float64) ([]byte, error) {
+	b := bytes.Buffer{}
+	gg := gob.NewEncoder(&b)
+	if err := gg.Encode(f); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+func gobEncodeBool(t bool) ([]byte, error) {
+	b := bytes.Buffer{}
+	gg := gob.NewEncoder(&b)
+	if err := gg.Encode(t); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+func gobEncodeBytes(s []byte) ([]byte, error) {
+	b := bytes.Buffer{}
+	gg := gob.NewEncoder(&b)
+	if err := gg.Encode(s); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+func gobEncodeStringLikeType(g *gob.Encoder, s []byte) error {
+	if err := g.Encode(s); err != nil {
+		return err
+	}
+	return nil
+}
+
 func gobEncodeItems(col ItemCollection) ([]byte, error) {
 	b := bytes.Buffer{}
 	tt := make([][]byte, 0)
@@ -530,6 +564,196 @@ func mapOrderedCollectionPageProperties(mm map[string][]byte, c OrderedCollectio
 			return hasData, err
 		}
 		hasData = true
+	}
+	return
+}
+
+func mapLinkProperties(mm map[string][]byte, l Link) (hasData bool, err error) {
+	if len(l.ID) > 0 {
+		if mm["id"], err = l.ID.GobEncode(); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if len(l.Type) > 0 {
+		if mm["type"], err = l.Type.GobEncode(); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if len(l.MediaType) > 0 {
+		if mm["mediaType"], err = l.MediaType.GobEncode(); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if len(l.Href) > 0 {
+		if mm["href"], err = l.Href.GobEncode(); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if len(l.HrefLang) > 0 {
+		if mm["hrefLang"], err = l.HrefLang.GobEncode(); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if len(l.Name) > 0 {
+		if mm["name"], err = l.Name.GobEncode(); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if len(l.Rel) > 0 {
+		if mm["rel"], err = l.Rel.GobEncode(); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if l.Width > 0 {
+		if mm["width"], err = gobEncodeUint(l.Width); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if l.Height > 0 {
+		if mm["height"], err = gobEncodeUint(l.Height); err != nil {
+			return
+		}
+		hasData = true
+	}
+	return
+}
+
+func mapPlaceProperties(mm map[string][]byte, p Place) (hasData bool, err error) {
+	err = OnObject(p, func(o *Object) error {
+		hasData, err = mapObjectProperties(mm, o)
+		return err
+	})
+	if p.Accuracy > 0 {
+		if mm["accuracy"], err = gobEncodeFloat64(p.Accuracy); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if p.Altitude > 0 {
+		if mm["altitude"], err = gobEncodeFloat64(p.Altitude); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if p.Latitude > 0 {
+		if mm["latitude"], err = gobEncodeFloat64(p.Latitude); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if p.Longitude > 0 {
+		if mm["longitude"], err = gobEncodeFloat64(p.Longitude); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if p.Radius > 0 {
+		if mm["radius"], err = gobEncodeInt64(p.Radius); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if len(p.Units) > 0 {
+		if mm["units"], err = gobEncodeBytes([]byte(p.Units)); err != nil {
+			return
+		}
+		hasData = true
+	}
+	return
+}
+
+func mapProfileProperties(mm map[string][]byte, p Profile) (hasData bool, err error) {
+	err = OnObject(p, func(o *Object) error {
+		hasData, err = mapObjectProperties(mm, o)
+		return err
+	})
+	if p.Describes != nil {
+		if mm["describes"], err = gobEncodeItem(p.Describes); err != nil {
+			return
+		}
+		hasData = true
+	}
+	return
+}
+
+func mapRelationshipProperties(mm map[string][]byte, r Relationship) (hasData bool, err error) {
+	err = OnObject(r, func(o *Object) error {
+		hasData, err = mapObjectProperties(mm, o)
+		return err
+	})
+	if r.Subject != nil {
+		if mm["subject"], err = gobEncodeItem(r.Subject); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if r.Object != nil {
+		if mm["object"], err = gobEncodeItem(r.Object); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if r.Relationship != nil {
+		if mm["relationship"], err = gobEncodeItem(r.Relationship); err != nil {
+			return
+		}
+		hasData = true
+	}
+	return
+}
+
+func mapTombstoneProperties(mm map[string][]byte, t Tombstone) (hasData bool, err error) {
+	err = OnObject(t, func(o *Object) error {
+		hasData, err = mapObjectProperties(mm, o)
+		return err
+	})
+	if len(t.FormerType) > 0 {
+		if mm["formerType"], err = t.FormerType.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	if !t.Deleted.IsZero() {
+		if mm["deleted"], err = t.Deleted.GobEncode(); err != nil {
+			return hasData, err
+		}
+		hasData = true
+	}
+	return
+}
+
+func mapQuestionProperties(mm map[string][]byte, q Question) (hasData bool, err error) {
+	err = OnObject(q, func(o *Object) error {
+		hasData, err = mapObjectProperties(mm, o)
+		return err
+	})
+	if q.OneOf != nil {
+		if mm["oneOf"], err = gobEncodeItem(q.OneOf); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if q.AnyOf != nil {
+		if mm["anyOf"], err = gobEncodeItem(q.AnyOf); err != nil {
+			return
+		}
+		hasData = true
+	}
+	if q.Closed {
+		hasData = true
+	}
+	if hasData {
+		if mm["closed"], err = gobEncodeBool(q.Closed); err != nil {
+			return
+		}
 	}
 	return
 }
