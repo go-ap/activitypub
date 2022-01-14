@@ -78,12 +78,14 @@ func gobEncodeItems(col ItemCollection) ([]byte, error) {
 }
 
 func gobEncodeItem(it Item) ([]byte, error) {
+	if IsIRI(it) {
+		if i, ok := it.(IRI); ok {
+			return []byte(i), nil
+		}
+		return []byte{}, nil
+	}
 	b := bytes.Buffer{}
 	var err error
-	if IsIRI(it) {
-		g := gob.NewEncoder(&b)
-		err = gobEncodeStringLikeType(g, []byte(it.GetLink()))
-	}
 	if IsItemCollection(it) {
 		err = OnItemCollection(it, func(col *ItemCollection) error {
 			bytes, err := gobEncodeItems(*col)
@@ -91,97 +93,99 @@ func gobEncodeItem(it Item) ([]byte, error) {
 			return err
 		})
 	}
-	switch it.GetType() {
-	case IRIType:
-		var bytes []byte
-		bytes, err = it.(IRI).GobEncode()
-		b.Write(bytes)
-	case "", ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
-		err = OnObject(it, func(ob *Object) error {
-			bytes, err := ob.GobEncode()
+	if IsObject(it) {
+		switch it.GetType() {
+		case IRIType:
+			var bytes []byte
+			bytes, err = it.(IRI).GobEncode()
 			b.Write(bytes)
-			return err
-		})
-	case LinkType, MentionType:
-		err = OnLink(it, func(l *Link) error {
-			bytes, err := l.GobEncode()
-			b.Write(bytes)
-			return err
-		})
-	case ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
-		FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
-		RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType:
-		err = OnActivity(it, func(act *Activity) error {
-			bytes, err := act.GobEncode()
-			b.Write(bytes)
-			return err
-		})
-	case IntransitiveActivityType, ArriveType, TravelType:
-		err = OnIntransitiveActivity(it, func(act *IntransitiveActivity) error {
-			bytes, err := act.GobEncode()
-			b.Write(bytes)
-			return err
-		})
-	case ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType:
-		err = OnActor(it, func(a *Actor) error {
-			bytes, err := a.GobEncode()
-			b.Write(bytes)
-			return err
-		})
-	case CollectionType:
-		err = OnCollection(it, func(c *Collection) error {
-			bytes, err := c.GobEncode()
-			b.Write(bytes)
-			return err
-		})
-	case OrderedCollectionType:
-		err = OnOrderedCollection(it, func(c *OrderedCollection) error {
-			bytes, err := c.GobEncode()
-			b.Write(bytes)
-			return err
-		})
-	case CollectionPageType:
-		err = OnCollectionPage(it, func(p *CollectionPage) error {
-			bytes, err := p.GobEncode()
-			b.Write(bytes)
-			return err
-		})
-	case OrderedCollectionPageType:
-		err = OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
-			bytes, err := p.GobEncode()
-			b.Write(bytes)
-			return err
-		})
-	case PlaceType:
-		err = OnPlace(it, func(p *Place) error {
-			bytes, err := p.GobEncode()
-			b.Write(bytes)
-			return err
-		})
-	case ProfileType:
-		err = OnProfile(it, func(p *Profile) error {
-			bytes, err := p.GobEncode()
-			b.Write(bytes)
-			return err
-		})
-	case RelationshipType:
-		err = OnRelationship(it, func(r *Relationship) error {
-			bytes, err := r.GobEncode()
-			b.Write(bytes)
-			return err
-		})
-	case TombstoneType:
-		err = OnTombstone(it, func(t *Tombstone) error {
-			bytes, err := t.GobEncode()
-			b.Write(bytes)
-			return err
-		})
-	case QuestionType:
-		err = OnQuestion(it, func(q *Question) error {
-			bytes, err := q.GobEncode()
-			b.Write(bytes)
-			return err
-		})
+		case "", ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
+			err = OnObject(it, func(ob *Object) error {
+				bytes, err := ob.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case LinkType, MentionType:
+			err = OnLink(it, func(l *Link) error {
+				bytes, err := l.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
+			FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
+			RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType:
+			err = OnActivity(it, func(act *Activity) error {
+				bytes, err := act.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case IntransitiveActivityType, ArriveType, TravelType:
+			err = OnIntransitiveActivity(it, func(act *IntransitiveActivity) error {
+				bytes, err := act.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType:
+			err = OnActor(it, func(a *Actor) error {
+				bytes, err := a.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case CollectionType:
+			err = OnCollection(it, func(c *Collection) error {
+				bytes, err := c.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case OrderedCollectionType:
+			err = OnOrderedCollection(it, func(c *OrderedCollection) error {
+				bytes, err := c.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case CollectionPageType:
+			err = OnCollectionPage(it, func(p *CollectionPage) error {
+				bytes, err := p.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case OrderedCollectionPageType:
+			err = OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
+				bytes, err := p.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case PlaceType:
+			err = OnPlace(it, func(p *Place) error {
+				bytes, err := p.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case ProfileType:
+			err = OnProfile(it, func(p *Profile) error {
+				bytes, err := p.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case RelationshipType:
+			err = OnRelationship(it, func(r *Relationship) error {
+				bytes, err := r.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case TombstoneType:
+			err = OnTombstone(it, func(t *Tombstone) error {
+				bytes, err := t.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case QuestionType:
+			err = OnQuestion(it, func(q *Question) error {
+				bytes, err := q.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		}
 	}
 	return b.Bytes(), err
 }

@@ -414,20 +414,17 @@ func gobDecodeItem(data []byte) (Item, error) {
 		}
 		return it, nil
 	}
-	iri := IRI("")
-	if err := tryDecodeIRI(&iri, data); err == nil {
-		return iri, err
-	}
-	mm, err := gobDecodeObjectAsMap(data)
-	if err != nil {
-		return nil, err
-	}
+	isObject := false
 	typ := ObjectType
-	sTyp, isObject := mm["type"]
-	if isObject {
-		typ = ActivityVocabularyType(sTyp)
-	} else {
-		_, isObject = mm["id"]
+	mm, err := gobDecodeObjectAsMap(data)
+	if err == nil {
+		var sTyp []byte
+		sTyp, isObject = mm["type"]
+		if isObject {
+			typ = ActivityVocabularyType(sTyp)
+		} else {
+			_, isObject = mm["id"]
+		}
 	}
 	if isObject {
 		it, err := ItemTyperFunc(typ)
@@ -496,6 +493,10 @@ func gobDecodeItem(data []byte) (Item, error) {
 			})
 		}
 		return it, err
+	}
+	iri := IRI("")
+	if err := tryDecodeIRI(&iri, data); err == nil {
+		return iri, err
 	}
 
 	return nil, errors.New("unable to gob decode to any known ActivityPub types")
