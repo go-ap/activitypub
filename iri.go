@@ -81,15 +81,7 @@ func (i IRI) MarshalBinary() ([]byte, error) {
 
 // GobEncode
 func (i IRI) GobEncode() ([]byte, error) {
-	if len(i) == 0 {
-		return []byte{}, nil
-	}
-	b := bytes.Buffer{}
-	gg := gob.NewEncoder(&b)
-	if err := gobEncodeStringLikeType(gg, []byte(i)); err != nil {
-		return nil, err
-	}
-	return b.Bytes(), nil
+	return []byte(i), nil
 }
 
 // GobEncode
@@ -111,15 +103,7 @@ func (i IRIs) GobEncode() ([]byte, error) {
 
 // GobDecode
 func (i *IRI) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		// NOTE(marius): this behaviour diverges from vanilla gob package
-		return nil
-	}
-	var bb []byte
-	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
-		return err
-	}
-	*i = IRI(bb)
+	*i = IRI(data)
 	return nil
 }
 
