@@ -87,8 +87,9 @@ func IsItemCollection(it Item) bool {
 
 // IsIRI returns if the current Item interface holds an IRI
 func IsIRI(it Item) bool {
-	_, ok := it.(IRI)
-	return ok
+	_, okV := it.(IRI)
+	_, okP := it.(*IRI)
+	return okV || okP
 }
 
 // IsObject returns if the current Item interface holds an IRI
