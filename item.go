@@ -94,12 +94,16 @@ func IsIRI(it Item) bool {
 
 // IsObject returns if the current Item interface holds an IRI
 func IsObject(it Item) bool {
-	ok := it.IsObject()
-	if it.IsLink() {
-		_, ok = it.(IRI)
-		return !ok
+	switch it.(type) {
+	case Actor, *Actor,
+		Object, *Object, Profile, *Profile, Place, *Place, Relationship, *Relationship, Tombstone, *Tombstone,
+		Activity, *Activity, IntransitiveActivity, *IntransitiveActivity, Question, *Question,
+		Collection, *Collection, CollectionPage, *CollectionPage,
+		OrderedCollection, *OrderedCollection, OrderedCollectionPage, *OrderedCollectionPage:
+		return true
+	default:
+		return false
 	}
-	return ok
 }
 
 // IsNil checks if the object matching an ObjectOrLink interface is nil
