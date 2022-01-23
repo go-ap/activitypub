@@ -46,16 +46,16 @@ func TestIRI_IsLink(t *testing.T) {
 
 func TestIRI_IsObject(t *testing.T) {
 	i := IRI("http://example.com")
-	if !i.IsObject() {
+	if i.IsObject() {
 		t.Errorf("%T.IsObject() returned %t, expected %t", i, i.IsObject(), false)
 	}
 	ii := IRI([]byte("https://example.com"))
-	if !ii.IsObject() {
+	if ii.IsObject() {
 		t.Errorf("%T.IsObject() returned %t, expected %t", ii, ii.IsObject(), false)
 	}
 	var iii *IRI
 	iii = &ii
-	if !iii.IsObject() {
+	if iii.IsObject() {
 		t.Errorf("%T.IsObject() returned %t, expected %t", iii, iii.IsObject(), false)
 	}
 }
