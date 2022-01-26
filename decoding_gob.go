@@ -26,11 +26,6 @@ func gobDecodeInt64(i *int64, data []byte) error {
 	return g.Decode(i)
 }
 
-func gobDecodeString(s *string, data []byte) error {
-	g := gob.NewDecoder(bytes.NewReader(data))
-	return g.Decode(s)
-}
-
 func gobDecodeBool(b *bool, data []byte) error {
 	g := gob.NewDecoder(bytes.NewReader(data))
 	return g.Decode(b)
@@ -647,9 +642,7 @@ func unmapPlaceProperties(mm map[string][]byte, p *Place) error {
 		}
 	}
 	if raw, ok := mm["units"]; ok {
-		if err = gobDecodeString(&p.Units, raw); err != nil {
-			return err
-		}
+		p.Units = string(raw)
 	}
 	return nil
 }

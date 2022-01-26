@@ -679,9 +679,7 @@ func mapPlaceProperties(mm map[string][]byte, p Place) (hasData bool, err error)
 		hasData = true
 	}
 	if len(p.Units) > 0 {
-		if mm["units"], err = gobEncodeBytes([]byte(p.Units)); err != nil {
-			return
-		}
+		mm["units"] = []byte(p.Units)
 		hasData = true
 	}
 	return
