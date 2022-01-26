@@ -572,5 +572,25 @@ func (p PublicKey) GobEncode() ([]byte, error) {
 }
 
 func (p *PublicKey) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
+	mm, err := gobDecodeObjectAsMap(data)
+	if err != nil {
+		return err
+	}
+	if raw, ok := mm["id"]; ok {
+		if err = p.ID.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["owner"]; ok {
+		if err = p.Owner.GobDecode(raw); err != nil {
+			return err
+		}
+	}
+	if raw, ok := mm["publicKeyPem"]; ok {
+		p.PublicKeyPem = string(raw)
+	}
 	return nil
 }
