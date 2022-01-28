@@ -47,15 +47,6 @@ func gobEncodeBool(t bool) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func gobEncodeBytes(s []byte) ([]byte, error) {
-	b := bytes.Buffer{}
-	gg := gob.NewEncoder(&b)
-	if err := gg.Encode(s); err != nil {
-		return nil, err
-	}
-	return b.Bytes(), nil
-}
-
 func gobEncodeStringLikeType(g *gob.Encoder, s []byte) error {
 	if err := g.Encode(s); err != nil {
 		return err
@@ -459,10 +450,10 @@ func mapActorProperties(mm map[string][]byte, a *Actor) (hasData bool, err error
 		hasData = true
 	}
 	if len(a.Streams) > 0 {
-		//if mm["streams"], err = gobDecodeItem(a.Streams); err != nil {
-		//	return hasData, err
-		//}
-		//hasData = true
+		if mm["streams"], err = gobEncodeItems(a.Streams); err != nil {
+			return hasData, err
+		}
+		hasData = true
 	}
 	if len(a.PublicKey.PublicKeyPem)+len(a.PublicKey.ID) > 0 {
 		if mm["publicKey"], err = a.PublicKey.GobEncode(); err != nil {

@@ -156,8 +156,8 @@ type Actor struct {
 	// to a JSON-LD document with these properties.
 	Endpoints *Endpoints `jsonld:"endpoints,omitempty"`
 	// A list of supplementary Collections which may be of interest.
-	Streams   []ItemCollection `jsonld:"streams,omitempty"`
-	PublicKey PublicKey        `jsonld:"publicKey,omitempty"`
+	Streams   ItemCollection `jsonld:"streams,omitempty"`
+	PublicKey PublicKey      `jsonld:"publicKey,omitempty"`
 }
 
 // GetID returns the ID corresponding to the current Actor
@@ -396,11 +396,7 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 	}
 	if len(a.Streams) > 0 {
 		writePropJSONName(&b, "streams")
-		lNotEmpty := true
-		for _, ss := range a.Streams {
-			lNotEmpty = writeItemCollectionJSONValue(&b, ss) || lNotEmpty
-		}
-		notEmpty = lNotEmpty || notEmpty
+		notEmpty = notEmpty || writeItemCollectionJSONValue(&b, a.Streams)
 	}
 	if len(a.PublicKey.PublicKeyPem)+len(a.PublicKey.ID) > 0 {
 		if v, err := a.PublicKey.MarshalJSON(); err == nil && len(v) > 0 {

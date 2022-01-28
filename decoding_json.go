@@ -132,11 +132,6 @@ func JSONGetPublicKey(val *fastjson.Value, prop string) PublicKey {
 	return key
 }
 
-func JSONGetStreams(val *fastjson.Value, prop string) []ItemCollection {
-	// TODO(marius)
-	return nil
-}
-
 func itemsFn(val *fastjson.Value) (Item, error) {
 	if val.Type() == fastjson.TypeArray {
 		it := val.GetArray()
@@ -512,7 +507,7 @@ func loadActor(val *fastjson.Value, a *Actor) error {
 	a.Outbox = JSONGetItem(val, "outbox")
 	a.Liked = JSONGetItem(val, "liked")
 	a.Endpoints = JSONGetActorEndpoints(val, "endpoints")
-	a.Streams = JSONGetStreams(val, "streams")
+	a.Streams = JSONGetItems(val, "streams")
 	a.PublicKey = JSONGetPublicKey(val, "publicKey")
 	return nil
 }

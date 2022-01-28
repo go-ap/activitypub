@@ -73,11 +73,11 @@ func unmapActorProperties(mm map[string][]byte, a *Actor) error {
 			return err
 		}
 	}
-	//if raw, ok := mm["streams"]; ok {
-	//	if err = a.Streams.GobDecode(raw); err != nil {
-	//		return err
-	//	}
-	//}
+	if raw, ok := mm["streams"]; ok {
+		if a.Streams, err = gobDecodeItems(raw); err != nil {
+			return err
+		}
+	}
 	if raw, ok := mm["publicKey"]; ok {
 		if err = a.PublicKey.GobDecode(raw); err != nil {
 			return err
