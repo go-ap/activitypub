@@ -100,6 +100,7 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 			}
+			// For non instransitive activities we want to output the object in the response
 			if dat, err = pub.MarshalJSON(act.Object); err != nil {
 				return err
 			}
