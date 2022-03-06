@@ -37,31 +37,49 @@ func JSONGetType(val *fastjson.Value) ActivityVocabularyType {
 }
 
 func JSONGetMimeType(val *fastjson.Value, prop string) MimeType {
+	if !val.Exists(prop) {
+		return ""
+	}
 	t := val.GetStringBytes(prop)
 	return MimeType(t)
 }
 
 func JSONGetInt(val *fastjson.Value, prop string) int64 {
+	if !val.Exists(prop) {
+		return 0
+	}
 	i := val.Get(prop).GetInt64()
 	return i
 }
 
 func JSONGetFloat(val *fastjson.Value, prop string) float64 {
+	if !val.Exists(prop) {
+		return 0.0
+	}
 	f := val.Get(prop).GetFloat64()
 	return f
 }
 
 func JSONGetString(val *fastjson.Value, prop string) string {
+	if !val.Exists(prop) {
+		return ""
+	}
 	s := val.Get(prop).GetStringBytes()
 	return string(s)
 }
 
 func JSONGetBytes(val *fastjson.Value, prop string) []byte {
+	if !val.Exists(prop) {
+		return nil
+	}
 	s := val.Get(prop).GetStringBytes()
 	return s
 }
 
 func JSONGetBoolean(val *fastjson.Value, prop string) bool {
+	if !val.Exists(prop) {
+		return false
+	}
 	t, _ := val.Get(prop).Bool()
 	return t
 }
