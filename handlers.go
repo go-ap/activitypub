@@ -85,26 +85,32 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = pub.OnActivity(it, func(act *pub.Activity) error {
-		if act.Object.IsLink() {
-			if it, _ := st.Load(act.Object.GetLink()); it != nil {
-				if it.IsCollection() {
-					pub.OnCollectionIntf(it, func(c pub.CollectionInterface) error {
-						act.Object = c.Collection()
-						return nil
-					})
-				} else {
-					act.Object = it
+	typ := it.GetType()
+	if pub.ActivityTypes.Contains(typ) {
+		err = pub.OnActivity(it, func(act *pub.Activity) error {
+			if act.Object.IsLink() {
+				if it, _ := st.Load(act.Object.GetLink()); it != nil {
+					if it.IsCollection() {
+						pub.OnCollectionIntf(it, func(c pub.CollectionInterface) error {
+							act.Object = c.Collection()
+							return nil
+						})
+					} else {
+						act.Object = it
+					}
 				}
 			}
-		}
-		if dat, err = pub.MarshalJSON(act.Object); err != nil {
-			return err
-		}
-		return nil
-	})
+			if dat, err = pub.MarshalJSON(act.Object); err != nil {
+				return err
+			}
+			return nil
+		})
+	} else if pub.IntransitiveActivityTypes.Contains(typ) {
+		status = http.StatusNoContent
+	} else {
+		err = errors.BadRequestf("Invalid activity type %s received", typ)
+	}
 	if err != nil {
-		dat = []byte(err.Error())
 		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
@@ -115,6 +121,10 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Location", it.GetLink().String())
 		}
 	case http.StatusGone:
+		if len(it.GetLink()) > 0 {
+			w.Header().Set("Location", it.GetLink().String())
+		}
+	case http.StatusNoContent:
 		if len(it.GetLink()) > 0 {
 			w.Header().Set("Location", it.GetLink().String())
 		}
