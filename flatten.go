@@ -84,19 +84,25 @@ func FlattenObjectProperties(o *Object) *Object {
 
 // FlattenProperties flattens the Item's properties from Object types to IRI
 func FlattenProperties(it Item) Item {
-	if ActivityTypes.Contains(it.GetType()) {
+	typ := it.GetType()
+	if IntransitiveActivityTypes.Contains(typ) {
+		OnIntransitiveActivity(it, func(a *IntransitiveActivity) error {
+			a = FlattenIntransitiveActivityProperties(a)
+			return nil
+		})
+	} else if ActivityTypes.Contains(typ) {
 		OnActivity(it, func(a *Activity) error {
 			a = FlattenActivityProperties(a)
 			return nil
 		})
 	}
-	if ActorTypes.Contains(it.GetType()) {
+	if ActorTypes.Contains(typ) {
 		OnActor(it, func(a *Actor) error {
 			a = FlattenActorProperties(a)
 			return nil
 		})
 	}
-	if ObjectTypes.Contains(it.GetType()) {
+	if ObjectTypes.Contains(typ) {
 		OnObject(it, func(o *Object) error {
 			o = FlattenObjectProperties(o)
 			return nil
