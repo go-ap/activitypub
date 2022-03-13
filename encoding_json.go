@@ -313,8 +313,9 @@ func writeQuestionJSONValue(b *[]byte, q Question) (notEmpty bool) {
 	})
 	if q.OneOf != nil {
 		notEmpty = writeItemJSONProp(b, "oneOf", q.OneOf) || notEmpty
-	} else if q.AnyOf != nil {
-		notEmpty = writeItemJSONProp(b, "anyOf", q.OneOf) || notEmpty
+	}
+	if q.AnyOf != nil {
+		notEmpty = writeItemJSONProp(b, "anyOf", q.AnyOf) || notEmpty
 	}
 	notEmpty = writeBoolJSONProp(b, "closed", q.Closed) || notEmpty
 	return notEmpty
