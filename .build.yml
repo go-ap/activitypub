@@ -12,6 +12,7 @@ tasks:
       cd activitypub
       go mod vendor
       make test
+      make TEST_TARGET=./tests test
   - coverage: |
       set -a +x
       cd activitypub && make coverage
