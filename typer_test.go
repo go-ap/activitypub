@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"github.com/go-ap/activitypub"
 	"testing"
+
+	"github.com/go-ap/activitypub"
 )
 
 func TestPathTyper_Type(t *testing.T) {
@@ -97,7 +98,7 @@ func TestCollectionType_AddTo(t *testing.T) {
 	type args struct {
 		i activitypub.Item
 	}
-	var i activitypub.Item 
+	var i activitypub.Item
 	var o *activitypub.Object
 	tests := []struct {
 		name  string
@@ -107,48 +108,48 @@ func TestCollectionType_AddTo(t *testing.T) {
 		want1 bool
 	}{
 		{
-			name:  "simple",
-			t:     "test",
-			args:  args{
+			name: "simple",
+			t:    "test",
+			args: args{
 				i: &activitypub.Object{ID: "http://example.com/addTo"},
 			},
 			want:  "http://example.com/addTo/test",
 			want1: false, // this seems to always be false
 		},
 		{
-			name:  "on-nil-item",
-			t:     "test",
-			args:  args{
+			name: "on-nil-item",
+			t:    "test",
+			args: args{
 				i: i,
 			},
-			want: activitypub.NilIRI,
+			want:  activitypub.NilIRI,
 			want1: false,
 		},
 		{
-			name:  "on-nil",
-			t:     "test",
-			args:  args{
+			name: "on-nil",
+			t:    "test",
+			args: args{
 				i: nil,
 			},
-			want: activitypub.NilIRI,
+			want:  activitypub.NilIRI,
 			want1: false,
 		},
 		{
-			name:  "on-nil-object",
-			t:     "test",
-			args:  args{
+			name: "on-nil-object",
+			t:    "test",
+			args: args{
 				i: o,
 			},
-			want: activitypub.NilIRI,
+			want:  activitypub.NilIRI,
 			want1: false,
 		},
 		{
-			name:  "on-nil-item",
-			t:     "test",
-			args:  args{
+			name: "on-nil-item",
+			t:    "test",
+			args: args{
 				i: i,
 			},
-			want: activitypub.NilIRI,
+			want:  activitypub.NilIRI,
 			want1: false,
 		},
 	}

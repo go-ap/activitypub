@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"fmt"
-	pub "github.com/go-ap/activitypub"
-	"github.com/go-ap/errors"
 	"net/http"
 	"path"
 	"strings"
+
+	pub "github.com/go-ap/activitypub"
+	"github.com/go-ap/errors"
 )
 
 // CollectionType
