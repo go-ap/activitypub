@@ -10,7 +10,6 @@ environment:
 tasks:
   - tests: |
       cd handlers
-      go mod vendor
       make test
   - coverage: |
       set -a +x
