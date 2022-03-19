@@ -5,9 +5,12 @@ TEST_TARGET ?= .
 GO111MODULE = on
 PROJECT_NAME := $(shell basename $(PWD))
 
-.PHONY: test coverage clean
+.PHONY: test coverage clean download
 
-test:
+download:
+	$(GO) mod download all
+
+test: download
 	$(TEST) $(TEST_FLAGS) $(TEST_TARGET)
 
 coverage: TEST_TARGET := .

@@ -10,7 +10,6 @@ environment:
 tasks:
   - tests: |
       cd activitypub
-      go mod vendor
       make test
       make TEST_TARGET=./tests test
   - coverage: |
