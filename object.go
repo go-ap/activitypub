@@ -135,10 +135,10 @@ func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
 
 type Objects interface {
 	Object | Tombstone | Place | Profile | Relationship |
-	Activities |
-	IntransitiveActivities |
-	Collections |
-	IRI
+		Activities |
+		IntransitiveActivities |
+		Collections |
+		IRI
 }
 
 // Object describes an ActivityPub object of any kind.
@@ -427,14 +427,14 @@ func (m MimeType) MarshalBinary() ([]byte, error) {
 }
 
 // ToLink returns a Link pointer to the data in the current Item
-func ToLink(it Item) (*Link, error) {
+func ToLink(it LinkOrIRI) (*Link, error) {
 	switch i := it.(type) {
 	case *Link:
 		return i, nil
 	case Link:
 		return &i, nil
 	}
-	return nil, fmt.Errorf("unable to convert %q", it.GetType())
+	return nil, fmt.Errorf("unable to convert %T", it)
 }
 
 // ToObject returns an Object pointer to the data in the current Item

@@ -68,6 +68,19 @@ func gobEncodeItems(col ItemCollection) ([]byte, error) {
 	return b.Bytes(), err
 }
 
+func gobEncodeItemOrLink(it LinkOrIRI) ([]byte, error) {
+	if ob, ok := it.(Item); ok {
+		return gobEncodeItem(ob)
+	}
+	b := bytes.Buffer{}
+	err := OnLink(it, func(l *Link) error {
+		bytes, err := l.GobEncode()
+		b.Write(bytes)
+		return err
+	})
+	return b.Bytes(), err
+}
+
 func gobEncodeItem(it Item) ([]byte, error) {
 	if IsIRI(it) {
 		if i, ok := it.(IRI); ok {
@@ -97,6 +110,7 @@ func gobEncodeItem(it Item) ([]byte, error) {
 				return err
 			})
 		case LinkType, MentionType:
+			// TODO(marius): this shouldn't work, as Link does not implement Item? (or rather, should not)
 			err = OnLink(it, func(l *Link) error {
 				bytes, err := l.GobEncode()
 				b.Write(bytes)
@@ -333,7 +347,7 @@ func mapObjectProperties(mm map[string][]byte, o *Object) (hasData bool, err err
 		hasData = true
 	}
 	if o.URL != nil {
-		if mm["url"], err = gobEncodeItem(o.URL); err != nil {
+		if mm["url"], err = gobEncodeItemOrLink(o.URL); err != nil {
 			return hasData, err
 		}
 		hasData = true

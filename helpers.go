@@ -41,7 +41,7 @@ type WithOrderedCollectionPageFn func(*OrderedCollectionPage) error
 type WithItemCollectionFn func(*ItemCollection) error
 
 // OnLink calls function fn on it Item if it can be asserted to type Link
-func OnLink(it Item, fn WithLinkFn) error {
+func OnLink(it LinkOrIRI, fn WithLinkFn) error {
 	if it == nil {
 		return nil
 	}
