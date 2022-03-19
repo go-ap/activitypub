@@ -12,6 +12,10 @@ var LinkTypes = ActivityVocabularyTypes{
 	MentionType,
 }
 
+type Links interface {
+	Link | IRI
+}
+
 // A Link is an indirect, qualified reference to a resource identified by a URL.
 // The fundamental model for links is established by [ RFC5988].
 // Many of the properties defined by the Activity Vocabulary allow values that are either instances of APObject or Link.

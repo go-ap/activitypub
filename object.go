@@ -133,6 +133,14 @@ func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
 	return a.GobEncode()
 }
 
+type Objects interface {
+	Object | Tombstone | Place | Profile | Relationship |
+	Activities |
+	IntransitiveActivities |
+	Collections |
+	IRI
+}
+
 // Object describes an ActivityPub object of any kind.
 // It serves as the base type for most of the other kinds of objects defined in the Activity
 // Vocabulary, including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
@@ -203,7 +211,7 @@ type Object struct {
 	// Updated the date and time at which the object was updated
 	Updated time.Time `jsonld:"updated,omitempty"`
 	// URL identifies one or more links to representations of the object
-	URL Item `jsonld:"url,omitempty"`
+	URL LinkOrIRI `jsonld:"url,omitempty"`
 	// To identifies an entity considered to be part of the public primary audience of an Activity Pub Object
 	To ItemCollection `jsonld:"to,omitempty"`
 	// Bto identifies anActivity Pub Object that is part of the private primary audience of this Activity Pub Object.

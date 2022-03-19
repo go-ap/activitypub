@@ -36,6 +36,10 @@ var ActorTypes = ActivityVocabularyTypes{
 // Like other ActivityStreams objects, actors have an id, which is a URI.
 type CanReceiveActivities Item
 
+type Actors interface {
+	Actor
+}
+
 // Actor is generally one of the ActivityStreams actor Types, but they don't have to be.
 // For example, a Profile object might be used as an actor, or a type from an ActivityStreams extension.
 // Actors are retrieved like any other Object in ActivityPub.

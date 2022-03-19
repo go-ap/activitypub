@@ -1,4 +1,5 @@
-TEST := go test
+GO ?= go
+TEST := $(GO) test
 TEST_FLAGS ?= -v
 TEST_TARGET ?= .
 GO111MODULE = on
