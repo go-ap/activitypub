@@ -64,6 +64,19 @@ func (i ItemCollection) First() Item {
 	return i[0]
 }
 
+// Normalize returns the first item if the collection contains only one,
+// the full collection if the collection contains more than one item,
+// or nil
+func (i ItemCollection) Normalize() Item {
+	if len(i) == 0 {
+		return nil
+	}
+	if len(i) == 1 {
+		return i[0]
+	}
+	return i
+}
+
 // Collection returns the current object as collection interface
 func (i *ItemCollection) Collection() ItemCollection {
 	return *i

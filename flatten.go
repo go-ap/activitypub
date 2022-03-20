@@ -118,7 +118,7 @@ func Flatten(it Item) Item {
 	}
 	if it.IsCollection() {
 		if c, ok := it.(CollectionInterface); ok {
-			it = FlattenItemCollection(c.Collection())
+			it = FlattenItemCollection(c.Collection()).Normalize()
 		}
 	}
 	if len(it.GetLink()) > 0 {
