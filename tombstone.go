@@ -254,6 +254,11 @@ func ToTombstone(it Item) (*Tombstone, error) {
 
 type withTombstoneFn func(*Tombstone) error
 
+// OnTombstone calls function fn on it Item if it can be asserted to type *Tombstone
+//
+// This function should be called if trying to access the Tombstone specific properties
+// like "formerType" or "deleted".
+// For the other properties OnObject should be used instead.
 func OnTombstone(it Item, fn withTombstoneFn) error {
 	if it == nil {
 		return nil

@@ -280,6 +280,11 @@ func ToPlace(it Item) (*Place, error) {
 
 type withPlaceFn func(*Place) error
 
+// OnPlace calls function fn on it Item if it can be asserted to type *Place
+//
+// This function should be called if trying to access the Place specific properties
+// like "accuracy", "altitude", "latitude", "longitude", "radius", or "units".
+// For the other properties OnObject should be used instead.
 func OnPlace(it Item, fn withPlaceFn) error {
 	if it == nil {
 		return nil

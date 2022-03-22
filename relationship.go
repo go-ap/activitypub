@@ -263,6 +263,11 @@ func ToRelationship(it Item) (*Relationship, error) {
 
 type withRelationshipFn func(*Relationship) error
 
+// OnRelationship calls function fn on it Item if it can be asserted to type *Relationship
+//
+// This function should be called if trying to access the Relationship specific properties
+// like "subject", "object", or "relationship".
+// For the other properties OnObject should be used instead.
 func OnRelationship(it Item, fn withRelationshipFn) error {
 	if it == nil {
 		return nil

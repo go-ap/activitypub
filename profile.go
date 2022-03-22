@@ -248,6 +248,11 @@ func ToProfile(it Item) (*Profile, error) {
 
 type withProfileFn func(*Profile) error
 
+// OnProfile calls function fn on it Item if it can be asserted to type *Profile
+//
+// This function should be called if trying to access the Profile specific properties
+// like "describes".
+// For the other properties OnObject should be used instead.
 func OnProfile(it Item, fn withProfileFn) error {
 	if it == nil {
 		return nil
