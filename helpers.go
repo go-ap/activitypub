@@ -40,7 +40,10 @@ type WithOrderedCollectionPageFn func(*OrderedCollectionPage) error
 // WithItemCollectionFn represents a function type that can be used as a parameter for OnItemCollection helper function
 type WithItemCollectionFn func(*ItemCollection) error
 
-// OnLink calls function fn on it Item if it can be asserted to type Link
+// OnLink calls function fn on it Item if it can be asserted to type *Link
+//
+// This function should be safe to use for all types with a structure compatible
+// with the Link type
 func OnLink(it LinkOrIRI, fn WithLinkFn) error {
 	if it == nil {
 		return nil
@@ -52,7 +55,10 @@ func OnLink(it LinkOrIRI, fn WithLinkFn) error {
 	return fn(ob)
 }
 
-// OnObject calls function fn on it Item if it can be asserted to type Object
+// OnObject calls function fn on it Item if it can be asserted to type *Object
+//
+// This function should be safe to be called for all types with a structure compatible
+// to the Object type.
 func OnObject(it Item, fn WithObjectFn) error {
 	if it == nil {
 		return nil
@@ -74,7 +80,11 @@ func OnObject(it Item, fn WithObjectFn) error {
 	return fn(ob)
 }
 
-// OnActivity calls function fn on it Item if it can be asserted to type Activity
+// OnActivity calls function fn on it Item if it can be asserted to type *Activity
+//
+// This function should be called if trying to access the Activity specific properties
+// like "object", for the other properties OnObject, or OnIntransitiveActivity
+// should be used instead.
 func OnActivity(it Item, fn WithActivityFn) error {
 	if it == nil {
 		return nil
@@ -96,7 +106,12 @@ func OnActivity(it Item, fn WithActivityFn) error {
 	return fn(act)
 }
 
-// OnIntransitiveActivity calls function fn on it Item if it can be asserted to type IntransitiveActivity
+// OnIntransitiveActivity calls function fn on it Item if it can be asserted
+// to type *IntransitiveActivity
+//
+// This function should be called if trying to access the IntransitiveActivity
+// specific properties like "actor", for the other properties OnObject
+// should be used instead.
 func OnIntransitiveActivity(it Item, fn WithIntransitiveActivityFn) error {
 	if it == nil {
 		return nil
@@ -119,6 +134,10 @@ func OnIntransitiveActivity(it Item, fn WithIntransitiveActivityFn) error {
 }
 
 // OnQuestion calls function fn on it Item if it can be asserted to type Question
+//
+// This function should be called if trying to access the Questions specific
+// properties like "anyOf", "oneOf", "closed", etc. For the other properties
+// OnObject or OnIntransitiveActivity should be used instead.
 func OnQuestion(it Item, fn WithQuestionFn) error {
 	if it == nil {
 		return nil
@@ -140,7 +159,11 @@ func OnQuestion(it Item, fn WithQuestionFn) error {
 	return fn(act)
 }
 
-// OnActor calls function fn on it Item if it can be asserted to type Actor
+// OnActor calls function fn on it Item if it can be asserted to type *Actor
+//
+// This function should be called if trying to access the Actor specific
+// properties like "preferredName", "publicKey", etc. For the other properties
+// OnObject should be used instead.
 func OnActor(it Item, fn WithActorFn) error {
 	if it == nil {
 		return nil
@@ -162,19 +185,27 @@ func OnActor(it Item, fn WithActorFn) error {
 	return fn(act)
 }
 
-// OnCollection calls function fn on it Item if it can be asserted to type Collection
-func OnCollection(it Item, fn WithCollectionFn) error {
+// OnItemCollection calls function fn on it Item if it can be asserted to type ItemCollection
+//
+// It should be used when Item represents an Item collection and it's usually used as a way
+// to wrap functionality for other functions that will be called on each item in the collection.
+func OnItemCollection(it Item, fn WithItemCollectionFn) error {
 	if it == nil {
 		return nil
 	}
-	col, err := ToCollection(it)
+	col, err := ToItemCollection(it)
 	if err != nil {
 		return err
 	}
 	return fn(col)
 }
 
-// OnCollectionIntf calls function fn on it Item if it can be asserted to one of the Collection types
+// OnCollectionIntf calls function fn on it Item if it can be asserted to a type
+// that implements the CollectionInterface
+//
+// This function should be called if Item represents a collection of ActivityPub
+// objects. It basically wraps functionality for the different collection types
+// supported by the package.
 func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 	if it == nil {
 		return nil
@@ -219,7 +250,28 @@ func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 	}
 }
 
-// OnCollectionPage calls function fn on it Item if it can be asserted to type CollectionPage
+// OnCollection calls function fn on it Item if it can be asserted to type *Collection
+//
+// This function should be called if trying to access the Collection specific
+// properties like "totalItems", "items", etc. For the other properties
+// OnObject should be used instead.
+func OnCollection(it Item, fn WithCollectionFn) error {
+	if it == nil {
+		return nil
+	}
+	col, err := ToCollection(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
+}
+
+// OnCollectionPage calls function fn on it Item if it can be asserted to
+// type *CollectionPage
+//
+// This function should be called if trying to access the CollectionPage specific
+// properties like "partOf", "next", "perv". For the other properties
+// OnObject or OnCollection should be used instead.
 func OnCollectionPage(it Item, fn WithCollectionPageFn) error {
 	if it == nil {
 		return nil
@@ -231,7 +283,12 @@ func OnCollectionPage(it Item, fn WithCollectionPageFn) error {
 	return fn(col)
 }
 
-// OnOrderedCollection calls function fn on it Item if it can be asserted to type OrderedCollection
+// OnOrderedCollection calls function fn on it Item if it can be asserted
+// to type *OrderedCollection
+//
+// This function should be called if trying to access the Collection specific
+// properties like "totalItems", "orderedItems", etc. For the other properties
+// OnObject should be used instead.
 func OnOrderedCollection(it Item, fn WithOrderedCollectionFn) error {
 	if it == nil {
 		return nil
@@ -243,24 +300,17 @@ func OnOrderedCollection(it Item, fn WithOrderedCollectionFn) error {
 	return fn(col)
 }
 
-// OnOrderedCollectionPage calls function fn on it Item if it can be asserted to type OrderedCollectionPage
+// OnOrderedCollectionPage calls function fn on it Item if it can be asserted
+// to type *OrderedCollectionPage
+//
+// This function should be called if trying to access the OrderedCollectionPage specific
+// properties like "partOf", "next", "perv". For the other properties
+// OnObject or OnOrderedCollection should be used instead.
 func OnOrderedCollectionPage(it Item, fn WithOrderedCollectionPageFn) error {
 	if it == nil {
 		return nil
 	}
 	col, err := ToOrderedCollectionPage(it)
-	if err != nil {
-		return err
-	}
-	return fn(col)
-}
-
-// OnItemCollection calls function fn on it Item if it can be asserted to type ItemCollection
-func OnItemCollection(it Item, fn WithItemCollectionFn) error {
-	if it == nil {
-		return nil
-	}
-	col, err := ToItemCollection(it)
 	if err != nil {
 		return err
 	}
