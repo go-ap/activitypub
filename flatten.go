@@ -111,18 +111,17 @@ func FlattenProperties(it Item) Item {
 	return it
 }
 
-// Flatten checks if Item can be flatten to an IRI or array of IRIs and returns it if so
+// Flatten checks if Item can be flattened to an IRI or array of IRIs and returns it if so
 func Flatten(it Item) Item {
 	if IsNil(it) {
 		return nil
 	}
 	if it.IsCollection() {
-		if c, ok := it.(CollectionInterface); ok {
+		OnCollectionIntf(it, func(c CollectionInterface) error {
 			it = FlattenItemCollection(c.Collection()).Normalize()
-		}
+			return nil
+		})
+		return it
 	}
-	if len(it.GetLink()) > 0 {
-		return it.GetLink()
-	}
-	return it
+	return it.GetLink()
 }
