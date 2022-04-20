@@ -220,7 +220,7 @@ func writeObjectJSONValue(b *[]byte, o Object) (notEmpty bool) {
 		notEmpty = writeItemJSONProp(b, "tag", o.Tag) || notEmpty
 	}
 	if o.URL != nil {
-		notEmpty = writeIRIJSONProp(b, "url", o.URL) || notEmpty
+		notEmpty = writeItemJSONProp(b, "url", o.URL) || notEmpty
 	}
 	if o.To != nil {
 		notEmpty = writeItemJSONProp(b, "to", o.To) || notEmpty
