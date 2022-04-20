@@ -3,10 +3,10 @@ module github.com/go-ap/handlers
 go 1.18
 
 require (
-	github.com/go-ap/activitypub v0.0.0-20220323151940-947bcada60f7
+	github.com/go-ap/activitypub v0.0.0-20220420091113-4837641dc83b
 	github.com/go-ap/errors v0.0.0-20220407124202-394efeb1ec53
 	github.com/go-ap/jsonld v0.0.0-20200327122108-fafac2de2660
-	github.com/go-ap/storage v0.0.0-20220323152147-7b1ff73eb5c1
+	github.com/go-ap/storage v0.0.0-20220420091247-5a9edd34862b
 )
 
 require (
