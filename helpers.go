@@ -55,6 +55,73 @@ func OnLink(it LinkOrIRI, fn WithLinkFn) error {
 	return fn(ob)
 }
 
+func On[T Objects](it Item, fn func(*T) error) error {
+	/*
+		switch i := it.(type) {
+		case *Object:
+			return fn(i)
+		case Object:
+			return fn(&i)
+		case *Place:
+			return fn(i)
+		case Place:
+			return fn(&i)
+		case *Profile:
+			return fn(i)
+		case Profile:
+			return fn(&i)
+		case *Relationship:
+			return fn(i)
+		case Relationship:
+			return fn(&i)
+		case *Tombstone:
+			return fn(i)
+		case Tombstone:
+			return fn(&i)
+		case *Actor:
+			return fn(i)
+		case Actor:
+			return fn(&i)
+		case *Activity:
+			return fn(i)
+		case Activity:
+			return fn(&i)
+		case *IntransitiveActivity:
+			return fn(i)
+		case IntransitiveActivity:
+			return fn(&i)
+		case *Question:
+			return fn(i)
+		case Question:
+			return fn(&i)
+		case *Collection:
+			return fn(i)
+		case Collection:
+			return fn(&i)
+		case *CollectionPage:
+			return fn(i)
+		case CollectionPage:
+			return fn(&i)
+		case *OrderedCollection:
+			return fn(i)
+		case OrderedCollection:
+			return fn(&i)
+		case *OrderedCollectionPage:
+			return fn(i)
+		case OrderedCollectionPage:
+			return fn(&i)
+		default:
+			typ := reflect.TypeOf(new(Object))
+			if reflect.TypeOf(it).ConvertibleTo(typ) {
+				if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Object); ok {
+					return fn(i)
+				}
+			}
+		}
+	*/
+	return fmt.Errorf("invalid type %T for generic function", it)
+}
+
 // OnObject calls function fn on it Item if it can be asserted to type *Object
 //
 // This function should be safe to be called for all types with a structure compatible
