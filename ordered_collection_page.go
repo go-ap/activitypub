@@ -251,7 +251,7 @@ func (o OrderedCollectionPage) MarshalBinary() ([]byte, error) {
 
 // GobEncode
 func (o OrderedCollectionPage) GobEncode() ([]byte, error) {
-	var mm = make(map[string][]byte)
+	mm := make(map[string][]byte)
 	hasData, err := mapOrderedCollectionPageProperties(mm, o)
 	if err != nil {
 		return nil, err

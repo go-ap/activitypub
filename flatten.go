@@ -78,7 +78,7 @@ func FlattenObjectProperties(o *Object) *Object {
 	o.CC = FlattenItemCollection(o.CC)
 	o.BCC = FlattenItemCollection(o.BCC)
 	o.Audience = FlattenItemCollection(o.Audience)
-	//o.Tag = FlattenItemCollection(o.Tag)
+	// o.Tag = FlattenItemCollection(o.Tag)
 	return o
 }
 

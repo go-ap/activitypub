@@ -6,7 +6,7 @@ import (
 )
 
 func TestLinkNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 	var testType ActivityVocabularyType
 
 	l := LinkNew(testValue, testType)

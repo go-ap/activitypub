@@ -247,7 +247,7 @@ func (a Actor) MarshalBinary() ([]byte, error) {
 }
 
 func (a Actor) GobEncode() ([]byte, error) {
-	var mm = make(map[string][]byte)
+	mm := make(map[string][]byte)
 	hasData, err := mapActorProperties(mm, &a)
 	if err != nil {
 		return nil, err

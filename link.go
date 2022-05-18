@@ -3,6 +3,7 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
+
 	"github.com/valyala/fastjson"
 )
 

@@ -64,7 +64,7 @@ func writeNaturalLanguageJSONProp(b *[]byte, n string, nl NaturalLanguageValues)
 	return false
 }
 
-func writeStringJSONProp(b *[]byte, n string, s string) (notEmpty bool) {
+func writeStringJSONProp(b *[]byte, n, s string) (notEmpty bool) {
 	return writeJSONProp(b, n, []byte(fmt.Sprintf(`"%s"`, s)))
 }
 
