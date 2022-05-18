@@ -14,9 +14,3 @@ type ValidationErrors interface {
 type Validator interface {
 	Validate(receiver IRI, incoming Item) (bool, ValidationErrors)
 }
-
-func (v defaultValidator) Validate(receiver IRI, incoming Item) (bool, ValidationErrors) {
-	return true, nil
-}
-
-type defaultValidator struct{}

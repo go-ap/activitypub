@@ -1,21 +1,12 @@
 package activitypub
 
 import (
-	"encoding"
-	"encoding/json"
 	"fmt"
 	"net/url"
-	"reflect"
 	"strings"
 	"time"
 
 	"github.com/valyala/fastjson"
-)
-
-var (
-	apUnmarshalerType   = reflect.TypeOf(new(Item)).Elem()
-	unmarshalerType     = reflect.TypeOf(new(json.Unmarshaler)).Elem()
-	textUnmarshalerType = reflect.TypeOf(new(encoding.TextUnmarshaler)).Elem()
 )
 
 // ItemTyperFunc will return an instance of a struct that implements activitystreams.Item

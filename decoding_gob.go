@@ -345,13 +345,6 @@ func unmapObjectProperties(mm map[string][]byte, o *Object) error {
 	return nil
 }
 
-func tryDecodeObject(ob *Object, data []byte) error {
-	if err := ob.GobDecode(data); err != nil {
-		return err
-	}
-	return nil
-}
-
 func tryDecodeItems(items *ItemCollection, data []byte) error {
 	tt := make([][]byte, 0)
 	g := gob.NewDecoder(bytes.NewReader(data))
