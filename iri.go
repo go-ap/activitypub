@@ -230,14 +230,14 @@ func (i IRI) Equals(with IRI, checkScheme bool) bool {
 	u, e := i.URL()
 	uw, ew := with.URL()
 	if e != nil || ew != nil || !validURL(u) || !validURL(uw) {
-		return strings.ToLower(i.String()) == strings.ToLower(with.String())
+		return strings.EqualFold(i.String(), with.String())
 	}
 	if checkScheme {
-		if strings.ToLower(u.Scheme) != strings.ToLower(uw.Scheme) {
+		if !strings.EqualFold(u.Scheme, uw.Scheme) {
 			return false
 		}
 	}
-	if strings.ToLower(u.Host) != strings.ToLower(uw.Host) {
+	if !strings.EqualFold(u.Host, uw.Host) {
 		return false
 	}
 	if path.Clean(u.Path) != path.Clean(uw.Path) {
