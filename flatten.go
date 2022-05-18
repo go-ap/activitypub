@@ -19,7 +19,7 @@ func FlattenIntransitiveActivityProperties(act *IntransitiveActivity) *Intransit
 	act.Result = FlattenToIRI(act.Result)
 	act.Instrument = FlattenToIRI(act.Instrument)
 	OnObject(act, func(o *Object) error {
-		o = FlattenObjectProperties(o)
+		FlattenObjectProperties(o)
 		return nil
 	})
 	return act
@@ -61,7 +61,7 @@ func FlattenOrderedCollection(col *OrderedCollection) *OrderedCollection {
 // FlattenActorProperties flattens the Actor's properties from Object types to IRI
 func FlattenActorProperties(a *Actor) *Actor {
 	OnObject(a, func(o *Object) error {
-		o = FlattenObjectProperties(o)
+		FlattenObjectProperties(o)
 		return nil
 	})
 	return a
@@ -87,24 +87,24 @@ func FlattenProperties(it Item) Item {
 	typ := it.GetType()
 	if IntransitiveActivityTypes.Contains(typ) {
 		OnIntransitiveActivity(it, func(a *IntransitiveActivity) error {
-			a = FlattenIntransitiveActivityProperties(a)
+			FlattenIntransitiveActivityProperties(a)
 			return nil
 		})
 	} else if ActivityTypes.Contains(typ) {
 		OnActivity(it, func(a *Activity) error {
-			a = FlattenActivityProperties(a)
+			FlattenActivityProperties(a)
 			return nil
 		})
 	}
 	if ActorTypes.Contains(typ) {
 		OnActor(it, func(a *Actor) error {
-			a = FlattenActorProperties(a)
+			FlattenActorProperties(a)
 			return nil
 		})
 	}
 	if ObjectTypes.Contains(typ) {
 		OnObject(it, func(o *Object) error {
-			o = FlattenObjectProperties(o)
+			FlattenObjectProperties(o)
 			return nil
 		})
 	}
