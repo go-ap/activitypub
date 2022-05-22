@@ -71,16 +71,14 @@ func (a ActivityHandlerFn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO(marius): we need a better mechanism than loading it from the Request Context
+	// TODO(marius): we need a better mechanism than loading the storage object from the Request Context
 	st, err := a.Storage(r)
 	if err != nil {
-		dat = []byte(err.Error())
 		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
 
 	if it, status, err = a(Typer.Type(r), r, st); err != nil {
-		dat = []byte(err.Error())
 		errors.HandleError(err).ServeHTTP(w, r)
 		return
 	}
