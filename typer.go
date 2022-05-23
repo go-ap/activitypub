@@ -129,6 +129,9 @@ func (t CollectionType) IRI(i pub.Item) pub.IRI {
 	if !ValidCollection(t) {
 		return pub.EmptyIRI
 	}
+	if pub.IsIRI(i) {
+		return IRIf(i.GetLink(), t)
+	}
 	it := t.Of(i)
 	if pub.IsNil(it) {
 		return IRIf("", t)
