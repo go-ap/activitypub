@@ -126,9 +126,12 @@ func IRIf(i pub.IRI, t CollectionType) pub.IRI {
 // IRI gives us the IRI of the t collection type corresponding to the i Item,
 // or generates a new one if not found.
 func (t CollectionType) IRI(i pub.Item) pub.IRI {
+	if !ValidCollection(t) {
+		return pub.EmptyIRI
+	}
 	it := t.Of(i)
 	if pub.IsNil(it) {
-		return pub.EmptyIRI
+		return IRIf("", t)
 	}
 	if iri := it.GetLink(); len(iri) > 0 {
 		return iri
@@ -139,7 +142,7 @@ func (t CollectionType) IRI(i pub.Item) pub.IRI {
 // Of gives us the property of the i Item that corresponds to the t collection type.
 func (t CollectionType) Of(i pub.Item) pub.Item {
 	if pub.IsNil(i) || !i.IsObject() {
-		return pub.EmptyIRI
+		return nil
 	}
 	var it pub.Item
 	pub.OnActor(i, func(a *pub.Actor) error {

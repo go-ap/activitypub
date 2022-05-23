@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/go-ap/activitypub"
+	pub "github.com/go-ap/activitypub"
 )
 
 func TestPathTyper_Type(t *testing.T) {
@@ -40,6 +41,14 @@ func TestCollectionTypes_Of(t *testing.T) {
 		args args
 		want activitypub.Item
 	}{
+		{
+			name: "nil from nil object",
+			args: args{
+				o: nil,
+				t: "likes",
+			},
+			want: nil,
+		},
 		{
 			name: "nil from invalid collection type",
 			args: args{
@@ -82,7 +91,61 @@ func TestCollectionTypes_Of(t *testing.T) {
 }
 
 func TestCollectionType_IRI(t *testing.T) {
-	t.Skipf("TODO")
+	type args struct {
+		o activitypub.Item
+		t CollectionType
+	}
+	tests := []struct {
+		name string
+		args args
+		want activitypub.IRI
+	}{
+		{
+			name: "just path from nil object",
+			args: args{
+				o: nil,
+				t: "likes",
+			},
+			want: pub.IRI("/likes"),
+		},
+		{
+			name: "emptyIRI from invalid collection type",
+			args: args{
+				o: activitypub.Object{
+					Likes: activitypub.IRI("test"),
+				},
+				t: "like",
+			},
+			want: pub.EmptyIRI,
+		},
+		{
+			name: "just path from object without ID",
+			args: args{
+				o: activitypub.Object{},
+				t: "likes",
+			},
+			want: pub.IRI("/likes"),
+		},
+		{
+			name: "likes iri on object",
+			args: args{
+				o: activitypub.Object{
+					ID:    "http://example.com",
+					Likes: activitypub.IRI("test"),
+				},
+				t: "likes",
+			},
+			want: activitypub.IRI("test"),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if ob := test.args.t.IRI(test.args.o); ob != test.want {
+				t.Errorf("IRI received %q is different, expected %q", ob, test.want)
+			}
+		})
+	}
 }
 
 func TestCollectionType_OfActor(t *testing.T) {
