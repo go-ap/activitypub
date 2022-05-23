@@ -132,9 +132,12 @@ func (t CollectionType) IRI(i pub.Item) pub.IRI {
 	if pub.IsIRI(i) {
 		return IRIf(i.GetLink(), t)
 	}
+	if pub.IsNil(i) {
+		return IRIf("", t)
+	}
 	it := t.Of(i)
 	if pub.IsNil(it) {
-		return IRIf("", t)
+		return IRIf(i.GetLink(), t)
 	}
 	if iri := it.GetLink(); len(iri) > 0 {
 		return iri
