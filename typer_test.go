@@ -30,6 +30,57 @@ func TestSplit(t *testing.T) {
 	t.Skipf("TODO")
 }
 
+func TestCollectionTypes_Of(t *testing.T) {
+	type args struct {
+		o activitypub.Item
+		t CollectionType
+	}
+	tests := []struct {
+		name string
+		args args
+		want activitypub.Item
+	}{
+		{
+			name: "nil from invalid collection type",
+			args: args{
+				o: activitypub.Object{
+					Likes: activitypub.IRI("test"),
+				},
+				t: "like",
+			},
+			want: nil,
+		},
+		{
+			name: "nil from nil collection type",
+			args: args{
+				o: activitypub.Object{
+					Likes: nil,
+				},
+				t: "likes",
+			},
+			want: nil,
+		},
+		{
+			name: "get likes iri",
+			args: args{
+				o: activitypub.Object{
+					Likes: activitypub.IRI("test"),
+				},
+				t: "likes",
+			},
+			want: activitypub.IRI("test"),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if ob := test.args.t.Of(test.args.o); ob != test.want {
+				t.Errorf("Object received %#v is different, expected #%v", ob, test.want)
+			}
+		})
+	}
+}
+
 func TestCollectionType_IRI(t *testing.T) {
 	t.Skipf("TODO")
 }
@@ -164,4 +215,8 @@ func TestCollectionType_AddTo(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestCollectionTypes_Split(t *testing.T) {
+	t.Skipf("TODO")
 }

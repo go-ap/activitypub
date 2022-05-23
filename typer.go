@@ -123,54 +123,57 @@ func IRIf(i pub.IRI, t CollectionType) pub.IRI {
 	return pub.IRI(fmt.Sprintf("%s/%s", i, t))
 }
 
-// IRI gives us the property of the i Item that corresponds to the t collection type
+// IRI gives us the IRI of the t collection type corresponding to the i Item,
 // or generates a new one if not found.
 func (t CollectionType) IRI(i pub.Item) pub.IRI {
-	var iri pub.IRI
-	if pub.IsNil(i) {
+	it := t.Of(i)
+	if pub.IsNil(it) {
 		return pub.EmptyIRI
 	}
-	if i.IsObject() {
-		if OnActor.Contains(t) {
-			pub.OnActor(i, func(a *pub.Actor) error {
-				if t == Inbox && a.Inbox != nil {
-					iri = a.Inbox.GetLink()
-				}
-				if t == Outbox && a.Outbox != nil {
-					iri = a.Outbox.GetLink()
-				}
-				if t == Liked && a.Liked != nil {
-					iri = a.Liked.GetLink()
-				}
-				if t == Following && a.Following != nil {
-					iri = a.Following.GetLink()
-				}
-				if t == Followers && a.Followers != nil {
-					iri = a.Followers.GetLink()
-				}
-				return nil
-			})
-		}
-		if OnObject.Contains(t) {
-			pub.OnObject(i, func(o *pub.Object) error {
-				if t == Likes && o.Likes != nil {
-					iri = o.Likes.GetLink()
-				}
-				if t == Shares && o.Shares != nil {
-					iri = o.Shares.GetLink()
-				}
-				if t == Replies && o.Replies != nil {
-					iri = o.Replies.GetLink()
-				}
-				return nil
-			})
-		}
-	}
-
-	if len(iri) > 0 {
+	if iri := it.GetLink(); len(iri) > 0 {
 		return iri
 	}
 	return IRIf(i.GetLink(), t)
+}
+
+// Of gives us the property of the i Item that corresponds to the t collection type.
+func (t CollectionType) Of(i pub.Item) pub.Item {
+	if pub.IsNil(i) || !i.IsObject() {
+		return pub.EmptyIRI
+	}
+	var it pub.Item
+	pub.OnActor(i, func(a *pub.Actor) error {
+		if t == Inbox && a.Inbox != nil {
+			it = a.Inbox
+		}
+		if t == Outbox && a.Outbox != nil {
+			it = a.Outbox
+		}
+		if t == Liked && a.Liked != nil {
+			it = a.Liked
+		}
+		if t == Following && a.Following != nil {
+			it = a.Following
+		}
+		if t == Followers && a.Followers != nil {
+			it = a.Followers
+		}
+		return nil
+	})
+	pub.OnObject(i, func(o *pub.Object) error {
+		if t == Likes && o.Likes != nil {
+			it = o.Likes
+		}
+		if t == Shares && o.Shares != nil {
+			it = o.Shares
+		}
+		if t == Replies && o.Replies != nil {
+			it = o.Replies
+		}
+		return nil
+	})
+
+	return it
 }
 
 // OfActor returns the base IRI of received i, if i represents an IRI matching collection type t
