@@ -126,21 +126,13 @@ func IRIf(i pub.IRI, t CollectionType) pub.IRI {
 // IRI gives us the IRI of the t collection type corresponding to the i Item,
 // or generates a new one if not found.
 func (t CollectionType) IRI(i pub.Item) pub.IRI {
-	if !ValidCollection(t) {
-		return pub.EmptyIRI
-	}
-	if pub.IsIRI(i) {
-		return IRIf(i.GetLink(), t)
-	}
 	if pub.IsNil(i) {
 		return IRIf("", t)
 	}
-	it := t.Of(i)
-	if pub.IsNil(it) {
-		return IRIf(i.GetLink(), t)
-	}
-	if iri := it.GetLink(); len(iri) > 0 {
-		return iri
+	if pub.IsObject(i) {
+		if it := t.Of(i); !pub.IsNil(it) {
+			return it.GetLink()
+		}
 	}
 	return IRIf(i.GetLink(), t)
 }

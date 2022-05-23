@@ -116,7 +116,7 @@ func TestCollectionType_IRI(t *testing.T) {
 				},
 				t: "like",
 			},
-			want: pub.EmptyIRI,
+			want: "/like",
 		},
 		{
 			name: "just path from object without ID",
