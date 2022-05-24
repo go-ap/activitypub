@@ -143,32 +143,30 @@ func (t CollectionType) Of(i pub.Item) pub.Item {
 		return nil
 	}
 	var it pub.Item
-	pub.OnActor(i, func(a *pub.Actor) error {
-		if t == Inbox && a.Inbox != nil {
-			it = a.Inbox
-		}
-		if t == Outbox && a.Outbox != nil {
-			it = a.Outbox
-		}
-		if t == Liked && a.Liked != nil {
-			it = a.Liked
-		}
-		if t == Following && a.Following != nil {
-			it = a.Following
-		}
-		if t == Followers && a.Followers != nil {
-			it = a.Followers
-		}
-		return nil
-	})
+	if OnActor.Contains(t) && pub.ActorTypes.Contains(i.GetType()) {
+		pub.OnActor(i, func(a *pub.Actor) error {
+			switch t {
+			case Inbox:
+				it = a.Inbox
+			case Outbox:
+				it = a.Outbox
+			case Liked:
+				it = a.Liked
+			case Following:
+				it = a.Following
+			case Followers:
+				it = a.Followers
+			}
+			return nil
+		})
+	}
 	pub.OnObject(i, func(o *pub.Object) error {
-		if t == Likes && o.Likes != nil {
+		switch t {
+		case Likes:
 			it = o.Likes
-		}
-		if t == Shares && o.Shares != nil {
+		case Shares:
 			it = o.Shares
-		}
-		if t == Replies && o.Replies != nil {
+		case Replies:
 			it = o.Replies
 		}
 		return nil
