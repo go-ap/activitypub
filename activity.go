@@ -861,48 +861,12 @@ func (a *Activity) GobDecode(data []byte) error {
 func (a Activity) Equals(with Item) bool {
 	result := true
 	err := OnActivity(with, func(w *Activity) error {
-		OnObject(a, func(oa *Object) error {
-			result = oa.Equals(w)
+		OnIntransitiveActivity(a, func(oi *IntransitiveActivity) error {
+			result = oi.Equals(w)
 			return nil
 		})
 		if w.Object != nil {
 			if !ItemsEqual(a.Object, w.Object) {
-				result = false
-				return nil
-			}
-		}
-		if w.Actor != nil {
-			if !ItemsEqual(a.Actor, w.Actor) {
-				result = false
-				return nil
-			}
-		}
-		if w.Target != nil {
-			if !ItemsEqual(a.Target, w.Target) {
-				result = false
-				return nil
-			}
-		}
-		if w.Result != nil {
-			if !ItemsEqual(a.Result, w.Result) {
-				result = false
-				return nil
-			}
-		}
-		if w.Origin != nil {
-			if !ItemsEqual(a.Origin, w.Origin) {
-				result = false
-				return nil
-			}
-		}
-		if w.Result != nil {
-			if !ItemsEqual(a.Result, w.Result) {
-				result = false
-				return nil
-			}
-		}
-		if w.Instrument != nil {
-			if !ItemsEqual(a.Instrument, w.Instrument) {
 				result = false
 				return nil
 			}
