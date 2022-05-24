@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"net/url"
 	"path"
 	"strings"
@@ -35,6 +36,15 @@ type (
 	IRI  string
 	IRIs []IRI
 )
+
+func (i IRI) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		u, _ := i.URL()
+		u.RawQuery, _ = url.QueryUnescape(u.RawQuery)
+		io.WriteString(s, u.String())
+	}
+}
 
 // String returns the String value of the IRI object
 func (i IRI) String() string {
