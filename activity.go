@@ -860,9 +860,9 @@ func (a *Activity) GobDecode(data []byte) error {
 // Equals verifies if our receiver Object is equals with the "with" Object
 func (a Activity) Equals(with Item) bool {
 	result := true
-	OnActivity(with, func(w *Activity) error {
-		OnObject(a, func(o *Object) error {
-			result = o.Equals(w)
+	err := OnActivity(with, func(w *Activity) error {
+		OnObject(a, func(oa *Object) error {
+			result = oa.Equals(w)
 			return nil
 		})
 		if w.Object != nil {
@@ -909,5 +909,8 @@ func (a Activity) Equals(with Item) bool {
 		}
 		return nil
 	})
+	if err != nil {
+		result = false
+	}
 	return result
 }

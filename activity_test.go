@@ -1459,3 +1459,128 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 		})
 	}
 }
+
+func TestActivity_Equals(t *testing.T) {
+	type fields struct {
+		ID           ID
+		Type         ActivityVocabularyType
+		Name         NaturalLanguageValues
+		Attachment   Item
+		AttributedTo Item
+		Audience     ItemCollection
+		Content      NaturalLanguageValues
+		Context      Item
+		MediaType    MimeType
+		EndTime      time.Time
+		Generator    Item
+		Icon         Item
+		Image        Item
+		InReplyTo    Item
+		Location     Item
+		Preview      Item
+		Published    time.Time
+		Replies      Item
+		StartTime    time.Time
+		Summary      NaturalLanguageValues
+		Tag          ItemCollection
+		Updated      time.Time
+		URL          Item
+		To           ItemCollection
+		Bto          ItemCollection
+		CC           ItemCollection
+		BCC          ItemCollection
+		Duration     time.Duration
+		Likes        Item
+		Shares       Item
+		Source       Source
+		Actor        Item
+		Target       Item
+		Result       Item
+		Origin       Item
+		Instrument   Item
+		Object       Item
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		arg    Item
+		want   bool
+	}{
+		{
+			name:   "equal-empty-activity",
+			fields: fields{},
+			arg:    Activity{},
+			want:   true,
+		},
+		{
+			name:   "equal-activity-just-id",
+			fields: fields{ID: "test"},
+			arg:    Activity{ID: "test"},
+			want:   true,
+		},
+		{
+			name:   "equal-activity-id",
+			fields: fields{ID: "test", URL: IRI("example.com")},
+			arg:    Activity{ID: "test"},
+			want:   true,
+		},
+		{
+			name:   "equal-false-with-id-and-url",
+			fields: fields{ID: "test"},
+			arg:    Activity{ID: "test", URL: IRI("example.com")},
+			want:   false,
+		},
+		{
+			name:   "not a valid activity",
+			fields: fields{ID: "http://example.com"},
+			arg:    Link{ID: "http://example.com"},
+			want:   false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := Activity{
+				ID:           tt.fields.ID,
+				Type:         tt.fields.Type,
+				Name:         tt.fields.Name,
+				Attachment:   tt.fields.Attachment,
+				AttributedTo: tt.fields.AttributedTo,
+				Audience:     tt.fields.Audience,
+				Content:      tt.fields.Content,
+				Context:      tt.fields.Context,
+				MediaType:    tt.fields.MediaType,
+				EndTime:      tt.fields.EndTime,
+				Generator:    tt.fields.Generator,
+				Icon:         tt.fields.Icon,
+				Image:        tt.fields.Image,
+				InReplyTo:    tt.fields.InReplyTo,
+				Location:     tt.fields.Location,
+				Preview:      tt.fields.Preview,
+				Published:    tt.fields.Published,
+				Replies:      tt.fields.Replies,
+				StartTime:    tt.fields.StartTime,
+				Summary:      tt.fields.Summary,
+				Tag:          tt.fields.Tag,
+				Updated:      tt.fields.Updated,
+				URL:          tt.fields.URL,
+				To:           tt.fields.To,
+				Bto:          tt.fields.Bto,
+				CC:           tt.fields.CC,
+				BCC:          tt.fields.BCC,
+				Duration:     tt.fields.Duration,
+				Likes:        tt.fields.Likes,
+				Shares:       tt.fields.Shares,
+				Source:       tt.fields.Source,
+				Actor:        tt.fields.Actor,
+				Target:       tt.fields.Target,
+				Result:       tt.fields.Result,
+				Origin:       tt.fields.Origin,
+				Instrument:   tt.fields.Instrument,
+				Object:       tt.fields.Object,
+			}
+			if got := a.Equals(tt.arg); got != tt.want {
+				t.Errorf("Equals() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

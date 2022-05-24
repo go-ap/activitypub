@@ -640,7 +640,7 @@ func (o Object) Equals(with Item) bool {
 		return false
 	}
 	result := true
-	OnObject(with, func(w *Object) error {
+	err := OnObject(with, func(w *Object) error {
 		if len(w.Name) > 0 {
 			if !w.Name.Equals(o.Name) {
 				result = false
@@ -809,5 +809,8 @@ func (o Object) Equals(with Item) bool {
 		}
 		return nil
 	})
+	if err != nil {
+		result = false
+	}
 	return result
 }
