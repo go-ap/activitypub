@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"reflect"
 	"time"
-	"unsafe"
 
 	"github.com/valyala/fastjson"
 )
@@ -496,11 +495,15 @@ func ToActor(it Item) (*Actor, error) {
 	case Actor:
 		return &i, nil
 	case *Object:
-		// TODO(marius): this is unsafe as Actor has a different memory layout than Object
-		//  Everything should be fine as long as you don't try to read the Actor specific collections
-		return (*Actor)(unsafe.Pointer(i)), nil
+		// NOTE(marius): memory layout for Object is "smaller" than "Actor", so doing an unsafe pointer cast
+		//  has led to -race conditions
+		a := new(Actor)
+		CopyItemProperties(a, i)
+		return a, nil
 	case Object:
-		return (*Actor)(unsafe.Pointer(&i)), nil
+		a := new(Actor)
+		CopyItemProperties(a, i)
+		return a, nil
 	default:
 		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
 		typ := reflect.TypeOf(new(Actor))

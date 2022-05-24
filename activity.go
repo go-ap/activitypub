@@ -740,6 +740,8 @@ func ToActivity(it Item) (*Activity, error) {
 	case Activity:
 		return &i, nil
 	case *IntransitiveActivity:
+		// TODO(marius): look at ToActor on how to copy the item to an Activity that we newly allocate
+		//  Otherwise this behaviour of forcing the type to a "smaller" one will raise -race conditions
 		return (*Activity)(unsafe.Pointer(i)), nil
 	case IntransitiveActivity:
 		return (*Activity)(unsafe.Pointer(&i)), nil
