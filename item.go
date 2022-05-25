@@ -1,5 +1,10 @@
 package activitypub
 
+import (
+	"fmt"
+	"reflect"
+)
+
 // Item struct
 type Item = ObjectOrLink
 
@@ -92,7 +97,14 @@ func IsIRI(it Item) bool {
 	return okV || okP
 }
 
-// IsObject returns if the current Item interface holds an IRI
+// IsLink returns if the current Item interface holds a Link
+func IsLink(it Item) bool {
+	_, okV := it.(Link)
+	_, okP := it.(*Link)
+	return okV || okP
+}
+
+// IsObject returns if the current Item interface holds an Object
 func IsObject(it Item) bool {
 	switch it.(type) {
 	case Actor, *Actor,
@@ -111,18 +123,29 @@ func IsNil(it Item) bool {
 	if it == nil {
 		return true
 	}
-	// This is the default if the argument can't be casted to Object, as is the case for an ItemCollection
+	// This is the default if the argument can't be cast to Object, as is the case for an ItemCollection
 	isNil := false
 	if IsItemCollection(it) {
 		OnItemCollection(it, func(c *ItemCollection) error {
 			isNil = c == nil
 			return nil
 		})
-	} else {
+	} else if IsObject(it) {
 		OnObject(it, func(o *Object) error {
 			isNil = o == nil
 			return nil
 		})
+	} else if IsLink(it) {
+		OnLink(it, func(l *Link) error {
+			isNil = l == nil
+			return nil
+		})
+	} else if IsIRI(it) {
+		isNil = len(it.GetLink()) == 0
+	} else {
+		// NOTE(marius): we're not dealing with a type that we know about, so we use slow reflection
+		// as we still care about the result
+		isNil = reflect.ValueOf(it).IsNil()
 	}
 	return isNil
 }
