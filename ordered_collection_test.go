@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 )
@@ -214,7 +213,7 @@ func TestOnOrderedCollection(t *testing.T) {
 }
 
 func TestToOrderedCollection(t *testing.T) {
-	err := func(it Item) error { return fmt.Errorf("unable to convert %T to ordered collection", it) }
+	err := func(it Item) error { return ErrorInvalidType[OrderedCollection](it) }
 	tests := map[string]struct {
 		it      Item
 		want    *OrderedCollection

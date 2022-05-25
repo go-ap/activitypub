@@ -343,7 +343,7 @@ func ToOrderedCollection(it Item) (*OrderedCollection, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %T to ordered collection", it)
+	return nil, ErrorInvalidType[OrderedCollection](it)
 }
 
 func copyOrderedCollectionToPage(c *OrderedCollection, p *OrderedCollectionPage) error {

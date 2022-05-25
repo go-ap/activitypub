@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"errors"
 	"reflect"
 	"sort"
 )
@@ -184,7 +183,7 @@ func ToItemCollection(it Item) (*ItemCollection, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert to item collection")
+	return nil, ErrorInvalidType[ItemCollection](it)
 }
 
 // ItemsMatch

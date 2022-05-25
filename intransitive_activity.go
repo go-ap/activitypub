@@ -280,7 +280,7 @@ func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %T to intransitive activity", it)
+	return nil, ErrorInvalidType[IntransitiveActivity](it)
 }
 
 // ArriveNew initializes an Arrive activity

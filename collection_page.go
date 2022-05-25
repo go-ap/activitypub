@@ -341,7 +341,7 @@ func ToCollectionPage(it Item) (*CollectionPage, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %T to collection page", it)
+	return nil, ErrorInvalidType[CollectionPage](it)
 }
 
 // ItemsMatch

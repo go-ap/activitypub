@@ -260,5 +260,5 @@ func ToQuestion(it Item) (*Question, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %T to question", it)
+	return nil, ErrorInvalidType[Question](it)
 }

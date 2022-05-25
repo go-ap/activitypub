@@ -521,7 +521,7 @@ func ToActor(it Item) (*Actor, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %T to actor", it)
+	return nil, ErrorInvalidType[Actor](it)
 }
 
 // Equals verifies if our receiver Object is equals with the "with" Object

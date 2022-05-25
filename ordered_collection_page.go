@@ -298,7 +298,7 @@ func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %T to ordered collection page", it)
+	return nil, ErrorInvalidType[OrderedCollectionPage](it)
 }
 
 // ItemsMatch

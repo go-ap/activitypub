@@ -136,6 +136,7 @@ func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
 
 type Objects interface {
 	Object | Tombstone | Place | Profile | Relationship |
+		Actors |
 		Activities |
 		IntransitiveActivities |
 		Collections |
@@ -612,7 +613,7 @@ func ToLink(it LinkOrIRI) (*Link, error) {
 	case Link:
 		return &i, nil
 	}
-	return nil, fmt.Errorf("unable to convert %T", it)
+	return nil, fmt.Errorf("unable to convert %T to %T", it, new(Link))
 }
 
 // ToObject returns an Object pointer to the data in the current Item
@@ -680,7 +681,7 @@ func ToObject(it Item) (*Object, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %T", it)
+	return nil, ErrorInvalidType[Object](it)
 }
 
 // Source is intended to convey some sort of source from which the content markup was derived,

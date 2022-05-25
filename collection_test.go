@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 )
@@ -188,7 +187,7 @@ func TestCollection_ItemMatches(t *testing.T) {
 }
 
 func TestToCollection(t *testing.T) {
-	err := func(it Item) error { return fmt.Errorf("unable to convert %T to collection", it) }
+	err := func(it Item) error { return ErrorInvalidType[Collection](it) }
 	tests := map[string]struct {
 		it      Item
 		want    *Collection

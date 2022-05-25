@@ -283,7 +283,7 @@ func ToPlace(it Item) (*Place, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %T to place", it)
+	return nil, ErrorInvalidType[Place](it)
 }
 
 type withPlaceFn func(*Place) error

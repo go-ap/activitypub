@@ -149,3 +149,7 @@ func IsNil(it Item) bool {
 	}
 	return isNil
 }
+
+func ErrorInvalidType[T Objects | Links](received Item) error {
+	return fmt.Errorf("unable to convert %T to %T", received, new(T))
+}

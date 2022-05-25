@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 )
@@ -138,7 +137,7 @@ func TestCollectionPage_Count(t *testing.T) {
 }
 
 func TestToCollectionPage(t *testing.T) {
-	err := func(it Item) error { return fmt.Errorf("unable to convert %T to collection page", it) }
+	err := func(it Item) error { return ErrorInvalidType[CollectionPage](it) }
 	tests := map[string]struct {
 		it      Item
 		want    *CollectionPage

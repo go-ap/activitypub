@@ -777,7 +777,7 @@ func ToActivity(it Item) (*Activity, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %T to activity", it)
+	return nil, ErrorInvalidType[Activity](it)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.

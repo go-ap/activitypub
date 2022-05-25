@@ -344,7 +344,7 @@ func ToCollection(it Item) (*Collection, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %T to collection", it)
+	return nil, ErrorInvalidType[Collection](it)
 }
 
 // FollowingNew initializes a new Following

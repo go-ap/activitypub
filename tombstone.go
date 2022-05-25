@@ -257,7 +257,7 @@ func ToTombstone(it Item) (*Tombstone, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %T to tombstone", it)
+	return nil, ErrorInvalidType[Tombstone](it)
 }
 
 type withTombstoneFn func(*Tombstone) error
