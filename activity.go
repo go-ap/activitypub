@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"reflect"
 	"strings"
 	"time"
@@ -730,6 +731,24 @@ func (a *Activity) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	return loadActivity(val, a)
+}
+
+func fmtActivityProps(w io.Writer) func(*Activity) error {
+	return func(a *Activity) error {
+		if !IsNil(a.Object) {
+			io.WriteString(w, fmt.Sprintf(" object: %s", a.Object))
+		}
+		return OnIntransitiveActivity(a, fmtIntransitiveActivityProps(w))
+	}
+}
+
+func (a Activity) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] {", a, a.Type))
+		fmtActivityProps(s)(&a)
+		io.WriteString(s, " }")
+	}
 }
 
 // ToActivity

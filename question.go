@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"reflect"
 	"time"
 
@@ -226,6 +227,13 @@ func (q *Question) GobDecode(data []byte) error {
 		return err
 	}
 	return unmapQuestionProperties(mm, q)
+}
+
+func (q Question) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { }", q, q.Type))
+	}
 }
 
 // QuestionNew initializes a Question activity

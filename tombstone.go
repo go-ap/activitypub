@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -227,6 +228,13 @@ func (t *Tombstone) Recipients() ItemCollection {
 func (t *Tombstone) Clean() {
 	t.BCC = nil
 	t.Bto = nil
+}
+
+func (t Tombstone) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { formerType: %q }", t, t.Type, t.FormerType))
+	}
 }
 
 // ToTombstone

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -249,6 +250,13 @@ func (p *Place) Recipients() ItemCollection {
 func (p *Place) Clean() {
 	p.BCC = nil
 	p.Bto = nil
+}
+
+func (p Place) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { }", p, p.Type))
+	}
 }
 
 // ToPlace

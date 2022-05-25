@@ -3,6 +3,9 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
+	"fmt"
+	"io"
+
 	"github.com/valyala/fastjson"
 )
 
@@ -154,4 +157,11 @@ func (l *Link) GobDecode(data []byte) error {
 		return err
 	}
 	return unmapLinkProperties(mm, l)
+}
+
+func (l Link) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] {  }", l, l.Type))
+	}
 }

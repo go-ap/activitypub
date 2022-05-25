@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
+	"io"
 	"reflect"
 	"time"
 
@@ -411,6 +412,13 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 		return b, nil
 	}
 	return nil, nil
+}
+
+func (a Actor) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { }", a, a.Type))
+	}
 }
 
 // Endpoints a json object which maps additional (typically server/domain-wide)

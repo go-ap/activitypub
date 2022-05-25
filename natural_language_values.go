@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 
@@ -134,6 +135,23 @@ func (n NaturalLanguageValues) MarshalText() ([]byte, error) {
 	return nil, nil
 }
 
+func (n NaturalLanguageValues) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'q':
+		io.WriteString(s, "[")
+		for _, nn := range n {
+			nn.Format(s, verb)
+		}
+		io.WriteString(s, "]")
+	case 'v':
+		io.WriteString(s, "[")
+		for _, nn := range n {
+			nn.Format(s, verb)
+		}
+		io.WriteString(s, "]")
+	}
+}
+
 // Append is syntactic sugar for resizing the NaturalLanguageValues map
 // and appending an element
 func (n *NaturalLanguageValues) Append(lang LangRef, value Content) error {
@@ -163,6 +181,23 @@ func (l LangRefValue) String() string {
 		return l.Value.String()
 	}
 	return fmt.Sprintf("%s[%s]", l.Value, l.Ref)
+}
+
+func (l LangRefValue) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'q':
+		if l.Ref == NilLangRef {
+			io.WriteString(s, string(l.Value))
+		} else {
+			io.WriteString(s, fmt.Sprintf("%q[%s]", l.Value, l.Ref))
+		}
+	case 'v':
+		if l.Ref == NilLangRef {
+			io.WriteString(s, fmt.Sprintf("%q", string(l.Value)))
+		} else {
+			io.WriteString(s, fmt.Sprintf("%q[%s]", string(l.Value), l.Ref))
+		}
+	}
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
@@ -366,6 +401,15 @@ func (c Content) String() string {
 
 func (c Content) Equals(other Content) bool {
 	return bytes.Equal(c, other)
+}
+
+func (c Content) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'q':
+		io.WriteString(s, string(c))
+	case 'v':
+		io.WriteString(s, fmt.Sprintf("%q", string(c)))
+	}
 }
 
 func unescape(b []byte) []byte {

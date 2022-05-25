@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"reflect"
 	"time"
 
@@ -367,4 +368,11 @@ func (o OrderedCollectionPage) Equals(with Item) bool {
 		return nil
 	})
 	return result
+}
+
+func (o OrderedCollectionPage) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { totalItems: %d }", o, o.Type, o.TotalItems))
+	}
 }

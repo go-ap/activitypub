@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -221,6 +222,13 @@ func (p *Profile) Recipients() ItemCollection {
 func (p *Profile) Clean() {
 	p.BCC = nil
 	p.Bto = nil
+}
+
+func (p Profile) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { }", p, p.Type))
+	}
 }
 
 // ToProfile tries to convert the it Item to a Profile object

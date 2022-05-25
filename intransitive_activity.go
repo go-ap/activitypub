@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -340,4 +341,32 @@ func (i IntransitiveActivity) Equals(with Item) bool {
 		result = false
 	}
 	return result
+}
+
+func fmtIntransitiveActivityProps(w io.Writer) func(*IntransitiveActivity) error {
+	return func(ia *IntransitiveActivity) error {
+		if !IsNil(ia.Actor) {
+			io.WriteString(w, fmt.Sprintf(" actor: %s", ia.Actor))
+		}
+		if !IsNil(ia.Target) {
+			io.WriteString(w, fmt.Sprintf(" target: %s", ia.Target))
+		}
+		if !IsNil(ia.Result) {
+			io.WriteString(w, fmt.Sprintf(" result: %s", ia.Result))
+		}
+		if !IsNil(ia.Origin) {
+			io.WriteString(w, fmt.Sprintf(" origin: %s", ia.Origin))
+		}
+		if !IsNil(ia.Instrument) {
+			io.WriteString(w, fmt.Sprintf(" instrument: %s", ia.Instrument))
+		}
+		return OnObject(ia, fmtObjectProps(w))
+	}
+}
+
+func (i IntransitiveActivity) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] {  }", i, i.Type))
+	}
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -238,6 +239,13 @@ func (r *Relationship) Recipients() ItemCollection {
 func (r *Relationship) Clean() {
 	r.BCC = nil
 	r.Bto = nil
+}
+
+func (r Relationship) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { }", r, r.Type))
+	}
 }
 
 // ToRelationship tries to convert the it Item to a Relationship object.
