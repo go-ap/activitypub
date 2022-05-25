@@ -3,7 +3,7 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
+	"fmt"
 	"reflect"
 	"time"
 	"unsafe"
@@ -279,7 +279,7 @@ func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert to intransitive activity")
+	return nil, fmt.Errorf("unable to convert %T to intransitive activity", it)
 }
 
 // ArriveNew initializes an Arrive activity

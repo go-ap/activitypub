@@ -214,7 +214,7 @@ func TestOnOrderedCollection(t *testing.T) {
 }
 
 func TestToOrderedCollection(t *testing.T) {
-	err := fmt.Errorf("unable to convert to ordered collection")
+	err := func(it Item) error { return fmt.Errorf("unable to convert %T to ordered collection", it) }
 	tests := map[string]struct {
 		it      Item
 		want    *OrderedCollection
@@ -233,12 +233,12 @@ func TestToOrderedCollection(t *testing.T) {
 		"Collection": {
 			it:      new(Collection),
 			want:    new(OrderedCollection),
-			wantErr: err,
+			wantErr: err(new(Collection)),
 		},
 		"CollectionPage": {
 			it:      new(CollectionPage),
 			want:    new(OrderedCollection),
-			wantErr: err,
+			wantErr: err(new(CollectionPage)),
 		},
 	}
 	for name, tt := range tests {

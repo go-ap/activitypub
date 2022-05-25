@@ -502,7 +502,7 @@ func ToObject(it Item) (*Object, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %q", it.GetType())
+	return nil, fmt.Errorf("unable to convert %T", it)
 }
 
 // Source is intended to convey some sort of source from which the content markup was derived,

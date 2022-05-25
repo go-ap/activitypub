@@ -3,7 +3,7 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
+	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -758,7 +758,7 @@ func ToActivity(it Item) (*Activity, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert activity")
+	return nil, fmt.Errorf("unable to convert %T to activity", it)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.

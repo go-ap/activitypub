@@ -275,7 +275,7 @@ func ToPlace(it Item) (*Place, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %q", it.GetType())
+	return nil, fmt.Errorf("unable to convert %T to place", it)
 }
 
 type withPlaceFn func(*Place) error

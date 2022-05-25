@@ -243,7 +243,7 @@ func ToProfile(it Item) (*Profile, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %q", it.GetType())
+	return nil, fmt.Errorf("unable to convert %T to profile", it)
 }
 
 type withProfileFn func(*Profile) error

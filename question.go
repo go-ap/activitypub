@@ -3,7 +3,7 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
+	"fmt"
 	"reflect"
 	"time"
 
@@ -252,5 +252,5 @@ func ToQuestion(it Item) (*Question, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert to Question activity")
+	return nil, fmt.Errorf("unable to convert %T to question", it)
 }

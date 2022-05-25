@@ -3,7 +3,7 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
+	"fmt"
 	"reflect"
 	"time"
 
@@ -297,7 +297,7 @@ func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert to ordered collection page")
+	return nil, fmt.Errorf("unable to convert %T to ordered collection page", it)
 }
 
 // ItemsMatch

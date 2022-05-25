@@ -3,7 +3,7 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
+	"fmt"
 	"reflect"
 	"time"
 	"unsafe"
@@ -336,7 +336,7 @@ func ToCollection(it Item) (*Collection, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert to collection")
+	return nil, fmt.Errorf("unable to convert %T to collection", it)
 }
 
 // FollowingNew initializes a new Following

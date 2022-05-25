@@ -3,7 +3,7 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
+	"fmt"
 	"reflect"
 	"time"
 
@@ -340,7 +340,7 @@ func ToCollectionPage(it Item) (*CollectionPage, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert to collection page")
+	return nil, fmt.Errorf("unable to convert %T to collection page", it)
 }
 
 // ItemsMatch

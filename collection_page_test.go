@@ -138,7 +138,7 @@ func TestCollectionPage_Count(t *testing.T) {
 }
 
 func TestToCollectionPage(t *testing.T) {
-	err := fmt.Errorf("unable to convert to collection page")
+	err := func(it Item) error { return fmt.Errorf("unable to convert %T to collection page", it) }
 	tests := map[string]struct {
 		it      Item
 		want    *CollectionPage
@@ -152,17 +152,17 @@ func TestToCollectionPage(t *testing.T) {
 		"OrderedCollectionPage": {
 			it:      new(OrderedCollectionPage),
 			want:    new(CollectionPage),
-			wantErr: err,
+			wantErr: err(new(OrderedCollectionPage)),
 		},
 		"OrderedCollection": {
 			it:      new(OrderedCollection),
 			want:    new(CollectionPage),
-			wantErr: err,
+			wantErr: err(new(OrderedCollection)),
 		},
 		"Collection": {
 			it:      new(Collection),
 			want:    new(CollectionPage),
-			wantErr: err,
+			wantErr: err(new(Collection)),
 		},
 	}
 	for name, tt := range tests {

@@ -258,7 +258,7 @@ func ToRelationship(it Item) (*Relationship, error) {
 			return i, nil
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %q", it.GetType())
+	return nil, fmt.Errorf("unable to convert %T to relationship", it)
 }
 
 type withRelationshipFn func(*Relationship) error

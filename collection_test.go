@@ -188,7 +188,7 @@ func TestCollection_ItemMatches(t *testing.T) {
 }
 
 func TestToCollection(t *testing.T) {
-	err := fmt.Errorf("unable to convert to collection")
+	err := func(it Item) error { return fmt.Errorf("unable to convert %T to collection", it) }
 	tests := map[string]struct {
 		it      Item
 		want    *Collection
@@ -207,12 +207,12 @@ func TestToCollection(t *testing.T) {
 		"OrderedCollectionPage": {
 			it:      new(OrderedCollectionPage),
 			want:    new(Collection),
-			wantErr: err,
+			wantErr: err(new(OrderedCollectionPage)),
 		},
 		"OrderedCollection": {
 			it:      new(OrderedCollection),
 			want:    new(Collection),
-			wantErr: err,
+			wantErr: err(new(OrderedCollection)),
 		},
 	}
 	for name, tt := range tests {
