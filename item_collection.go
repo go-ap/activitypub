@@ -35,6 +35,9 @@ func (i ItemCollection) IsObject() bool {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (i ItemCollection) MarshalJSON() ([]byte, error) {
+	if i == nil {
+		return nil, nil
+	}
 	b := make([]byte, 0)
 	writeItemCollectionJSONValue(&b, i)
 	return b, nil
