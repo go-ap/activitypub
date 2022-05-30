@@ -2,65 +2,29 @@ package activitypub
 
 import (
 	"fmt"
-	"net/http"
 	"path"
 	"strings"
 
 	"github.com/go-ap/errors"
 )
 
-// collectionPath
-type collectionPath string
+// CollectionPath
+type CollectionPath string
 
 // CollectionPaths
-type CollectionPaths []collectionPath
+type CollectionPaths []CollectionPath
 
 const (
-	Unknown   = collectionPath("")
-	Outbox    = collectionPath("outbox")
-	Inbox     = collectionPath("inbox")
-	Shares    = collectionPath("shares")
-	Replies   = collectionPath("replies") // activitystreams
-	Following = collectionPath("following")
-	Followers = collectionPath("followers")
-	Liked     = collectionPath("liked")
-	Likes     = collectionPath("likes")
+	Unknown   = CollectionPath("")
+	Outbox    = CollectionPath("outbox")
+	Inbox     = CollectionPath("inbox")
+	Shares    = CollectionPath("shares")
+	Replies   = CollectionPath("replies") // activitystreams
+	Following = CollectionPath("following")
+	Followers = CollectionPath("followers")
+	Liked     = CollectionPath("liked")
+	Likes     = CollectionPath("likes")
 )
-
-func CollectionPath(s string) collectionPath {
-	return collectionPath(s)
-}
-
-// Typer is the static package variable that determines a collectionPath type for a particular request
-// It can be overloaded from outside packages.
-// @TODO(marius): This should be moved as a property on an instantiable package object, instead of keeping it here
-var Typer CollectionTyper = pathTyper{}
-
-// CollectionTyper allows external packages to tell us which collectionPath the current HTTP request addresses
-type CollectionTyper interface {
-	Type(r *http.Request) collectionPath
-}
-
-type pathTyper struct{}
-
-func (d pathTyper) Type(r *http.Request) collectionPath {
-	if r.URL == nil || len(r.URL.Path) == 0 {
-		return Unknown
-	}
-	col := Unknown
-	pathElements := strings.Split(r.URL.Path[1:], "/") // Skip first /
-	for i := len(pathElements) - 1; i >= 0; i-- {
-		col = collectionPath(pathElements[i])
-		if typ := getValidActivityCollection(col); typ != Unknown {
-			return typ
-		}
-		if typ := getValidObjectCollection(col); typ != Unknown {
-			return typ
-		}
-	}
-
-	return col
-}
 
 var (
 	validActivityCollection = CollectionPaths{
@@ -95,7 +59,7 @@ var (
 	}
 )
 
-func (t CollectionPaths) Contains(typ collectionPath) bool {
+func (t CollectionPaths) Contains(typ CollectionPath) bool {
 	for _, tt := range t {
 		if strings.ToLower(string(typ)) == string(tt) {
 			return true
@@ -104,11 +68,11 @@ func (t CollectionPaths) Contains(typ collectionPath) bool {
 	return false
 }
 
-// Split splits the IRI in an actor IRI and its collectionPath
-// if the collectionPath is found in the elements in the t CollectionPaths slice
-func (t CollectionPaths) Split(i IRI) (IRI, collectionPath) {
+// Split splits the IRI in an actor IRI and its CollectionPath
+// if the CollectionPath is found in the elements in the t CollectionPaths slice
+func (t CollectionPaths) Split(i IRI) (IRI, CollectionPath) {
 	maybeActor, maybeCol := path.Split(i.String())
-	tt := collectionPath(maybeCol)
+	tt := CollectionPath(maybeCol)
 	if !t.Contains(tt) {
 		tt = ""
 		maybeActor = i.String()
@@ -117,8 +81,8 @@ func (t CollectionPaths) Split(i IRI) (IRI, collectionPath) {
 	return iri, tt
 }
 
-// IRIf formats an IRI from an existing IRI and the collectionPath type
-func IRIf(i IRI, t collectionPath) IRI {
+// IRIf formats an IRI from an existing IRI and the CollectionPath type
+func IRIf(i IRI, t CollectionPath) IRI {
 	onePastLast := len(i)
 	if onePastLast > 1 && i[onePastLast-1] == '/' {
 		i = i[:onePastLast-1]
@@ -126,9 +90,9 @@ func IRIf(i IRI, t collectionPath) IRI {
 	return IRI(fmt.Sprintf("%s/%s", i, t))
 }
 
-// IRI gives us the IRI of the t collectionPath type corresponding to the i Item,
+// IRI gives us the IRI of the t CollectionPath type corresponding to the i Item,
 // or generates a new one if not found.
-func (t collectionPath) IRI(i Item) IRI {
+func (t CollectionPath) IRI(i Item) IRI {
 	if IsNil(i) {
 		return IRIf("", t)
 	}
@@ -140,8 +104,8 @@ func (t collectionPath) IRI(i Item) IRI {
 	return IRIf(i.GetLink(), t)
 }
 
-// Of gives us the property of the i Item that corresponds to the t collectionPath type.
-func (t collectionPath) Of(i Item) Item {
+// Of gives us the property of the i Item that corresponds to the t CollectionPath type.
+func (t CollectionPath) Of(i Item) Item {
 	if IsNil(i) || !i.IsObject() {
 		return nil
 	}
@@ -178,22 +142,22 @@ func (t collectionPath) Of(i Item) Item {
 	return it
 }
 
-// OfActor returns the base IRI of received i, if i represents an IRI matching collectionPath type t
-func (t collectionPath) OfActor(i IRI) (IRI, error) {
+// OfActor returns the base IRI of received i, if i represents an IRI matching CollectionPath type t
+func (t CollectionPath) OfActor(i IRI) (IRI, error) {
 	maybeActor, maybeCol := path.Split(i.String())
 	if strings.ToLower(maybeCol) == strings.ToLower(string(t)) {
 		maybeActor = strings.TrimRight(maybeActor, "/")
 		return IRI(maybeActor), nil
 	}
-	return EmptyIRI, errors.Newf("IRI does not represent a valid %s collectionPath", t)
+	return EmptyIRI, errors.Newf("IRI does not represent a valid %s CollectionPath", t)
 }
 
-// Split returns the base IRI of received i, if i represents an IRI matching collectionPath type t
-func Split(i IRI) (IRI, collectionPath) {
+// Split returns the base IRI of received i, if i represents an IRI matching CollectionPath type t
+func Split(i IRI) (IRI, CollectionPath) {
 	return ActivityPubCollections.Split(i)
 }
 
-func getValidActivityCollection(t collectionPath) collectionPath {
+func getValidActivityCollection(t CollectionPath) CollectionPath {
 	if validActivityCollection.Contains(t) {
 		return t
 	}
@@ -201,17 +165,17 @@ func getValidActivityCollection(t collectionPath) collectionPath {
 }
 
 // ValidActivityCollection shows if the current ActivityPub end-point type is a valid one for handling Activities
-func ValidActivityCollection(typ collectionPath) bool {
+func ValidActivityCollection(typ CollectionPath) bool {
 	return getValidActivityCollection(typ) != Unknown
 }
 
-var validObjectCollection = []collectionPath{
+var validObjectCollection = []CollectionPath{
 	Following,
 	Followers,
 	Liked,
 }
 
-func getValidObjectCollection(typ collectionPath) collectionPath {
+func getValidObjectCollection(typ CollectionPath) CollectionPath {
 	for _, t := range validObjectCollection {
 		if strings.ToLower(string(typ)) == string(t) {
 			return t
@@ -221,11 +185,11 @@ func getValidObjectCollection(typ collectionPath) collectionPath {
 }
 
 // ValidActivityCollection shows if the current ActivityPub end-point type is a valid one for handling Objects
-func ValidObjectCollection(typ collectionPath) bool {
+func ValidObjectCollection(typ CollectionPath) bool {
 	return getValidObjectCollection(typ) != Unknown
 }
 
-func getValidCollection(typ collectionPath) collectionPath {
+func getValidCollection(typ CollectionPath) CollectionPath {
 	if typ := getValidActivityCollection(typ); typ != Unknown {
 		return typ
 	}
@@ -235,7 +199,7 @@ func getValidCollection(typ collectionPath) collectionPath {
 	return Unknown
 }
 
-func ValidCollection(typ collectionPath) bool {
+func ValidCollection(typ CollectionPath) bool {
 	return getValidCollection(typ) != Unknown
 }
 
@@ -244,8 +208,8 @@ func ValidCollectionIRI(i IRI) bool {
 	return getValidCollection(t) != Unknown
 }
 
-// AddTo adds collectionPath type IRI on the corresponding property of the i Item
-func (t collectionPath) AddTo(i Item) (IRI, bool) {
+// AddTo adds CollectionPath type IRI on the corresponding property of the i Item
+func (t CollectionPath) AddTo(i Item) (IRI, bool) {
 	if IsNil(i) || !i.IsObject() {
 		return NilIRI, false
 	}

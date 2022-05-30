@@ -31,7 +31,7 @@ func TestSplit(t *testing.T) {
 func TestCollectionTypes_Of(t *testing.T) {
 	type args struct {
 		o Item
-		t collectionPath
+		t CollectionPath
 	}
 	tests := []struct {
 		name string
@@ -47,7 +47,7 @@ func TestCollectionTypes_Of(t *testing.T) {
 			want: nil,
 		},
 		{
-			name: "nil from invalid collectionPath type",
+			name: "nil from invalid CollectionPath type",
 			args: args{
 				o: Object{
 					Likes: IRI("test"),
@@ -57,7 +57,7 @@ func TestCollectionTypes_Of(t *testing.T) {
 			want: nil,
 		},
 		{
-			name: "nil from nil collectionPath type",
+			name: "nil from nil CollectionPath type",
 			args: args{
 				o: Object{
 					Likes: nil,
@@ -90,7 +90,7 @@ func TestCollectionTypes_Of(t *testing.T) {
 func TestCollectionType_IRI(t *testing.T) {
 	type args struct {
 		o Item
-		t collectionPath
+		t CollectionPath
 	}
 	tests := []struct {
 		name string
@@ -106,7 +106,7 @@ func TestCollectionType_IRI(t *testing.T) {
 			want: IRI("/likes"),
 		},
 		{
-			name: "emptyIRI from invalid collectionPath type",
+			name: "emptyIRI from invalid CollectionPath type",
 			args: args{
 				o: Object{
 					Likes: IRI("test"),
@@ -156,7 +156,7 @@ func TestCollectionTypes_Contains(t *testing.T) {
 func TestIRIf(t *testing.T) {
 	type args struct {
 		i IRI
-		t collectionPath
+		t CollectionPath
 	}
 	tests := []struct {
 		name string
@@ -213,7 +213,7 @@ func TestCollectionType_AddTo(t *testing.T) {
 	var o *Object
 	tests := []struct {
 		name  string
-		t     collectionPath
+		t     CollectionPath
 		args  args
 		want  IRI
 		want1 bool
