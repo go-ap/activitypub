@@ -27,7 +27,7 @@ func TestCollection_Append(t *testing.T) {
 	c.Append(val)
 
 	if c.Count() != 1 {
-		t.Errorf("Inbox collection of %q should have one element", c.GetID())
+		t.Errorf("Inbox collectionPath of %q should have one element", c.GetID())
 	}
 	if !reflect.DeepEqual(c.Items[0], val) {
 		t.Errorf("First item in Inbox is does not match %q", val.ID)

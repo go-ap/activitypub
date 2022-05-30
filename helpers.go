@@ -40,6 +40,27 @@ type WithOrderedCollectionPageFn func(*OrderedCollectionPage) error
 // WithItemCollectionFn represents a function type that can be used as a parameter for OnItemCollection helper function
 type WithItemCollectionFn func(*ItemCollection) error
 
+/*
+func To[T Objects](it Item) (*T, error) {
+	ob, ok := it.(T)
+	if !ok {
+		return nil, errors.New("Invalid cast to %T for object %T", T, it)
+	}
+	return &ob, nil
+}
+
+func On[T Objects](it Item, fn func(ob *T)) error {
+	if IsNil(it) {
+		return nil
+	}
+	ob, err := To[T](it)
+	if err != nil {
+		return err
+	}
+	return fn(ob)
+}
+*/
+
 // OnLink calls function fn on it Item if it can be asserted to type *Link
 //
 // This function should be safe to use for all types with a structure compatible

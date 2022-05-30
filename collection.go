@@ -143,18 +143,12 @@ type Collection struct {
 
 type (
 	// FollowersCollection is a collection of followers
-	FollowersCollection = Followers
-
-	// Followers is a Collection type
-	Followers = Collection
+	FollowersCollection = Collection
 
 	// FollowingCollection is a list of everybody that the actor has followed, added as a side effect.
 	// The following collection MUST be either an OrderedCollection or a Collection and MAY
 	// be filtered on privileges of an authenticated user or as appropriate when no authentication is given.
-	FollowingCollection = Following
-
-	// Following is a type alias for a simple Collection
-	Following = Collection
+	FollowingCollection = Collection
 )
 
 // CollectionNew initializes a new Collection
@@ -345,20 +339,6 @@ func ToCollection(it Item) (*Collection, error) {
 		}
 	}
 	return nil, ErrorInvalidType[Collection](it)
-}
-
-// FollowingNew initializes a new Following
-func FollowingNew() *Following {
-	id := ID("following")
-
-	i := Following{ID: id, Type: CollectionType}
-	i.Name = NaturalLanguageValuesNew()
-	i.Content = NaturalLanguageValuesNew()
-	i.Summary = NaturalLanguageValuesNew()
-
-	i.TotalItems = 0
-
-	return &i
 }
 
 // ItemsMatch

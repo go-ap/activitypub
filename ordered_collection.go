@@ -126,45 +126,30 @@ type (
 	// In general, the owner of an inbox is likely to be able to access all of their inbox contents.
 	// Depending on access control, some other content may be public, whereas other content may
 	// require authentication for non-owner users, if they can access the inbox at all.
-	InboxStream = Inbox
-
-	// Inbox is a type alias for an Ordered Collection
-	Inbox = OrderedCollection
+	InboxStream = OrderedCollection
 
 	// LikedCollection is a list of every object from all of the actor's Like activities,
 	// added as a side effect. The liked collection MUST be either an OrderedCollection or
 	// a Collection and MAY be filtered on privileges of an authenticated user or as
 	// appropriate when no authentication is given.
-	LikedCollection = Liked
-
-	// Liked is a type alias for an Ordered Collection
-	Liked = OrderedCollection
+	LikedCollection = OrderedCollection
 
 	// LikesCollection is a list of all Like activities with this object as the object property,
 	// added as a side effect. The likes collection MUST be either an OrderedCollection or a Collection
 	// and MAY be filtered on privileges of an authenticated user or as appropriate when
 	// no authentication is given.
-	LikesCollection = Likes
-
-	// Likes is a type alias for an Ordered Collection
-	Likes = OrderedCollection
+	LikesCollection = OrderedCollection
 
 	// OutboxStream contains activities the user has published,
 	// subject to the ability of the requestor to retrieve the activity (that is,
 	// the contents of the outbox are filtered by the permissions of the person reading it).
-	OutboxStream = Outbox
-
-	// Outbox is a type alias for an Ordered Collection
-	Outbox = OrderedCollection
+	OutboxStream = OrderedCollection
 
 	// SharesCollection is a list of all Announce activities with this object as the object property,
 	// added as a side effect. The shares collection MUST be either an OrderedCollection or a Collection
 	// and MAY be filtered on privileges of an authenticated user or as appropriate when no authentication
 	// is given.
-	SharesCollection = Shares
-
-	// Shares is a type alias for an Ordered Collection
-	Shares = OrderedCollection
+	SharesCollection = OrderedCollection
 )
 
 // GetType returns the OrderedCollection's type
@@ -380,71 +365,6 @@ func copyOrderedCollectionToPage(c *OrderedCollection, p *OrderedCollectionPage)
 	p.First = c.First
 	p.PartOf = c.GetLink()
 	return nil
-}
-
-// InboxNew initializes a new Inbox
-func InboxNew() *OrderedCollection {
-	id := ID("inbox")
-
-	i := OrderedCollection{ID: id, Type: CollectionType}
-	i.Name = NaturalLanguageValuesNew()
-	i.Content = NaturalLanguageValuesNew()
-
-	i.TotalItems = 0
-
-	return &i
-}
-
-// LikedCollection initializes a new outbox
-func LikedNew() *OrderedCollection {
-	id := ID("liked")
-
-	l := OrderedCollection{ID: id, Type: CollectionType}
-	l.Name = NaturalLanguageValuesNew()
-	l.Content = NaturalLanguageValuesNew()
-
-	l.TotalItems = 0
-
-	return &l
-}
-
-// LikesCollection initializes a new outbox
-func LikesNew() *Likes {
-	id := ID("likes")
-
-	l := Likes{ID: id, Type: CollectionType}
-	l.Name = NaturalLanguageValuesNew()
-	l.Content = NaturalLanguageValuesNew()
-
-	l.TotalItems = 0
-
-	return &l
-}
-
-// OutboxNew initializes a new outbox
-func OutboxNew() *Outbox {
-	id := ID("outbox")
-
-	i := Outbox{ID: id, Type: OrderedCollectionType}
-	i.Name = NaturalLanguageValuesNew()
-	i.Content = NaturalLanguageValuesNew()
-	i.TotalItems = 0
-	i.OrderedItems = make(ItemCollection, 0)
-
-	return &i
-}
-
-// SharesNew initializes a new Shares
-func SharesNew() *Shares {
-	id := ID("Shares")
-
-	i := Shares{ID: id, Type: CollectionType}
-	i.Name = NaturalLanguageValuesNew()
-	i.Content = NaturalLanguageValuesNew()
-
-	i.TotalItems = 0
-
-	return &i
 }
 
 // ItemsMatch
