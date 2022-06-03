@@ -40,27 +40,6 @@ type WithOrderedCollectionPageFn func(*OrderedCollectionPage) error
 // WithItemCollectionFn represents a function type that can be used as a parameter for OnItemCollection helper function
 type WithItemCollectionFn func(*ItemCollection) error
 
-/*
-func To[T Objects](it Item) (*T, error) {
-	ob, ok := it.(T)
-	if !ok {
-		return nil, errors.New("Invalid cast to %T for object %T", T, it)
-	}
-	return &ob, nil
-}
-
-func On[T Objects](it Item, fn func(ob *T)) error {
-	if IsNil(it) {
-		return nil
-	}
-	ob, err := To[T](it)
-	if err != nil {
-		return err
-	}
-	return fn(ob)
-}
-*/
-
 // OnLink calls function fn on it Item if it can be asserted to type *Link
 //
 // This function should be safe to use for all types with a structure compatible
@@ -76,71 +55,20 @@ func OnLink(it LinkOrIRI, fn WithLinkFn) error {
 	return fn(ob)
 }
 
+func To[T Objects](it Item) (*T, error) {
+	ob, ok := it.(T)
+	if !ok {
+		return nil, fmt.Errorf("invalid cast for object %T", it)
+	}
+	return &ob, nil
+}
+
 func On[T Objects](it Item, fn func(*T) error) error {
-	/*
-		switch i := it.(type) {
-		case *Object:
-			return fn(i)
-		case Object:
-			return fn(&i)
-		case *Place:
-			return fn(i)
-		case Place:
-			return fn(&i)
-		case *Profile:
-			return fn(i)
-		case Profile:
-			return fn(&i)
-		case *Relationship:
-			return fn(i)
-		case Relationship:
-			return fn(&i)
-		case *Tombstone:
-			return fn(i)
-		case Tombstone:
-			return fn(&i)
-		case *Actor:
-			return fn(i)
-		case Actor:
-			return fn(&i)
-		case *Activity:
-			return fn(i)
-		case Activity:
-			return fn(&i)
-		case *IntransitiveActivity:
-			return fn(i)
-		case IntransitiveActivity:
-			return fn(&i)
-		case *Question:
-			return fn(i)
-		case Question:
-			return fn(&i)
-		case *Collection:
-			return fn(i)
-		case Collection:
-			return fn(&i)
-		case *CollectionPage:
-			return fn(i)
-		case CollectionPage:
-			return fn(&i)
-		case *OrderedCollection:
-			return fn(i)
-		case OrderedCollection:
-			return fn(&i)
-		case *OrderedCollectionPage:
-			return fn(i)
-		case OrderedCollectionPage:
-			return fn(&i)
-		default:
-			typ := reflect.TypeOf(new(Object))
-			if reflect.TypeOf(it).ConvertibleTo(typ) {
-				if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Object); ok {
-					return fn(i)
-				}
-			}
-		}
-	*/
-	return fmt.Errorf("invalid type %T for generic function", it)
+	ob, err := To[T](it)
+	if err != nil {
+		return err
+	}
+	return fn(ob)
 }
 
 // OnObject calls function fn on it Item if it can be asserted to type *Object

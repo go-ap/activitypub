@@ -271,7 +271,7 @@ func TestOnOrderedCollectionPage(t *testing.T) {
 
 type args[T Objects] struct {
 	it T
-	fn func (fn canErrorFunc, expected T) func(*T) error
+	fn func(fn canErrorFunc, expected T) func(*T) error
 }
 
 type testPair[T Objects] struct {
@@ -291,13 +291,18 @@ func assert[T Objects](fn canErrorFunc, expected T) func(*T) error {
 }
 
 func TestOn(t *testing.T) {
-	testQuestion := Object{ID: "https://example.com"}
-	var tests []testPair[Object] = []testPair[Object]{
+	var tests = []testPair[Object]{
 		{
-			name:     "single",
-			args:     args[Object]{testQuestion, assert[Object]},
-			expected: testQuestion,
-			wantErr:  true,
+			name:     "single object",
+			args:     args[Object]{Object{ID: "https://example.com"}, assert[Object]},
+			expected: Object{ID: "https://example.com"},
+			wantErr:  false,
+		},
+		{
+			name:     "single image",
+			args:     args[Image]{Image{ID: "http://example.com"}, assert[Image]},
+			expected: Image{ID: "http://example.com"},
+			wantErr:  false,
 		},
 	}
 	for _, tt := range tests {
