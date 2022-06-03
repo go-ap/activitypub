@@ -63,12 +63,24 @@ func To[T Objects](it Item) (*T, error) {
 	return &ob, nil
 }
 
+// On handles in a generic way the call to fn(*T) if the "it" Item can be asserted to one of the Objects type.
+// It also covers the case where "it" is a collection of items that match the assertion.
 func On[T Objects](it Item, fn func(*T) error) error {
-	ob, err := To[T](it)
-	if err != nil {
-		return err
+	if !IsItemCollection(it) {
+		ob, err := To[T](it)
+		if err != nil {
+			return err
+		}
+		return fn(ob)
 	}
-	return fn(ob)
+	return OnItemCollection(it, func(col *ItemCollection) error {
+		for _, it := range *col {
+			if err := On(it, fn); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 // OnObject calls function fn on it Item if it can be asserted to type *Object
