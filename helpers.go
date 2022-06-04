@@ -55,17 +55,16 @@ func OnLink(it LinkOrIRI, fn WithLinkFn) error {
 	return fn(ob)
 }
 
-func To[T Objects](it Item) (*T, error) {
-	ob, ok := it.(T)
-	if !ok {
-		return nil, fmt.Errorf("invalid cast for object %T", it)
+func To[T Item](it Item) (*T, error) {
+	if ob, ok := it.(T); ok {
+		return &ob, nil
 	}
-	return &ob, nil
+	return nil, fmt.Errorf("invalid cast for object %T", it)
 }
 
 // On handles in a generic way the call to fn(*T) if the "it" Item can be asserted to one of the Objects type.
 // It also covers the case where "it" is a collection of items that match the assertion.
-func On[T Objects](it Item, fn func(*T) error) error {
+func On[T Item](it Item, fn func(*T) error) error {
 	if !IsItemCollection(it) {
 		ob, err := To[T](it)
 		if err != nil {

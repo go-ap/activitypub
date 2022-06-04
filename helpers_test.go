@@ -319,3 +319,60 @@ func TestOn(t *testing.T) {
 		})
 	}
 }
+
+var fnObj = func(_ *Object) error {
+	return nil
+}
+var fnAct = func(_ *Actor) error {
+	return nil
+}
+var fnA = func(_ *Activity) error {
+	return nil
+}
+var fnIA = func(_ *IntransitiveActivity) error {
+	return nil
+}
+
+func Benchmark_OnT_vs_On_T(b *testing.B) {
+	var it Item
+	b.Run("OnObject", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			OnObject(it, fnObj)
+		}
+	})
+	b.Run("On_T_Object", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			On[Object](it, fnObj)
+		}
+	})
+	b.Run("OnActor", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			OnActor(it, fnAct)
+		}
+	})
+	b.Run("On_T_Actor", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			On[Actor](it, fnAct)
+		}
+	})
+	b.Run("OnActivity", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			OnActivity(it, fnA)
+		}
+	})
+	b.Run("On_T_Activity", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			On[Activity](it, fnA)
+		}
+	})
+	b.Run("OnIntransitiveActivity", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			OnIntransitiveActivity(it, fnIA)
+		}
+	})
+	b.Run("On_T_IntransitiveActivity", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			On[IntransitiveActivity](it, fnIA)
+		}
+	})
+}
