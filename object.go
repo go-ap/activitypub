@@ -676,6 +676,9 @@ func ToObject(it Item) (*Object, error) {
 		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
 		typ := reflect.TypeOf(new(Object))
 		if reflect.TypeOf(it).ConvertibleTo(typ) {
+			if reflect.ValueOf(it).IsNil() {
+				return nil, nil
+			}
 			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Object); ok {
 				return i, nil
 			}

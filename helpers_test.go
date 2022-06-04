@@ -323,15 +323,59 @@ func TestOn(t *testing.T) {
 var fnObj = func(_ *Object) error {
 	return nil
 }
-var fnAct = func(_ *Actor) error {
-	return nil
+
+func Benchmark_ToT_vs_To_T(b *testing.B) {
+	maybeObject := Object{}
+	b.Run("ToObject", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			ToObject(maybeObject)
+		}
+	})
+	b.Run("To_T_Object", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			To[Object](maybeObject)
+		}
+	})
+	maybeActor := Actor{}
+	b.Run("ToActor", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			ToActor(maybeActor)
+		}
+	})
+	b.Run("To_T_Actor", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			To[Actor](maybeActor)
+		}
+	})
+	maybeActivity := Activity{}
+	b.Run("ToActivity", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			ToActivity(maybeActivity)
+		}
+	})
+	b.Run("To_T_Activity", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			To[Activity](maybeActivity)
+		}
+	})
+	maybeIntransitiveActivity := IntransitiveActivity{}
+	b.Run("ToIntransitiveActivity", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			ToIntransitiveActivity(maybeIntransitiveActivity)
+		}
+	})
+	b.Run("To_T_IntransitiveActivity", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			To[IntransitiveActivity](maybeIntransitiveActivity)
+		}
+	})
 }
-var fnA = func(_ *Activity) error {
-	return nil
-}
-var fnIA = func(_ *IntransitiveActivity) error {
-	return nil
-}
+
+var (
+	fnAct = func(_ *Actor) error { return nil }
+	fnA   = func(_ *Activity) error { return nil }
+	fnIA  = func(_ *IntransitiveActivity) error { return nil }
+)
 
 func Benchmark_OnT_vs_On_T(b *testing.B) {
 	var it Item
