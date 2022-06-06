@@ -320,103 +320,166 @@ func TestOn(t *testing.T) {
 	}
 }
 
-var fnObj = func(_ *Object) error {
-	return nil
-}
-
-func Benchmark_ToT_vs_To_T(b *testing.B) {
-	maybeObject := Object{}
-	b.Run("ToObject", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			ToObject(maybeObject)
-		}
-	})
-	b.Run("To_T_Object", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			To[Object](maybeObject)
-		}
-	})
-	maybeActor := Actor{}
-	b.Run("ToActor", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			ToActor(maybeActor)
-		}
-	})
-	b.Run("To_T_Actor", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			To[Actor](maybeActor)
-		}
-	})
-	maybeActivity := Activity{}
-	b.Run("ToActivity", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			ToActivity(maybeActivity)
-		}
-	})
-	b.Run("To_T_Activity", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			To[Activity](maybeActivity)
-		}
-	})
-	maybeIntransitiveActivity := IntransitiveActivity{}
-	b.Run("ToIntransitiveActivity", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			ToIntransitiveActivity(maybeIntransitiveActivity)
-		}
-	})
-	b.Run("To_T_IntransitiveActivity", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			To[IntransitiveActivity](maybeIntransitiveActivity)
-		}
-	})
-}
-
 var (
+	emptyPrintFn = func(string, ...any) {}
+
+	fnPrintObj = func(printFn func(string, ...any)) func(_ *Object) error {
+		return func(o *Object) error {
+			printFn("%v", o)
+			return nil
+		}
+	}
+
+	fnObj = func(_ *Object) error { return nil }
 	fnAct = func(_ *Actor) error { return nil }
 	fnA   = func(_ *Activity) error { return nil }
 	fnIA  = func(_ *IntransitiveActivity) error { return nil }
+
+	maybeObject               Item = new(Object)
+	notObject                 Item = new(Activity)
+	maybeActor                Item = new(Actor)
+	maybeActivity             Item = new(Activity)
+	notIntransitiveActivity   Item = new(Activity)
+	maybeIntransitiveActivity Item = new(IntransitiveActivity)
+	colOfObjects              Item = ItemCollection{Object{ID: "unum"}, Object{ID: "duo"}}
+	colOfNotObjects           Item = ItemCollection{Activity{ID: "unum"}, Activity{ID: "duo"}}
 )
 
-func Benchmark_OnT_vs_On_T(b *testing.B) {
-	var it Item
-	b.Run("OnObject", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			OnObject(it, fnObj)
-		}
-	})
-	b.Run("On_T_Object", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			On[Object](it, fnObj)
-		}
-	})
-	b.Run("OnActor", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			OnActor(it, fnAct)
-		}
-	})
-	b.Run("On_T_Actor", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			On[Actor](it, fnAct)
-		}
-	})
-	b.Run("OnActivity", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			OnActivity(it, fnA)
-		}
-	})
-	b.Run("On_T_Activity", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			On[Activity](it, fnA)
-		}
-	})
-	b.Run("OnIntransitiveActivity", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			OnIntransitiveActivity(it, fnIA)
-		}
-	})
-	b.Run("On_T_IntransitiveActivity", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			On[IntransitiveActivity](it, fnIA)
-		}
-	})
+func Benchmark_ToObject(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ToObject(maybeObject)
+	}
+}
+
+func Benchmark_To_T_Object(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		To[Object](maybeObject)
+	}
+}
+
+func Benchmark_ToActor(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ToActor(maybeActor)
+	}
+}
+
+func Benchmark_To_T_Actor(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		To[Actor](maybeActor)
+	}
+}
+
+func Benchmark_ToActivity(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ToActivity(maybeActivity)
+	}
+}
+
+func Benchmark_To_T_Activity(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		To[Activity](maybeActivity)
+	}
+}
+
+func Benchmark_ToIntransitiveActivityHappy(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ToIntransitiveActivity(maybeIntransitiveActivity)
+	}
+}
+
+func Benchmark_To_T_IntransitiveActivityHappy(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		To[IntransitiveActivity](maybeIntransitiveActivity)
+	}
+}
+
+func Benchmark_ToIntransitiveActivityNotHappy(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ToIntransitiveActivity(notIntransitiveActivity)
+	}
+}
+
+func Benchmark_To_T_IntransitiveActivityNotHappy(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		To[IntransitiveActivity](notIntransitiveActivity)
+	}
+}
+
+func Benchmark_OnObject(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		OnObject(maybeObject, fnObj)
+	}
+}
+
+func Benchmark_On_T_Object(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		On[Object](maybeObject, fnObj)
+	}
+}
+func Benchmark_OnActor(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		OnActor(maybeObject, fnAct)
+	}
+}
+func Benchmark_On_T_Actor(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		On[Actor](maybeObject, fnAct)
+	}
+}
+func Benchmark_OnActivity(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		OnActivity(maybeObject, fnA)
+	}
+}
+
+func Benchmark_On_T_Activity(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		On[Activity](maybeObject, fnA)
+	}
+}
+func Benchmark_OnIntransitiveActivity(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		OnIntransitiveActivity(maybeObject, fnIA)
+	}
+}
+
+func Benchmark_On_T_IntransitiveActivity(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		On[IntransitiveActivity](maybeObject, fnIA)
+	}
+}
+func Benchmark_OnObjectNotHappy(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		OnObject(notObject, fnObj)
+	}
+}
+
+func Benchmark_On_T_ObjectNotHappy(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		On[Object](notObject, fnObj)
+	}
+}
+
+func Benchmark_OnObjectHappyCol(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		OnObject(colOfObjects, fnObj)
+	}
+}
+
+func Benchmark_On_T_ObjectHappyCol(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		On[Object](colOfObjects, fnObj)
+	}
+}
+
+func Benchmark_OnObjectNotHappyCol(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		OnObject(colOfNotObjects, fnObj)
+	}
+}
+
+func Benchmark_On_T_ObjectNotHappyCol(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		On[Object](colOfNotObjects, fnObj)
+	}
 }
