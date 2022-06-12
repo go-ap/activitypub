@@ -301,13 +301,6 @@ func ActorNew(id ID, typ ActivityVocabularyType) *Actor {
 	a.Name = NaturalLanguageValuesNew()
 	a.Content = NaturalLanguageValuesNew()
 	a.Summary = NaturalLanguageValuesNew()
-	in := OrderedCollectionNew(ID("test-inbox"))
-	out := OrderedCollectionNew(ID("test-outbox"))
-	liked := OrderedCollectionNew(ID("test-liked"))
-
-	a.Inbox = in
-	a.Outbox = out
-	a.Liked = liked
 	a.PreferredUsername = NaturalLanguageValuesNew()
 
 	return &a
