@@ -54,17 +54,27 @@ func (a ActivityVocabularyTypes) Contains(typ ActivityVocabularyType) bool {
 	return false
 }
 
-// ContentManagementActivityTypes use case primarily deals with activities that involve the creation, modification or deletion of content.
-// This includes, for instance, activities such as "John created a new note", "Sally updated an article", and "Joe deleted the photo".
+// ContentManagementActivityTypes use case primarily deals with activities that involve the creation, modification or
+// deletion of content.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-crud
+//
+// This includes, for instance, activities such as "John created a new note", "Sally updated an article", and 
+// "Joe deleted the photo".
 var ContentManagementActivityTypes = ActivityVocabularyTypes{
 	CreateType,
 	DeleteType,
 	UpdateType,
 }
 
-// CollectionManagementActivityTypes use case primarily deals with activities involving the management of content within collections.
+// CollectionManagementActivityTypes use case primarily deals with activities involving the management of content within
+// collections.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-collection
+//
 // Examples of collections include things like folders, albums, friend lists, etc.
-// This includes, for instance, activities such as "Sally added a file to Folder A", "John moved the file from Folder A to Folder B", etc.
+// This includes, for instance, activities such as "Sally added a file to Folder A", "John moved the file from Folder A
+// to Folder B", etc.
 var CollectionManagementActivityTypes = ActivityVocabularyTypes{
 	AddType,
 	MoveType,
@@ -72,7 +82,11 @@ var CollectionManagementActivityTypes = ActivityVocabularyTypes{
 }
 
 // ReactionsActivityTypes use case primarily deals with reactions to content.
-// This can include activities such as liking or disliking content, ignoring updates, flagging content as being inappropriate, accepting or rejecting objects, etc.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-reactions
+//
+// This can include activities such as liking or disliking content, ignoring updates, flagging content as being
+// inappropriate, accepting or rejecting objects, etc.
 var ReactionsActivityTypes = ActivityVocabularyTypes{
 	AcceptType,
 	BlockType,
@@ -86,6 +100,8 @@ var ReactionsActivityTypes = ActivityVocabularyTypes{
 }
 
 // EventRSVPActivityTypes use case primarily deals with invitations to events and RSVP type responses.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-rsvp
 var EventRSVPActivityTypes = ActivityVocabularyTypes{
 	AcceptType,
 	IgnoreType,
@@ -96,7 +112,11 @@ var EventRSVPActivityTypes = ActivityVocabularyTypes{
 }
 
 // GroupManagementActivityTypes use case primarily deals with management of groups.
-// It can include, for instance, activities such as "John added Sally to Group A", "Sally joined Group A", "Joe left Group A", etc.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-group
+//
+// It can include, for instance, activities such as "John added Sally to Group A", "Sally joined Group A",
+// "Joe left Group A", etc.
 var GroupManagementActivityTypes = ActivityVocabularyTypes{
 	AddType,
 	JoinType,
@@ -104,7 +124,11 @@ var GroupManagementActivityTypes = ActivityVocabularyTypes{
 	RemoveType,
 }
 
-// ContentExperienceActivityTypes use case primarily deals with describing activities involving listening to, reading, or viewing content.
+// ContentExperienceActivityTypes use case primarily deals with describing activities involving listening to, reading,
+// or viewing content.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-experience
+//
 // For instance, "Sally read the article", "Joe listened to the song".
 var ContentExperienceActivityTypes = ActivityVocabularyTypes{
 	ListenType,
@@ -113,7 +137,11 @@ var ContentExperienceActivityTypes = ActivityVocabularyTypes{
 }
 
 // GeoSocialEventsActivityTypes use case primarily deals with activities involving geo-tagging type activities.
-// For instance, it can include activities such as "Joe arrived at work", "Sally left work", and "John is travel from home to work".
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-geo
+//
+// For instance, it can include activities such as "Joe arrived at work", "Sally left work", and
+// "John is travel from home to work".
 var GeoSocialEventsActivityTypes = ActivityVocabularyTypes{
 	ArriveType,
 	LeaveType,
@@ -121,18 +149,30 @@ var GeoSocialEventsActivityTypes = ActivityVocabularyTypes{
 }
 
 // NotificationActivityTypes use case primarily deals with calling attention to particular objects or notifications.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-notification
 var NotificationActivityTypes = ActivityVocabularyTypes{
 	AnnounceType,
 }
 
 // QuestionActivityTypes use case primarily deals with representing inquiries of any type.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-questions
+//
 // See 5.4 Representing Questions for more information.
+// https://www.w3.org/TR/activitystreams-vocabulary/#questions
 var QuestionActivityTypes = ActivityVocabularyTypes{
 	QuestionType,
 }
 
-// RelationshipManagementActivityTypes use case primarily deals with representing activities involving the management of interpersonal and social relationships
-// (e.g. friend requests, management of social network, etc). See 5.2 Representing Relationships Between Entities for more information.
+// RelationshipManagementActivityTypes use case primarily deals with representing activities involving the management of
+// interpersonal and social relationships
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-relationships
+//
+// (e.g. friend requests, management of social network, etc). See 5.2 Representing Relationships Between Entities
+// for more information.
+// https://www.w3.org/TR/activitystreams-vocabulary/#connections
 var RelationshipManagementActivityTypes = ActivityVocabularyTypes{
 	AcceptType,
 	AddType,
@@ -146,13 +186,21 @@ var RelationshipManagementActivityTypes = ActivityVocabularyTypes{
 }
 
 // NegatingActivityTypes use case primarily deals with the ability to redact previously completed activities.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-undo
+//
 // See 5.5 Inverse Activities and "Undo" for more information.
+// https://www.w3.org/TR/activitystreams-vocabulary/#inverse
 var NegatingActivityTypes = ActivityVocabularyTypes{
 	UndoType,
 }
 
 // OffersActivityTypes use case deals with activities involving offering one object to another.
-// It can include, for instance, activities such as "Company A is offering a discount on purchase of Product Z to Sally", "Sally is offering to add a File to Folder A", etc.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-offers
+//
+// It can include, for instance, activities such as "Company A is offering a discount on purchase of Product Z to Sally",
+// "Sally is offering to add a File to Folder A", etc.
 var OffersActivityTypes = ActivityVocabularyTypes{
 	OfferType,
 }
