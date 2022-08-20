@@ -198,7 +198,7 @@ func (o *OrderedCollectionPage) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadOrderedCollectionPage(val, o)
+	return JSONLoadOrderedCollectionPage(val, o)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.

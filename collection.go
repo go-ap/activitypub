@@ -238,7 +238,7 @@ func (c *Collection) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadCollection(val, c)
+	return JSONLoadCollection(val, c)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.

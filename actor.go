@@ -210,7 +210,7 @@ func (p *PublicKey) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	return loadPublicKey(val, p)
+	return JSONLoadPublicKey(val, p)
 }
 
 func (p PublicKey) MarshalJSON() ([]byte, error) {
@@ -356,7 +356,7 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadActor(val, a)
+	return JSONLoadActor(val, a)
 }
 
 func (a Actor) MarshalJSON() ([]byte, error) {

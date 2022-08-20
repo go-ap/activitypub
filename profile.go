@@ -149,7 +149,7 @@ func (p *Profile) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadProfile(val, p)
+	return JSONLoadProfile(val, p)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.

@@ -163,7 +163,7 @@ func (p *Place) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadPlace(val, p)
+	return JSONLoadPlace(val, p)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.

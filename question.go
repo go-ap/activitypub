@@ -174,7 +174,7 @@ func (q *Question) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadQuestion(val, q)
+	return JSONLoadQuestion(val, q)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.

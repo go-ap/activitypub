@@ -778,7 +778,7 @@ func (a *Activity) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadActivity(val, a)
+	return JSONLoadActivity(val, a)
 }
 
 func fmtActivityProps(w io.Writer) func(*Activity) error {

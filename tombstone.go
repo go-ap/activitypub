@@ -151,7 +151,7 @@ func (t *Tombstone) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadTombstone(val, t)
+	return JSONLoadTombstone(val, t)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.

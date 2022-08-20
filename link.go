@@ -118,7 +118,7 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadLink(val, l)
+	return JSONLoadLink(val, l)
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.

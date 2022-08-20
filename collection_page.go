@@ -195,7 +195,7 @@ func (c *CollectionPage) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadCollectionPage(val, c)
+	return JSONLoadCollectionPage(val, c)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.

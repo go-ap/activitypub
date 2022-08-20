@@ -289,7 +289,7 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadObject(val, o)
+	return JSONLoadObject(val, o)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.

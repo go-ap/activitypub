@@ -159,7 +159,7 @@ func (r *Relationship) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadRelationship(val, r)
+	return JSONLoadRelationship(val, r)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
