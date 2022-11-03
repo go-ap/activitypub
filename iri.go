@@ -134,7 +134,7 @@ func (i *IRIs) GobDecode(data []byte) error {
 
 // AddPath concatenates el elements as a path to i
 func (i IRI) AddPath(el ...string) IRI {
-	return IRI(filepath.Clean(filepath.Join(i.String(), filepath.Join(el...))))
+	return IRI(i.String() + filepath.Clean(filepath.Join("/", filepath.Join(el...))))
 }
 
 // GetID
