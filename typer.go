@@ -106,8 +106,11 @@ func (t CollectionPath) IRI(i Item) IRI {
 
 // Of gives us the property of the i Item that corresponds to the t CollectionPath type.
 func (t CollectionPath) Of(i Item) Item {
-	if IsNil(i) || !i.IsObject() {
+	if IsNil(i) {
 		return nil
+	}
+	if IsIRI(i) {
+		return i.GetLink().AddPath(string(t))
 	}
 	var it Item
 	if OfActor.Contains(t) && ActorTypes.Contains(i.GetType()) {
