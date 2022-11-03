@@ -2,7 +2,7 @@ package activitypub
 
 import (
 	"fmt"
-	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/go-ap/errors"
@@ -71,7 +71,7 @@ func (t CollectionPaths) Contains(typ CollectionPath) bool {
 // Split splits the IRI in an actor IRI and its CollectionPath
 // if the CollectionPath is found in the elements in the t CollectionPaths slice
 func (t CollectionPaths) Split(i IRI) (IRI, CollectionPath) {
-	maybeActor, maybeCol := path.Split(i.String())
+	maybeActor, maybeCol := filepath.Split(i.String())
 	tt := CollectionPath(maybeCol)
 	if !t.Contains(tt) {
 		tt = ""
@@ -144,7 +144,7 @@ func (t CollectionPath) Of(i Item) Item {
 
 // OfActor returns the base IRI of received i, if i represents an IRI matching CollectionPath type t
 func (t CollectionPath) OfActor(i IRI) (IRI, error) {
-	maybeActor, maybeCol := path.Split(i.String())
+	maybeActor, maybeCol := filepath.Split(i.String())
 	if strings.ToLower(maybeCol) == strings.ToLower(string(t)) {
 		maybeActor = strings.TrimRight(maybeActor, "/")
 		return IRI(maybeActor), nil

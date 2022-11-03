@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
-	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/valyala/fastjson"
@@ -134,7 +134,7 @@ func (i *IRIs) GobDecode(data []byte) error {
 
 // AddPath concatenates el elements as a path to i
 func (i IRI) AddPath(el ...string) IRI {
-	return IRI(fmt.Sprintf("%s/%s", i, path.Join(el...)))
+	return IRI(filepath.Clean(filepath.Join(i.String(), filepath.Join(el...))))
 }
 
 // GetID
@@ -250,7 +250,7 @@ func (i IRI) Equals(with IRI, checkScheme bool) bool {
 	if strings.ToLower(u.Host) != strings.ToLower(uw.Host) {
 		return false
 	}
-	if path.Clean(u.Path) != path.Clean(uw.Path) {
+	if filepath.Clean(u.Path) != filepath.Clean(uw.Path) {
 		return false
 	}
 	uq := u.Query()
@@ -311,11 +311,11 @@ func (i IRI) Contains(what IRI, checkScheme bool) bool {
 	}
 	p := u.Path
 	if p != "" {
-		p = path.Clean(p)
+		p = filepath.Clean(p)
 	}
 	pw := uw.Path
 	if pw != "" {
-		pw = path.Clean(pw)
+		pw = filepath.Clean(pw)
 	}
 	return strings.Contains(p, pw)
 }
