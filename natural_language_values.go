@@ -15,6 +15,9 @@ import (
 // It is used for LangRefValue objects without an explicit language key.
 const NilLangRef LangRef = "-"
 
+// DefaultLang represents the default language reference used when using the convenience content generation.
+var DefaultLang = NilLangRef
+
 type (
 	// LangRef is the type for a language reference code, should be an ISO639-1 language specifier.
 	LangRef string
@@ -29,8 +32,16 @@ type (
 	NaturalLanguageValues []LangRefValue
 )
 
-func NaturalLanguageValuesNew() NaturalLanguageValues {
-	return make(NaturalLanguageValues, 0)
+func NaturalLanguageValuesNew(values ...LangRefValue) NaturalLanguageValues {
+	n := make(NaturalLanguageValues, len(values))
+	for i, val := range values {
+		n[i] = val
+	}
+	return n
+}
+
+func DefaultNaturalLanguageValue(content string) NaturalLanguageValues {
+	return NaturalLanguageValuesNew(DefaultLangRef(content))
 }
 
 func (n NaturalLanguageValues) String() string {
@@ -72,6 +83,10 @@ func (n *NaturalLanguageValues) Set(ref LangRef, v Content) error {
 		n.Append(ref, v)
 	}
 	return nil
+}
+
+func (n *NaturalLanguageValues) Add(ref LangRefValue) {
+	*n = append(*n, ref)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
@@ -181,6 +196,14 @@ func (l LangRefValue) String() string {
 		return l.Value.String()
 	}
 	return fmt.Sprintf("%s[%s]", l.Value, l.Ref)
+}
+
+func DefaultLangRef(value string) LangRefValue {
+	return LangRefValue{Ref: DefaultLang, Value: Content(value)}
+}
+
+func LangRefValueNew(lang LangRef, value string) LangRefValue {
+	return LangRefValue{Ref: lang, Value: Content(value)}
 }
 
 func (l LangRefValue) Format(s fmt.State, verb rune) {
