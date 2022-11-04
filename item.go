@@ -146,7 +146,7 @@ func IsNil(it Item) bool {
 		// NOTE(marius): we're not dealing with a type that we know about, so we use slow reflection
 		// as we still care about the result
 		v := reflect.ValueOf(it)
-		isNil = v.Kind() != reflect.Pointer || v.IsNil()
+		isNil = v.Kind() == reflect.Pointer && v.IsNil()
 	}
 	return isNil
 }
