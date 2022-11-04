@@ -104,41 +104,84 @@ func (t CollectionPath) IRI(i Item) IRI {
 	return IRIf(i.GetLink(), t)
 }
 
+func (t CollectionPath) ofItemCollection(col ItemCollection) Item {
+	iriCol := make(ItemCollection, len(col))
+	for i, it := range col {
+		iriCol[i] = t.Of(it)
+	}
+	return iriCol
+}
+
+func (t CollectionPath) ofObject(ob *Object) Item {
+	var it Item
+	switch t {
+	case Likes:
+		it = ob.Likes
+	case Shares:
+		it = ob.Shares
+	case Replies:
+		it = ob.Replies
+	}
+	if it == nil {
+		it = t.ofIRI(ob.ID)
+	}
+	return it
+}
+func (t CollectionPath) ofActor(a *Actor) Item {
+	var it Item
+	switch t {
+	case Inbox:
+		it = a.Inbox
+	case Outbox:
+		it = a.Outbox
+	case Liked:
+		it = a.Liked
+	case Following:
+		it = a.Following
+	case Followers:
+		it = a.Followers
+	}
+	if it == nil {
+		it = t.ofIRI(a.ID)
+	}
+	return it
+}
+
+func (t CollectionPath) ofIRI(iri IRI) Item {
+	if len(iri) == 0 {
+		return nil
+	}
+	return iri.AddPath(string(t))
+}
+
+func (t CollectionPath) ofItem(i Item) Item {
+	var it Item
+	return it
+}
+
 // Of gives us the property of the i Item that corresponds to the t CollectionPath type.
 func (t CollectionPath) Of(i Item) Item {
 	if IsNil(i) {
 		return nil
 	}
 	if IsIRI(i) {
-		return i.GetLink().AddPath(string(t))
+		return t.ofIRI(i.GetLink())
 	}
 	var it Item
+	if IsItemCollection(i) {
+		OnItemCollection(i, func(col *ItemCollection) error {
+			it = t.ofItemCollection(*col)
+			return nil
+		})
+	}
 	if OfActor.Contains(t) && ActorTypes.Contains(i.GetType()) {
 		OnActor(i, func(a *Actor) error {
-			switch t {
-			case Inbox:
-				it = a.Inbox
-			case Outbox:
-				it = a.Outbox
-			case Liked:
-				it = a.Liked
-			case Following:
-				it = a.Following
-			case Followers:
-				it = a.Followers
-			}
+			it = t.ofActor(a)
 			return nil
 		})
 	}
 	OnObject(i, func(o *Object) error {
-		switch t {
-		case Likes:
-			it = o.Likes
-		case Shares:
-			it = o.Shares
-		case Replies:
-			it = o.Replies
-		}
+		it = t.ofObject(o)
 		return nil
 	})
 
