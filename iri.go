@@ -216,6 +216,55 @@ func (i *IRIs) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// GetID returns the ID corresponding to ItemCollection
+func (i IRIs) GetID() ID {
+	return EmptyID
+}
+
+// GetLink returns the empty IRI
+func (i IRIs) GetLink() IRI {
+	return EmptyIRI
+}
+
+// GetType returns the ItemCollection's type
+func (i IRIs) GetType() ActivityVocabularyType {
+	return CollectionOfItems
+}
+
+// IsLink returns false for an ItemCollection object
+func (i IRIs) IsLink() bool {
+	return false
+}
+
+// IsObject returns true for a ItemCollection object
+func (i IRIs) IsObject() bool {
+	return false
+}
+
+// IsCollection returns true for IRI slices
+func (i IRIs) IsCollection() bool {
+	return true
+}
+
+// Append facilitates adding elements to IRI slices
+// and ensures IRIs implements the Collection interface
+func (i *IRIs) Append(r IRI) error {
+	*i = append(*i, r)
+	return nil
+}
+
+func (i *IRIs) Collection() ItemCollection {
+	res := make(ItemCollection, len(*i))
+	for k, iri := range *i {
+		res[k] = iri
+	}
+	return res
+}
+
+func (i *IRIs) Count() uint {
+	return uint(len(*i))
+}
+
 // Contains verifies if IRIs array contains the received one
 func (i IRIs) Contains(r IRI) bool {
 	if len(i) == 0 {
