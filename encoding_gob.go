@@ -751,8 +751,8 @@ func mapTombstoneProperties(mm map[string][]byte, t Tombstone) (hasData bool, er
 }
 
 func mapQuestionProperties(mm map[string][]byte, q Question) (hasData bool, err error) {
-	err = OnObject(q, func(o *Object) error {
-		hasData, err = mapObjectProperties(mm, o)
+	err = OnIntransitiveActivity(q, func(i *IntransitiveActivity) error {
+		hasData, err = mapIntransitiveActivityProperties(mm, i)
 		return err
 	})
 	if q.OneOf != nil {
