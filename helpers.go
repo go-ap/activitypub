@@ -40,6 +40,9 @@ type WithOrderedCollectionPageFn func(*OrderedCollectionPage) error
 // WithItemCollectionFn represents a function type that can be used as a parameter for OnItemCollection helper function
 type WithItemCollectionFn func(*ItemCollection) error
 
+// WithIRIsFn represents a function type that can be used as a parameter for OnIRIs helper function
+type WithIRIsFn func(*IRIs) error
+
 // OnLink calls function fn on it Item if it can be asserted to type *Link
 //
 // This function should be safe to use for all types with a structure compatible
@@ -227,6 +230,20 @@ func OnItemCollection(it Item, fn WithItemCollectionFn) error {
 	return fn(col)
 }
 
+// OnIRIs calls function fn on it Item if it can be asserted to type IRIs
+//
+// It should be used when Item represents an IRI slice.
+func OnIRIs(it Item, fn WithIRIsFn) error {
+	if it == nil {
+		return nil
+	}
+	col, err := ToIRIs(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
+}
+
 // OnCollectionIntf calls function fn on it Item if it can be asserted to a type
 // that implements the CollectionInterface
 //
@@ -244,6 +261,13 @@ func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 			return err
 		}
 		return fn(col)
+	case CollectionOfIRIs:
+		col, err := ToIRIs(it)
+		if err != nil {
+			return err
+		}
+		itCol := col.Collection()
+		return fn(&itCol)
 	case CollectionType:
 		col, err := ToCollection(it)
 		if err != nil {

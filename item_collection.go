@@ -189,6 +189,25 @@ func ToItemCollection(it Item) (*ItemCollection, error) {
 	return nil, ErrorInvalidType[ItemCollection](it)
 }
 
+// ToIRIs
+func ToIRIs(it Item) (*IRIs, error) {
+	switch i := it.(type) {
+	case *IRIs:
+		return i, nil
+	case IRIs:
+		return &i, nil
+	default:
+		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
+		typ := reflect.TypeOf(new(IRIs))
+		if reflect.TypeOf(it).ConvertibleTo(typ) {
+			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*IRIs); ok {
+				return i, nil
+			}
+		}
+	}
+	return nil, ErrorInvalidType[IRIs](it)
+}
+
 // ItemsMatch
 func (i ItemCollection) ItemsMatch(col ...Item) bool {
 	for _, it := range col {

@@ -97,6 +97,13 @@ func IsIRI(it Item) bool {
 	return okV || okP
 }
 
+// IsIRIs returns if the current Item interface holds an IRI slice
+func IsIRIs(it Item) bool {
+	_, okV := it.(IRIs)
+	_, okP := it.(*IRIs)
+	return okV || okP
+}
+
 // IsLink returns if the current Item interface holds a Link
 func IsLink(it Item) bool {
 	_, okV := it.(Link)
@@ -151,6 +158,6 @@ func IsNil(it Item) bool {
 	return isNil
 }
 
-func ErrorInvalidType[T Objects | Links](received Item) error {
+func ErrorInvalidType[T Objects | Links | IRIs](received Item) error {
 	return fmt.Errorf("unable to convert %T to %T", received, new(T))
 }

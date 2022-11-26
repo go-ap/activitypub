@@ -403,11 +403,7 @@ func gobDecodeItem(data []byte) (Item, error) {
 	}
 	iris := make(IRIs, 0)
 	if err := tryDecodeIRIs(&iris, data); err == nil {
-		it := make(ItemCollection, len(iris))
-		for i, iri := range iris {
-			it[i] = iri
-		}
-		return it, nil
+		return iris, nil
 	}
 	isObject := false
 	typ := ObjectType

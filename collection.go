@@ -12,6 +12,7 @@ import (
 	"github.com/valyala/fastjson"
 )
 
+const CollectionOfIRIs ActivityVocabularyType = "IRICollection"
 const CollectionOfItems ActivityVocabularyType = "ItemCollection"
 
 var CollectionTypes = ActivityVocabularyTypes{

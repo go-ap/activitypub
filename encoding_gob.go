@@ -68,6 +68,12 @@ func gobEncodeItems(col ItemCollection) ([]byte, error) {
 	return b.Bytes(), err
 }
 
+func gobEncodeIRIs(col IRIs) ([]byte, error) {
+	b := bytes.Buffer{}
+	err := gob.NewEncoder(&b).Encode(col)
+	return b.Bytes(), err
+}
+
 func gobEncodeItemOrLink(it LinkOrIRI) ([]byte, error) {
 	if ob, ok := it.(Item); ok {
 		return gobEncodeItem(ob)
@@ -90,6 +96,13 @@ func gobEncodeItem(it Item) ([]byte, error) {
 	}
 	b := bytes.Buffer{}
 	var err error
+	if IsIRIs(it) {
+		err = OnIRIs(it, func(iris *IRIs) error {
+			bytes, err := gobEncodeIRIs(*iris)
+			b.Write(bytes)
+			return err
+		})
+	}
 	if IsItemCollection(it) {
 		err = OnItemCollection(it, func(col *ItemCollection) error {
 			bytes, err := gobEncodeItems(*col)

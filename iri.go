@@ -122,8 +122,13 @@ func (i *IRIs) GobDecode(data []byte) error {
 		// NOTE(marius): this behaviour diverges from vanilla gob package
 		return nil
 	}
+	err := gob.NewDecoder(bytes.NewReader(data)).Decode(i)
+	if err == nil {
+		return nil
+	}
 	bb := make([][]byte, 0)
-	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
+	err = gob.NewDecoder(bytes.NewReader(data)).Decode(&bb)
+	if err != nil {
 		return err
 	}
 	for _, b := range bb {
@@ -228,7 +233,7 @@ func (i IRIs) GetLink() IRI {
 
 // GetType returns the ItemCollection's type
 func (i IRIs) GetType() ActivityVocabularyType {
-	return CollectionOfItems
+	return CollectionOfIRIs
 }
 
 // IsLink returns false for an ItemCollection object
