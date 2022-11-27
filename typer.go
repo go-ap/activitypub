@@ -164,10 +164,7 @@ func (t CollectionPath) Of(i Item) Item {
 	if IsNil(i) {
 		return nil
 	}
-	if IsIRI(i) {
-		return t.ofIRI(i.GetLink())
-	}
-	var it Item
+	it := t.ofIRI(i.GetLink())
 	if IsItemCollection(i) {
 		OnItemCollection(i, func(col *ItemCollection) error {
 			it = t.ofItemCollection(*col)
@@ -184,7 +181,6 @@ func (t CollectionPath) Of(i Item) Item {
 		it = t.ofObject(o)
 		return nil
 	})
-
 	return it
 }
 
