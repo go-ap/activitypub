@@ -177,10 +177,10 @@ func FlattenToIRI(it Item) Item {
 }
 
 func (i IRIs) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
 	if len(i) == 0 {
-		return nil, nil
+		return []byte{'[', ']'}, nil
 	}
+	b := make([]byte, 0)
 	writeCommaIfNotEmpty := func(notEmpty bool) {
 		if notEmpty {
 			writeS(&b, ",")
