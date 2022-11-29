@@ -160,9 +160,6 @@ func JSONGetPublicKey(val *fastjson.Value, prop string) PublicKey {
 func JSONItemsFn(val *fastjson.Value) (Item, error) {
 	if val.Type() == fastjson.TypeArray {
 		it := val.GetArray()
-		if len(it) == 1 {
-			return JSONLoadItem(it[0])
-		}
 		items := make(ItemCollection, 0)
 		for _, v := range it {
 			if it, _ := JSONLoadItem(v); it != nil {
