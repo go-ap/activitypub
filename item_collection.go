@@ -196,6 +196,18 @@ func ToIRIs(it Item) (*IRIs, error) {
 		return i, nil
 	case IRIs:
 		return &i, nil
+	case ItemCollection:
+		iris := make(IRIs, len(i))
+		for j, ob := range i {
+			iris[j] = ob.GetLink()
+		}
+		return &iris, nil
+	case *ItemCollection:
+		iris := make(IRIs, len(*i))
+		for j, ob := range *i {
+			iris[j] = ob.GetLink()
+		}
+		return &iris, nil
 	default:
 		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
 		typ := reflect.TypeOf(new(IRIs))
