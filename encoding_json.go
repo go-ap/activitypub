@@ -364,5 +364,5 @@ func writeLinkJSONValue(b *[]byte, l Link) (notEmpty bool) {
 
 // MarshalJSON represents just a wrapper for the jsonld.Marshal function
 func MarshalJSON(it Item) ([]byte, error) {
-	return jsonld.WithContext(jsonld.IRI(ActivityBaseURI), jsonld.IRI(SecurityContextURI)).Marshal(it)
+	return jsonld.Marshal(it)
 }
