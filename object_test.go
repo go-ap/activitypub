@@ -254,8 +254,8 @@ func TestRecipients(t *testing.T) {
 	first.Append(alice)
 	first.Append(foo)
 	first.Append(bob)
-	if len(first) != 8 {
-		t.Errorf("Objects array should have exactly 8(eight) elements, not %d", len(first))
+	if len(first) != 4 {
+		t.Errorf("Objects array should have exactly 4(eight) elements, not %d", len(first))
 	}
 
 	ItemCollectionDeduplication(&first)

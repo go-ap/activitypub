@@ -30,7 +30,7 @@ type Collections interface {
 type CollectionInterface interface {
 	ObjectOrLink
 	Collection() ItemCollection
-	Append(ob Item) error
+	Append(ob ...Item) error
 	Count() uint
 	Contains(Item) bool
 }
@@ -206,8 +206,13 @@ func (c Collection) Collection() ItemCollection {
 }
 
 // Append adds an element to a Collection
-func (c *Collection) Append(ob Item) error {
-	c.Items = append(c.Items, ob)
+func (c *Collection) Append(it ...Item) error {
+	for _, ob := range it {
+		if c.Items.Contains(ob) {
+			continue
+		}
+		c.Items = append(c.Items, ob)
+	}
 	return nil
 }
 

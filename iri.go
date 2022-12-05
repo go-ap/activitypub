@@ -253,8 +253,13 @@ func (i IRIs) IsCollection() bool {
 
 // Append facilitates adding elements to IRI slices
 // and ensures IRIs implements the Collection interface
-func (i *IRIs) Append(r IRI) error {
-	*i = append(*i, r)
+func (i *IRIs) Append(it ...Item) error {
+	for _, ob := range it {
+		if (*i).Contains(ob.GetLink()) {
+			continue
+		}
+		*i = append(*i, ob.GetLink())
+	}
 	return nil
 }
 
@@ -271,12 +276,12 @@ func (i *IRIs) Count() uint {
 }
 
 // Contains verifies if IRIs array contains the received one
-func (i IRIs) Contains(r IRI) bool {
+func (i IRIs) Contains(r Item) bool {
 	if len(i) == 0 {
 		return false
 	}
 	for _, iri := range i {
-		if r.Equals(iri, false) {
+		if r.GetLink().Equals(iri, false) {
 			return true
 		}
 	}

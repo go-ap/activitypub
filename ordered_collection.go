@@ -209,8 +209,13 @@ func (o *OrderedCollection) Count() uint {
 }
 
 // Append adds an element to an the receiver collection object.
-func (o *OrderedCollection) Append(ob Item) error {
-	o.OrderedItems = append(o.OrderedItems, ob)
+func (o *OrderedCollection) Append(it ...Item) error {
+	for _, ob := range it {
+		if o.OrderedItems.Contains(ob) {
+			continue
+		}
+		o.OrderedItems = append(o.OrderedItems, ob)
+	}
 	return nil
 }
 

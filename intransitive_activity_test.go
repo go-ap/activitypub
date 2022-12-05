@@ -48,8 +48,8 @@ func TestIntransitiveActivityRecipients(t *testing.T) {
 	a.To.Append(alice)
 	a.To.Append(foo)
 	a.To.Append(bob)
-	if len(a.To) != 8 {
-		t.Errorf("%T.To should have exactly 8(eight) elements, not %d", a, len(a.To))
+	if len(a.To) != 4 {
+		t.Errorf("%T.To should have exactly 4(eight) elements, not %d", a, len(a.To))
 	}
 
 	a.Recipients()

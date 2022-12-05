@@ -170,8 +170,13 @@ func (c *CollectionPage) Count() uint {
 }
 
 // Append adds an element to a CollectionPage
-func (c *CollectionPage) Append(ob Item) error {
-	c.Items = append(c.Items, ob)
+func (c *CollectionPage) Append(it ...Item) error {
+	for _, ob := range it {
+		if c.Items.Contains(ob) {
+			continue
+		}
+		c.Items = append(c.Items, ob)
+	}
 	return nil
 }
 

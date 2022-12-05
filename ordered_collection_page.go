@@ -173,8 +173,13 @@ func (o *OrderedCollectionPage) Count() uint {
 }
 
 // Append adds an element to an OrderedCollectionPage
-func (o *OrderedCollectionPage) Append(ob Item) error {
-	o.OrderedItems = append(o.OrderedItems, ob)
+func (o *OrderedCollectionPage) Append(it ...Item) error {
+	for _, ob := range it {
+		if o.OrderedItems.Contains(ob) {
+			continue
+		}
+		o.OrderedItems = append(o.OrderedItems, ob)
+	}
 	return nil
 }
 
