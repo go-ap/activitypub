@@ -113,13 +113,13 @@ func IsLink(it Item) bool {
 
 // IsObject returns if the current Item interface holds an Object
 func IsObject(it Item) bool {
-	switch it.(type) {
+	switch ob := it.(type) {
 	case Actor, *Actor,
 		Object, *Object, Profile, *Profile, Place, *Place, Relationship, *Relationship, Tombstone, *Tombstone,
 		Activity, *Activity, IntransitiveActivity, *IntransitiveActivity, Question, *Question,
 		Collection, *Collection, CollectionPage, *CollectionPage,
 		OrderedCollection, *OrderedCollection, OrderedCollectionPage, *OrderedCollectionPage:
-		return true
+		return ob != nil
 	default:
 		return false
 	}

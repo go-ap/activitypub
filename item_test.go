@@ -246,3 +246,42 @@ func TestItemsEqual1(t *testing.T) {
 		})
 	}
 }
+
+func TestIsObject(t *testing.T) {
+	type args struct {
+		it Item
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "nil",
+			args: args{},
+			want: false,
+		},
+		{
+			name: "interface with nil value",
+			args: args{Item(nil)},
+			want: false,
+		},
+		{
+			name: "empty object",
+			args: args{Object{}},
+			want: true,
+		},
+		{
+			name: "pointer to empty object",
+			args: args{&Object{}},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsObject(tt.args.it); got != tt.want {
+				t.Errorf("IsObject() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
