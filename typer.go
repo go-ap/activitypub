@@ -15,15 +15,97 @@ type CollectionPath string
 type CollectionPaths []CollectionPath
 
 const (
-	Unknown   = CollectionPath("")
-	Outbox    = CollectionPath("outbox")
-	Inbox     = CollectionPath("inbox")
-	Shares    = CollectionPath("shares")
-	Replies   = CollectionPath("replies") // activitystreams
-	Following = CollectionPath("following")
+	Unknown = CollectionPath("")
+	// Outbox
+	//
+	// https://www.w3.org/TR/activitypub/#outbox
+	//
+	// The outbox is discovered through the outbox property of an actor's profile.
+	// The outbox MUST be an OrderedCollection.
+	//
+	// The outbox stream contains activities the user has published, subject to the ability of the requestor
+	// to retrieve the activity (that is, the contents of the outbox are filtered by the permissions
+	// of the person reading it). If a user submits a request without Authorization the server should respond
+	// with all of the Public posts. This could potentially be all relevant objects published by the user,
+	// though the number of available items is left to the discretion of those implementing and deploying the server.
+	//
+	// The outbox accepts HTTP POST requests, with behaviour described in Client to Server Interactions.
+	Outbox = CollectionPath("outbox")
+	// Inbox
+	//
+	// https://www.w3.org/TR/activitypub/#inbox
+	//
+	// The inbox is discovered through the inbox property of an actor's profile. The inbox MUST be an OrderedCollection.
+	//
+	// The inbox stream contains all activities received by the actor. The server SHOULD filter content according
+	// to the requester's permission. In general, the owner of an inbox is likely to be able to access
+	// all of their inbox contents. Depending on access control, some other content may be public,
+	// whereas other content may require authentication for non-owner users, if they can access the inbox at all.
+	//
+	// The server MUST perform de-duplication of activities returned by the inbox. Duplication can occur
+	// if an activity is addressed both to an actor's followers, and a specific actor who also follows
+	// the recipient actor, and the server has failed to de-duplicate the recipients list.
+	// Such deduplication MUST be performed by comparing the id of the activities and dropping any activities already seen.
+	//
+	// The inboxes of actors on federated servers accepts HTTP POST requests, with behaviour described in Delivery.
+	// Non-federated servers SHOULD return a 405 Method Not Allowed upon receipt of a POST request.
+	Inbox = CollectionPath("inbox")
+	// Followers
+	//
+	// https://www.w3.org/TR/activitypub/#followers
+	//
+	// Every actor SHOULD have a followers collection. This is a list of everyone who has sent a Follow activity
+	// for the actor, added as a side effect. This is where one would find a list of all the actors that are following
+	// the actor. The followers collection MUST be either an OrderedCollection or a Collection and MAY be filtered
+	// on privileges of an authenticated user or as appropriate when no authentication is given.
+	//
+	// NOTE: Default for notification targeting
+	// The follow activity generally is a request to see the objects an actor creates.
+	// This makes the Followers collection an appropriate default target for delivery of notifications.
 	Followers = CollectionPath("followers")
-	Liked     = CollectionPath("liked")
-	Likes     = CollectionPath("likes")
+	// Following
+	//
+	// https://www.w3.org/TR/activitypub/#following
+	//
+	// Every actor SHOULD have a following collection. This is a list of everybody that the actor has followed,
+	// added as a side effect. The following collection MUST be either an OrderedCollection or a Collection
+	// and MAY be filtered on privileges of an authenticated user or as appropriate when no authentication is given.
+	Following = CollectionPath("following")
+	// Liked
+	//
+	// https://www.w3.org/TR/activitypub/#liked
+	//
+	// Every actor MAY have a liked collection. This is a list of every object from all of the actor's Like activities,
+	// added as a side effect. The liked collection MUST be either an OrderedCollection or a Collection and
+	// MAY be filtered on privileges of an authenticated user or as appropriate when no authentication is given.
+	Liked = CollectionPath("liked")
+	// Likes
+	//
+	// https://www.w3.org/TR/activitypub/#likes
+	//
+	// Every object MAY have a likes collection. This is a list of all Like activities with this object as the object
+	// property, added as a side effect. The likes collection MUST be either an OrderedCollection or a Collection
+	// and MAY be filtered on privileges of an authenticated user or as appropriate when no authentication is given.
+	//
+	// NOTE
+	// Care should be taken to not confuse the the likes collection with the similarly named but different liked
+	// collection. In sum:
+	//
+	// * liked: Specifically a property of actors. This is a collection of Like activities performed by the actor,
+	// added to the collection as a side effect of delivery to the outbox.
+	// * likes: May be a property of any object. This is a collection of Like activities referencing this object,
+	// added to the collection as a side effect of delivery to the inbox.
+	Likes = CollectionPath("likes")
+	// Shares
+	//
+	// https://www.w3.org/TR/activitypub/#shares
+	//
+	// Every object MAY have a shares collection. This is a list of all Announce activities with this object
+	// as the object property, added as a side effect. The shares collection MUST be either an OrderedCollection
+	// or a Collection and MAY be filtered on privileges of an authenticated user or as appropriate when
+	// no authentication is given.
+	Shares  = CollectionPath("shares")
+	Replies = CollectionPath("replies") // activitystreams
 )
 
 var (

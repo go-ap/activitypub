@@ -17,7 +17,31 @@ const (
 	ActivityBaseURI = IRI("https://www.w3.org/ns/activitystreams")
 	// SecurityContextURI the URI for the security namespace (for an Actor's PublicKey)
 	SecurityContextURI = IRI("https://w3id.org/security/v1")
-	// PublicNS is the reference to the Public entity in the ActivityStreams namespace
+	// PublicNS is the reference to the Public entity in the ActivityStreams namespace.
+	//
+	// Public Addressing
+	//
+	// https://www.w3.org/TR/activitypub/#public-addressing
+	//
+	// In addition to [ActivityStreams] collections and objects, Activities may additionally be addressed to the
+	// special "public" collection, with the identifier https://www.w3.org/ns/activitystreams#Public. For example:
+	//
+	// {
+	//   "@context": "https://www.w3.org/ns/activitystreams",
+	//   "id": "https://www.w3.org/ns/activitystreams#Public",
+	//   "type": "Collection"
+	// }
+	// Activities addressed to this special URI shall be accessible to all users, without authentication.
+	// Implementations MUST NOT deliver to the "public" special collection; it is not capable of receiving
+	// actual activities. However, actors MAY have a sharedInbox endpoint which is available for efficient
+	// shared delivery of public posts (as well as posts to followers-only); see 7.1.3 Shared Inbox Delivery.
+	//
+	// NOTE
+	// Compacting an ActivityStreams object using the ActivityStreams JSON-LD context might result in
+	// https://www.w3.org/ns/activitystreams#Public being represented as simply Public or as:Public which are valid
+	// representations of the Public collection. Implementations which treat ActivityStreams objects as simply JSON
+	// rather than converting an incoming activity over to a local context using JSON-LD tooling should be aware
+	// of this and should be prepared to accept all three representations.
 	PublicNS = ActivityBaseURI + "#Public"
 )
 

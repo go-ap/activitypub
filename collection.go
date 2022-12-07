@@ -23,8 +23,26 @@ var CollectionTypes = ActivityVocabularyTypes{
 	OrderedCollectionPageType,
 }
 
+// Collections
+//
+// https://www.w3.org/TR/activitypub/#collections
+//
+// [ActivityStreams] defines the collection concept; ActivityPub defines several collections with special behavior.
+//
+// Note that ActivityPub makes use of ActivityStreams paging to traverse large sets of objects.
+//
+// Note that some of these collections are specified to be of type OrderedCollection specifically,
+// while others are permitted to be either a Collection or an OrderedCollection.
+// An OrderedCollection MUST be presented consistently in reverse chronological order.
+//
+// NOTE
+// What property is used to determine the reverse chronological order is intentionally left as an implementation detail.
+// For example, many SQL-style databases use an incrementing integer as an identifier, which can be reasonably used for
+// handling insertion order in most cases. In other databases, an insertion time timestamp may be preferred.
+// What is used isn't important, but the ordering of elements must remain intact, with newer items first.
+// A property which changes regularly, such a "last updated" timestamp, should not be used.
 type Collections interface {
-	Collection | CollectionPage | OrderedCollection | OrderedCollectionPage | ItemCollection
+	Collection | CollectionPage | OrderedCollection | OrderedCollectionPage | ItemCollection | IRIs
 }
 
 type CollectionInterface interface {
