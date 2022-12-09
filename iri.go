@@ -331,10 +331,11 @@ func (i IRI) Equals(with IRI, checkScheme bool) bool {
 			return false
 		}
 	}
-	if strings.ToLower(u.Host) != strings.ToLower(uw.Host) {
+	if !strings.EqualFold(u.Host, uw.Host) {
 		return false
 	}
-	if filepath.Clean(u.Path) != filepath.Clean(uw.Path) {
+	if !(u.Path == "/" && uw.Path == "" || u.Path == "" && uw.Path == "/") &&
+		!strings.EqualFold(filepath.Clean(u.Path), filepath.Clean(uw.Path)) {
 		return false
 	}
 	uq := u.Query()
