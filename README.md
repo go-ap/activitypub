@@ -22,7 +22,7 @@ The helper functions exposed by the package come in two flavours:
 explicit `OnXXX` and `ToXXX` functions corresponding to each type and,
 a generic pair of functions `On[T]` and `To[T]`.
 
-Before using them you should consider that the former comes with a pretty heavy performance penalty:
+Before using them you should consider that the latter comes with a pretty heavy performance penalty:
 
 ```
 goos: linux
