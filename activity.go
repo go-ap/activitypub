@@ -59,7 +59,7 @@ func (a ActivityVocabularyTypes) Contains(typ ActivityVocabularyType) bool {
 //
 // https://www.w3.org/TR/activitystreams-vocabulary/#motivations-crud
 //
-// This includes, for instance, activities such as "John created a new note", "Sally updated an article", and 
+// This includes, for instance, activities such as "John created a new note", "Sally updated an article", and
 // "Joe deleted the photo".
 var ContentManagementActivityTypes = ActivityVocabularyTypes{
 	CreateType,
@@ -831,12 +831,12 @@ func ToActivity(it Item) (*Activity, error) {
 // MarshalJSON encodes the receiver object to a JSON document.
 func (a Activity) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
-	if !writeActivityJSONValue(&b, a) {
+	if !JSONWriteActivityValue(&b, a) {
 		return nil, nil
 	}
-	write(&b, '}')
+	JSONWrite(&b, '}')
 	return b, nil
 }
 

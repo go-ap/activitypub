@@ -97,9 +97,9 @@ func (i IRI) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 	b := make([]byte, 0)
-	write(&b, '"')
-	writeS(&b, i.String())
-	write(&b, '"')
+	JSONWrite(&b, '"')
+	JSONWriteS(&b, i.String())
+	JSONWrite(&b, '"')
 	return b, nil
 }
 
@@ -207,17 +207,17 @@ func (i IRIs) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	writeCommaIfNotEmpty := func(notEmpty bool) {
 		if notEmpty {
-			writeS(&b, ",")
+			JSONWriteS(&b, ",")
 		}
 	}
-	write(&b, '[')
+	JSONWrite(&b, '[')
 	for k, iri := range i {
 		writeCommaIfNotEmpty(k > 0)
-		write(&b, '"')
-		writeS(&b, iri.String())
-		write(&b, '"')
+		JSONWrite(&b, '"')
+		JSONWriteS(&b, iri.String())
+		JSONWrite(&b, '"')
 	}
-	write(&b, ']')
+	JSONWrite(&b, ']')
 	return b, nil
 }
 

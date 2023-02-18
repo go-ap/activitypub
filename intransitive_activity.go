@@ -197,12 +197,12 @@ func (i *IntransitiveActivity) UnmarshalJSON(data []byte) error {
 // MarshalJSON encodes the receiver object to a JSON document.
 func (i IntransitiveActivity) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
-	if !writeIntransitiveActivityJSONValue(&b, i) {
+	if !JSONWriteIntransitiveActivityValue(&b, i) {
 		return nil, nil
 	}
-	write(&b, '}')
+	JSONWrite(&b, '}')
 	return b, nil
 }
 

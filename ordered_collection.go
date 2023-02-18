@@ -233,27 +233,27 @@ func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
 func (o OrderedCollection) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
 	OnObject(o, func(o *Object) error {
-		notEmpty = writeObjectJSONValue(&b, *o)
+		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 	if o.Current != nil {
-		notEmpty = writeItemJSONProp(&b, "current", o.Current) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "current", o.Current) || notEmpty
 	}
 	if o.First != nil {
-		notEmpty = writeItemJSONProp(&b, "first", o.First) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "first", o.First) || notEmpty
 	}
 	if o.Last != nil {
-		notEmpty = writeItemJSONProp(&b, "last", o.Last) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "last", o.Last) || notEmpty
 	}
-	notEmpty = writeIntJSONProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
+	notEmpty = JSONWriteIntProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
 	if o.OrderedItems != nil {
-		notEmpty = writeItemCollectionJSONProp(&b, "orderedItems", o.OrderedItems) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(&b, "orderedItems", o.OrderedItems) || notEmpty
 	}
 	if notEmpty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil

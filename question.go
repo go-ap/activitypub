@@ -180,12 +180,12 @@ func (q *Question) UnmarshalJSON(data []byte) error {
 // MarshalJSON encodes the receiver object to a JSON document.
 func (q Question) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
-	if !writeQuestionJSONValue(&b, q) {
+	if !JSONWriteQuestionValue(&b, q) {
 		return nil, nil
 	}
-	write(&b, '}')
+	JSONWrite(&b, '}')
 	return b, nil
 }
 

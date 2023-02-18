@@ -39,7 +39,7 @@ func (i ItemCollection) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 	b := make([]byte, 0)
-	writeItemCollectionJSONValue(&b, i)
+	JSONWriteItemCollectionValue(&b, i)
 	return b, nil
 }
 

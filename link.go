@@ -102,10 +102,10 @@ func (l Link) GetType() ActivityVocabularyType {
 // MarshalJSON encodes the receiver object to a JSON document.
 func (l Link) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
-	if writeLinkJSONValue(&b, l) {
-		write(&b, '}')
+	if JSONWriteLinkValue(&b, l) {
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil

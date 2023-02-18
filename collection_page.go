@@ -207,36 +207,36 @@ func (c *CollectionPage) UnmarshalJSON(data []byte) error {
 func (c CollectionPage) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
 	OnObject(c, func(o *Object) error {
-		notEmpty = writeObjectJSONValue(&b, *o)
+		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 	if c.PartOf != nil {
-		notEmpty = writeItemJSONProp(&b, "partOf", c.PartOf) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "partOf", c.PartOf) || notEmpty
 	}
 	if c.Current != nil {
-		notEmpty = writeItemJSONProp(&b, "current", c.Current) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "current", c.Current) || notEmpty
 	}
 	if c.First != nil {
-		notEmpty = writeItemJSONProp(&b, "first", c.First) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "first", c.First) || notEmpty
 	}
 	if c.Last != nil {
-		notEmpty = writeItemJSONProp(&b, "last", c.Last) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "last", c.Last) || notEmpty
 	}
 	if c.Next != nil {
-		notEmpty = writeItemJSONProp(&b, "next", c.Next) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "next", c.Next) || notEmpty
 	}
 	if c.Prev != nil {
-		notEmpty = writeItemJSONProp(&b, "prev", c.Prev) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "prev", c.Prev) || notEmpty
 	}
-	notEmpty = writeIntJSONProp(&b, "totalItems", int64(c.TotalItems)) || notEmpty
+	notEmpty = JSONWriteIntProp(&b, "totalItems", int64(c.TotalItems)) || notEmpty
 	if c.Items != nil {
-		notEmpty = writeItemCollectionJSONProp(&b, "items", c.Items) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(&b, "items", c.Items) || notEmpty
 	}
 	if notEmpty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil

@@ -109,7 +109,7 @@ func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 	b := make([]byte, 0)
-	writeStringJSONValue(&b, string(a))
+	JSONWriteStringValue(&b, string(a))
 	return b, nil
 }
 
@@ -295,10 +295,10 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 // MarshalJSON encodes the receiver object to a JSON document.
 func (o Object) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
-	if writeObjectJSONValue(&b, o) {
-		write(&b, '}')
+	if JSONWriteObjectValue(&b, o) {
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil
@@ -564,7 +564,7 @@ func (m MimeType) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 	b := make([]byte, 0)
-	writeStringJSONValue(&b, string(m))
+	JSONWriteStringValue(&b, string(m))
 	return b, nil
 }
 
@@ -728,17 +728,17 @@ func (s *Source) UnmarshalJSON(data []byte) error {
 func (s Source) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	empty := true
-	write(&b, '{')
+	JSONWrite(&b, '{')
 	if len(s.MediaType) > 0 {
 		if v, err := s.MediaType.MarshalJSON(); err == nil && len(v) > 0 {
-			empty = !writeJSONProp(&b, "mediaType", v)
+			empty = !JSONWriteProp(&b, "mediaType", v)
 		}
 	}
 	if len(s.Content) > 0 {
-		empty = !writeNaturalLanguageJSONProp(&b, "content", s.Content)
+		empty = !JSONWriteNaturalLanguageProp(&b, "content", s.Content)
 	}
 	if !empty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil

@@ -15,10 +15,11 @@ import (
 // Relationship describes a relationship between two individuals.
 // The subject and object properties are used to identify the connected individuals.
 // See 5.2 Representing Relationships Between Entities for additional information.
-//  5.2: The relationship property specifies the kind of relationship that exists between the two individuals identified
-//  by the subject and object properties. Used together, these three properties form what is commonly known
-//  as a "reified statement" where subject identifies the subject, relationship identifies the predicate,
-//  and object identifies the object.
+//
+//	5.2: The relationship property specifies the kind of relationship that exists between the two individuals identified
+//	by the subject and object properties. Used together, these three properties form what is commonly known
+//	as a "reified statement" where subject identifies the subject, relationship identifies the predicate,
+//	and object identifies the object.
 type Relationship struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
@@ -166,25 +167,25 @@ func (r *Relationship) UnmarshalJSON(data []byte) error {
 func (r Relationship) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
 	OnObject(r, func(o *Object) error {
-		notEmpty = writeObjectJSONValue(&b, *o)
+		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 
 	if r.Subject != nil {
-		notEmpty = writeItemJSONProp(&b, "subject", r.Subject) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "subject", r.Subject) || notEmpty
 	}
 	if r.Object != nil {
-		notEmpty = writeItemJSONProp(&b, "object", r.Object) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "object", r.Object) || notEmpty
 	}
 	if r.Relationship != nil {
-		notEmpty = writeItemJSONProp(&b, "relationship", r.Relationship) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "relationship", r.Relationship) || notEmpty
 	}
 
 	if notEmpty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil

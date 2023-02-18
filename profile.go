@@ -156,18 +156,18 @@ func (p *Profile) UnmarshalJSON(data []byte) error {
 func (p Profile) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
 	OnObject(p, func(o *Object) error {
 		return nil
 	})
 
 	if p.Describes != nil {
-		notEmpty = writeItemJSONProp(&b, "describes", p.Describes) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "describes", p.Describes) || notEmpty
 	}
 
 	if notEmpty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil
