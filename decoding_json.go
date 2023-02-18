@@ -18,12 +18,15 @@ var (
 	textUnmarshalerType = reflect.TypeOf(new(encoding.TextUnmarshaler)).Elem()
 )
 
-// ItemTyperFunc will return an instance of a struct that implements activitystreams.Item
+// ItemTyperFunc will return an instance of a struct that implements activitypub.Item
 // The default for this package is GetItemByType but can be overwritten
 var ItemTyperFunc TyperFn = GetItemByType
 
 // JSONItemUnmarshal can be set externally to populate a custom object based on its type
 var JSONItemUnmarshal JSONUnmarshalerFn = nil
+
+// IsNotEmpty checks if an object is empty
+var IsNotEmpty NotEmptyCheckerFn = NotEmpty
 
 // TyperFn is the type of the function which returns an Item struct instance
 // for a specific ActivityVocabularyType
@@ -32,6 +35,9 @@ type TyperFn func(ActivityVocabularyType) (Item, error)
 // JSONUnmarshalerFn is the type of the function that will load the data from a fastjson.Value into an Item
 // that the current package doesn't know about.
 type JSONUnmarshalerFn func(ActivityVocabularyType, *fastjson.Value, Item) error
+
+// NotEmptyCheckerFn is the type of the function that checks if an object is empty
+type NotEmptyCheckerFn func(Item) bool
 
 func JSONGetID(val *fastjson.Value) ID {
 	i := val.Get("id").GetStringBytes()
@@ -183,7 +189,7 @@ func JSONLoadItem(val *fastjson.Value) (Item, error) {
 	if err != nil || IsNil(i) {
 		return nil, nil
 	}
-	var empty = func(i Item) bool { return !NotEmpty(i) }
+	var empty = func(i Item) bool { return !IsNotEmpty(i) }
 
 	switch typ {
 	case "":
