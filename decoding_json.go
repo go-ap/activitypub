@@ -448,15 +448,22 @@ func GetItemByType(typ ActivityVocabularyType) (Item, error) {
 }
 
 func JSONGetActorEndpoints(val *fastjson.Value, prop string) *Endpoints {
-	str := val.Get(prop).GetStringBytes()
-
-	var e *Endpoints
-	if len(str) > 0 {
-		e = &Endpoints{}
-		e.UnmarshalJSON(str)
+	if val == nil {
+		return nil
+	}
+	if val = val.Get(prop); val == nil {
+		return nil
 	}
 
-	return e
+	e := Endpoints{}
+	e.UploadMedia = JSONGetURIItem(val, "uploadMedia")
+	e.OauthAuthorizationEndpoint = JSONGetURIItem(val, "oauthAuthorizationEndpoint")
+	e.OauthTokenEndpoint = JSONGetURIItem(val, "oauthTokenEndpoint")
+	e.SharedInbox = JSONGetURIItem(val, "sharedInbox")
+	e.ProvideClientKey = JSONGetURIItem(val, "provideClientKey")
+	e.SignClientKey = JSONGetURIItem(val, "signClientKey")
+
+	return &e
 }
 
 func JSONLoadObject(val *fastjson.Value, o *Object) error {
@@ -495,39 +502,33 @@ func JSONLoadObject(val *fastjson.Value, o *Object) error {
 }
 
 func JSONLoadIntransitiveActivity(val *fastjson.Value, i *IntransitiveActivity) error {
-	OnObject(i, func(o *Object) error {
-		return JSONLoadObject(val, o)
-	})
 	i.Actor = JSONGetItem(val, "actor")
 	i.Target = JSONGetItem(val, "target")
 	i.Result = JSONGetItem(val, "result")
 	i.Origin = JSONGetItem(val, "origin")
 	i.Instrument = JSONGetItem(val, "instrument")
-	return nil
+	return OnObject(i, func(o *Object) error {
+		return JSONLoadObject(val, o)
+	})
 }
 
 func JSONLoadActivity(val *fastjson.Value, a *Activity) error {
-	OnIntransitiveActivity(a, func(i *IntransitiveActivity) error {
+	a.Object = JSONGetItem(val, "object")
+	return OnIntransitiveActivity(a, func(i *IntransitiveActivity) error {
 		return JSONLoadIntransitiveActivity(val, i)
 	})
-	a.Object = JSONGetItem(val, "object")
-	return nil
 }
 
 func JSONLoadQuestion(val *fastjson.Value, q *Question) error {
-	OnIntransitiveActivity(q, func(i *IntransitiveActivity) error {
-		return JSONLoadIntransitiveActivity(val, i)
-	})
 	q.OneOf = JSONGetItem(val, "oneOf")
 	q.AnyOf = JSONGetItem(val, "anyOf")
 	q.Closed = JSONGetBoolean(val, "closed")
-	return nil
+	return OnIntransitiveActivity(q, func(i *IntransitiveActivity) error {
+		return JSONLoadIntransitiveActivity(val, i)
+	})
 }
 
 func JSONLoadActor(val *fastjson.Value, a *Actor) error {
-	OnObject(a, func(o *Object) error {
-		return JSONLoadObject(val, o)
-	})
 	a.PreferredUsername = JSONGetNaturalLanguageField(val, "preferredUsername")
 	a.Followers = JSONGetItem(val, "followers")
 	a.Following = JSONGetItem(val, "following")
@@ -537,92 +538,86 @@ func JSONLoadActor(val *fastjson.Value, a *Actor) error {
 	a.Endpoints = JSONGetActorEndpoints(val, "endpoints")
 	a.Streams = JSONGetItems(val, "streams")
 	a.PublicKey = JSONGetPublicKey(val, "publicKey")
-	return nil
+	return OnObject(a, func(o *Object) error {
+		return JSONLoadObject(val, o)
+	})
 }
 
 func JSONLoadCollection(val *fastjson.Value, c *Collection) error {
-	OnObject(c, func(o *Object) error {
-		return JSONLoadObject(val, o)
-	})
 	c.Current = JSONGetItem(val, "current")
 	c.First = JSONGetItem(val, "first")
 	c.Last = JSONGetItem(val, "last")
 	c.TotalItems = uint(JSONGetInt(val, "totalItems"))
 	c.Items = JSONGetItems(val, "items")
-	return nil
+	return OnObject(c, func(o *Object) error {
+		return JSONLoadObject(val, o)
+	})
 }
 
 func JSONLoadCollectionPage(val *fastjson.Value, c *CollectionPage) error {
-	OnCollection(c, func(c *Collection) error {
-		return JSONLoadCollection(val, c)
-	})
 	c.Next = JSONGetItem(val, "next")
 	c.Prev = JSONGetItem(val, "prev")
 	c.PartOf = JSONGetItem(val, "partOf")
-	return nil
+	return OnCollection(c, func(c *Collection) error {
+		return JSONLoadCollection(val, c)
+	})
 }
 
 func JSONLoadOrderedCollection(val *fastjson.Value, c *OrderedCollection) error {
-	OnObject(c, func(o *Object) error {
-		return JSONLoadObject(val, o)
-	})
 	c.Current = JSONGetItem(val, "current")
 	c.First = JSONGetItem(val, "first")
 	c.Last = JSONGetItem(val, "last")
 	c.TotalItems = uint(JSONGetInt(val, "totalItems"))
 	c.OrderedItems = JSONGetItems(val, "orderedItems")
-	return nil
+	return OnObject(c, func(o *Object) error {
+		return JSONLoadObject(val, o)
+	})
 }
 
 func JSONLoadOrderedCollectionPage(val *fastjson.Value, c *OrderedCollectionPage) error {
-	OnOrderedCollection(c, func(c *OrderedCollection) error {
-		return JSONLoadOrderedCollection(val, c)
-	})
 	c.Next = JSONGetItem(val, "next")
 	c.Prev = JSONGetItem(val, "prev")
 	c.PartOf = JSONGetItem(val, "partOf")
 	c.StartIndex = uint(JSONGetInt(val, "startIndex"))
-	return nil
+	return OnOrderedCollection(c, func(c *OrderedCollection) error {
+		return JSONLoadOrderedCollection(val, c)
+	})
 }
 
 func JSONLoadPlace(val *fastjson.Value, p *Place) error {
-	OnObject(p, func(o *Object) error {
-		return JSONLoadObject(val, o)
-	})
 	p.Accuracy = JSONGetFloat(val, "accuracy")
 	p.Altitude = JSONGetFloat(val, "altitude")
 	p.Latitude = JSONGetFloat(val, "latitude")
 	p.Longitude = JSONGetFloat(val, "longitude")
 	p.Radius = JSONGetInt(val, "radius")
 	p.Units = JSONGetString(val, "units")
-	return nil
+	return OnObject(p, func(o *Object) error {
+		return JSONLoadObject(val, o)
+	})
 }
 
 func JSONLoadProfile(val *fastjson.Value, p *Profile) error {
-	OnObject(p, func(o *Object) error {
+	p.Describes = JSONGetItem(val, "describes")
+	return OnObject(p, func(o *Object) error {
 		return JSONLoadObject(val, o)
 	})
-	p.Describes = JSONGetItem(val, "describes")
-	return nil
 }
 
 func JSONLoadRelationship(val *fastjson.Value, r *Relationship) error {
-	OnObject(r, func(o *Object) error {
-		return JSONLoadObject(val, o)
-	})
 	r.Subject = JSONGetItem(val, "subject")
 	r.Object = JSONGetItem(val, "object")
 	r.Relationship = JSONGetItem(val, "relationship")
-	return nil
+	return OnObject(r, func(o *Object) error {
+		return JSONLoadObject(val, o)
+	})
 }
 
 func JSONLoadTombstone(val *fastjson.Value, t *Tombstone) error {
-	OnObject(t, func(o *Object) error {
-		return JSONLoadObject(val, o)
-	})
 	t.FormerType = ActivityVocabularyType(JSONGetString(val, "formerType"))
 	t.Deleted = JSONGetTime(val, "deleted")
-	return nil
+	return OnObject(t, func(o *Object) error {
+		return JSONLoadObject(val, o)
+	})
 }
 
 func JSONLoadLink(val *fastjson.Value, l *Link) error {
@@ -630,28 +625,23 @@ func JSONLoadLink(val *fastjson.Value, l *Link) error {
 	l.Type = JSONGetType(val)
 	l.MediaType = JSONGetMimeType(val, "mediaType")
 	l.Preview = JSONGetItem(val, "preview")
-	h := JSONGetInt(val, "height")
-	if h != 0 {
+	if h := JSONGetInt(val, "height"); h != 0 {
 		l.Height = uint(h)
 	}
-	w := JSONGetInt(val, "width")
-	if w != 0 {
+	if w := JSONGetInt(val, "width"); w != 0 {
 		l.Width = uint(w)
 	}
 	l.Name = JSONGetNaturalLanguageField(val, "name")
-	hrefLang := JSONGetLangRefField(val, "hrefLang")
-	if len(hrefLang) > 0 {
+	if hrefLang := JSONGetLangRefField(val, "hrefLang"); len(hrefLang) > 0 {
 		l.HrefLang = hrefLang
 	}
-	href := JSONGetURIItem(val, "href")
-	if href != nil {
+	if href := JSONGetURIItem(val, "href"); href != nil {
 		ll := href.GetLink()
 		if len(ll) > 0 {
 			l.Href = ll
 		}
 	}
-	rel := JSONGetURIItem(val, "rel")
-	if rel != nil {
+	if rel := JSONGetURIItem(val, "rel"); rel != nil {
 		rr := rel.GetLink()
 		if len(rr) > 0 {
 			l.Rel = rr
@@ -661,12 +651,8 @@ func JSONLoadLink(val *fastjson.Value, l *Link) error {
 }
 
 func JSONLoadPublicKey(val *fastjson.Value, p *PublicKey) error {
-	if id := val.GetStringBytes("id"); len(id) > 0 {
-		p.ID = ID(id)
-	}
-	if o := val.GetStringBytes("owner"); len(o) > 0 {
-		p.Owner = IRI(o)
-	}
+	p.ID = JSONGetID(val)
+	p.Owner = JSONGetIRI(val, "owner")
 	if pub := val.GetStringBytes("publicKeyPem"); len(pub) > 0 {
 		p.PublicKeyPem = string(pub)
 	}
