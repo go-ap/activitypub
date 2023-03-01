@@ -515,9 +515,7 @@ func fmtObjectProps(w io.Writer) func(*Object) error {
 func (o Object) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		io.WriteString(s, fmt.Sprintf("%T[%s] { ", o, o.Type))
-		fmtObjectProps(s)(&o)
-		io.WriteString(s, " }")
+		fmt.Fprintf(s, "%T[%s] { %s }", o, o.Type, o.ID)
 	}
 }
 
