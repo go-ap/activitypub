@@ -111,7 +111,7 @@ func CopyItemProperties(to, from Item) (Item, error) {
 	if !to.GetLink().Equals(from.GetLink(), false) {
 		return to, fmt.Errorf("object IDs don't match")
 	}
-	if to.GetType() != from.GetType() {
+	if to.GetType() != "" && to.GetType() != from.GetType() {
 		return to, fmt.Errorf("invalid object types for update %s(old) and %s(new)", from.GetType(), to.GetType())
 	}
 	if CollectionType == to.GetType() {
@@ -169,7 +169,7 @@ func CopyItemProperties(to, from Item) (Item, error) {
 		}
 		return UpdatePersonProperties(o, n)
 	}
-	if ObjectTypes.Contains(to.GetType()) {
+	if ObjectTypes.Contains(to.GetType()) || to.GetType() == "" {
 		o, err := ToObject(to)
 		if err != nil {
 			return o, err
