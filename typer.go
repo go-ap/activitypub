@@ -153,7 +153,8 @@ func (t CollectionPaths) Contains(typ CollectionPath) bool {
 // Split splits the IRI in an actor IRI and its CollectionPath
 // if the CollectionPath is found in the elements in the t CollectionPaths slice
 func (t CollectionPaths) Split(i IRI) (IRI, CollectionPath) {
-	maybeActor, maybeCol := filepath.Split(i.String())
+	u, _ := i.URL()
+	maybeActor, maybeCol := filepath.Split(u.Path)
 	tt := CollectionPath(maybeCol)
 	if !t.Contains(tt) {
 		tt = ""
