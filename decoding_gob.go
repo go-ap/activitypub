@@ -406,7 +406,7 @@ func gobDecodeItem(data []byte) (Item, error) {
 		return iris, nil
 	}
 	isObject := false
-	typ := ObjectType
+	typ := ActivityVocabularyType("")
 	mm, err := gobDecodeObjectAsMap(data)
 	if err == nil {
 		var sTyp []byte
