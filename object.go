@@ -810,10 +810,10 @@ func (o Object) Equals(with Item) bool {
 	if with.IsCollection() {
 		return false
 	}
-	if withID := with.GetID(); len(withID) > 0 && withID != o.ID {
+	if withID := with.GetID(); !o.ID.Equals(withID, true) {
 		return false
 	}
-	if withType := with.GetType(); len(withType) > 0 && withType != o.Type {
+	if withType := with.GetType(); !strings.EqualFold(string(o.Type), string(withType)) {
 		return false
 	}
 	if with.IsLink() && !with.GetLink().Equals(o.GetLink(), false) {

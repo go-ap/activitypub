@@ -321,13 +321,16 @@ func validURL(u *url.URL) bool {
 // It tries to use the URL representation if possible and fallback to string comparison if unable to convert
 // In URL representation checks hostname in a case insensitive way and the path and
 func (i IRI) Equals(with IRI, checkScheme bool) bool {
+	if len(i)+len(with) == 0 {
+		return true
+	}
 	u, e := i.URL()
 	uw, ew := with.URL()
 	if e != nil || ew != nil || !validURL(u) || !validURL(uw) {
 		return strings.ToLower(i.String()) == strings.ToLower(with.String())
 	}
 	if checkScheme {
-		if strings.ToLower(u.Scheme) != strings.ToLower(uw.Scheme) {
+		if !strings.EqualFold(u.Scheme, uw.Scheme) {
 			return false
 		}
 	}
