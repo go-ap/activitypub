@@ -277,6 +277,67 @@ func TestCollectionType_AddTo(t *testing.T) {
 	}
 }
 
-func TestCollectionTypes_Split(t *testing.T) {
-	t.Skipf("TODO")
+func TestCollectionPaths_Split(t *testing.T) {
+	tests := []struct {
+		name       string
+		t          CollectionPaths
+		given      IRI
+		maybeActor IRI
+		maybeCol   CollectionPath
+	}{
+		{
+			name:       "empty",
+			t:          nil,
+			given:      "",
+			maybeActor: "",
+			maybeCol:   "",
+		},
+		{
+			name:       "nil with example.com",
+			t:          nil,
+			given:      "example.com",
+			maybeActor: "example.com",
+			maybeCol:   "",
+		},
+		{
+			name:       "nil with https://example.com",
+			t:          nil,
+			given:      "https://example.com/",
+			maybeActor: "https://example.com",
+			maybeCol:   "",
+		},
+		{
+			name:       "outbox with https://example.com/outbox",
+			t:          CollectionPaths{Outbox},
+			given:      "https://example.com/outbox",
+			maybeActor: "https://example.com",
+			maybeCol:   Outbox,
+		},
+		{
+			name:       "{outbox,inbox} with https://example.com/inbox",
+			t:          CollectionPaths{Outbox, Inbox},
+			given:      "https://example.com/inbox",
+			maybeActor: "https://example.com",
+			maybeCol:   Inbox,
+		},
+		{
+			// TODO(marius): This feels wrong.
+			name:       "outbox with https://example.com/inbox",
+			t:          CollectionPaths{Outbox},
+			given:      "https://example.com/inbox",
+			maybeActor: "https://example.com",
+			maybeCol:   Unknown,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			maybeActor, maybeCol := tt.t.Split(tt.given)
+			if maybeActor != tt.maybeActor {
+				t.Errorf("Split() got = %v, want %v", maybeActor, tt.maybeActor)
+			}
+			if maybeCol != tt.maybeCol {
+				t.Errorf("Split() got1 = %v, want %v", maybeCol, tt.maybeCol)
+			}
+		})
+	}
 }

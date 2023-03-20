@@ -155,12 +155,15 @@ func (t CollectionPaths) Contains(typ CollectionPath) bool {
 func (t CollectionPaths) Split(i IRI) (IRI, CollectionPath) {
 	u, _ := i.URL()
 	maybeActor, maybeCol := filepath.Split(u.Path)
+	if len(maybeActor) == 0 {
+		return i, Unknown
+	}
 	tt := CollectionPath(maybeCol)
 	if !t.Contains(tt) {
 		tt = ""
-		maybeActor = i.String()
 	}
-	iri := IRI(strings.TrimRight(maybeActor, "/"))
+	u.Path = strings.TrimRight(maybeActor, "/")
+	iri := IRI(u.String())
 	return iri, tt
 }
 
