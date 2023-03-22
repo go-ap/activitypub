@@ -302,8 +302,7 @@ func TestIRI_Equals(t *testing.T) {
 				with:  "http://example.com?foo=bar&ana=mere",
 				check: false,
 			},
-			// This was true in the url.Parse implementation
-			want: false,
+			want: true,
 		},
 		{
 			name: "same host, different scheme and same path, same query different order",
@@ -312,8 +311,7 @@ func TestIRI_Equals(t *testing.T) {
 				with:  "https://example.com/ana/are/mere?ana=mere&foo=bar",
 				check: false,
 			},
-			// This was true in the url.Parse implementation
-			want: false,
+			want: true,
 		},
 		{
 			name: "same host different scheme, same query",
@@ -323,26 +321,6 @@ func TestIRI_Equals(t *testing.T) {
 				check: false,
 			},
 			want: true,
-		},
-		{
-			name: "same host different scheme, same query - different order",
-			i:    "https://example.com?ana=mere&foo=bar",
-			args: args{
-				with:  "http://example.com?foo=bar&ana=mere",
-				check: false,
-			},
-			// This was true in the url.Parse implementation
-			want: false,
-		},
-		{
-			name: "same host, different scheme and same path, same query different order",
-			i:    "http://example.com/ana/are/mere?foo=bar&ana=mere",
-			args: args{
-				with:  "https://example.com/ana/are/mere?ana=mere&foo=bar",
-				check: false,
-			},
-			// This was true in the url.Parse implementation
-			want: false,
 		},
 		{
 			name: "different host same scheme",

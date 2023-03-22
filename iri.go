@@ -312,10 +312,16 @@ func (i IRIs) Contains(r Item) bool {
 	return false
 }
 
+func validURL(u *url.URL) bool {
+	return len(u.Scheme) > 0 && len(u.Host) > 0
+}
+
 // Equals verifies if our receiver IRI is equals with the "with" IRI
 func (i IRI) Equals(with IRI, checkScheme bool) bool {
 	if checkScheme {
-		return strings.EqualFold(string(i), string(with))
+		if strings.EqualFold(string(i), string(with)) {
+			return true
+		}
 	} else {
 		is := string(i)
 		ws := string(with)
@@ -327,8 +333,55 @@ func (i IRI) Equals(with IRI, checkScheme bool) bool {
 		if wp < 0 {
 			wp = 0
 		}
-		return strings.EqualFold(is[ip:], ws[wp:])
+		if strings.EqualFold(is[ip:], ws[wp:]) {
+			return true
+		}
 	}
+
+	u, e := i.URL()
+	uw, ew := with.URL()
+	if e != nil || ew != nil || !validURL(u) || !validURL(uw) {
+		return strings.ToLower(i.String()) == strings.ToLower(with.String())
+	}
+	if checkScheme {
+		if !strings.EqualFold(u.Scheme, uw.Scheme) {
+			return false
+		}
+	}
+	if !strings.EqualFold(u.Host, uw.Host) {
+		return false
+	}
+	if !(u.Path == "/" && uw.Path == "" || u.Path == "" && uw.Path == "/") &&
+		!strings.EqualFold(filepath.Clean(u.Path), filepath.Clean(uw.Path)) {
+		return false
+	}
+	uq := u.Query()
+	uwq := uw.Query()
+	if len(uq) != len(uwq) {
+		return false
+	}
+	for k, uqv := range uq {
+		uwqv, ok := uwq[k]
+		if !ok {
+			return false
+		}
+		if len(uqv) != len(uwqv) {
+			return false
+		}
+		for _, uqvv := range uqv {
+			eq := false
+			for _, uwqvv := range uwqv {
+				if uwqvv == uqvv {
+					eq = true
+					continue
+				}
+			}
+			if !eq {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func hostSplit(h string) (string, string) {
