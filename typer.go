@@ -143,7 +143,7 @@ var (
 
 func (t CollectionPaths) Contains(typ CollectionPath) bool {
 	for _, tt := range t {
-		if strings.ToLower(string(typ)) == string(tt) {
+		if strings.EqualFold(string(typ), string(tt)) {
 			return true
 		}
 	}
@@ -273,7 +273,7 @@ func (t CollectionPath) Of(i Item) Item {
 // OfActor returns the base IRI of received i, if i represents an IRI matching CollectionPath type t
 func (t CollectionPath) OfActor(i IRI) (IRI, error) {
 	maybeActor, maybeCol := filepath.Split(i.String())
-	if strings.ToLower(maybeCol) == strings.ToLower(string(t)) {
+	if strings.EqualFold(maybeCol, string(t)) {
 		maybeActor = strings.TrimRight(maybeActor, "/")
 		return IRI(maybeActor), nil
 	}
@@ -305,7 +305,7 @@ var validObjectCollection = []CollectionPath{
 
 func getValidObjectCollection(typ CollectionPath) CollectionPath {
 	for _, t := range validObjectCollection {
-		if strings.ToLower(string(typ)) == string(t) {
+		if strings.EqualFold(string(typ), string(t)) {
 			return t
 		}
 	}

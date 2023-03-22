@@ -47,7 +47,7 @@ const (
 
 func (a ActivityVocabularyTypes) Contains(typ ActivityVocabularyType) bool {
 	for _, v := range a {
-		if strings.ToLower(string(v)) == strings.ToLower(string(typ)) {
+		if strings.EqualFold(string(v), string(typ)) {
 			return true
 		}
 	}
