@@ -153,18 +153,29 @@ func (t CollectionPaths) Contains(typ CollectionPath) bool {
 // Split splits the IRI in an actor IRI and its CollectionPath
 // if the CollectionPath is found in the elements in the t CollectionPaths slice
 func (t CollectionPaths) Split(i IRI) (IRI, CollectionPath) {
-	u, _ := i.URL()
-	maybeActor, maybeCol := filepath.Split(u.Path)
+	if u, err := i.URL(); err == nil {
+		maybeActor, maybeCol := filepath.Split(u.Path)
+		if len(maybeActor) == 0 {
+			return i, Unknown
+		}
+		tt := CollectionPath(maybeCol)
+		if !t.Contains(tt) {
+			tt = ""
+		}
+		u.Path = strings.TrimRight(maybeActor, "/")
+		iri := IRI(u.String())
+		return iri, tt
+	}
+	maybeActor, maybeCol := filepath.Split(i.String())
 	if len(maybeActor) == 0 {
 		return i, Unknown
 	}
 	tt := CollectionPath(maybeCol)
 	if !t.Contains(tt) {
-		tt = ""
+		return i, Unknown
 	}
-	u.Path = strings.TrimRight(maybeActor, "/")
-	iri := IRI(u.String())
-	return iri, tt
+	maybeActor = strings.TrimRight(maybeActor, "/")
+	return IRI(maybeActor), tt
 }
 
 // IRIf formats an IRI from an existing IRI and the CollectionPath type

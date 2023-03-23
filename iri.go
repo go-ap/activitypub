@@ -337,7 +337,6 @@ func (i IRI) Equals(with IRI, checkScheme bool) bool {
 			return true
 		}
 	}
-
 	u, e := i.URL()
 	uw, ew := with.URL()
 	if e != nil || ew != nil || !validURL(u) || !validURL(uw) {

@@ -304,7 +304,7 @@ func TestCollectionPaths_Split(t *testing.T) {
 			t:          nil,
 			given:      "https://example.com/",
 			maybeActor: "https://example.com",
-			maybeCol:   "",
+			maybeCol:   Unknown,
 		},
 		{
 			name:       "outbox with https://example.com/outbox",
@@ -328,15 +328,29 @@ func TestCollectionPaths_Split(t *testing.T) {
 			maybeActor: "https://example.com",
 			maybeCol:   Unknown,
 		},
+		{
+			name:       "invalid url",
+			t:          CollectionPaths{Inbox},
+			given:      "127.0.0.1:666/inbox",
+			maybeActor: "127.0.0.1:666",
+			maybeCol:   Inbox,
+		},
+		{
+			name:       "invalid url - collection doesn't match",
+			t:          CollectionPaths{Outbox},
+			given:      "127.0.0.1:666/inbox",
+			maybeActor: "127.0.0.1:666/inbox",
+			maybeCol:   Unknown,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			maybeActor, maybeCol := tt.t.Split(tt.given)
-			if maybeActor != tt.maybeActor {
-				t.Errorf("Split() got = %v, want %v", maybeActor, tt.maybeActor)
+			ma, mc := tt.t.Split(tt.given)
+			if ma != tt.maybeActor {
+				t.Errorf("Split() got Actor = %q, want %q", ma, tt.maybeActor)
 			}
-			if maybeCol != tt.maybeCol {
-				t.Errorf("Split() got1 = %v, want %v", maybeCol, tt.maybeCol)
+			if mc != tt.maybeCol {
+				t.Errorf("Split() got Colletion Path = %q, want %q", mc, tt.maybeCol)
 			}
 		})
 	}
