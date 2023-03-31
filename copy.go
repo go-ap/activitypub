@@ -4,99 +4,99 @@ import (
 	"fmt"
 )
 
-func CopyOrderedCollectionPageProperties(old, new *OrderedCollectionPage) (*OrderedCollectionPage, error) {
-	old.PartOf = replaceIfItem(old.PartOf, new.PartOf)
-	old.Next = replaceIfItem(old.Next, new.Next)
-	old.Prev = replaceIfItem(old.Prev, new.Prev)
-	oldCol, _ := ToOrderedCollection(old)
-	newCol, _ := ToOrderedCollection(new)
+func CopyOrderedCollectionPageProperties(to, from *OrderedCollectionPage) (*OrderedCollectionPage, error) {
+	to.PartOf = replaceIfItem(to.PartOf, from.PartOf)
+	to.Next = replaceIfItem(to.Next, from.Next)
+	to.Prev = replaceIfItem(to.Prev, from.Prev)
+	oldCol, _ := ToOrderedCollection(to)
+	newCol, _ := ToOrderedCollection(from)
 	_, err := CopyOrderedCollectionProperties(oldCol, newCol)
 	if err != nil {
-		return old, err
+		return to, err
 	}
-	return old, nil
+	return to, nil
 }
 
-func CopyCollectionPageProperties(old, new *CollectionPage) (*CollectionPage, error) {
-	old.PartOf = replaceIfItem(old.PartOf, new.PartOf)
-	old.Next = replaceIfItem(old.Next, new.Next)
-	old.Prev = replaceIfItem(old.Prev, new.Prev)
-	oldCol, _ := ToCollection(old)
-	newCol, _ := ToCollection(new)
-	_, err := CopyCollectionProperties(oldCol, newCol)
-	return old, err
+func CopyCollectionPageProperties(to, from *CollectionPage) (*CollectionPage, error) {
+	to.PartOf = replaceIfItem(to.PartOf, from.PartOf)
+	to.Next = replaceIfItem(to.Next, from.Next)
+	to.Prev = replaceIfItem(to.Prev, from.Prev)
+	toCol, _ := ToCollection(to)
+	fromCol, _ := ToCollection(from)
+	_, err := CopyCollectionProperties(toCol, fromCol)
+	return to, err
 }
 
-func CopyOrderedCollectionProperties(old, new *OrderedCollection) (*OrderedCollection, error) {
-	old.First = replaceIfItem(old.First, new.First)
-	old.Last = replaceIfItem(old.Last, new.Last)
-	old.OrderedItems = replaceIfItemCollection(old.OrderedItems, new.OrderedItems)
-	if old.TotalItems == 0 {
-		old.TotalItems = new.TotalItems
+func CopyOrderedCollectionProperties(to, from *OrderedCollection) (*OrderedCollection, error) {
+	to.First = replaceIfItem(to.First, from.First)
+	to.Last = replaceIfItem(to.Last, from.Last)
+	to.OrderedItems = replaceIfItemCollection(to.OrderedItems, from.OrderedItems)
+	if to.TotalItems == 0 {
+		to.TotalItems = from.TotalItems
 	}
-	oldOb, _ := ToObject(old)
-	newOb, _ := ToObject(new)
+	oldOb, _ := ToObject(to)
+	newOb, _ := ToObject(from)
 	_, err := CopyObjectProperties(oldOb, newOb)
-	return old, err
+	return to, err
 }
 
-func CopyCollectionProperties(old, new *Collection) (*Collection, error) {
-	old.First = replaceIfItem(old.First, new.First)
-	old.Last = replaceIfItem(old.Last, new.Last)
-	old.Items = replaceIfItemCollection(old.Items, new.Items)
-	if old.TotalItems == 0 {
-		old.TotalItems = new.TotalItems
+func CopyCollectionProperties(to, from *Collection) (*Collection, error) {
+	to.First = replaceIfItem(to.First, from.First)
+	to.Last = replaceIfItem(to.Last, from.Last)
+	to.Items = replaceIfItemCollection(to.Items, from.Items)
+	if to.TotalItems == 0 {
+		to.TotalItems = from.TotalItems
 	}
-	oldOb, _ := ToObject(old)
-	newOb, _ := ToObject(new)
+	oldOb, _ := ToObject(to)
+	newOb, _ := ToObject(from)
 	_, err := CopyObjectProperties(oldOb, newOb)
-	return old, err
+	return to, err
 }
 
 // CopyObjectProperties updates the "old" object properties with "new's"
-func CopyObjectProperties(old, new *Object) (*Object, error) {
-	old.Name = replaceIfNaturalLanguageValues(old.Name, new.Name)
-	old.Attachment = replaceIfItem(old.Attachment, new.Attachment)
-	old.AttributedTo = replaceIfItem(old.AttributedTo, new.AttributedTo)
-	old.Audience = replaceIfItemCollection(old.Audience, new.Audience)
-	old.Content = replaceIfNaturalLanguageValues(old.Content, new.Content)
-	old.Context = replaceIfItem(old.Context, new.Context)
-	if len(new.MediaType) > 0 {
-		old.MediaType = new.MediaType
+func CopyObjectProperties(to, from *Object) (*Object, error) {
+	to.Name = replaceIfNaturalLanguageValues(to.Name, from.Name)
+	to.Attachment = replaceIfItem(to.Attachment, from.Attachment)
+	to.AttributedTo = replaceIfItem(to.AttributedTo, from.AttributedTo)
+	to.Audience = replaceIfItemCollection(to.Audience, from.Audience)
+	to.Content = replaceIfNaturalLanguageValues(to.Content, from.Content)
+	to.Context = replaceIfItem(to.Context, from.Context)
+	if len(from.MediaType) > 0 {
+		to.MediaType = from.MediaType
 	}
-	if !new.EndTime.IsZero() {
-		old.EndTime = new.EndTime
+	if !from.EndTime.IsZero() {
+		to.EndTime = from.EndTime
 	}
-	old.Generator = replaceIfItem(old.Generator, new.Generator)
-	old.Icon = replaceIfItem(old.Icon, new.Icon)
-	old.Image = replaceIfItem(old.Image, new.Image)
-	old.InReplyTo = replaceIfItem(old.InReplyTo, new.InReplyTo)
-	old.Location = replaceIfItem(old.Location, new.Location)
-	old.Preview = replaceIfItem(old.Preview, new.Preview)
-	if old.Published.IsZero() && !new.Published.IsZero() {
-		old.Published = new.Published
+	to.Generator = replaceIfItem(to.Generator, from.Generator)
+	to.Icon = replaceIfItem(to.Icon, from.Icon)
+	to.Image = replaceIfItem(to.Image, from.Image)
+	to.InReplyTo = replaceIfItem(to.InReplyTo, from.InReplyTo)
+	to.Location = replaceIfItem(to.Location, from.Location)
+	to.Preview = replaceIfItem(to.Preview, from.Preview)
+	if to.Published.IsZero() && !from.Published.IsZero() {
+		to.Published = from.Published
 	}
-	old.Replies = replaceIfItem(old.Replies, new.Replies)
-	if !new.StartTime.IsZero() {
-		old.StartTime = new.StartTime
+	if to.Updated.IsZero() && !from.Updated.IsZero() {
+		to.Updated = from.Updated
 	}
-	old.Summary = replaceIfNaturalLanguageValues(old.Summary, new.Summary)
-	old.Tag = replaceIfItemCollection(old.Tag, new.Tag)
-	if !new.Updated.IsZero() {
-		old.Updated = new.Updated
+	to.Replies = replaceIfItem(to.Replies, from.Replies)
+	if !from.StartTime.IsZero() {
+		to.StartTime = from.StartTime
 	}
-	if new.URL != nil {
-		old.URL = new.URL
+	to.Summary = replaceIfNaturalLanguageValues(to.Summary, from.Summary)
+	to.Tag = replaceIfItemCollection(to.Tag, from.Tag)
+	if from.URL != nil {
+		to.URL = from.URL
 	}
-	old.To = replaceIfItemCollection(old.To, new.To)
-	old.Bto = replaceIfItemCollection(old.Bto, new.Bto)
-	old.CC = replaceIfItemCollection(old.CC, new.CC)
-	old.BCC = replaceIfItemCollection(old.BCC, new.BCC)
-	if new.Duration == 0 {
-		old.Duration = new.Duration
+	to.To = replaceIfItemCollection(to.To, from.To)
+	to.Bto = replaceIfItemCollection(to.Bto, from.Bto)
+	to.CC = replaceIfItemCollection(to.CC, from.CC)
+	to.BCC = replaceIfItemCollection(to.BCC, from.BCC)
+	if from.Duration == 0 {
+		to.Duration = from.Duration
 	}
-	old.Source = replaceIfSource(old.Source, new.Source)
-	return old, nil
+	to.Source = replaceIfSource(to.Source, from.Source)
+	return to, nil
 }
 
 // CopyItemProperties delegates to the correct per type functions for copying
@@ -184,17 +184,17 @@ func CopyItemProperties(to, from Item) (Item, error) {
 }
 
 // UpdatePersonProperties
-func UpdatePersonProperties(old, new *Actor) (*Actor, error) {
-	old.Inbox = replaceIfItem(old.Inbox, new.Inbox)
-	old.Outbox = replaceIfItem(old.Outbox, new.Outbox)
-	old.Following = replaceIfItem(old.Following, new.Following)
-	old.Followers = replaceIfItem(old.Followers, new.Followers)
-	old.Liked = replaceIfItem(old.Liked, new.Liked)
-	old.PreferredUsername = replaceIfNaturalLanguageValues(old.PreferredUsername, new.PreferredUsername)
-	oldOb, _ := ToObject(old)
-	newOb, _ := ToObject(new)
+func UpdatePersonProperties(to, from *Actor) (*Actor, error) {
+	to.Inbox = replaceIfItem(to.Inbox, from.Inbox)
+	to.Outbox = replaceIfItem(to.Outbox, from.Outbox)
+	to.Following = replaceIfItem(to.Following, from.Following)
+	to.Followers = replaceIfItem(to.Followers, from.Followers)
+	to.Liked = replaceIfItem(to.Liked, from.Liked)
+	to.PreferredUsername = replaceIfNaturalLanguageValues(to.PreferredUsername, from.PreferredUsername)
+	oldOb, _ := ToObject(to)
+	newOb, _ := ToObject(from)
 	_, err := CopyObjectProperties(oldOb, newOb)
-	return old, err
+	return to, err
 }
 
 func replaceIfItem(old, new Item) Item {
@@ -218,10 +218,10 @@ func replaceIfNaturalLanguageValues(old, new NaturalLanguageValues) NaturalLangu
 	return new
 }
 
-func replaceIfSource(old, new Source) Source {
-	if new.MediaType != old.MediaType {
-		return new
+func replaceIfSource(to, from Source) Source {
+	if from.MediaType != to.MediaType {
+		return from
 	}
-	old.Content = replaceIfNaturalLanguageValues(old.Content, new.Content)
-	return old
+	to.Content = replaceIfNaturalLanguageValues(to.Content, from.Content)
+	return to
 }
