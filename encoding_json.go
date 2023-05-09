@@ -89,10 +89,13 @@ func JSONWriteTimeProp(b *[]byte, n string, t time.Time) (notEmpty bool) {
 }
 
 func JSONWriteDurationProp(b *[]byte, n string, d time.Duration) (notEmpty bool) {
+	var tb []byte
 	if v, err := xsd.Marshal(d); err == nil {
-		return JSONWriteProp(b, n, v)
+		JSONWrite(&tb, '"')
+		JSONWrite(&tb, v...)
+		JSONWrite(&tb, '"')
 	}
-	return false
+	return JSONWriteProp(b, n, tb)
 }
 
 func JSONWriteIRIProp(b *[]byte, n string, i LinkOrIRI) (notEmpty bool) {
