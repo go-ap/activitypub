@@ -96,6 +96,9 @@ func OnObject(it Item, fn WithObjectFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
+				if IsLink(it) {
+					continue
+				}
 				if err := OnObject(it, fn); err != nil {
 					return err
 				}
@@ -122,6 +125,9 @@ func OnActivity(it Item, fn WithActivityFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
+				if IsLink(it) {
+					continue
+				}
 				if err := OnActivity(it, fn); err != nil {
 					return err
 				}
@@ -201,6 +207,9 @@ func OnActor(it Item, fn WithActorFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
+				if IsLink(it) {
+					continue
+				}
 				if err := OnActor(it, fn); err != nil {
 					return err
 				}

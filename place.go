@@ -300,6 +300,9 @@ func OnPlace(it Item, fn withPlaceFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
+				if IsLink(it) {
+					continue
+				}
 				if err := OnPlace(it, fn); err != nil {
 					return err
 				}

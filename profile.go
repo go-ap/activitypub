@@ -268,6 +268,9 @@ func OnProfile(it Item, fn withProfileFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
+				if IsLink(it) {
+					continue
+				}
 				if err := OnProfile(it, fn); err != nil {
 					return err
 				}
