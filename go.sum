@@ -1,6 +1,0 @@
-git.sr.ht/~mariusor/go-xsd-duration v0.0.0-20200411073322-f0bcc40f0bf2 h1:2OrsyJYZp7J6nyAsKi2q1SELYRaIc0aQmcQ/EQqPfk8=
-git.sr.ht/~mariusor/go-xsd-duration v0.0.0-20200411073322-f0bcc40f0bf2/go.mod h1:g/V2Hjas6Z1UHUp4yIx6bATpNzJ7DYtD0FG3+xARWxs=
-github.com/go-ap/jsonld v0.0.0-20200327122108-fafac2de2660 h1:AUG8+r0Q/zbNUAi5CWVBK5oUhOZDX3Kkr+oWURaJIfU=
-github.com/go-ap/jsonld v0.0.0-20200327122108-fafac2de2660/go.mod h1:jyveZeGw5LaADntW+UEsMjl3IlIwk+DxlYNsbofQkGA=
-github.com/valyala/fastjson v1.6.3 h1:tAKFnnwmeMGPbwJ7IwxcTPCNr3uIzoIj3/Fh90ra4xc=
-github.com/valyala/fastjson v1.6.3/go.mod h1:CLCAqky6SMuOcxStkYQvblddUtoRxhYMGLrsQns1aXY=
