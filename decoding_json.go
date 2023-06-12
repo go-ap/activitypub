@@ -1,12 +1,13 @@
 package activitypub
 
 import (
+	"encoding"
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"reflect"
 	"strings"
 	"time"
-	"reflect"
 
 	"github.com/valyala/fastjson"
 )
