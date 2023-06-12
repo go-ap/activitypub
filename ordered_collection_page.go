@@ -3,7 +3,8 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
+	"fmt"
+	"io"
 	"reflect"
 	"time"
 
@@ -172,8 +173,13 @@ func (o *OrderedCollectionPage) Count() uint {
 }
 
 // Append adds an element to an OrderedCollectionPage
-func (o *OrderedCollectionPage) Append(ob Item) error {
-	o.OrderedItems = append(o.OrderedItems, ob)
+func (o *OrderedCollectionPage) Append(it ...Item) error {
+	for _, ob := range it {
+		if o.OrderedItems.Contains(ob) {
+			continue
+		}
+		o.OrderedItems = append(o.OrderedItems, ob)
+	}
 	return nil
 }
 
@@ -197,43 +203,43 @@ func (o *OrderedCollectionPage) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadOrderedCollectionPage(val, o)
+	return JSONLoadOrderedCollectionPage(val, o)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (o OrderedCollectionPage) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
 	OnObject(o, func(o *Object) error {
-		notEmpty = writeObjectJSONValue(&b, *o)
+		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 	if o.PartOf != nil {
-		notEmpty = writeItemJSONProp(&b, "partOf", o.PartOf) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "partOf", o.PartOf) || notEmpty
 	}
 	if o.Current != nil {
-		notEmpty = writeItemJSONProp(&b, "current", o.Current) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "current", o.Current) || notEmpty
 	}
 	if o.First != nil {
-		notEmpty = writeItemJSONProp(&b, "first", o.First) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "first", o.First) || notEmpty
 	}
 	if o.Last != nil {
-		notEmpty = writeItemJSONProp(&b, "last", o.Last) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "last", o.Last) || notEmpty
 	}
 	if o.Next != nil {
-		notEmpty = writeItemJSONProp(&b, "next", o.Next) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "next", o.Next) || notEmpty
 	}
 	if o.Prev != nil {
-		notEmpty = writeItemJSONProp(&b, "prev", o.Prev) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "prev", o.Prev) || notEmpty
 	}
-	notEmpty = writeIntJSONProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
+	notEmpty = JSONWriteIntProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
 	if o.OrderedItems != nil {
-		notEmpty = writeItemCollectionJSONProp(&b, "orderedItems", o.OrderedItems) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(&b, "orderedItems", o.OrderedItems) || notEmpty
 	}
 	if notEmpty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil
@@ -297,7 +303,7 @@ func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert to ordered collection page")
+	return nil, ErrorInvalidType[OrderedCollectionPage](it)
 }
 
 // ItemsMatch
@@ -367,4 +373,11 @@ func (o OrderedCollectionPage) Equals(with Item) bool {
 		return nil
 	})
 	return result
+}
+
+func (o OrderedCollectionPage) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { totalItems: %d }", o, o.Type, o.TotalItems))
+	}
 }

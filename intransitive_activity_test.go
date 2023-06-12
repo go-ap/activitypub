@@ -1,6 +1,9 @@
 package activitypub
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestIntransitiveActivityNew(t *testing.T) {
 	testValue := ID("test")
@@ -45,8 +48,8 @@ func TestIntransitiveActivityRecipients(t *testing.T) {
 	a.To.Append(alice)
 	a.To.Append(foo)
 	a.To.Append(bob)
-	if len(a.To) != 8 {
-		t.Errorf("%T.To should have exactly 8(eight) elements, not %d", a, len(a.To))
+	if len(a.To) != 4 {
+		t.Errorf("%T.To should have exactly 4(eight) elements, not %d", a, len(a.To))
 	}
 
 	a.Recipients()
@@ -261,5 +264,128 @@ func TestTravelNew(t *testing.T) {
 	}
 	if a.Type != TravelType {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, TravelType)
+	}
+}
+
+func TestIntransitiveActivity_Equals(t *testing.T) {
+	type fields struct {
+		ID           ID
+		Type         ActivityVocabularyType
+		Name         NaturalLanguageValues
+		Attachment   Item
+		AttributedTo Item
+		Audience     ItemCollection
+		Content      NaturalLanguageValues
+		Context      Item
+		MediaType    MimeType
+		EndTime      time.Time
+		Generator    Item
+		Icon         Item
+		Image        Item
+		InReplyTo    Item
+		Location     Item
+		Preview      Item
+		Published    time.Time
+		Replies      Item
+		StartTime    time.Time
+		Summary      NaturalLanguageValues
+		Tag          ItemCollection
+		Updated      time.Time
+		URL          Item
+		To           ItemCollection
+		Bto          ItemCollection
+		CC           ItemCollection
+		BCC          ItemCollection
+		Duration     time.Duration
+		Likes        Item
+		Shares       Item
+		Source       Source
+		Actor        Item
+		Target       Item
+		Result       Item
+		Origin       Item
+		Instrument   Item
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		arg    Item
+		want   bool
+	}{
+		{
+			name:   "equal-empty-intransitive-activity",
+			fields: fields{},
+			arg:    IntransitiveActivity{},
+			want:   true,
+		},
+		{
+			name:   "equal-intransitive-activity-just-id",
+			fields: fields{ID: "test"},
+			arg:    IntransitiveActivity{ID: "test"},
+			want:   true,
+		},
+		{
+			name:   "equal-intransitive-activity-id",
+			fields: fields{ID: "test", URL: IRI("example.com")},
+			arg:    IntransitiveActivity{ID: "test"},
+			want:   true,
+		},
+		{
+			name:   "equal-false-with-id-and-url",
+			fields: fields{ID: "test"},
+			arg:    IntransitiveActivity{ID: "test", URL: IRI("example.com")},
+			want:   false,
+		},
+		{
+			name:   "not a valid intransitive-activity",
+			fields: fields{ID: "http://example.com"},
+			arg:    Link{ID: "http://example.com"},
+			want:   false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := IntransitiveActivity{
+				ID:           tt.fields.ID,
+				Type:         tt.fields.Type,
+				Name:         tt.fields.Name,
+				Attachment:   tt.fields.Attachment,
+				AttributedTo: tt.fields.AttributedTo,
+				Audience:     tt.fields.Audience,
+				Content:      tt.fields.Content,
+				Context:      tt.fields.Context,
+				MediaType:    tt.fields.MediaType,
+				EndTime:      tt.fields.EndTime,
+				Generator:    tt.fields.Generator,
+				Icon:         tt.fields.Icon,
+				Image:        tt.fields.Image,
+				InReplyTo:    tt.fields.InReplyTo,
+				Location:     tt.fields.Location,
+				Preview:      tt.fields.Preview,
+				Published:    tt.fields.Published,
+				Replies:      tt.fields.Replies,
+				StartTime:    tt.fields.StartTime,
+				Summary:      tt.fields.Summary,
+				Tag:          tt.fields.Tag,
+				Updated:      tt.fields.Updated,
+				URL:          tt.fields.URL,
+				To:           tt.fields.To,
+				Bto:          tt.fields.Bto,
+				CC:           tt.fields.CC,
+				BCC:          tt.fields.BCC,
+				Duration:     tt.fields.Duration,
+				Likes:        tt.fields.Likes,
+				Shares:       tt.fields.Shares,
+				Source:       tt.fields.Source,
+				Actor:        tt.fields.Actor,
+				Target:       tt.fields.Target,
+				Result:       tt.fields.Result,
+				Origin:       tt.fields.Origin,
+				Instrument:   tt.fields.Instrument,
+			}
+			if got := a.Equals(tt.arg); got != tt.want {
+				t.Errorf("Equals() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

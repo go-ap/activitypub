@@ -246,3 +246,110 @@ func TestItemsEqual1(t *testing.T) {
 		})
 	}
 }
+
+func TestIsObject(t *testing.T) {
+	type args struct {
+		it Item
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "nil",
+			args: args{},
+			want: false,
+		},
+		{
+			name: "interface with nil value",
+			args: args{Item(nil)},
+			want: false,
+		},
+		{
+			name: "empty object",
+			args: args{Object{}},
+			want: true,
+		},
+		{
+			name: "pointer to empty object",
+			args: args{&Object{}},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsObject(tt.args.it); got != tt.want {
+				t.Errorf("IsObject() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestItemsEqual2(t *testing.T) {
+	type args struct {
+		it   Item
+		with Item
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "nil vs nil",
+			args: args{
+				it:   nil,
+				with: nil,
+			},
+			want: true,
+		},
+		{
+			name: "nil vs object",
+			args: args{
+				it:   nil,
+				with: Object{},
+			},
+			want: false,
+		},
+		{
+			name: "object vs nil",
+			args: args{
+				it:   Object{},
+				with: nil,
+			},
+			want: false,
+		},
+		{
+			name: "empty object vs empty object",
+			args: args{
+				it:   Object{},
+				with: Object{},
+			},
+			want: true,
+		},
+		{
+			name: "object-id vs empty object",
+			args: args{
+				it:   Object{ID: "https://example.com"},
+				with: Object{},
+			},
+			want: false,
+		},
+		{
+			name: "empty object vs object-id",
+			args: args{
+				it:   Object{},
+				with: Object{ID: "https://example.com"},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ItemsEqual(tt.args.it, tt.args.with); got != tt.want {
+				t.Errorf("ItemsEqual() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

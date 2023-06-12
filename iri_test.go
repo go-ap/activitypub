@@ -98,146 +98,6 @@ func TestIRIs_Contains(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestIRI_Equals(t *testing.T) {
-	{
-		i1 := IRI("http://example.com")
-		i2 := IRI("http://example.com")
-		// same host same scheme
-		if !i1.Equals(i2, true) {
-			t.Errorf("%s should equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("http://example.com/ana/are/mere")
-		i2 := IRI("http://example.com/ana/are/mere")
-		// same host, same scheme and same path
-		if !i1.Equals(i2, true) {
-			t.Errorf("%s should equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("https://example.com")
-		i2 := IRI("http://example.com")
-		// same host different scheme
-		if !i1.Equals(i2, false) {
-			t.Errorf("%s should equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("http://example.com/ana/are/mere")
-		i2 := IRI("https://example.com/ana/are/mere")
-		// same host, different scheme and same path
-		if !i1.Equals(i2, false) {
-			t.Errorf("%s should equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("https://example.com?ana=mere")
-		i2 := IRI("http://example.com?ana=mere")
-		// same host different scheme, same query
-		if !i1.Equals(i2, false) {
-			t.Errorf("%s should equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("https://example.com?ana=mere&foo=bar")
-		i2 := IRI("http://example.com?foo=bar&ana=mere")
-		// same host different scheme, same query - different order
-		if !i1.Equals(i2, false) {
-			t.Errorf("%s should equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("http://example.com/ana/are/mere?foo=bar&ana=mere")
-		i2 := IRI("https://example.com/ana/are/mere?ana=mere&foo=bar")
-		// same host, different scheme and same path, same query different order
-		if !i1.Equals(i2, false) {
-			t.Errorf("%s should equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("https://example.com?ana=mere")
-		i2 := IRI("http://example.com?ana=mere")
-		// same host different scheme, same query
-		if !i1.Equals(i2, false) {
-			t.Errorf("%s should equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("https://example.com?ana=mere&foo=bar")
-		i2 := IRI("http://example.com?foo=bar&ana=mere")
-		// same host different scheme, same query - different order
-		if !i1.Equals(i2, false) {
-			t.Errorf("%s should equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("http://example.com/ana/are/mere?foo=bar&ana=mere")
-		i2 := IRI("https://example.com/ana/are/mere?ana=mere&foo=bar")
-		// same host, different scheme and same path, same query different order
-		if !i1.Equals(i2, false) {
-			t.Errorf("%s should equal %s", i1, i2)
-		}
-	}
-	///
-	{
-		i1 := IRI("http://example.com")
-		i2 := IRI("https://example.com")
-		// same host different scheme
-		if i1.Equals(i2, true) {
-			t.Errorf("%s should not equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("http://example1.com")
-		i2 := IRI("http://example.com")
-		// different host same scheme
-		if i1.Equals(i2, true) {
-			t.Errorf("%s should not equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("http://example.com/ana/1are/mere")
-		i2 := IRI("http://example.com/ana/are/mere")
-		// same host, same scheme and different path
-		if i1.Equals(i2, true) {
-			t.Errorf("%s should not equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("http://example.com?ana1=mere")
-		i2 := IRI("http://example.com?ana=mere")
-		// same host same scheme, different query key
-		if i1.Equals(i2, false) {
-			t.Errorf("%s should not equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("http://example.com?ana=mere")
-		i2 := IRI("http://example.com?ana=mere1")
-		// same host same scheme, different query value
-		if i1.Equals(i2, false) {
-			t.Errorf("%s should not equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("https://example.com?ana=mere&foo=bar")
-		i2 := IRI("http://example.com?foo=bar1&ana=mere")
-		// same host different scheme, different query value - different order
-		if i1.Equals(i2, false) {
-			t.Errorf("%s should not equal %s", i1, i2)
-		}
-	}
-	{
-		i1 := IRI("http://example.com/ana/are/mere?foo=bar&ana=mere")
-		i2 := IRI("https://example.com/ana/are/mere?ana=mere&foo1=bar")
-		// same host, different scheme and same path, different query key different order
-		if i1.Equals(i2, false) {
-			t.Errorf("%s should not equal %s", i1, i2)
-		}
-	}
-}
-
 func TestIRI_Contains(t *testing.T) {
 	t.Skip("TODO")
 }
@@ -382,6 +242,127 @@ func TestIRI_GobEncode(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GobEncode() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIRI_Equals(t *testing.T) {
+	type args struct {
+		with  IRI
+		check bool
+	}
+	tests := []struct {
+		name string
+		i    IRI
+		args args
+		want bool
+	}{
+		{
+			name: "just host",
+			i:    "http://example.com",
+			args: args{
+				with:  IRI("http://example.com"),
+				check: true,
+			},
+			want: true,
+		},
+		{
+			name: "host and path",
+			i:    "http://example.com/ana/are/mere",
+			args: args{
+				with:  IRI("http://example.com/ana/are/mere"),
+				check: true,
+			},
+			want: true,
+		},
+		{
+			name: "different schemes check scheme",
+			i:    "https://example.com/ana/are/mere",
+			args: args{
+				with:  IRI("http://example.com/ana/are/mere"),
+				check: true,
+			},
+			want: false,
+		},
+		{
+			name: "different schemes, don't check scheme",
+			i:    "https://example.com/ana/are/mere",
+			args: args{
+				with:  IRI("http://example.com/ana/are/mere"),
+				check: false,
+			},
+			want: true,
+		},
+		{
+			name: "same host different scheme, same query - different order",
+			i:    "https://example.com?ana=mere&foo=bar",
+			args: args{
+				with:  "http://example.com?foo=bar&ana=mere",
+				check: false,
+			},
+			want: true,
+		},
+		{
+			name: "same host, different scheme and same path, same query different order",
+			i:    "http://example.com/ana/are/mere?foo=bar&ana=mere",
+			args: args{
+				with:  "https://example.com/ana/are/mere?ana=mere&foo=bar",
+				check: false,
+			},
+			want: true,
+		},
+		{
+			name: "same host different scheme, same query",
+			i:    "https://example.com?ana=mere",
+			args: args{
+				with:  "http://example.com?ana=mere",
+				check: false,
+			},
+			want: true,
+		},
+		{
+			name: "different host same scheme",
+			i:    "http://example1.com",
+			args: args{
+				with:  "http://example.com",
+				check: true,
+			},
+			want: false,
+		},
+		{
+			name: "same host, same scheme and different path",
+			i:    "same host, same scheme and different path",
+			args: args{
+				with:  "http://example.com/ana/are/mere",
+				check: true,
+			},
+			want: false,
+		},
+		{
+			name: "same host same scheme, different query key",
+			i:    "http://example.com?ana1=mere",
+			args: args{
+				with:  "http://example.com?ana=mere",
+				check: false,
+			},
+			want: false,
+		},
+		{
+			name: "same host same scheme, different query value",
+			i:    "http://example.com?ana=mere",
+			args: args{
+				with:  "http://example.com?ana=mere1",
+				check: false,
+			},
+			// This was true in the url.Parse implementation
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Equals(tt.args.with, tt.args.check); got != tt.want {
+				t.Errorf("Equals() = %v, want %v", got, tt.want)
 			}
 		})
 	}

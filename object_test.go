@@ -253,8 +253,8 @@ func TestRecipients(t *testing.T) {
 	first.Append(alice)
 	first.Append(foo)
 	first.Append(bob)
-	if len(first) != 8 {
-		t.Errorf("Objects array should have exactly 8(eight) elements, not %d", len(first))
+	if len(first) != 4 {
+		t.Errorf("Objects array should have exactly 4(eight) elements, not %d", len(first))
 	}
 
 	ItemCollectionDeduplication(&first)
@@ -925,51 +925,112 @@ func TestSource_MarshalJSON(t *testing.T) {
 }
 
 func TestObject_Equals(t *testing.T) {
-	type args struct {
-		with Object
+	type fields struct {
+		ID           ID
+		Type         ActivityVocabularyType
+		Name         NaturalLanguageValues
+		Attachment   Item
+		AttributedTo Item
+		Audience     ItemCollection
+		Content      NaturalLanguageValues
+		Context      Item
+		MediaType    MimeType
+		EndTime      time.Time
+		Generator    Item
+		Icon         Item
+		Image        Item
+		InReplyTo    Item
+		Location     Item
+		Preview      Item
+		Published    time.Time
+		Replies      Item
+		StartTime    time.Time
+		Summary      NaturalLanguageValues
+		Tag          ItemCollection
+		Updated      time.Time
+		URL          Item
+		To           ItemCollection
+		Bto          ItemCollection
+		CC           ItemCollection
+		BCC          ItemCollection
+		Duration     time.Duration
+		Likes        Item
+		Shares       Item
+		Source       Source
 	}
 	tests := []struct {
-		name string
-		o    Object
-		args args
-		want bool
+		name   string
+		fields fields
+		arg    Item
+		want   bool
 	}{
 		{
-			name: "equal-empty-object",
-			o:    Object{},
-			args: args{
-				with: Object{},
-			},
-			want: true,
+			name:   "equal-empty-object",
+			fields: fields{},
+			arg:    Object{},
+			want:   true,
 		},
 		{
-			name: "equal-object-just-id",
-			o:    Object{ID: "test"},
-			args: args{
-				with: Object{ID: "test"},
-			},
-			want: true,
+			name:   "equal-object-just-id",
+			fields: fields{ID: "test"},
+			arg:    Object{ID: "test"},
+			want:   true,
 		},
 		{
-			name: "equal-object-id",
-			o:    Object{ID: "test", URL: IRI("example.com")},
-			args: args{
-				with: Object{ID: "test"},
-			},
-			want: true,
+			name:   "equal-object-id",
+			fields: fields{ID: "test", URL: IRI("example.com")},
+			arg:    Object{ID: "test"},
+			want:   true,
 		},
 		{
-			name: "equal-false-with-id-and-url",
-			o:    Object{ID: "test"},
-			args: args{
-				with: Object{ID: "test", URL: IRI("example.com")},
-			},
-			want: false,
+			name:   "equal-false-with-id-and-url",
+			fields: fields{ID: "test"},
+			arg:    Object{ID: "test", URL: IRI("example.com")},
+			want:   false,
+		},
+		{
+			name:   "not a valid object",
+			fields: fields{ID: "http://example.com"},
+			arg:    Link{ID: "http://example.com"},
+			want:   false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.o.Equals(tt.args.with); got != tt.want {
+			o := Object{
+				ID:           tt.fields.ID,
+				Type:         tt.fields.Type,
+				Name:         tt.fields.Name,
+				Attachment:   tt.fields.Attachment,
+				AttributedTo: tt.fields.AttributedTo,
+				Audience:     tt.fields.Audience,
+				Content:      tt.fields.Content,
+				Context:      tt.fields.Context,
+				MediaType:    tt.fields.MediaType,
+				EndTime:      tt.fields.EndTime,
+				Generator:    tt.fields.Generator,
+				Icon:         tt.fields.Icon,
+				Image:        tt.fields.Image,
+				InReplyTo:    tt.fields.InReplyTo,
+				Location:     tt.fields.Location,
+				Preview:      tt.fields.Preview,
+				Published:    tt.fields.Published,
+				Replies:      tt.fields.Replies,
+				StartTime:    tt.fields.StartTime,
+				Summary:      tt.fields.Summary,
+				Tag:          tt.fields.Tag,
+				Updated:      tt.fields.Updated,
+				URL:          tt.fields.URL,
+				To:           tt.fields.To,
+				Bto:          tt.fields.Bto,
+				CC:           tt.fields.CC,
+				BCC:          tt.fields.BCC,
+				Duration:     tt.fields.Duration,
+				Likes:        tt.fields.Likes,
+				Shares:       tt.fields.Shares,
+				Source:       tt.fields.Source,
+			}
+			if got := o.Equals(tt.arg); got != tt.want {
 				t.Errorf("Equals() = %v, want %v", got, tt.want)
 			}
 		})

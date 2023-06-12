@@ -3,7 +3,8 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
+	"fmt"
+	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -11,6 +12,7 @@ import (
 	"github.com/valyala/fastjson"
 )
 
+const CollectionOfIRIs ActivityVocabularyType = "IRICollection"
 const CollectionOfItems ActivityVocabularyType = "ItemCollection"
 
 var CollectionTypes = ActivityVocabularyTypes{
@@ -21,14 +23,32 @@ var CollectionTypes = ActivityVocabularyTypes{
 	OrderedCollectionPageType,
 }
 
+// Collections
+//
+// https://www.w3.org/TR/activitypub/#collections
+//
+// [ActivityStreams] defines the collection concept; ActivityPub defines several collections with special behavior.
+//
+// Note that ActivityPub makes use of ActivityStreams paging to traverse large sets of objects.
+//
+// Note that some of these collections are specified to be of type OrderedCollection specifically,
+// while others are permitted to be either a Collection or an OrderedCollection.
+// An OrderedCollection MUST be presented consistently in reverse chronological order.
+//
+// NOTE
+// What property is used to determine the reverse chronological order is intentionally left as an implementation detail.
+// For example, many SQL-style databases use an incrementing integer as an identifier, which can be reasonably used for
+// handling insertion order in most cases. In other databases, an insertion time timestamp may be preferred.
+// What is used isn't important, but the ordering of elements must remain intact, with newer items first.
+// A property which changes regularly, such a "last updated" timestamp, should not be used.
 type Collections interface {
-	Collection | CollectionPage | OrderedCollection | OrderedCollectionPage | ItemCollection
+	Collection | CollectionPage | OrderedCollection | OrderedCollectionPage | ItemCollection | IRIs
 }
 
 type CollectionInterface interface {
 	ObjectOrLink
 	Collection() ItemCollection
-	Append(ob Item) error
+	Append(ob ...Item) error
 	Count() uint
 	Contains(Item) bool
 }
@@ -142,18 +162,12 @@ type Collection struct {
 
 type (
 	// FollowersCollection is a collection of followers
-	FollowersCollection = Followers
-
-	// Followers is a Collection type
-	Followers = Collection
+	FollowersCollection = Collection
 
 	// FollowingCollection is a list of everybody that the actor has followed, added as a side effect.
 	// The following collection MUST be either an OrderedCollection or a Collection and MAY
 	// be filtered on privileges of an authenticated user or as appropriate when no authentication is given.
-	FollowingCollection = Following
-
-	// Following is a type alias for a simple Collection
-	Following = Collection
+	FollowingCollection = Collection
 )
 
 // CollectionNew initializes a new Collection
@@ -210,8 +224,13 @@ func (c Collection) Collection() ItemCollection {
 }
 
 // Append adds an element to a Collection
-func (c *Collection) Append(ob Item) error {
-	c.Items = append(c.Items, ob)
+func (c *Collection) Append(it ...Item) error {
+	for _, ob := range it {
+		if c.Items.Contains(ob) {
+			continue
+		}
+		c.Items = append(c.Items, ob)
+	}
 	return nil
 }
 
@@ -243,34 +262,34 @@ func (c *Collection) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadCollection(val, c)
+	return JSONLoadCollection(val, c)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (c Collection) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
 	OnObject(c, func(o *Object) error {
-		notEmpty = writeObjectJSONValue(&b, *o)
+		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 	if c.Current != nil {
-		notEmpty = writeItemJSONProp(&b, "current", c.Current) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "current", c.Current) || notEmpty
 	}
 	if c.First != nil {
-		notEmpty = writeItemJSONProp(&b, "first", c.First) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "first", c.First) || notEmpty
 	}
 	if c.Last != nil {
-		notEmpty = writeItemJSONProp(&b, "last", c.Last) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "last", c.Last) || notEmpty
 	}
-	notEmpty = writeIntJSONProp(&b, "totalItems", int64(c.TotalItems)) || notEmpty
+	notEmpty = JSONWriteIntProp(&b, "totalItems", int64(c.TotalItems)) || notEmpty
 	if c.Items != nil {
-		notEmpty = writeItemCollectionJSONProp(&b, "items", c.Items) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(&b, "items", c.Items) || notEmpty
 	}
 	if notEmpty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil
@@ -314,6 +333,13 @@ func (c *Collection) GobDecode(data []byte) error {
 	return unmapCollectionProperties(mm, c)
 }
 
+func (c Collection) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { totalItems: %d }", c, c.Type, c.TotalItems))
+	}
+}
+
 // ToCollection
 func ToCollection(it Item) (*Collection, error) {
 	switch i := it.(type) {
@@ -336,21 +362,7 @@ func ToCollection(it Item) (*Collection, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert to collection")
-}
-
-// FollowingNew initializes a new Following
-func FollowingNew() *Following {
-	id := ID("following")
-
-	i := Following{ID: id, Type: CollectionType}
-	i.Name = NaturalLanguageValuesNew()
-	i.Content = NaturalLanguageValuesNew()
-	i.Summary = NaturalLanguageValuesNew()
-
-	i.TotalItems = 0
-
-	return &i
+	return nil, ErrorInvalidType[Collection](it)
 }
 
 // ItemsMatch

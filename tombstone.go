@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -150,29 +151,29 @@ func (t *Tombstone) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadTombstone(val, t)
+	return JSONLoadTombstone(val, t)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (t Tombstone) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
 	OnObject(t, func(o *Object) error {
-		notEmpty = writeObjectJSONValue(&b, *o)
+		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 	if len(t.FormerType) > 0 {
 		if v, err := t.FormerType.MarshalJSON(); err == nil && len(v) > 0 {
-			notEmpty = writeJSONProp(&b, "formerType", v) || notEmpty
+			notEmpty = JSONWriteProp(&b, "formerType", v) || notEmpty
 		}
 	}
 	if !t.Deleted.IsZero() {
-		notEmpty = writeTimeJSONProp(&b, "deleted", t.Deleted) || notEmpty
+		notEmpty = JSONWriteTimeProp(&b, "deleted", t.Deleted) || notEmpty
 	}
 	if notEmpty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil
@@ -229,6 +230,13 @@ func (t *Tombstone) Clean() {
 	t.Bto = nil
 }
 
+func (t Tombstone) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { formerType: %q }", t, t.Type, t.FormerType))
+	}
+}
+
 // ToTombstone
 func ToTombstone(it Item) (*Tombstone, error) {
 	switch i := it.(type) {
@@ -249,7 +257,7 @@ func ToTombstone(it Item) (*Tombstone, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %q", it.GetType())
+	return nil, ErrorInvalidType[Tombstone](it)
 }
 
 type withTombstoneFn func(*Tombstone) error

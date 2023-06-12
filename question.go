@@ -3,7 +3,8 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
+	"fmt"
+	"io"
 	"reflect"
 	"time"
 
@@ -173,18 +174,18 @@ func (q *Question) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadQuestion(val, q)
+	return JSONLoadQuestion(val, q)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (q Question) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
-	if !writeQuestionJSONValue(&b, q) {
+	if !JSONWriteQuestionValue(&b, q) {
 		return nil, nil
 	}
-	write(&b, '}')
+	JSONWrite(&b, '}')
 	return b, nil
 }
 
@@ -228,6 +229,13 @@ func (q *Question) GobDecode(data []byte) error {
 	return unmapQuestionProperties(mm, q)
 }
 
+func (q Question) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { }", q, q.Type))
+	}
+}
+
 // QuestionNew initializes a Question activity
 func QuestionNew(id ID) *Question {
 	q := Question{ID: id, Type: QuestionType}
@@ -252,5 +260,5 @@ func ToQuestion(it Item) (*Question, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert to Question activity")
+	return nil, ErrorInvalidType[Question](it)
 }

@@ -3,7 +3,8 @@ module github.com/go-ap/activitypub
 go 1.18
 
 require (
-	git.sr.ht/~mariusor/go-xsd-duration v0.0.0-20200411073322-f0bcc40f0bf2
-	github.com/go-ap/jsonld v0.0.0-20200327122108-fafac2de2660
-	github.com/valyala/fastjson v1.6.3
+	git.sr.ht/~mariusor/go-xsd-duration v0.0.0-20220703122237-02e73435a078
+	github.com/go-ap/errors v0.0.0-20221205040414-01c1adfc98ea
+	github.com/go-ap/jsonld v0.0.0-20221030091449-f2a191312c73
+	github.com/valyala/fastjson v1.6.4
 )

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -162,39 +163,39 @@ func (p *Place) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadPlace(val, p)
+	return JSONLoadPlace(val, p)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (p Place) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
 	OnObject(p, func(o *Object) error {
-		notEmpty = writeObjectJSONValue(&b, *o)
+		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 	if p.Accuracy > 0 {
-		notEmpty = writeFloatJSONProp(&b, "accuracy", p.Accuracy) || notEmpty
+		notEmpty = JSONWriteFloatProp(&b, "accuracy", p.Accuracy) || notEmpty
 	}
 	if p.Altitude > 0 {
-		notEmpty = writeFloatJSONProp(&b, "altitude", p.Altitude) || notEmpty
+		notEmpty = JSONWriteFloatProp(&b, "altitude", p.Altitude) || notEmpty
 	}
 	if p.Latitude > 0 {
-		notEmpty = writeFloatJSONProp(&b, "latitude", p.Latitude) || notEmpty
+		notEmpty = JSONWriteFloatProp(&b, "latitude", p.Latitude) || notEmpty
 	}
 	if p.Longitude > 0 {
-		notEmpty = writeFloatJSONProp(&b, "longitude", p.Longitude) || notEmpty
+		notEmpty = JSONWriteFloatProp(&b, "longitude", p.Longitude) || notEmpty
 	}
 	if p.Radius > 0 {
-		notEmpty = writeIntJSONProp(&b, "radius", p.Radius) || notEmpty
+		notEmpty = JSONWriteIntProp(&b, "radius", p.Radius) || notEmpty
 	}
 	if len(p.Units) > 0 {
-		notEmpty = writeStringJSONProp(&b, "radius", p.Units) || notEmpty
+		notEmpty = JSONWriteStringProp(&b, "radius", p.Units) || notEmpty
 	}
 	if notEmpty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil
@@ -251,6 +252,13 @@ func (p *Place) Clean() {
 	p.Bto = nil
 }
 
+func (p Place) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { }", p, p.Type))
+	}
+}
+
 // ToPlace
 func ToPlace(it Item) (*Place, error) {
 	switch i := it.(type) {
@@ -275,7 +283,7 @@ func ToPlace(it Item) (*Place, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %q", it.GetType())
+	return nil, ErrorInvalidType[Place](it)
 }
 
 type withPlaceFn func(*Place) error
@@ -292,6 +300,9 @@ func OnPlace(it Item, fn withPlaceFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
+				if IsLink(it) {
+					continue
+				}
 				if err := OnPlace(it, fn); err != nil {
 					return err
 				}

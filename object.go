@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"reflect"
 	"strings"
 	"time"
@@ -108,7 +109,7 @@ func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 	b := make([]byte, 0)
-	writeStringJSONValue(&b, string(a))
+	JSONWriteStringValue(&b, string(a))
 	return b, nil
 }
 
@@ -135,6 +136,7 @@ func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
 
 type Objects interface {
 	Object | Tombstone | Place | Profile | Relationship |
+		Actors |
 		Activities |
 		IntransitiveActivities |
 		Collections |
@@ -287,16 +289,16 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadObject(val, o)
+	return JSONLoadObject(val, o)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (o Object) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
-	if writeObjectJSONValue(&b, o) {
-		write(&b, '}')
+	if JSONWriteObjectValue(&b, o) {
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil
@@ -342,6 +344,181 @@ func (o *Object) GobDecode(data []byte) error {
 	return unmapObjectProperties(mm, o)
 }
 
+func fmtObjectProps(w io.Writer) func(*Object) error {
+	return func(o *Object) error {
+		if len(o.Name) > 0 {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: [%s]", "name", o.Name))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if len(o.Summary) > 0 {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: [%s]", "summary", o.Summary))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if len(o.Content) > 0 {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: [%s]", "content", o.Content))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.Attachment) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "attachment", o.Attachment))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.AttributedTo) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "attributedTo", o.AttributedTo))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.Audience) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "audience", o.Audience))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.Context) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "context", o.Context))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.Generator) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "generator", o.Generator))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.Icon) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "icon", o.Icon))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.Image) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "image", o.Image))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.InReplyTo) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "inReplyTo", o.InReplyTo))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.Location) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "location", o.Location))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.Preview) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "preview", o.Preview))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.Replies) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "replies", o.Replies))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.Tag) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "tag", o.Tag))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.URL) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "url", o.URL))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.To) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "to", o.To))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.Bto) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "bto", o.Bto))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.CC) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "cc", o.CC))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.BCC) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "bcc", o.BCC))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !o.Published.IsZero() {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "published", o.Published))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !o.Updated.IsZero() {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "updated", o.Updated))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !o.StartTime.IsZero() {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "startTime", o.StartTime))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !o.EndTime.IsZero() {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "endTime", o.EndTime))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if o.Duration != 0 {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "duration", o.Duration))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.Likes) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "likes", o.Likes))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		if !IsNil(o.Shares) {
+			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "shares", o.Shares))
+			if n > 0 {
+				io.WriteString(w, ", ")
+			}
+		}
+		return nil
+	}
+}
+
+func (o Object) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		fmt.Fprintf(s, "%T[%s] { %s }", o, o.Type, o.ID)
+	}
+}
+
 // Recipients performs recipient de-duplication on the Object's To, Bto, CC and BCC properties
 func (o *Object) Recipients() ItemCollection {
 	var aud ItemCollection
@@ -385,7 +562,7 @@ func (m MimeType) MarshalJSON() ([]byte, error) {
 		return nil, nil
 	}
 	b := make([]byte, 0)
-	writeStringJSONValue(&b, string(m))
+	JSONWriteStringValue(&b, string(m))
 	return b, nil
 }
 
@@ -434,7 +611,7 @@ func ToLink(it LinkOrIRI) (*Link, error) {
 	case Link:
 		return &i, nil
 	}
-	return nil, fmt.Errorf("unable to convert %T", it)
+	return nil, fmt.Errorf("unable to convert %T to %T", it, new(Link))
 }
 
 // ToObject returns an Object pointer to the data in the current Item
@@ -497,12 +674,15 @@ func ToObject(it Item) (*Object, error) {
 		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
 		typ := reflect.TypeOf(new(Object))
 		if reflect.TypeOf(it).ConvertibleTo(typ) {
+			if reflect.ValueOf(it).IsNil() {
+				return nil, nil
+			}
 			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Object); ok {
 				return i, nil
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %q", it.GetType())
+	return nil, ErrorInvalidType[Object](it)
 }
 
 // Source is intended to convey some sort of source from which the content markup was derived,
@@ -546,17 +726,17 @@ func (s *Source) UnmarshalJSON(data []byte) error {
 func (s Source) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	empty := true
-	write(&b, '{')
+	JSONWrite(&b, '{')
 	if len(s.MediaType) > 0 {
 		if v, err := s.MediaType.MarshalJSON(); err == nil && len(v) > 0 {
-			empty = !writeJSONProp(&b, "mediaType", v)
+			empty = !JSONWriteProp(&b, "mediaType", v)
 		}
 	}
 	if len(s.Content) > 0 {
-		empty = !writeNaturalLanguageJSONProp(&b, "content", s.Content)
+		empty = !JSONWriteNaturalLanguageProp(&b, "content", s.Content)
 	}
 	if !empty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil
@@ -630,17 +810,17 @@ func (o Object) Equals(with Item) bool {
 	if with.IsCollection() {
 		return false
 	}
-	if withID := with.GetID(); len(withID) > 0 && withID != o.ID {
+	if withID := with.GetID(); !o.ID.Equals(withID, true) {
 		return false
 	}
-	if withType := with.GetType(); len(withType) > 0 && withType != o.Type {
+	if withType := with.GetType(); !strings.EqualFold(string(o.Type), string(withType)) {
 		return false
 	}
 	if with.IsLink() && !with.GetLink().Equals(o.GetLink(), false) {
 		return false
 	}
 	result := true
-	OnObject(with, func(w *Object) error {
+	err := OnObject(with, func(w *Object) error {
 		if len(w.Name) > 0 {
 			if !w.Name.Equals(o.Name) {
 				result = false
@@ -809,5 +989,8 @@ func (o Object) Equals(with Item) bool {
 		}
 		return nil
 	})
+	if err != nil {
+		result = false
+	}
 	return result
 }

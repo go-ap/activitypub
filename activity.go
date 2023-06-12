@@ -3,7 +3,8 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
+	"fmt"
+	"io"
 	"reflect"
 	"strings"
 	"time"
@@ -53,17 +54,27 @@ func (a ActivityVocabularyTypes) Contains(typ ActivityVocabularyType) bool {
 	return false
 }
 
-// ContentManagementActivityTypes use case primarily deals with activities that involve the creation, modification or deletion of content.
-// This includes, for instance, activities such as "John created a new note", "Sally updated an article", and "Joe deleted the photo".
+// ContentManagementActivityTypes use case primarily deals with activities that involve the creation, modification or
+// deletion of content.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-crud
+//
+// This includes, for instance, activities such as "John created a new note", "Sally updated an article", and
+// "Joe deleted the photo".
 var ContentManagementActivityTypes = ActivityVocabularyTypes{
 	CreateType,
 	DeleteType,
 	UpdateType,
 }
 
-// CollectionManagementActivityTypes use case primarily deals with activities involving the management of content within collections.
+// CollectionManagementActivityTypes use case primarily deals with activities involving the management of content within
+// collections.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-collection
+//
 // Examples of collections include things like folders, albums, friend lists, etc.
-// This includes, for instance, activities such as "Sally added a file to Folder A", "John moved the file from Folder A to Folder B", etc.
+// This includes, for instance, activities such as "Sally added a file to Folder A", "John moved the file from Folder A
+// to Folder B", etc.
 var CollectionManagementActivityTypes = ActivityVocabularyTypes{
 	AddType,
 	MoveType,
@@ -71,7 +82,11 @@ var CollectionManagementActivityTypes = ActivityVocabularyTypes{
 }
 
 // ReactionsActivityTypes use case primarily deals with reactions to content.
-// This can include activities such as liking or disliking content, ignoring updates, flagging content as being inappropriate, accepting or rejecting objects, etc.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-reactions
+//
+// This can include activities such as liking or disliking content, ignoring updates, flagging content as being
+// inappropriate, accepting or rejecting objects, etc.
 var ReactionsActivityTypes = ActivityVocabularyTypes{
 	AcceptType,
 	BlockType,
@@ -85,6 +100,8 @@ var ReactionsActivityTypes = ActivityVocabularyTypes{
 }
 
 // EventRSVPActivityTypes use case primarily deals with invitations to events and RSVP type responses.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-rsvp
 var EventRSVPActivityTypes = ActivityVocabularyTypes{
 	AcceptType,
 	IgnoreType,
@@ -95,7 +112,11 @@ var EventRSVPActivityTypes = ActivityVocabularyTypes{
 }
 
 // GroupManagementActivityTypes use case primarily deals with management of groups.
-// It can include, for instance, activities such as "John added Sally to Group A", "Sally joined Group A", "Joe left Group A", etc.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-group
+//
+// It can include, for instance, activities such as "John added Sally to Group A", "Sally joined Group A",
+// "Joe left Group A", etc.
 var GroupManagementActivityTypes = ActivityVocabularyTypes{
 	AddType,
 	JoinType,
@@ -103,7 +124,11 @@ var GroupManagementActivityTypes = ActivityVocabularyTypes{
 	RemoveType,
 }
 
-// ContentExperienceActivityTypes use case primarily deals with describing activities involving listening to, reading, or viewing content.
+// ContentExperienceActivityTypes use case primarily deals with describing activities involving listening to, reading,
+// or viewing content.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-experience
+//
 // For instance, "Sally read the article", "Joe listened to the song".
 var ContentExperienceActivityTypes = ActivityVocabularyTypes{
 	ListenType,
@@ -112,7 +137,11 @@ var ContentExperienceActivityTypes = ActivityVocabularyTypes{
 }
 
 // GeoSocialEventsActivityTypes use case primarily deals with activities involving geo-tagging type activities.
-// For instance, it can include activities such as "Joe arrived at work", "Sally left work", and "John is travel from home to work".
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-geo
+//
+// For instance, it can include activities such as "Joe arrived at work", "Sally left work", and
+// "John is travel from home to work".
 var GeoSocialEventsActivityTypes = ActivityVocabularyTypes{
 	ArriveType,
 	LeaveType,
@@ -120,18 +149,30 @@ var GeoSocialEventsActivityTypes = ActivityVocabularyTypes{
 }
 
 // NotificationActivityTypes use case primarily deals with calling attention to particular objects or notifications.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-notification
 var NotificationActivityTypes = ActivityVocabularyTypes{
 	AnnounceType,
 }
 
 // QuestionActivityTypes use case primarily deals with representing inquiries of any type.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-questions
+//
 // See 5.4 Representing Questions for more information.
+// https://www.w3.org/TR/activitystreams-vocabulary/#questions
 var QuestionActivityTypes = ActivityVocabularyTypes{
 	QuestionType,
 }
 
-// RelationshipManagementActivityTypes use case primarily deals with representing activities involving the management of interpersonal and social relationships
-// (e.g. friend requests, management of social network, etc). See 5.2 Representing Relationships Between Entities for more information.
+// RelationshipManagementActivityTypes use case primarily deals with representing activities involving the management of
+// interpersonal and social relationships
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-relationships
+//
+// (e.g. friend requests, management of social network, etc). See 5.2 Representing Relationships Between Entities
+// for more information.
+// https://www.w3.org/TR/activitystreams-vocabulary/#connections
 var RelationshipManagementActivityTypes = ActivityVocabularyTypes{
 	AcceptType,
 	AddType,
@@ -145,13 +186,21 @@ var RelationshipManagementActivityTypes = ActivityVocabularyTypes{
 }
 
 // NegatingActivityTypes use case primarily deals with the ability to redact previously completed activities.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-undo
+//
 // See 5.5 Inverse Activities and "Undo" for more information.
+// https://www.w3.org/TR/activitystreams-vocabulary/#inverse
 var NegatingActivityTypes = ActivityVocabularyTypes{
 	UndoType,
 }
 
 // OffersActivityTypes use case deals with activities involving offering one object to another.
-// It can include, for instance, activities such as "Company A is offering a discount on purchase of Product Z to Sally", "Sally is offering to add a File to Folder A", etc.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#motivations-offers
+//
+// It can include, for instance, activities such as "Company A is offering a discount on purchase of Product Z to Sally",
+// "Sally is offering to add a File to Folder A", etc.
 var OffersActivityTypes = ActivityVocabularyTypes{
 	OfferType,
 }
@@ -729,7 +778,25 @@ func (a *Activity) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadActivity(val, a)
+	return JSONLoadActivity(val, a)
+}
+
+func fmtActivityProps(w io.Writer) func(*Activity) error {
+	return func(a *Activity) error {
+		if !IsNil(a.Object) {
+			io.WriteString(w, fmt.Sprintf(" object: %s", a.Object))
+		}
+		return OnIntransitiveActivity(a, fmtIntransitiveActivityProps(w))
+	}
+}
+
+func (a Activity) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] {", a, a.Type))
+		fmtActivityProps(s)(&a)
+		io.WriteString(s, " }")
+	}
 }
 
 // ToActivity
@@ -740,6 +807,8 @@ func ToActivity(it Item) (*Activity, error) {
 	case Activity:
 		return &i, nil
 	case *IntransitiveActivity:
+		// TODO(marius): look at ToActor on how to copy the item to an Activity that we newly allocate
+		//  Otherwise this behaviour of forcing the type to a "smaller" one will raise -race conditions
 		return (*Activity)(unsafe.Pointer(i)), nil
 	case IntransitiveActivity:
 		return (*Activity)(unsafe.Pointer(&i)), nil
@@ -756,18 +825,18 @@ func ToActivity(it Item) (*Activity, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert activity")
+	return nil, ErrorInvalidType[Activity](it)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (a Activity) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
-	if !writeActivityJSONValue(&b, a) {
+	if !JSONWriteActivityValue(&b, a) {
 		return nil, nil
 	}
-	write(&b, '}')
+	JSONWrite(&b, '}')
 	return b, nil
 }
 
@@ -860,9 +929,9 @@ func (a *Activity) GobDecode(data []byte) error {
 // Equals verifies if our receiver Object is equals with the "with" Object
 func (a Activity) Equals(with Item) bool {
 	result := true
-	OnActivity(with, func(w *Activity) error {
-		OnObject(a, func(o *Object) error {
-			result = o.Equals(w)
+	err := OnActivity(with, func(w *Activity) error {
+		OnIntransitiveActivity(a, func(oi *IntransitiveActivity) error {
+			result = oi.Equals(w)
 			return nil
 		})
 		if w.Object != nil {
@@ -871,43 +940,10 @@ func (a Activity) Equals(with Item) bool {
 				return nil
 			}
 		}
-		if w.Actor != nil {
-			if !ItemsEqual(a.Actor, w.Actor) {
-				result = false
-				return nil
-			}
-		}
-		if w.Target != nil {
-			if !ItemsEqual(a.Target, w.Target) {
-				result = false
-				return nil
-			}
-		}
-		if w.Result != nil {
-			if !ItemsEqual(a.Result, w.Result) {
-				result = false
-				return nil
-			}
-		}
-		if w.Origin != nil {
-			if !ItemsEqual(a.Origin, w.Origin) {
-				result = false
-				return nil
-			}
-		}
-		if w.Result != nil {
-			if !ItemsEqual(a.Result, w.Result) {
-				result = false
-				return nil
-			}
-		}
-		if w.Instrument != nil {
-			if !ItemsEqual(a.Instrument, w.Instrument) {
-				result = false
-				return nil
-			}
-		}
 		return nil
 	})
+	if err != nil {
+		result = false
+	}
 	return result
 }

@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"errors"
 	"reflect"
 	"sort"
 )
@@ -36,15 +35,23 @@ func (i ItemCollection) IsObject() bool {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (i ItemCollection) MarshalJSON() ([]byte, error) {
+	if i == nil {
+		return nil, nil
+	}
 	b := make([]byte, 0)
-	writeItemCollectionJSONValue(&b, i)
+	JSONWriteItemCollectionValue(&b, i)
 	return b, nil
 }
 
 // Append facilitates adding elements to Item arrays
 // and ensures ItemCollection implements the Collection interface
-func (i *ItemCollection) Append(o Item) error {
-	*i = append(*i, o)
+func (i *ItemCollection) Append(it ...Item) error {
+	for _, ob := range it {
+		if i.Contains(ob) {
+			continue
+		}
+		*i = append(*i, ob)
+	}
 	return nil
 }
 
@@ -184,7 +191,38 @@ func ToItemCollection(it Item) (*ItemCollection, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert to item collection")
+	return nil, ErrorInvalidType[ItemCollection](it)
+}
+
+// ToIRIs
+func ToIRIs(it Item) (*IRIs, error) {
+	switch i := it.(type) {
+	case *IRIs:
+		return i, nil
+	case IRIs:
+		return &i, nil
+	case ItemCollection:
+		iris := make(IRIs, len(i))
+		for j, ob := range i {
+			iris[j] = ob.GetLink()
+		}
+		return &iris, nil
+	case *ItemCollection:
+		iris := make(IRIs, len(*i))
+		for j, ob := range *i {
+			iris[j] = ob.GetLink()
+		}
+		return &iris, nil
+	default:
+		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
+		typ := reflect.TypeOf(new(IRIs))
+		if reflect.TypeOf(it).ConvertibleTo(typ) {
+			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*IRIs); ok {
+				return i, nil
+			}
+		}
+	}
+	return nil, ErrorInvalidType[IRIs](it)
 }
 
 // ItemsMatch

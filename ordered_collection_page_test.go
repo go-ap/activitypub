@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 )
@@ -117,7 +116,7 @@ func TestOrderedCollectionPage_Contains(t *testing.T) {
 }
 
 func TestToOrderedCollectionPage(t *testing.T) {
-	err := fmt.Errorf("unable to convert to ordered collection page")
+	err := func(it Item) error { return ErrorInvalidType[OrderedCollectionPage](it) }
 	tests := map[string]struct {
 		it      Item
 		want    *OrderedCollectionPage
@@ -131,17 +130,17 @@ func TestToOrderedCollectionPage(t *testing.T) {
 		"OrderedCollection": {
 			it:      new(OrderedCollection),
 			want:    new(OrderedCollectionPage),
-			wantErr: err,
+			wantErr: err(new(OrderedCollection)),
 		},
 		"Collection": {
 			it:      new(Collection),
 			want:    new(OrderedCollectionPage),
-			wantErr: err,
+			wantErr: err(new(Collection)),
 		},
 		"CollectionPage": {
 			it:      new(CollectionPage),
 			want:    new(OrderedCollectionPage),
-			wantErr: err,
+			wantErr: err(new(CollectionPage)),
 		},
 	}
 	for name, tt := range tests {

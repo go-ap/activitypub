@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 )
@@ -214,7 +213,7 @@ func TestOnOrderedCollection(t *testing.T) {
 }
 
 func TestToOrderedCollection(t *testing.T) {
-	err := fmt.Errorf("unable to convert to ordered collection")
+	err := func(it Item) error { return ErrorInvalidType[OrderedCollection](it) }
 	tests := map[string]struct {
 		it      Item
 		want    *OrderedCollection
@@ -233,12 +232,12 @@ func TestToOrderedCollection(t *testing.T) {
 		"Collection": {
 			it:      new(Collection),
 			want:    new(OrderedCollection),
-			wantErr: err,
+			wantErr: err(new(Collection)),
 		},
 		"CollectionPage": {
 			it:      new(CollectionPage),
 			want:    new(OrderedCollection),
-			wantErr: err,
+			wantErr: err(new(CollectionPage)),
 		},
 	}
 	for name, tt := range tests {
@@ -267,77 +266,6 @@ func TestToOrderedCollection(t *testing.T) {
 }
 
 func TestOrderedCollection_Contains(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestInboxNew(t *testing.T) {
-	i := InboxNew()
-
-	id := ID("inbox")
-	if i.ID != id {
-		t.Errorf("%T should be initialized with %q as %T", i, id, id)
-	}
-	if len(i.Name) != 0 {
-		t.Errorf("%T should be initialized with 0 length Name", i)
-	}
-	if len(i.Content) != 0 {
-		t.Errorf("%T should be initialized with 0 length Content", i)
-	}
-	if len(i.Summary) != 0 {
-		t.Errorf("%T should be initialized with 0 length Summary", i)
-	}
-	if i.TotalItems != 0 {
-		t.Errorf("%T should be initialized with 0 TotalItems", i)
-	}
-}
-
-func TestLikedNew(t *testing.T) {
-	l := LikedNew()
-
-	id := ID("liked")
-	if l.ID != id {
-		t.Errorf("%T should be initialized with %q as %T", l, id, id)
-	}
-	if len(l.Name) != 0 {
-		t.Errorf("%T should be initialized with 0 length Name", l)
-	}
-	if len(l.Content) != 0 {
-		t.Errorf("%T should be initialized with 0 length Content", l)
-	}
-	if len(l.Summary) != 0 {
-		t.Errorf("%T should be initialized with 0 length Summary", l)
-	}
-	if l.TotalItems != 0 {
-		t.Errorf("%T should be initialized with 0 TotalItems", l)
-	}
-}
-
-func TestLikesNew(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestOutboxNew(t *testing.T) {
-	o := OutboxNew()
-
-	id := ID("outbox")
-	if o.ID != id {
-		t.Errorf("%T should be initialized with %q as %T", o, id, id)
-	}
-	if len(o.Name) != 0 {
-		t.Errorf("%T should be initialized with 0 length Name", o)
-	}
-	if len(o.Content) != 0 {
-		t.Errorf("%T should be initialized with 0 length Content", o)
-	}
-	if len(o.Summary) != 0 {
-		t.Errorf("%T should be initialized with 0 length Summary", o)
-	}
-	if o.TotalItems != 0 {
-		t.Errorf("%T should be initialized with 0 TotalItems", o)
-	}
-}
-
-func TestSharesNew(t *testing.T) {
 	t.Skipf("TODO")
 }
 

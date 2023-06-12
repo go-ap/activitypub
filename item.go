@@ -1,5 +1,10 @@
 package activitypub
 
+import (
+	"fmt"
+	"reflect"
+)
+
 // Item struct
 type Item = ObjectOrLink
 
@@ -53,8 +58,7 @@ func ItemsEqual(it, with Item) bool {
 				return nil
 			})
 		}
-	}
-	if it.IsObject() {
+	} else if it.IsObject() {
 		if ActivityTypes.Contains(with.GetType()) {
 			OnActivity(it, func(i *Activity) error {
 				result = i.Equals(with)
@@ -92,15 +96,29 @@ func IsIRI(it Item) bool {
 	return okV || okP
 }
 
-// IsObject returns if the current Item interface holds an IRI
+// IsIRIs returns if the current Item interface holds an IRI slice
+func IsIRIs(it Item) bool {
+	_, okV := it.(IRIs)
+	_, okP := it.(*IRIs)
+	return okV || okP
+}
+
+// IsLink returns if the current Item interface holds a Link
+func IsLink(it Item) bool {
+	_, okV := it.(Link)
+	_, okP := it.(*Link)
+	return okV || okP
+}
+
+// IsObject returns if the current Item interface holds an Object
 func IsObject(it Item) bool {
-	switch it.(type) {
+	switch ob := it.(type) {
 	case Actor, *Actor,
 		Object, *Object, Profile, *Profile, Place, *Place, Relationship, *Relationship, Tombstone, *Tombstone,
 		Activity, *Activity, IntransitiveActivity, *IntransitiveActivity, Question, *Question,
 		Collection, *Collection, CollectionPage, *CollectionPage,
 		OrderedCollection, *OrderedCollection, OrderedCollectionPage, *OrderedCollectionPage:
-		return true
+		return ob != nil
 	default:
 		return false
 	}
@@ -111,18 +129,34 @@ func IsNil(it Item) bool {
 	if it == nil {
 		return true
 	}
-	// This is the default if the argument can't be casted to Object, as is the case for an ItemCollection
+	// This is the default if the argument can't be cast to Object, as is the case for an ItemCollection
 	isNil := false
 	if IsItemCollection(it) {
 		OnItemCollection(it, func(c *ItemCollection) error {
 			isNil = c == nil
 			return nil
 		})
-	} else {
+	} else if IsObject(it) {
 		OnObject(it, func(o *Object) error {
 			isNil = o == nil
 			return nil
 		})
+	} else if IsLink(it) {
+		OnLink(it, func(l *Link) error {
+			isNil = l == nil
+			return nil
+		})
+	} else if IsIRI(it) {
+		isNil = len(it.GetLink()) == 0
+	} else {
+		// NOTE(marius): we're not dealing with a type that we know about, so we use slow reflection
+		// as we still care about the result
+		v := reflect.ValueOf(it)
+		isNil = v.Kind() == reflect.Pointer && v.IsNil()
 	}
 	return isNil
+}
+
+func ErrorInvalidType[T Objects | Links | IRIs](received Item) error {
+	return fmt.Errorf("unable to convert %T to %T", received, new(T))
 }

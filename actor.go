@@ -5,9 +5,9 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
+	"io"
 	"reflect"
 	"time"
-	"unsafe"
 
 	"github.com/valyala/fastjson"
 )
@@ -210,27 +210,27 @@ func (p *PublicKey) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	return loadPublicKey(val, p)
+	return JSONLoadPublicKey(val, p)
 }
 
 func (p PublicKey) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := true
-	write(&b, '{')
+	JSONWrite(&b, '{')
 	if v, err := p.ID.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = !writeJSONProp(&b, "id", v)
+		notEmpty = !JSONWriteProp(&b, "id", v)
 	}
 	if len(p.Owner) > 0 {
-		notEmpty = writeIRIJSONProp(&b, "owner", p.Owner) || notEmpty
+		notEmpty = JSONWriteIRIProp(&b, "owner", p.Owner) || notEmpty
 	}
 	if len(p.PublicKeyPem) > 0 {
 		if pem, err := json.Marshal(p.PublicKeyPem); err == nil {
-			notEmpty = writeJSONProp(&b, "publicKeyPem", pem) || notEmpty
+			notEmpty = JSONWriteProp(&b, "publicKeyPem", pem) || notEmpty
 		}
 	}
 
 	if notEmpty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil
@@ -301,13 +301,6 @@ func ActorNew(id ID, typ ActivityVocabularyType) *Actor {
 	a.Name = NaturalLanguageValuesNew()
 	a.Content = NaturalLanguageValuesNew()
 	a.Summary = NaturalLanguageValuesNew()
-	in := OrderedCollectionNew(ID("test-inbox"))
-	out := OrderedCollectionNew(ID("test-outbox"))
-	liked := OrderedCollectionNew(ID("test-liked"))
-
-	a.Inbox = in
-	a.Outbox = out
-	a.Liked = liked
 	a.PreferredUsername = NaturalLanguageValuesNew()
 
 	return &a
@@ -363,55 +356,62 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadActor(val, a)
+	return JSONLoadActor(val, a)
 }
 
 func (a Actor) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
 	OnObject(a, func(o *Object) error {
-		notEmpty = writeObjectJSONValue(&b, *o)
+		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 	if a.Inbox != nil {
-		notEmpty = writeItemJSONProp(&b, "inbox", a.Inbox) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "inbox", a.Inbox) || notEmpty
 	}
 	if a.Outbox != nil {
-		notEmpty = writeItemJSONProp(&b, "outbox", a.Outbox) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "outbox", a.Outbox) || notEmpty
 	}
 	if a.Following != nil {
-		notEmpty = writeItemJSONProp(&b, "following", a.Following) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "following", a.Following) || notEmpty
 	}
 	if a.Followers != nil {
-		notEmpty = writeItemJSONProp(&b, "followers", a.Followers) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "followers", a.Followers) || notEmpty
 	}
 	if a.Liked != nil {
-		notEmpty = writeItemJSONProp(&b, "liked", a.Liked) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "liked", a.Liked) || notEmpty
 	}
 	if a.PreferredUsername != nil {
-		notEmpty = writeNaturalLanguageJSONProp(&b, "preferredUsername", a.PreferredUsername) || notEmpty
+		notEmpty = JSONWriteNaturalLanguageProp(&b, "preferredUsername", a.PreferredUsername) || notEmpty
 	}
 	if a.Endpoints != nil {
 		if v, err := a.Endpoints.MarshalJSON(); err == nil && len(v) > 0 {
-			notEmpty = writeJSONProp(&b, "endpoints", v) || notEmpty
+			notEmpty = JSONWriteProp(&b, "endpoints", v) || notEmpty
 		}
 	}
 	if len(a.Streams) > 0 {
-		notEmpty = writeItemCollectionJSONProp(&b, "streams", a.Streams)
+		notEmpty = JSONWriteItemCollectionProp(&b, "streams", a.Streams)
 	}
 	if len(a.PublicKey.PublicKeyPem)+len(a.PublicKey.ID) > 0 {
 		if v, err := a.PublicKey.MarshalJSON(); err == nil && len(v) > 0 {
-			notEmpty = writeJSONProp(&b, "publicKey", v) || notEmpty
+			notEmpty = JSONWriteProp(&b, "publicKey", v) || notEmpty
 		}
 	}
 
 	if notEmpty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil
+}
+
+func (a Actor) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { }", a, a.Type))
+	}
 }
 
 // Endpoints a json object which maps additional (typically server/domain-wide)
@@ -462,27 +462,27 @@ func (e Endpoints) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
 
-	write(&b, '{')
+	JSONWrite(&b, '{')
 	if e.OauthAuthorizationEndpoint != nil {
-		notEmpty = writeItemJSONProp(&b, "oauthAuthorizationEndpoint", e.OauthAuthorizationEndpoint) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "oauthAuthorizationEndpoint", e.OauthAuthorizationEndpoint) || notEmpty
 	}
 	if e.OauthTokenEndpoint != nil {
-		notEmpty = writeItemJSONProp(&b, "oauthTokenEndpoint", e.OauthTokenEndpoint) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "oauthTokenEndpoint", e.OauthTokenEndpoint) || notEmpty
 	}
 	if e.ProvideClientKey != nil {
-		notEmpty = writeItemJSONProp(&b, "provideClientKey", e.ProvideClientKey) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "provideClientKey", e.ProvideClientKey) || notEmpty
 	}
 	if e.SignClientKey != nil {
-		notEmpty = writeItemJSONProp(&b, "signClientKey", e.SignClientKey) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "signClientKey", e.SignClientKey) || notEmpty
 	}
 	if e.SharedInbox != nil {
-		notEmpty = writeItemJSONProp(&b, "sharedInbox", e.SharedInbox) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "sharedInbox", e.SharedInbox) || notEmpty
 	}
 	if e.UploadMedia != nil {
-		notEmpty = writeItemJSONProp(&b, "uploadMedia", e.UploadMedia) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "uploadMedia", e.UploadMedia) || notEmpty
 	}
 	if notEmpty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil
@@ -496,11 +496,15 @@ func ToActor(it Item) (*Actor, error) {
 	case Actor:
 		return &i, nil
 	case *Object:
-		// TODO(marius): this is unsafe as Actor has a different memory layout than Object
-		//  Everything should be fine as long as you don't try to read the Actor specific collections
-		return (*Actor)(unsafe.Pointer(i)), nil
+		// NOTE(marius): memory layout for Object is "smaller" than "Actor", so doing an unsafe pointer cast
+		//  has led to -race conditions
+		a := new(Actor)
+		CopyItemProperties(a, i)
+		return a, nil
 	case Object:
-		return (*Actor)(unsafe.Pointer(&i)), nil
+		a := new(Actor)
+		CopyItemProperties(a, i)
+		return a, nil
 	default:
 		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
 		typ := reflect.TypeOf(new(Actor))
@@ -510,22 +514,46 @@ func ToActor(it Item) (*Actor, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %T to actor", it)
+	return nil, ErrorInvalidType[Actor](it)
 }
 
 // Equals verifies if our receiver Object is equals with the "with" Object
 func (a Actor) Equals(with Item) bool {
 	result := true
-	OnActor(with, func(w *Actor) error {
-		OnObject(w, func(wo *Object) error {
-			if !wo.Equals(a) {
+	err := OnActor(with, func(w *Actor) error {
+		OnObject(a, func(oa *Object) error {
+			result = oa.Equals(w)
+			return nil
+		})
+		if w.Inbox != nil {
+			if !ItemsEqual(a.Inbox, w.Inbox) {
 				result = false
 				return nil
 			}
-			return nil
-		})
+		}
+		if w.Outbox != nil {
+			if !ItemsEqual(a.Outbox, w.Outbox) {
+				result = false
+				return nil
+			}
+		}
+		if w.Liked != nil {
+			if !ItemsEqual(a.Liked, w.Liked) {
+				result = false
+				return nil
+			}
+		}
+		if w.PreferredUsername != nil {
+			if !a.PreferredUsername.Equals(w.PreferredUsername) {
+				result = false
+				return nil
+			}
+		}
 		return nil
 	})
+	if err != nil {
+		result = false
+	}
 	return result
 }
 

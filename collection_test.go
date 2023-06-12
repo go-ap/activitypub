@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 )
@@ -28,7 +27,7 @@ func TestCollection_Append(t *testing.T) {
 	c.Append(val)
 
 	if c.Count() != 1 {
-		t.Errorf("Inbox collection of %q should have one element", c.GetID())
+		t.Errorf("Inbox collectionPath of %q should have one element", c.GetID())
 	}
 	if !reflect.DeepEqual(c.Items[0], val) {
 		t.Errorf("First item in Inbox is does not match %q", val.ID)
@@ -188,7 +187,7 @@ func TestCollection_ItemMatches(t *testing.T) {
 }
 
 func TestToCollection(t *testing.T) {
-	err := fmt.Errorf("unable to convert to collection")
+	err := func(it Item) error { return ErrorInvalidType[Collection](it) }
 	tests := map[string]struct {
 		it      Item
 		want    *Collection
@@ -207,12 +206,12 @@ func TestToCollection(t *testing.T) {
 		"OrderedCollectionPage": {
 			it:      new(OrderedCollectionPage),
 			want:    new(Collection),
-			wantErr: err,
+			wantErr: err(new(OrderedCollectionPage)),
 		},
 		"OrderedCollection": {
 			it:      new(OrderedCollection),
 			want:    new(Collection),
-			wantErr: err,
+			wantErr: err(new(OrderedCollection)),
 		},
 	}
 	for name, tt := range tests {

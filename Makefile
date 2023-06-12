@@ -1,3 +1,10 @@
+SHELL := bash
+.ONESHELL:
+.SHELLFLAGS := -eu -o pipefail -c
+.DELETE_ON_ERROR:
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
+
 GO ?= go
 TEST := $(GO) test
 TEST_FLAGS ?= -v
@@ -9,6 +16,7 @@ PROJECT_NAME := $(shell basename $(PWD))
 
 download:
 	$(GO) mod download all
+	$(GO) mod tidy
 
 test: download
 	$(TEST) $(TEST_FLAGS) $(TEST_TARGET)

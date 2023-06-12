@@ -3,7 +3,8 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
+	"fmt"
+	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -125,45 +126,30 @@ type (
 	// In general, the owner of an inbox is likely to be able to access all of their inbox contents.
 	// Depending on access control, some other content may be public, whereas other content may
 	// require authentication for non-owner users, if they can access the inbox at all.
-	InboxStream = Inbox
-
-	// Inbox is a type alias for an Ordered Collection
-	Inbox = OrderedCollection
+	InboxStream = OrderedCollection
 
 	// LikedCollection is a list of every object from all of the actor's Like activities,
 	// added as a side effect. The liked collection MUST be either an OrderedCollection or
 	// a Collection and MAY be filtered on privileges of an authenticated user or as
 	// appropriate when no authentication is given.
-	LikedCollection = Liked
-
-	// Liked is a type alias for an Ordered Collection
-	Liked = OrderedCollection
+	LikedCollection = OrderedCollection
 
 	// LikesCollection is a list of all Like activities with this object as the object property,
 	// added as a side effect. The likes collection MUST be either an OrderedCollection or a Collection
 	// and MAY be filtered on privileges of an authenticated user or as appropriate when
 	// no authentication is given.
-	LikesCollection = Likes
-
-	// Likes is a type alias for an Ordered Collection
-	Likes = OrderedCollection
+	LikesCollection = OrderedCollection
 
 	// OutboxStream contains activities the user has published,
 	// subject to the ability of the requestor to retrieve the activity (that is,
 	// the contents of the outbox are filtered by the permissions of the person reading it).
-	OutboxStream = Outbox
-
-	// Outbox is a type alias for an Ordered Collection
-	Outbox = OrderedCollection
+	OutboxStream = OrderedCollection
 
 	// SharesCollection is a list of all Announce activities with this object as the object property,
 	// added as a side effect. The shares collection MUST be either an OrderedCollection or a Collection
 	// and MAY be filtered on privileges of an authenticated user or as appropriate when no authentication
 	// is given.
-	SharesCollection = Shares
-
-	// Shares is a type alias for an Ordered Collection
-	Shares = OrderedCollection
+	SharesCollection = OrderedCollection
 )
 
 // GetType returns the OrderedCollection's type
@@ -223,8 +209,13 @@ func (o *OrderedCollection) Count() uint {
 }
 
 // Append adds an element to an the receiver collection object.
-func (o *OrderedCollection) Append(ob Item) error {
-	o.OrderedItems = append(o.OrderedItems, ob)
+func (o *OrderedCollection) Append(it ...Item) error {
+	for _, ob := range it {
+		if o.OrderedItems.Contains(ob) {
+			continue
+		}
+		o.OrderedItems = append(o.OrderedItems, ob)
+	}
 	return nil
 }
 
@@ -235,34 +226,34 @@ func (o *OrderedCollection) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadOrderedCollection(val, o)
+	return JSONLoadOrderedCollection(val, o)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (o OrderedCollection) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
 	OnObject(o, func(o *Object) error {
-		notEmpty = writeObjectJSONValue(&b, *o)
+		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 	if o.Current != nil {
-		notEmpty = writeItemJSONProp(&b, "current", o.Current) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "current", o.Current) || notEmpty
 	}
 	if o.First != nil {
-		notEmpty = writeItemJSONProp(&b, "first", o.First) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "first", o.First) || notEmpty
 	}
 	if o.Last != nil {
-		notEmpty = writeItemJSONProp(&b, "last", o.Last) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "last", o.Last) || notEmpty
 	}
-	notEmpty = writeIntJSONProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
+	notEmpty = JSONWriteIntProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
 	if o.OrderedItems != nil {
-		notEmpty = writeItemCollectionJSONProp(&b, "orderedItems", o.OrderedItems) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(&b, "orderedItems", o.OrderedItems) || notEmpty
 	}
 	if notEmpty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil
@@ -342,7 +333,7 @@ func ToOrderedCollection(it Item) (*OrderedCollection, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert to ordered collection")
+	return nil, ErrorInvalidType[OrderedCollection](it)
 }
 
 func copyOrderedCollectionToPage(c *OrderedCollection, p *OrderedCollectionPage) error {
@@ -381,71 +372,6 @@ func copyOrderedCollectionToPage(c *OrderedCollection, p *OrderedCollectionPage)
 	return nil
 }
 
-// InboxNew initializes a new Inbox
-func InboxNew() *OrderedCollection {
-	id := ID("inbox")
-
-	i := OrderedCollection{ID: id, Type: CollectionType}
-	i.Name = NaturalLanguageValuesNew()
-	i.Content = NaturalLanguageValuesNew()
-
-	i.TotalItems = 0
-
-	return &i
-}
-
-// LikedCollection initializes a new outbox
-func LikedNew() *OrderedCollection {
-	id := ID("liked")
-
-	l := OrderedCollection{ID: id, Type: CollectionType}
-	l.Name = NaturalLanguageValuesNew()
-	l.Content = NaturalLanguageValuesNew()
-
-	l.TotalItems = 0
-
-	return &l
-}
-
-// LikesCollection initializes a new outbox
-func LikesNew() *Likes {
-	id := ID("likes")
-
-	l := Likes{ID: id, Type: CollectionType}
-	l.Name = NaturalLanguageValuesNew()
-	l.Content = NaturalLanguageValuesNew()
-
-	l.TotalItems = 0
-
-	return &l
-}
-
-// OutboxNew initializes a new outbox
-func OutboxNew() *Outbox {
-	id := ID("outbox")
-
-	i := Outbox{ID: id, Type: OrderedCollectionType}
-	i.Name = NaturalLanguageValuesNew()
-	i.Content = NaturalLanguageValuesNew()
-	i.TotalItems = 0
-	i.OrderedItems = make(ItemCollection, 0)
-
-	return &i
-}
-
-// SharesNew initializes a new Shares
-func SharesNew() *Shares {
-	id := ID("Shares")
-
-	i := Shares{ID: id, Type: CollectionType}
-	i.Name = NaturalLanguageValuesNew()
-	i.Content = NaturalLanguageValuesNew()
-
-	i.TotalItems = 0
-
-	return &i
-}
-
 // ItemsMatch
 func (o OrderedCollection) ItemsMatch(col ...Item) bool {
 	for _, it := range col {
@@ -482,4 +408,11 @@ func (o OrderedCollection) Equals(with Item) bool {
 		return nil
 	})
 	return result
+}
+
+func (o OrderedCollection) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { totalItems: %d }", o, o.Type, o.TotalItems))
+	}
 }

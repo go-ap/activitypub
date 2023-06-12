@@ -40,6 +40,9 @@ type WithOrderedCollectionPageFn func(*OrderedCollectionPage) error
 // WithItemCollectionFn represents a function type that can be used as a parameter for OnItemCollection helper function
 type WithItemCollectionFn func(*ItemCollection) error
 
+// WithIRIsFn represents a function type that can be used as a parameter for OnIRIs helper function
+type WithIRIsFn func(*IRIs) error
+
 // OnLink calls function fn on it Item if it can be asserted to type *Link
 //
 // This function should be safe to use for all types with a structure compatible
@@ -55,6 +58,33 @@ func OnLink(it LinkOrIRI, fn WithLinkFn) error {
 	return fn(ob)
 }
 
+func To[T Item](it Item) (*T, error) {
+	if ob, ok := it.(T); ok {
+		return &ob, nil
+	}
+	return nil, fmt.Errorf("invalid cast for object %T", it)
+}
+
+// On handles in a generic way the call to fn(*T) if the "it" Item can be asserted to one of the Objects type.
+// It also covers the case where "it" is a collection of items that match the assertion.
+func On[T Item](it Item, fn func(*T) error) error {
+	if !IsItemCollection(it) {
+		ob, err := To[T](it)
+		if err != nil {
+			return err
+		}
+		return fn(ob)
+	}
+	return OnItemCollection(it, func(col *ItemCollection) error {
+		for _, it := range *col {
+			if err := On(it, fn); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
 // OnObject calls function fn on it Item if it can be asserted to type *Object
 //
 // This function should be safe to be called for all types with a structure compatible
@@ -66,6 +96,9 @@ func OnObject(it Item, fn WithObjectFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
+				if IsLink(it) {
+					continue
+				}
 				if err := OnObject(it, fn); err != nil {
 					return err
 				}
@@ -92,6 +125,9 @@ func OnActivity(it Item, fn WithActivityFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
+				if IsLink(it) {
+					continue
+				}
 				if err := OnActivity(it, fn); err != nil {
 					return err
 				}
@@ -171,6 +207,9 @@ func OnActor(it Item, fn WithActorFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
+				if IsLink(it) {
+					continue
+				}
 				if err := OnActor(it, fn); err != nil {
 					return err
 				}
@@ -200,6 +239,20 @@ func OnItemCollection(it Item, fn WithItemCollectionFn) error {
 	return fn(col)
 }
 
+// OnIRIs calls function fn on it Item if it can be asserted to type IRIs
+//
+// It should be used when Item represents an IRI slice.
+func OnIRIs(it Item, fn WithIRIsFn) error {
+	if it == nil {
+		return nil
+	}
+	col, err := ToIRIs(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
+}
+
 // OnCollectionIntf calls function fn on it Item if it can be asserted to a type
 // that implements the CollectionInterface
 //
@@ -217,6 +270,13 @@ func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 			return err
 		}
 		return fn(col)
+	case CollectionOfIRIs:
+		col, err := ToIRIs(it)
+		if err != nil {
+			return err
+		}
+		itCol := col.Collection()
+		return fn(&itCol)
 	case CollectionType:
 		col, err := ToCollection(it)
 		if err != nil {

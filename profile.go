@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -148,25 +149,25 @@ func (p *Profile) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadProfile(val, p)
+	return JSONLoadProfile(val, p)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (p Profile) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
 	notEmpty := false
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
 	OnObject(p, func(o *Object) error {
 		return nil
 	})
 
 	if p.Describes != nil {
-		notEmpty = writeItemJSONProp(&b, "describes", p.Describes) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "describes", p.Describes) || notEmpty
 	}
 
 	if notEmpty {
-		write(&b, '}')
+		JSONWrite(&b, '}')
 		return b, nil
 	}
 	return nil, nil
@@ -223,6 +224,13 @@ func (p *Profile) Clean() {
 	p.Bto = nil
 }
 
+func (p Profile) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] { }", p, p.Type))
+	}
+}
+
 // ToProfile tries to convert the it Item to a Profile object
 func ToProfile(it Item) (*Profile, error) {
 	switch i := it.(type) {
@@ -243,7 +251,7 @@ func ToProfile(it Item) (*Profile, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("unable to convert %q", it.GetType())
+	return nil, ErrorInvalidType[Profile](it)
 }
 
 type withProfileFn func(*Profile) error
@@ -260,6 +268,9 @@ func OnProfile(it Item, fn withProfileFn) error {
 	if IsItemCollection(it) {
 		return OnItemCollection(it, func(col *ItemCollection) error {
 			for _, it := range *col {
+				if IsLink(it) {
+					continue
+				}
 				if err := OnProfile(it, fn); err != nil {
 					return err
 				}

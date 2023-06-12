@@ -3,7 +3,8 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
+	"fmt"
+	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -190,18 +191,18 @@ func (i *IntransitiveActivity) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return loadIntransitiveActivity(val, i)
+	return JSONLoadIntransitiveActivity(val, i)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (i IntransitiveActivity) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)
-	write(&b, '{')
+	JSONWrite(&b, '{')
 
-	if !writeIntransitiveActivityJSONValue(&b, i) {
+	if !JSONWriteIntransitiveActivityValue(&b, i) {
 		return nil, nil
 	}
-	write(&b, '}')
+	JSONWrite(&b, '}')
 	return b, nil
 }
 
@@ -279,7 +280,7 @@ func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
 			}
 		}
 	}
-	return nil, errors.New("unable to convert to intransitive activity")
+	return nil, ErrorInvalidType[IntransitiveActivity](it)
 }
 
 // ArriveNew initializes an Arrive activity
@@ -294,4 +295,78 @@ func TravelNew(id ID) *Travel {
 	a := IntransitiveActivityNew(id, TravelType)
 	o := Travel(*a)
 	return &o
+}
+
+// Equals verifies if our receiver Object is equals with the "with" Object
+func (i IntransitiveActivity) Equals(with Item) bool {
+	result := true
+	err := OnActivity(with, func(w *Activity) error {
+		OnObject(i, func(oa *Object) error {
+			result = oa.Equals(w)
+			return nil
+		})
+		if w.Actor != nil {
+			if !ItemsEqual(i.Actor, w.Actor) {
+				result = false
+				return nil
+			}
+		}
+		if w.Target != nil {
+			if !ItemsEqual(i.Target, w.Target) {
+				result = false
+				return nil
+			}
+		}
+		if w.Result != nil {
+			if !ItemsEqual(i.Result, w.Result) {
+				result = false
+				return nil
+			}
+		}
+		if w.Origin != nil {
+			if !ItemsEqual(i.Origin, w.Origin) {
+				result = false
+				return nil
+			}
+		}
+		if w.Instrument != nil {
+			if !ItemsEqual(i.Instrument, w.Instrument) {
+				result = false
+				return nil
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		result = false
+	}
+	return result
+}
+
+func fmtIntransitiveActivityProps(w io.Writer) func(*IntransitiveActivity) error {
+	return func(ia *IntransitiveActivity) error {
+		if !IsNil(ia.Actor) {
+			io.WriteString(w, fmt.Sprintf(" actor: %s", ia.Actor))
+		}
+		if !IsNil(ia.Target) {
+			io.WriteString(w, fmt.Sprintf(" target: %s", ia.Target))
+		}
+		if !IsNil(ia.Result) {
+			io.WriteString(w, fmt.Sprintf(" result: %s", ia.Result))
+		}
+		if !IsNil(ia.Origin) {
+			io.WriteString(w, fmt.Sprintf(" origin: %s", ia.Origin))
+		}
+		if !IsNil(ia.Instrument) {
+			io.WriteString(w, fmt.Sprintf(" instrument: %s", ia.Instrument))
+		}
+		return OnObject(ia, fmtObjectProps(w))
+	}
+}
+
+func (i IntransitiveActivity) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'v':
+		io.WriteString(s, fmt.Sprintf("%T[%s] {  }", i, i.Type))
+	}
 }

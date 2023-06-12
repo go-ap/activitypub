@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 
@@ -13,6 +14,9 @@ import (
 // NilLangRef represents a convention for a nil language reference.
 // It is used for LangRefValue objects without an explicit language key.
 const NilLangRef LangRef = "-"
+
+// DefaultLang represents the default language reference used when using the convenience content generation.
+var DefaultLang = NilLangRef
 
 type (
 	// LangRef is the type for a language reference code, should be an ISO639-1 language specifier.
@@ -28,8 +32,16 @@ type (
 	NaturalLanguageValues []LangRefValue
 )
 
-func NaturalLanguageValuesNew() NaturalLanguageValues {
-	return make(NaturalLanguageValues, 0)
+func NaturalLanguageValuesNew(values ...LangRefValue) NaturalLanguageValues {
+	n := make(NaturalLanguageValues, len(values))
+	for i, val := range values {
+		n[i] = val
+	}
+	return n
+}
+
+func DefaultNaturalLanguageValue(content string) NaturalLanguageValues {
+	return NaturalLanguageValuesNew(DefaultLangRef(content))
 }
 
 func (n NaturalLanguageValues) String() string {
@@ -71,6 +83,10 @@ func (n *NaturalLanguageValues) Set(ref LangRef, v Content) error {
 		n.Append(ref, v)
 	}
 	return nil
+}
+
+func (n *NaturalLanguageValues) Add(ref LangRefValue) {
+	*n = append(*n, ref)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
@@ -134,6 +150,23 @@ func (n NaturalLanguageValues) MarshalText() ([]byte, error) {
 	return nil, nil
 }
 
+func (n NaturalLanguageValues) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'q':
+		io.WriteString(s, "[")
+		for _, nn := range n {
+			nn.Format(s, verb)
+		}
+		io.WriteString(s, "]")
+	case 'v':
+		io.WriteString(s, "[")
+		for _, nn := range n {
+			nn.Format(s, verb)
+		}
+		io.WriteString(s, "]")
+	}
+}
+
 // Append is syntactic sugar for resizing the NaturalLanguageValues map
 // and appending an element
 func (n *NaturalLanguageValues) Append(lang LangRef, value Content) error {
@@ -155,6 +188,31 @@ func (l LangRefValue) String() string {
 		return l.Value.String()
 	}
 	return fmt.Sprintf("%s[%s]", l.Value, l.Ref)
+}
+
+func DefaultLangRef(value string) LangRefValue {
+	return LangRefValue{Ref: DefaultLang, Value: Content(value)}
+}
+
+func LangRefValueNew(lang LangRef, value string) LangRefValue {
+	return LangRefValue{Ref: lang, Value: Content(value)}
+}
+
+func (l LangRefValue) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'q':
+		if l.Ref == NilLangRef {
+			io.WriteString(s, string(l.Value))
+		} else {
+			io.WriteString(s, fmt.Sprintf("%q[%s]", l.Value, l.Ref))
+		}
+	case 'v':
+		if l.Ref == NilLangRef {
+			io.WriteString(s, fmt.Sprintf("%q", string(l.Value)))
+		} else {
+			io.WriteString(s, fmt.Sprintf("%q[%s]", string(l.Value), l.Ref))
+		}
+	}
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
@@ -358,6 +416,15 @@ func (c Content) String() string {
 
 func (c Content) Equals(other Content) bool {
 	return bytes.Equal(c, other)
+}
+
+func (c Content) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's', 'q':
+		io.WriteString(s, string(c))
+	case 'v':
+		io.WriteString(s, fmt.Sprintf("%q", string(c)))
+	}
 }
 
 func unescape(b []byte) []byte {

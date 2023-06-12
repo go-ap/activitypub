@@ -262,7 +262,7 @@ func TestNaturalLanguageValue_MarshalText(t *testing.T) {
 	if j == nil {
 		t.Errorf("Error marshaling: nil value returned")
 	}
-	expected := fmt.Sprintf("\"%s[%s]\"", nlv.Value, nlv.Ref)
+	expected := fmt.Sprintf("%s[%s]", nlv.Value, nlv.Ref)
 	if string(j) != expected {
 		t.Errorf("Wrong value: %s, expected %s", j, expected)
 	}
