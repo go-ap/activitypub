@@ -253,7 +253,7 @@ func (c CollectionPage) MarshalBinary() ([]byte, error) {
 }
 
 func (c CollectionPage) GobEncode() ([]byte, error) {
-	var mm = make(map[string][]byte)
+	mm := make(map[string][]byte)
 	hasData, err := mapCollectionPageProperties(mm, c)
 	if err != nil {
 		return nil, err

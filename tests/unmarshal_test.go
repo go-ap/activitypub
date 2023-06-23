@@ -3,7 +3,6 @@ package tests
 import (
 	"bytes"
 	"fmt"
-	pub "github.com/go-ap/activitypub"
 	"io"
 	"os"
 	"path/filepath"
@@ -11,6 +10,8 @@ import (
 	"testing"
 	"time"
 	"unsafe"
+
+	pub "github.com/go-ap/activitypub"
 
 	j "github.com/go-ap/jsonld"
 )
@@ -395,8 +396,8 @@ var allTests = testMaps{
 				&pub.Object{
 					ID:           pub.ID("http://example.com/outbox/53c6fb47"),
 					Type:         pub.ArticleType,
-					Name:         pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("Example title")}},
-					Content:      pub.NaturalLanguageValues{{pub.NilLangRef, pub.Content("Example content!")}},
+					Name:         pub.NaturalLanguageValues{{Ref: pub.NilLangRef, Value: pub.Content("Example title")}},
+					Content:      pub.NaturalLanguageValues{{Ref: pub.NilLangRef, Value: pub.Content("Example content!")}},
 					URL:          pub.IRI("http://example.com/53c6fb47"),
 					MediaType:    pub.MimeType("text/markdown"),
 					Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),
@@ -526,7 +527,7 @@ func getFileContents(path string) ([]byte, error) {
 func TestUnmarshal(t *testing.T) {
 	var err error
 
-	var f = t.Errorf
+	f := t.Errorf
 	if len(allTests) == 0 {
 		t.Skip("No tests found")
 	}

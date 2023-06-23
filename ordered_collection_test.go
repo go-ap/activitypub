@@ -6,7 +6,7 @@ import (
 )
 
 func TestOrderedCollectionNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	c := OrderedCollectionNew(testValue)
 

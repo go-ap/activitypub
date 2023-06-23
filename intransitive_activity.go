@@ -217,7 +217,7 @@ func (i IntransitiveActivity) MarshalBinary() ([]byte, error) {
 }
 
 func (i IntransitiveActivity) GobEncode() ([]byte, error) {
-	var mm = make(map[string][]byte)
+	mm := make(map[string][]byte)
 	hasData, err := mapIntransitiveActivityProperties(mm, &i)
 	if err != nil {
 		return nil, err

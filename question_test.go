@@ -3,7 +3,7 @@ package activitypub
 import "testing"
 
 func TestQuestionNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := QuestionNew(testValue)
 

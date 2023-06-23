@@ -6,7 +6,7 @@ import (
 )
 
 func TestIntransitiveActivityNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 	var testType ActivityVocabularyType = "Arrive"
 
 	a := IntransitiveActivityNew(testValue, testType)
@@ -108,6 +108,7 @@ func TestIntransitiveActivityRecipients(t *testing.T) {
 		t.Error(err)
 	}
 }
+
 func TestIntransitiveActivity_GetLink(t *testing.T) {
 	i := IntransitiveActivityNew("test", QuestionType)
 
@@ -115,6 +116,7 @@ func TestIntransitiveActivity_GetLink(t *testing.T) {
 		t.Errorf("%T should return an empty %T object. Received %#v", i, i, i)
 	}
 }
+
 func TestIntransitiveActivity_GetObject(t *testing.T) {
 	i := IntransitiveActivityNew("test", QuestionType)
 
@@ -122,6 +124,7 @@ func TestIntransitiveActivity_GetObject(t *testing.T) {
 		t.Errorf("%T should not return an empty %T object. Received %#v", i, i, i)
 	}
 }
+
 func TestIntransitiveActivity_IsLink(t *testing.T) {
 	i := IntransitiveActivityNew("test", QuestionType)
 
@@ -129,6 +132,7 @@ func TestIntransitiveActivity_IsLink(t *testing.T) {
 		t.Errorf("%T should not respond true to IsLink", i)
 	}
 }
+
 func TestIntransitiveActivity_IsObject(t *testing.T) {
 	i := IntransitiveActivityNew("test", ActivityType)
 
@@ -136,6 +140,7 @@ func TestIntransitiveActivity_IsObject(t *testing.T) {
 		t.Errorf("%T should respond true to IsObject", i)
 	}
 }
+
 func TestIntransitiveActivity_Recipients(t *testing.T) {
 	to := PersonNew("bob")
 	o := ObjectNew(ArticleType)
@@ -237,7 +242,7 @@ func TestIntransitiveActivity_UnmarshalJSON(t *testing.T) {
 }
 
 func TestArriveNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := ArriveNew(testValue)
 
@@ -250,7 +255,7 @@ func TestArriveNew(t *testing.T) {
 }
 
 func TestTravelNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := TravelNew(testValue)
 

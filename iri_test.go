@@ -53,8 +53,7 @@ func TestIRI_IsObject(t *testing.T) {
 	if ii.IsObject() {
 		t.Errorf("%T.IsObject() returned %t, expected %t", ii, ii.IsObject(), false)
 	}
-	var iii *IRI
-	iii = &ii
+	iii := &ii
 	if iii.IsObject() {
 		t.Errorf("%T.IsObject() returned %t, expected %t", iii, iii.IsObject(), false)
 	}

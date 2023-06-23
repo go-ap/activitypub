@@ -170,15 +170,7 @@ func (n NaturalLanguageValues) Format(s fmt.State, verb rune) {
 // Append is syntactic sugar for resizing the NaturalLanguageValues map
 // and appending an element
 func (n *NaturalLanguageValues) Append(lang LangRef, value Content) error {
-	var t NaturalLanguageValues
-	if len(*n) == 0 {
-		t = make(NaturalLanguageValues, 0)
-	} else {
-		t = *n
-	}
-	t = append(*n, LangRefValue{lang, value})
-	*n = t
-
+	*n = append(*n, LangRefValue{lang, value})
 	return nil
 }
 

@@ -588,7 +588,7 @@ func AcceptNew(id ID, ob Item) *Accept {
 }
 
 // AddNew initializes an Add activity
-func AddNew(id ID, ob Item, trgt Item) *Add {
+func AddNew(id ID, ob, trgt Item) *Add {
 	a := ActivityNew(id, AddType, ob)
 	o := Add(*a)
 	o.Target = trgt
@@ -715,7 +715,7 @@ func ReadNew(id ID, ob Item) *Read {
 }
 
 // RemoveNew initializes a Remove activity
-func RemoveNew(id ID, ob Item, trgt Item) *Remove {
+func RemoveNew(id ID, ob, trgt Item) *Remove {
 	a := ActivityNew(id, RemoveType, ob)
 	o := Remove(*a)
 	o.Target = trgt
@@ -898,7 +898,7 @@ func mapActivityProperties(mm map[string][]byte, a *Activity) (hasData bool, err
 
 // GobEncode
 func (a Activity) GobEncode() ([]byte, error) {
-	var mm = make(map[string][]byte)
+	mm := make(map[string][]byte)
 	hasData, err := mapActivityProperties(mm, &a)
 	if err != nil {
 		return nil, err

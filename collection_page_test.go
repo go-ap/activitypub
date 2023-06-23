@@ -6,7 +6,7 @@ import (
 )
 
 func TestCollectionPageNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	c := CollectionNew(testValue)
 	p := CollectionPageNew(c)

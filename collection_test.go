@@ -6,7 +6,7 @@ import (
 )
 
 func TestCollectionNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	c := CollectionNew(testValue)
 

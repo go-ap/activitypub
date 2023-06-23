@@ -197,53 +197,55 @@ func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool
 
 type testPairs map[ActivityVocabularyType]reflect.Type
 
-var objectPtrType = reflect.TypeOf(new(*Object)).Elem()
-var tombstoneType = reflect.TypeOf(new(*Tombstone)).Elem()
-var profileType = reflect.TypeOf(new(*Profile)).Elem()
-var placeType = reflect.TypeOf(new(*Place)).Elem()
-var relationshipType = reflect.TypeOf(new(*Relationship)).Elem()
-var linkPtrType = reflect.TypeOf(new(*Link)).Elem()
-var mentionPtrType = reflect.TypeOf(new(*Mention)).Elem()
-var activityPtrType = reflect.TypeOf(new(*Activity)).Elem()
-var intransitiveActivityPtrType = reflect.TypeOf(new(*IntransitiveActivity)).Elem()
-var collectionPtrType = reflect.TypeOf(new(*Collection)).Elem()
-var collectionPagePtrType = reflect.TypeOf(new(*CollectionPage)).Elem()
-var orderedCollectionPtrType = reflect.TypeOf(new(*OrderedCollection)).Elem()
-var orderedCollectionPagePtrType = reflect.TypeOf(new(*OrderedCollectionPage)).Elem()
-var actorPtrType = reflect.TypeOf(new(*Actor)).Elem()
-var applicationPtrType = reflect.TypeOf(new(*Application)).Elem()
-var servicePtrType = reflect.TypeOf(new(*Service)).Elem()
-var personPtrType = reflect.TypeOf(new(*Person)).Elem()
-var groupPtrType = reflect.TypeOf(new(*Group)).Elem()
-var organizationPtrType = reflect.TypeOf(new(*Organization)).Elem()
-var acceptPtrType = reflect.TypeOf(new(*Accept)).Elem()
-var addPtrType = reflect.TypeOf(new(*Add)).Elem()
-var announcePtrType = reflect.TypeOf(new(*Announce)).Elem()
-var arrivePtrType = reflect.TypeOf(new(*Arrive)).Elem()
-var blockPtrType = reflect.TypeOf(new(*Block)).Elem()
-var createPtrType = reflect.TypeOf(new(*Create)).Elem()
-var deletePtrType = reflect.TypeOf(new(*Delete)).Elem()
-var dislikePtrType = reflect.TypeOf(new(*Dislike)).Elem()
-var flagPtrType = reflect.TypeOf(new(*Flag)).Elem()
-var followPtrType = reflect.TypeOf(new(*Follow)).Elem()
-var ignorePtrType = reflect.TypeOf(new(*Ignore)).Elem()
-var invitePtrType = reflect.TypeOf(new(*Invite)).Elem()
-var joinPtrType = reflect.TypeOf(new(*Join)).Elem()
-var leavePtrType = reflect.TypeOf(new(*Leave)).Elem()
-var likePtrType = reflect.TypeOf(new(*Like)).Elem()
-var listenPtrType = reflect.TypeOf(new(*Listen)).Elem()
-var movePtrType = reflect.TypeOf(new(*Move)).Elem()
-var offerPtrType = reflect.TypeOf(new(*Offer)).Elem()
-var questionPtrType = reflect.TypeOf(new(*Question)).Elem()
-var rejectPtrType = reflect.TypeOf(new(*Reject)).Elem()
-var readPtrType = reflect.TypeOf(new(*Read)).Elem()
-var removePtrType = reflect.TypeOf(new(*Remove)).Elem()
-var tentativeRejectPtrType = reflect.TypeOf(new(*TentativeReject)).Elem()
-var tentativeAcceptPtrType = reflect.TypeOf(new(*TentativeAccept)).Elem()
-var travelPtrType = reflect.TypeOf(new(*Travel)).Elem()
-var undoPtrType = reflect.TypeOf(new(*Undo)).Elem()
-var updatePtrType = reflect.TypeOf(new(*Update)).Elem()
-var viewPtrType = reflect.TypeOf(new(*View)).Elem()
+var (
+	objectPtrType                = reflect.TypeOf(new(*Object)).Elem()
+	tombstoneType                = reflect.TypeOf(new(*Tombstone)).Elem()
+	profileType                  = reflect.TypeOf(new(*Profile)).Elem()
+	placeType                    = reflect.TypeOf(new(*Place)).Elem()
+	relationshipType             = reflect.TypeOf(new(*Relationship)).Elem()
+	linkPtrType                  = reflect.TypeOf(new(*Link)).Elem()
+	mentionPtrType               = reflect.TypeOf(new(*Mention)).Elem()
+	activityPtrType              = reflect.TypeOf(new(*Activity)).Elem()
+	intransitiveActivityPtrType  = reflect.TypeOf(new(*IntransitiveActivity)).Elem()
+	collectionPtrType            = reflect.TypeOf(new(*Collection)).Elem()
+	collectionPagePtrType        = reflect.TypeOf(new(*CollectionPage)).Elem()
+	orderedCollectionPtrType     = reflect.TypeOf(new(*OrderedCollection)).Elem()
+	orderedCollectionPagePtrType = reflect.TypeOf(new(*OrderedCollectionPage)).Elem()
+	actorPtrType                 = reflect.TypeOf(new(*Actor)).Elem()
+	applicationPtrType           = reflect.TypeOf(new(*Application)).Elem()
+	servicePtrType               = reflect.TypeOf(new(*Service)).Elem()
+	personPtrType                = reflect.TypeOf(new(*Person)).Elem()
+	groupPtrType                 = reflect.TypeOf(new(*Group)).Elem()
+	organizationPtrType          = reflect.TypeOf(new(*Organization)).Elem()
+	acceptPtrType                = reflect.TypeOf(new(*Accept)).Elem()
+	addPtrType                   = reflect.TypeOf(new(*Add)).Elem()
+	announcePtrType              = reflect.TypeOf(new(*Announce)).Elem()
+	arrivePtrType                = reflect.TypeOf(new(*Arrive)).Elem()
+	blockPtrType                 = reflect.TypeOf(new(*Block)).Elem()
+	createPtrType                = reflect.TypeOf(new(*Create)).Elem()
+	deletePtrType                = reflect.TypeOf(new(*Delete)).Elem()
+	dislikePtrType               = reflect.TypeOf(new(*Dislike)).Elem()
+	flagPtrType                  = reflect.TypeOf(new(*Flag)).Elem()
+	followPtrType                = reflect.TypeOf(new(*Follow)).Elem()
+	ignorePtrType                = reflect.TypeOf(new(*Ignore)).Elem()
+	invitePtrType                = reflect.TypeOf(new(*Invite)).Elem()
+	joinPtrType                  = reflect.TypeOf(new(*Join)).Elem()
+	leavePtrType                 = reflect.TypeOf(new(*Leave)).Elem()
+	likePtrType                  = reflect.TypeOf(new(*Like)).Elem()
+	listenPtrType                = reflect.TypeOf(new(*Listen)).Elem()
+	movePtrType                  = reflect.TypeOf(new(*Move)).Elem()
+	offerPtrType                 = reflect.TypeOf(new(*Offer)).Elem()
+	questionPtrType              = reflect.TypeOf(new(*Question)).Elem()
+	rejectPtrType                = reflect.TypeOf(new(*Reject)).Elem()
+	readPtrType                  = reflect.TypeOf(new(*Read)).Elem()
+	removePtrType                = reflect.TypeOf(new(*Remove)).Elem()
+	tentativeRejectPtrType       = reflect.TypeOf(new(*TentativeReject)).Elem()
+	tentativeAcceptPtrType       = reflect.TypeOf(new(*TentativeAccept)).Elem()
+	travelPtrType                = reflect.TypeOf(new(*Travel)).Elem()
+	undoPtrType                  = reflect.TypeOf(new(*Undo)).Elem()
+	updatePtrType                = reflect.TypeOf(new(*Update)).Elem()
+	viewPtrType                  = reflect.TypeOf(new(*View)).Elem()
+)
 
 var tests = testPairs{
 	ObjectType:                objectPtrType,
@@ -411,7 +413,6 @@ func TestJSONGetDuration(t *testing.T) {
 }
 
 func TestJSONGetInt(t *testing.T) {
-
 }
 
 func TestJSONGetIRI(t *testing.T) {
@@ -423,7 +424,6 @@ func TestJSONGetItem(t *testing.T) {
 }
 
 func TestJSONGetItems(t *testing.T) {
-
 }
 
 func TestJSONGetLangRefField(t *testing.T) {

@@ -4,8 +4,9 @@ package tests
 
 import (
 	"fmt"
-	pub "github.com/go-ap/activitypub"
 	"testing"
+
+	pub "github.com/go-ap/activitypub"
 )
 
 // S2S Server: Activities requiring the object property
@@ -431,7 +432,7 @@ S2S Server: Delete activity
 	t.Skip(desc)
 }
 
-//S2S Server: Following, and handling accept/reject of follows
+// S2S Server: Following, and handling accept/reject of follows
 // Follow should add the activity's actor to the receiving actor's Followers Collection.
 func TestFollowAddsToFollowers(t *testing.T) {
 	desc := `
@@ -442,7 +443,7 @@ S2S Server: Following, and handling accept/reject of follows
 	t.Skip(desc)
 }
 
-//S2S Server: Following, and handling accept/reject of follows
+// S2S Server: Following, and handling accept/reject of follows
 // Generates either an Accept or Reject activity with Follow as object and deliver to actor of the Follow
 func TestGeneratesAcceptOrReject(t *testing.T) {
 	desc := `
@@ -453,7 +454,7 @@ S2S Server: Following, and handling accept/reject of follows
 	t.Skip(desc)
 }
 
-//S2S Server: Following, and handling accept/reject of follows
+// S2S Server: Following, and handling accept/reject of follows
 // If receiving an Accept in reply to a Follow activity, adds actor to receiver's Following Collection
 func TestAddsFollowerIfAccept(t *testing.T) {
 	desc := `
@@ -464,7 +465,7 @@ S2S Server: Following, and handling accept/reject of follows
 	t.Skip(desc)
 }
 
-//S2S Server: Following, and handling accept/reject of follows
+// S2S Server: Following, and handling accept/reject of follows
 // If receiving a Reject in reply to a Follow activity, does not add actor to receiver's Following Collection
 func TestDoesntAddFollowerIfReject(t *testing.T) {
 	desc := `

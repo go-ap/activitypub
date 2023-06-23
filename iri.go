@@ -340,7 +340,7 @@ func (i IRI) Equals(with IRI, checkScheme bool) bool {
 	u, e := i.URL()
 	uw, ew := with.URL()
 	if e != nil || ew != nil || !validURL(u) || !validURL(uw) {
-		return strings.ToLower(i.String()) == strings.ToLower(with.String())
+		return strings.EqualFold(i.String(), with.String())
 	}
 	if checkScheme {
 		if !strings.EqualFold(u.Scheme, uw.Scheme) {

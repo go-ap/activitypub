@@ -8,7 +8,7 @@ import (
 )
 
 func TestActivityNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 	var testType ActivityVocabularyType = "Accept"
 
 	a := ActivityNew(testValue, testType, nil)
@@ -30,7 +30,7 @@ func TestActivityNew(t *testing.T) {
 }
 
 func TestAcceptNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := AcceptNew(testValue, nil)
 
@@ -43,7 +43,7 @@ func TestAcceptNew(t *testing.T) {
 }
 
 func TestAddNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := AddNew(testValue, nil, nil)
 
@@ -56,7 +56,7 @@ func TestAddNew(t *testing.T) {
 }
 
 func TestAnnounceNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := AnnounceNew(testValue, nil)
 
@@ -69,7 +69,7 @@ func TestAnnounceNew(t *testing.T) {
 }
 
 func TestBlockNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := BlockNew(testValue, nil)
 
@@ -82,7 +82,7 @@ func TestBlockNew(t *testing.T) {
 }
 
 func TestCreateNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := CreateNew(testValue, nil)
 
@@ -95,7 +95,7 @@ func TestCreateNew(t *testing.T) {
 }
 
 func TestDeleteNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := DeleteNew(testValue, nil)
 
@@ -108,7 +108,7 @@ func TestDeleteNew(t *testing.T) {
 }
 
 func TestDislikeNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := DislikeNew(testValue, nil)
 
@@ -121,7 +121,7 @@ func TestDislikeNew(t *testing.T) {
 }
 
 func TestFlagNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := FlagNew(testValue, nil)
 
@@ -134,7 +134,7 @@ func TestFlagNew(t *testing.T) {
 }
 
 func TestFollowNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := FollowNew(testValue, nil)
 
@@ -147,7 +147,7 @@ func TestFollowNew(t *testing.T) {
 }
 
 func TestIgnoreNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := IgnoreNew(testValue, nil)
 
@@ -160,7 +160,7 @@ func TestIgnoreNew(t *testing.T) {
 }
 
 func TestInviteNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := InviteNew(testValue, nil)
 
@@ -173,7 +173,7 @@ func TestInviteNew(t *testing.T) {
 }
 
 func TestJoinNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := JoinNew(testValue, nil)
 
@@ -186,7 +186,7 @@ func TestJoinNew(t *testing.T) {
 }
 
 func TestLeaveNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := LeaveNew(testValue, nil)
 
@@ -199,7 +199,7 @@ func TestLeaveNew(t *testing.T) {
 }
 
 func TestLikeNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := LikeNew(testValue, nil)
 
@@ -212,7 +212,7 @@ func TestLikeNew(t *testing.T) {
 }
 
 func TestListenNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := ListenNew(testValue, nil)
 
@@ -225,7 +225,7 @@ func TestListenNew(t *testing.T) {
 }
 
 func TestMoveNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := MoveNew(testValue, nil)
 
@@ -238,7 +238,7 @@ func TestMoveNew(t *testing.T) {
 }
 
 func TestOfferNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := OfferNew(testValue, nil)
 
@@ -251,7 +251,7 @@ func TestOfferNew(t *testing.T) {
 }
 
 func TestRejectNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := RejectNew(testValue, nil)
 
@@ -264,7 +264,7 @@ func TestRejectNew(t *testing.T) {
 }
 
 func TestReadNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := ReadNew(testValue, nil)
 
@@ -277,7 +277,7 @@ func TestReadNew(t *testing.T) {
 }
 
 func TestRemoveNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := RemoveNew(testValue, nil, nil)
 
@@ -290,7 +290,7 @@ func TestRemoveNew(t *testing.T) {
 }
 
 func TestTentativeRejectNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := TentativeRejectNew(testValue, nil)
 
@@ -303,7 +303,7 @@ func TestTentativeRejectNew(t *testing.T) {
 }
 
 func TestTentativeAcceptNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := TentativeAcceptNew(testValue, nil)
 
@@ -316,7 +316,7 @@ func TestTentativeAcceptNew(t *testing.T) {
 }
 
 func TestUndoNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := UndoNew(testValue, nil)
 
@@ -329,7 +329,7 @@ func TestUndoNew(t *testing.T) {
 }
 
 func TestUpdateNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := UpdateNew(testValue, nil)
 
@@ -342,7 +342,7 @@ func TestUpdateNew(t *testing.T) {
 }
 
 func TestViewNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	a := ViewNew(testValue, nil)
 
@@ -641,6 +641,7 @@ func TestActivity_GetID(t *testing.T) {
 		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
 	}
 }
+
 func TestActivity_GetIDGetType(t *testing.T) {
 	a := ActivityNew("test", ActivityType, Person{})
 
@@ -648,6 +649,7 @@ func TestActivity_GetIDGetType(t *testing.T) {
 		t.Errorf("%T should not return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
 	}
 }
+
 func TestActivity_IsLink(t *testing.T) {
 	a := ActivityNew("test", ActivityType, Person{})
 
@@ -655,6 +657,7 @@ func TestActivity_IsLink(t *testing.T) {
 		t.Errorf("%T should not respond true to IsLink", a)
 	}
 }
+
 func TestActivity_IsObject(t *testing.T) {
 	a := ActivityNew("test", ActivityType, Person{})
 
@@ -956,6 +959,7 @@ func TestToActivity(t *testing.T) {
 func TestValidEventRSVPActivityType(t *testing.T) {
 	t.Skipf("TODO")
 }
+
 func TestValidGroupManagementActivityType(t *testing.T) {
 	t.Skipf("TODO")
 }

@@ -6,7 +6,7 @@ import (
 )
 
 func TestOrderedCollectionPageNew(t *testing.T) {
-	var testValue = ID("test")
+	testValue := ID("test")
 
 	c := OrderedCollectionNew(testValue)
 	p := OrderedCollectionPageNew(c)

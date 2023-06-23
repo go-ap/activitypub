@@ -9,8 +9,8 @@ import (
 )
 
 func TestObjectNew(t *testing.T) {
-	var testValue = ID("test")
-	var testType = ArticleType
+	testValue := ID("test")
+	testType := ArticleType
 
 	o := ObjectNew(testType)
 	o.ID = testValue
@@ -30,7 +30,6 @@ func TestObjectNew(t *testing.T) {
 	if n.Type != ObjectType {
 		t.Errorf("APObject Type '%v' different than expected '%v'", n.Type, ObjectType)
 	}
-
 }
 
 func TestActivityVocabularyTypes_Contains(t *testing.T) {

@@ -1,12 +1,12 @@
 package tests
 
 import (
+	"strings"
 	"testing"
 
 	j "github.com/go-ap/jsonld"
 
 	pub "github.com/go-ap/activitypub"
-	"strings"
 )
 
 func TestAcceptSerialization(t *testing.T) {

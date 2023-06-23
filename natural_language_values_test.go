@@ -22,7 +22,6 @@ func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
 	}
 	js := "{\"en\":\"the test\",\"fr\":\"le test\"}"
 	out, err := p.MarshalJSON()
-
 	if err != nil {
 		t.Errorf("Error: '%s'", err)
 	}
@@ -188,9 +187,9 @@ func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
 	langDe := "de-DE"
 	valDe := Content("zufällig\n")
 
-	//m := make(map[string]string)
-	//m[langEn] = valEn
-	//m[langDe] = valDe
+	// m := make(map[string]string)
+	// m[langEn] = valEn
+	// m[langDe] = valDe
 
 	json := `{
 		"` + langEn + `": "` + valEn.String() + `",
@@ -299,8 +298,8 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		if string(result) != mRes {
 			t.Errorf("Different results '%v' vs. '%v'", string(result), mRes)
 		}
-		//n := NaturalLanguageValuesNew()
-		//result, err := n.MarshalJSON()
+		// n := NaturalLanguageValuesNew()
+		// result, err := n.MarshalJSON()
 
 		s := make(map[LangRef]string)
 		s["en"] = "test"
