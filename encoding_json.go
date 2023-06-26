@@ -131,11 +131,11 @@ func JSONWriteStringValue(b *[]byte, s string) (notEmpty bool) {
 	return true
 }
 
-func JSONWriteItemCollectionValue(b *[]byte, col ItemCollection) (notEmpty bool) {
+func JSONWriteItemCollectionValue(b *[]byte, col ItemCollection, compact bool) (notEmpty bool) {
 	if len(col) == 0 {
 		return notEmpty
 	}
-	if len(col) == 1 {
+	if len(col) == 1 && compact {
 		it := col[0]
 		im, ok := it.(json.Marshaler)
 		if !ok {
@@ -178,12 +178,12 @@ func JSONWriteItemCollectionValue(b *[]byte, col ItemCollection) (notEmpty bool)
 	return true
 }
 
-func JSONWriteItemCollectionProp(b *[]byte, n string, col ItemCollection) (notEmpty bool) {
+func JSONWriteItemCollectionProp(b *[]byte, n string, col ItemCollection, compact bool) (notEmpty bool) {
 	if len(col) == 0 {
 		return notEmpty
 	}
 	JSONWriteComma(b)
-	success := JSONWritePropName(b, n) && JSONWriteItemCollectionValue(b, col)
+	success := JSONWritePropName(b, n) && JSONWriteItemCollectionValue(b, col, compact)
 	if !success {
 		*b = (*b)[:len(*b)-1]
 	}
@@ -243,22 +243,22 @@ func JSONWriteObjectValue(b *[]byte, o Object) (notEmpty bool) {
 		notEmpty = JSONWriteItemProp(b, "replies", o.Replies) || notEmpty
 	}
 	if o.Tag != nil {
-		notEmpty = JSONWriteItemProp(b, "tag", o.Tag) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(b, "tag", o.Tag, false) || notEmpty
 	}
 	if o.URL != nil {
 		notEmpty = JSONWriteItemProp(b, "url", o.URL) || notEmpty
 	}
 	if o.To != nil {
-		notEmpty = JSONWriteItemProp(b, "to", o.To) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(b, "to", o.To, false) || notEmpty
 	}
 	if o.Bto != nil {
-		notEmpty = JSONWriteItemProp(b, "bto", o.Bto) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(b, "bto", o.Bto, false) || notEmpty
 	}
 	if o.CC != nil {
-		notEmpty = JSONWriteItemProp(b, "cc", o.CC) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(b, "cc", o.CC, false) || notEmpty
 	}
 	if o.BCC != nil {
-		notEmpty = JSONWriteItemProp(b, "bcc", o.BCC) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(b, "bcc", o.BCC, false) || notEmpty
 	}
 	if !o.Published.IsZero() {
 		notEmpty = JSONWriteTimeProp(b, "published", o.Published) || notEmpty

@@ -236,7 +236,7 @@ func (o OrderedCollectionPage) MarshalJSON() ([]byte, error) {
 	}
 	notEmpty = JSONWriteIntProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
 	if o.OrderedItems != nil {
-		notEmpty = JSONWriteItemCollectionProp(&b, "orderedItems", o.OrderedItems) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(&b, "orderedItems", o.OrderedItems, false) || notEmpty
 	}
 	if notEmpty {
 		JSONWrite(&b, '}')

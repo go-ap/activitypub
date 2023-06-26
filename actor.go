@@ -392,7 +392,7 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 		}
 	}
 	if len(a.Streams) > 0 {
-		notEmpty = JSONWriteItemCollectionProp(&b, "streams", a.Streams)
+		notEmpty = JSONWriteItemCollectionProp(&b, "streams", a.Streams, false)
 	}
 	if len(a.PublicKey.PublicKeyPem)+len(a.PublicKey.ID) > 0 {
 		if v, err := a.PublicKey.MarshalJSON(); err == nil && len(v) > 0 {
