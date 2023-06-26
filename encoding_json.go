@@ -135,6 +135,22 @@ func JSONWriteItemCollectionValue(b *[]byte, col ItemCollection) (notEmpty bool)
 	if len(col) == 0 {
 		return notEmpty
 	}
+	if len(col) == 1 {
+		it := col[0]
+		im, ok := it.(json.Marshaler)
+		if !ok {
+			return false
+		}
+		v, err := im.MarshalJSON()
+		if err != nil {
+			return false
+		}
+		if len(v) == 0 {
+			return false
+		}
+		JSONWrite(b, v...)
+		return true
+	}
 	writeCommaIfNotEmpty := func(notEmpty bool) {
 		if notEmpty {
 			JSONWrite(b, ',')
