@@ -1,4 +1,4 @@
-# About GoActivityPub
+# About GoActivityPub: Vocabulary
 
 [![MIT Licensed](https://img.shields.io/github/license/go-ap/activitypub.svg)](https://raw.githubusercontent.com/go-ap/activitypub/master/LICENSE)
 [![Build Status](https://builds.sr.ht/~mariusor/activitypub.svg)](https://builds.sr.ht/~mariusor/activitypub)
