@@ -204,7 +204,7 @@ func Test_JSONWriteItemCollection(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := JSONWriteItemCollectionValue(tt.args.b, tt.args.col); gotNotEmpty != tt.wantNotEmpty {
+			if gotNotEmpty := JSONWriteItemCollectionValue(tt.args.b, tt.args.col, true); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteItemCollectionValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
@@ -226,7 +226,7 @@ func Test_JSONWriteItemCollectionProp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotNotEmpty := JSONWriteItemCollectionProp(tt.args.b, tt.args.n, tt.args.col); gotNotEmpty != tt.wantNotEmpty {
+			if gotNotEmpty := JSONWriteItemCollectionProp(tt.args.b, tt.args.n, tt.args.col, true); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteItemCollectionProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 		})
