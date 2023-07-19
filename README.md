@@ -1,28 +1,66 @@
-# Activity Pub for Go
+# About GoActivityPub
 
 [![MIT Licensed](https://img.shields.io/github/license/go-ap/activitypub.svg)](https://raw.githubusercontent.com/go-ap/activitypub/master/LICENSE)
 [![Build Status](https://builds.sr.ht/~mariusor/activitypub.svg)](https://builds.sr.ht/~mariusor/activitypub)
 [![Test Coverage](https://img.shields.io/codecov/c/github/go-ap/activitypub.svg)](https://codecov.io/gh/go-ap/activitypub)
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-ap/activitypub)](https://goreportcard.com/report/github.com/go-ap/activitypub)
 
-Basic package for using [ActivityPub](https://www.w3.org/TR/activitypub/#Overview) API in Go.
+This project is part of the [GoActivityPub](https://github.com/go-ap) library which helps with creating ActivityPub applications using the Go programming language.
 
-It contains types for most of the ActivityStreams vocabulary and the ActivityPub extension.
-They are documented accordingly with annotations from the specification.
+It contains data types for most of the [Activity Vocabulary](https://www.w3.org/TR/activitystreams-vocabulary/) and the [ActivityPub](https://www.w3.org/TR/activitypub/) extension.
+They are documented accordingly with annotations from these specifications.
+
+You can find an expanded documentation about the whole library [on SourceHut](https://man.sr.ht/~mariusor/go-activitypub/go-ap/index.md).
+
+For discussions about the projects you can write to the discussions mailing list: [~mariusor/go-activitypub-discuss@lists.sr.ht](mailto:~mariusor/go-activitypub-discuss@lists.sr.ht)
+
+For patches and bug reports please use the dev mailing list: [~mariusor/go-activitypub-dev@lists.sr.ht](mailto:~mariusor/go-activitypub-dev@lists.sr.ht)
 
 ## Usage
 
 ```go
-import "github.com/go-ap/activitypub"
+import vocab "github.com/go-ap/activitypub"
+
+follow := vocab.Activity{
+    Type: vocab.FollowType,
+    Actor: vocab.IRI("https://example.com/alice"),
+    Object: vocab.IRI("https://example.com/janedoe"),
+}
+
 ```
 
 ## Note about generics
 
-The helper functions exposed by the package come in two flavours: 
-explicit `OnXXX` and `ToXXX` functions corresponding to each type and,
-a generic pair of functions `On[T]` and `To[T]`.
+The module contains helper functions which make it simpler to deal with the `vocab.Item` 
+interfaces and they come in two flavours: explicit `OnXXX` and `ToXXX` functions corresponding 
+to each type and, a generic pair of functions `On[T]` and `To[T]`.
 
-Before using them you should consider that the latter comes with a pretty heavy performance penalty:
+```go
+import (
+    "fmt"
+
+    vocab "github.com/go-ap/activitypub"
+)
+
+var it vocab.Item = ... // an ActivityPub object unmarshaled from a request
+
+err := vocab.OnActivity(it, func(act *vocab.Activity) error {
+    if vocab.ContentManagementActivityTypes.Contains(act.Type) {
+        fmt.Printf("This is a Content Management type activity: %q", act.Type)
+    }
+    return nil
+})
+
+err := vocab.On[vocab.Activity](it, func(act *vocab.Activity) error {
+    if vocab.ReactionsActivityTypes.Contains(act.Type) {
+        fmt.Printf("This is a Reaction type activity: %q", act.Type)
+    }
+    return nil
+})
+
+```
+
+Before using the generic versions you should consider that they come with a pretty heavy performance penalty:
 
 ```
 goos: linux
