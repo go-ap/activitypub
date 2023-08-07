@@ -441,6 +441,8 @@ func GetItemByType(typ ActivityVocabularyType) (Item, error) {
 	case QuestionType:
 		return &Question{Type: typ}, nil
 	case "":
+		fallthrough
+	default:
 		// when no type is available use a plain Object
 		return &Object{}, nil
 	}
