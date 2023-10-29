@@ -259,18 +259,18 @@ func IntransitiveActivityNew(id ID, typ ActivityVocabularyType) *IntransitiveAct
 // ToIntransitiveActivity tries to convert it Item to an IntransitiveActivity object
 func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
 	switch i := it.(type) {
-	case *Activity:
-		return (*IntransitiveActivity)(unsafe.Pointer(i)), nil
-	case Activity:
-		return (*IntransitiveActivity)(unsafe.Pointer(&i)), nil
-	case *Question:
-		return (*IntransitiveActivity)(unsafe.Pointer(i)), nil
-	case Question:
-		return (*IntransitiveActivity)(unsafe.Pointer(&i)), nil
 	case *IntransitiveActivity:
 		return i, nil
 	case IntransitiveActivity:
 		return &i, nil
+	case *Question:
+		return (*IntransitiveActivity)(unsafe.Pointer(i)), nil
+	case Question:
+		return (*IntransitiveActivity)(unsafe.Pointer(&i)), nil
+	case *Activity:
+		return (*IntransitiveActivity)(unsafe.Pointer(i)), nil
+	case Activity:
+		return (*IntransitiveActivity)(unsafe.Pointer(&i)), nil
 	default:
 		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
 		typ := reflect.TypeOf(new(IntransitiveActivity))
@@ -300,8 +300,8 @@ func TravelNew(id ID) *Travel {
 // Equals verifies if our receiver Object is equals with the "with" Object
 func (i IntransitiveActivity) Equals(with Item) bool {
 	result := true
-	err := OnActivity(with, func(w *Activity) error {
-		OnObject(i, func(oa *Object) error {
+	err := OnIntransitiveActivity(with, func(w *IntransitiveActivity) error {
+		_ = OnObject(i, func(oa *Object) error {
 			result = oa.Equals(w)
 			return nil
 		})

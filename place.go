@@ -7,7 +7,6 @@ import (
 	"io"
 	"reflect"
 	"time"
-	"unsafe"
 
 	"github.com/valyala/fastjson"
 )
@@ -266,14 +265,6 @@ func ToPlace(it Item) (*Place, error) {
 		return i, nil
 	case Place:
 		return &i, nil
-	case *Object:
-		// FIXME(marius): **memory_safety** Place has extra properties which will point to invalid memory
-		//   we need a safe version for converting from smaller objects to larger ones
-		return (*Place)(unsafe.Pointer(i)), nil
-	case Object:
-		// FIXME(marius): **memory_safety** Place has extra properties which will point to invalid memory
-		//   we need a safe version for converting from smaller objects to larger ones
-		return (*Place)(unsafe.Pointer(&i)), nil
 	default:
 		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
 		typ := reflect.TypeOf(new(Place))

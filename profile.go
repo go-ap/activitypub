@@ -7,7 +7,6 @@ import (
 	"io"
 	"reflect"
 	"time"
-	"unsafe"
 
 	"github.com/valyala/fastjson"
 )
@@ -238,10 +237,6 @@ func ToProfile(it Item) (*Profile, error) {
 		return i, nil
 	case Profile:
 		return &i, nil
-	case *Object:
-		return (*Profile)(unsafe.Pointer(i)), nil
-	case Object:
-		return (*Profile)(unsafe.Pointer(&i)), nil
 	default:
 		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
 		typ := reflect.TypeOf(new(Profile))

@@ -8,7 +8,6 @@ import (
 	"io"
 	"reflect"
 	"time"
-	"unsafe"
 
 	"github.com/valyala/fastjson"
 )
@@ -496,10 +495,6 @@ func ToActor(it Item) (*Actor, error) {
 		return i, nil
 	case Actor:
 		return &i, nil
-	case *Object:
-		return (*Actor)(unsafe.Pointer(i)), nil
-	case Object:
-		return (*Actor)(unsafe.Pointer(&i)), nil
 	default:
 		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
 		typ := reflect.TypeOf(new(Actor))
@@ -516,7 +511,7 @@ func ToActor(it Item) (*Actor, error) {
 func (a Actor) Equals(with Item) bool {
 	result := true
 	err := OnActor(with, func(w *Actor) error {
-		OnObject(a, func(oa *Object) error {
+		_ = OnObject(a, func(oa *Object) error {
 			result = oa.Equals(w)
 			return nil
 		})

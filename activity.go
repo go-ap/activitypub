@@ -8,7 +8,6 @@ import (
 	"reflect"
 	"strings"
 	"time"
-	"unsafe"
 
 	"github.com/valyala/fastjson"
 )
@@ -806,16 +805,6 @@ func ToActivity(it Item) (*Activity, error) {
 		return i, nil
 	case Activity:
 		return &i, nil
-	case *IntransitiveActivity:
-		// TODO(marius): look at ToActor on how to copy the item to an Activity that we newly allocate
-		//  Otherwise this behaviour of forcing the type to a "smaller" one will raise -race conditions
-		return (*Activity)(unsafe.Pointer(i)), nil
-	case IntransitiveActivity:
-		return (*Activity)(unsafe.Pointer(&i)), nil
-	case *Question:
-		return (*Activity)(unsafe.Pointer(i)), nil
-	case Question:
-		return (*Activity)(unsafe.Pointer(&i)), nil
 	default:
 		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
 		typ := reflect.TypeOf(new(Activity))
