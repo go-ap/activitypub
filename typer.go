@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -180,11 +179,14 @@ func (t CollectionPaths) Split(i IRI) (IRI, CollectionPath) {
 
 // IRIf formats an IRI from an existing IRI and the CollectionPath type
 func IRIf(i IRI, t CollectionPath) IRI {
-	onePastLast := len(i)
-	if onePastLast > 1 && i[onePastLast-1] == '/' {
-		i = i[:onePastLast-1]
+	si := i.String()
+	s := strings.Builder{}
+	_, _ = s.WriteString(si)
+	if l := len(si); l == 0 || si[l-1] != '/' {
+		_, _ = s.WriteRune('/')
 	}
-	return IRI(fmt.Sprintf("%s/%s", i, t))
+	_, _ = s.WriteString(string(t))
+	return IRI(s.String())
 }
 
 // IRI gives us the IRI of the t CollectionPath type corresponding to the i Item,

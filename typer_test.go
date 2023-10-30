@@ -164,6 +164,14 @@ func TestIRIf(t *testing.T) {
 		want IRI
 	}{
 		{
+			name: "nil iri",
+			args: args{
+				i: Object{}.ID,
+				t: "inbox",
+			},
+			want: "/inbox",
+		},
+		{
 			name: "empty iri",
 			args: args{
 				i: "",
