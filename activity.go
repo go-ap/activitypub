@@ -797,7 +797,15 @@ func fmtActivityProps(w io.Writer) func(*Activity) error {
 
 func (a Activity) Format(s fmt.State, verb rune) {
 	switch verb {
-	case 's', 'v':
+	case 's':
+		if a.Type != "" && a.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", a, a.Type, a.ID)
+		} else if a.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T( %s )", a, a.ID)
+		} else {
+			_, _ = fmt.Fprintf(s, "%T[%p]", a, &a)
+		}
+	case 'v':
 		_, _ = fmt.Fprintf(s, "%T[%s] {", a, a.Type)
 		fmtActivityProps(s)(&a)
 		_, _ = io.WriteString(s, " }")

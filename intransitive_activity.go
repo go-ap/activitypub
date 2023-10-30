@@ -343,6 +343,23 @@ func (i IntransitiveActivity) Equals(with Item) bool {
 	return result
 }
 
+func (i IntransitiveActivity) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's':
+		if i.Type != "" && i.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", i, i.Type, i.ID)
+		} else if i.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T( %s )", i, i.ID)
+		} else {
+			_, _ = fmt.Fprintf(s, "%T[%p]", i, &i)
+		}
+	case 'v':
+		_, _ = fmt.Fprintf(s, "%T[%s] {", i, i.Type)
+		_ = fmtIntransitiveActivityProps(s)(&i)
+		_, _ = io.WriteString(s, " }")
+	}
+}
+
 func fmtIntransitiveActivityProps(w io.Writer) func(*IntransitiveActivity) error {
 	return func(ia *IntransitiveActivity) error {
 		if !IsNil(ia.Actor) {
@@ -361,12 +378,5 @@ func fmtIntransitiveActivityProps(w io.Writer) func(*IntransitiveActivity) error
 			_, _ = fmt.Fprintf(w, " instrument: %s", ia.Instrument)
 		}
 		return OnObject(ia, fmtObjectProps(w))
-	}
-}
-
-func (i IntransitiveActivity) Format(s fmt.State, verb rune) {
-	switch verb {
-	case 's', 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] {  }", i, i.Type)
 	}
 }

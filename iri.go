@@ -64,9 +64,7 @@ type (
 func (i IRI) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		u, _ := i.URL()
-		u.RawQuery, _ = url.QueryUnescape(u.RawQuery)
-		_, _ = io.WriteString(s, u.String())
+		_, _ = io.WriteString(s, i.String())
 	}
 }
 

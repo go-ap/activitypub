@@ -346,6 +346,11 @@ func (o *Object) GobDecode(data []byte) error {
 
 func fmtObjectProps(w io.Writer) func(*Object) error {
 	return func(o *Object) error {
+		if len(o.ID) > 0 {
+			if n, _ := fmt.Fprintf(w, "ID:%s", o.ID); n > 0 {
+				_, _ = io.WriteString(w, ", ")
+			}
+		}
 		if len(o.Name) > 0 {
 			if n, _ := fmt.Fprintf(w, "%s: [%s]", "name", o.Name); n > 0 {
 				_, _ = io.WriteString(w, ", ")
@@ -367,12 +372,11 @@ func fmtObjectProps(w io.Writer) func(*Object) error {
 			}
 		}
 		if !IsNil(o.AttributedTo) {
-
 			if n, _ := fmt.Fprintf(w, "%s: %s", "attributedTo", o.AttributedTo); n > 0 {
 				_, _ = io.WriteString(w, ", ")
 			}
 		}
-		if !IsNil(o.Audience) {
+		if !IsNil(o.Audience) && o.Audience.Count() > 0 {
 			if n, _ := fmt.Fprintf(w, "%s: %s", "audience", o.Audience); n > 0 {
 				_, _ = io.WriteString(w, ", ")
 			}
@@ -417,7 +421,7 @@ func fmtObjectProps(w io.Writer) func(*Object) error {
 				_, _ = io.WriteString(w, ", ")
 			}
 		}
-		if !IsNil(o.Tag) {
+		if !IsNil(o.Tag) && o.Tag.Count() > 0 {
 			if n, _ := fmt.Fprintf(w, "%s: %s", "tag", o.Tag); n > 0 {
 				_, _ = io.WriteString(w, ", ")
 			}
@@ -427,22 +431,22 @@ func fmtObjectProps(w io.Writer) func(*Object) error {
 				_, _ = io.WriteString(w, ", ")
 			}
 		}
-		if !IsNil(o.To) {
+		if !IsNil(o.To) && o.To.Count() > 0 {
 			if n, _ := fmt.Fprintf(w, "%s: %s", "to", o.To); n > 0 {
 				_, _ = io.WriteString(w, ", ")
 			}
 		}
-		if !IsNil(o.Bto) {
+		if !IsNil(o.Bto) && o.Bto.Count() > 0 {
 			if n, _ := fmt.Fprintf(w, "%s: %s", "bto", o.Bto); n > 0 {
 				_, _ = io.WriteString(w, ", ")
 			}
 		}
-		if !IsNil(o.CC) {
+		if !IsNil(o.CC) && o.CC.Count() > 0 {
 			if n, _ := fmt.Fprintf(w, "%s: %s", "cc", o.CC); n > 0 {
 				_, _ = io.WriteString(w, ", ")
 			}
 		}
-		if !IsNil(o.BCC) {
+		if !IsNil(o.BCC) && o.BCC.Count() > 0 {
 			if n, _ := fmt.Fprintf(w, "%s: %s", "bcc", o.BCC); n > 0 {
 				_, _ = io.WriteString(w, ", ")
 			}
@@ -488,8 +492,24 @@ func fmtObjectProps(w io.Writer) func(*Object) error {
 
 func (o Object) Format(s fmt.State, verb rune) {
 	switch verb {
-	case 's', 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] { %s }", o, o.Type, o.ID)
+	case 's':
+		if o.Type != "" && o.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", o, o.Type, o.ID)
+		} else if o.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T( %s )", o, o.ID)
+		} else {
+			_, _ = fmt.Fprintf(s, "%T[%p]", o, &o)
+		}
+	case 'v':
+		if o.Type != "" && o.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T[%s] {", o, o.Type)
+			_ = fmtObjectProps(s)(&o)
+			_, _ = io.WriteString(s, " }")
+		} else if o.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T { ", o)
+			_ = fmtObjectProps(s)(&o)
+			_, _ = io.WriteString(s, " }")
+		}
 	}
 }
 

@@ -408,7 +408,15 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 
 func (a Actor) Format(s fmt.State, verb rune) {
 	switch verb {
-	case 's', 'v':
+	case 's':
+		if a.Type != "" && a.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", a, a.Type, a.ID)
+		} else if a.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T( %s )", a, a.ID)
+		} else {
+			_, _ = fmt.Fprintf(s, "%T[%p]", a, &a)
+		}
+	case 'v':
 		_, _ = fmt.Fprintf(s, "%T[%s] { }", a, a.Type)
 	}
 }
