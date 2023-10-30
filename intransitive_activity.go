@@ -143,7 +143,7 @@ type (
 	Travel = IntransitiveActivity
 )
 
-// Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
+// Recipients performs recipient de-duplication on the IntransitiveActivity's To, Bto, CC and BCC properties
 func (i *IntransitiveActivity) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&ItemCollection{i.Actor}, &i.To, &i.Bto, &i.CC, &i.BCC, &i.Audience)
 }

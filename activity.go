@@ -240,10 +240,16 @@ var ActivityTypes = ActivityVocabularyTypes{
 
 // HasRecipients is an interface implemented by activities to return their audience
 // for further propagation
+//
+// Please take care to the fact that the de-duplication functionality requires a pointer receiver
+// therefore a valid Item interface that wraps around an Object struct, can not be type asserted
+// to HasRecipients.
 type HasRecipients interface {
 	// Recipients is a method that should do a recipients de-duplication step and then return
-	// the remaining recipients
+	// the remaining recipients.
 	Recipients() ItemCollection
+	// Clean is a method that removes BCC/Bto recipients in preparation for public consumption of
+	// the Object.
 	Clean()
 }
 
@@ -453,7 +459,7 @@ func (a *Activity) Recipients() ItemCollection {
 		alwaysRemove = append(alwaysRemove, a.Actor)
 	}
 	if len(alwaysRemove) > 0 {
-		removeFromAudience(a, alwaysRemove...)
+		_ = removeFromAudience(a, alwaysRemove...)
 	}
 	return ItemCollectionDeduplication(&a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
 }
@@ -463,19 +469,19 @@ func (a *Activity) Clean() {
 	a.BCC = nil
 	a.Bto = nil
 	if a.Object != nil && a.Object.IsObject() {
-		OnObject(a.Object, func(o *Object) error {
+		_ = OnObject(a.Object, func(o *Object) error {
 			o.Clean()
 			return nil
 		})
 	}
 	if a.Actor != nil && a.Actor.IsObject() {
-		OnObject(a.Actor, func(o *Object) error {
+		_ = OnObject(a.Actor, func(o *Object) error {
 			o.Clean()
 			return nil
 		})
 	}
 	if a.Target != nil && a.Target.IsObject() {
-		OnObject(a.Target, func(o *Object) error {
+		_ = OnObject(a.Target, func(o *Object) error {
 			o.Clean()
 			return nil
 		})
