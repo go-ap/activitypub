@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -336,7 +335,7 @@ func (c *Collection) GobDecode(data []byte) error {
 func (c Collection) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		io.WriteString(s, fmt.Sprintf("%T[%s] { totalItems: %d }", c, c.Type, c.TotalItems))
+		_, _ = fmt.Fprintf(s, "%T[%s] { totalItems: %d }", c, c.Type, c.TotalItems)
 	}
 }
 

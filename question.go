@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"io"
 	"reflect"
 	"time"
 
@@ -232,7 +231,7 @@ func (q *Question) GobDecode(data []byte) error {
 func (q Question) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		io.WriteString(s, fmt.Sprintf("%T[%s] { }", q, q.Type))
+		_, _ = fmt.Fprintf(s, "%T[%s] { }", q, q.Type)
 	}
 }
 

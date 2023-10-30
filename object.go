@@ -347,165 +347,139 @@ func (o *Object) GobDecode(data []byte) error {
 func fmtObjectProps(w io.Writer) func(*Object) error {
 	return func(o *Object) error {
 		if len(o.Name) > 0 {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: [%s]", "name", o.Name))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: [%s]", "name", o.Name); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if len(o.Summary) > 0 {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: [%s]", "summary", o.Summary))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: [%s]", "summary", o.Summary); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if len(o.Content) > 0 {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: [%s]", "content", o.Content))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: [%s]", "content", o.Content); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.Attachment) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "attachment", o.Attachment))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "attachment", o.Attachment); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.AttributedTo) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "attributedTo", o.AttributedTo))
-			if n > 0 {
-				io.WriteString(w, ", ")
+
+			if n, _ := fmt.Fprintf(w, "%s: %s", "attributedTo", o.AttributedTo); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.Audience) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "audience", o.Audience))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "audience", o.Audience); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.Context) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "context", o.Context))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "context", o.Context); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.Generator) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "generator", o.Generator))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "generator", o.Generator); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.Icon) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "icon", o.Icon))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "icon", o.Icon); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.Image) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "image", o.Image))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "image", o.Image); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.InReplyTo) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "inReplyTo", o.InReplyTo))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "inReplyTo", o.InReplyTo); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.Location) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "location", o.Location))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "location", o.Location); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.Preview) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "preview", o.Preview))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "preview", o.Preview); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.Replies) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "replies", o.Replies))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "replies", o.Replies); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.Tag) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "tag", o.Tag))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "tag", o.Tag); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.URL) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "url", o.URL))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "url", o.URL); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.To) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "to", o.To))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "to", o.To); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.Bto) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "bto", o.Bto))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "bto", o.Bto); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.CC) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "cc", o.CC))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "cc", o.CC); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.BCC) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "bcc", o.BCC))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "bcc", o.BCC); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !o.Published.IsZero() {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "published", o.Published))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "published", o.Published); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !o.Updated.IsZero() {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "updated", o.Updated))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "updated", o.Updated); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !o.StartTime.IsZero() {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "startTime", o.StartTime))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "startTime", o.StartTime); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !o.EndTime.IsZero() {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "endTime", o.EndTime))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "endTime", o.EndTime); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if o.Duration != 0 {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "duration", o.Duration))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "duration", o.Duration); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.Likes) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "likes", o.Likes))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "likes", o.Likes); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		if !IsNil(o.Shares) {
-			n, _ := io.WriteString(w, fmt.Sprintf("%s: %s", "shares", o.Shares))
-			if n > 0 {
-				io.WriteString(w, ", ")
+			if n, _ := fmt.Fprintf(w, "%s: %s", "shares", o.Shares); n > 0 {
+				_, _ = io.WriteString(w, ", ")
 			}
 		}
 		return nil
@@ -515,7 +489,7 @@ func fmtObjectProps(w io.Writer) func(*Object) error {
 func (o Object) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		fmt.Fprintf(s, "%T[%s] { %s }", o, o.Type, o.ID)
+		_, _ = fmt.Fprintf(s, "%T[%s] { %s }", o, o.Type, o.ID)
 	}
 }
 

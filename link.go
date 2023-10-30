@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"io"
-
 	"github.com/valyala/fastjson"
 )
 
@@ -162,6 +160,6 @@ func (l *Link) GobDecode(data []byte) error {
 func (l Link) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		io.WriteString(s, fmt.Sprintf("%T[%s] {  }", l, l.Type))
+		_, _ = fmt.Fprintf(s, "%T[%s] {  }", l, l.Type)
 	}
 }

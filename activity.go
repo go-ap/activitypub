@@ -789,7 +789,7 @@ func (a *Activity) UnmarshalJSON(data []byte) error {
 func fmtActivityProps(w io.Writer) func(*Activity) error {
 	return func(a *Activity) error {
 		if !IsNil(a.Object) {
-			io.WriteString(w, fmt.Sprintf(" object: %s", a.Object))
+			_, _ = fmt.Fprintf(w, " object: %s", a.Object)
 		}
 		return OnIntransitiveActivity(a, fmtIntransitiveActivityProps(w))
 	}
@@ -798,9 +798,9 @@ func fmtActivityProps(w io.Writer) func(*Activity) error {
 func (a Activity) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		io.WriteString(s, fmt.Sprintf("%T[%s] {", a, a.Type))
+		_, _ = fmt.Fprintf(s, "%T[%s] {", a, a.Type)
 		fmtActivityProps(s)(&a)
-		io.WriteString(s, " }")
+		_, _ = io.WriteString(s, " }")
 	}
 }
 

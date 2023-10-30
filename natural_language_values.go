@@ -432,17 +432,17 @@ func (n NaturalLanguageValues) MarshalText() ([]byte, error) {
 func (n NaturalLanguageValues) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'q':
-		io.WriteString(s, "[")
+		_, _ = io.WriteString(s, "[")
 		for _, nn := range n {
 			nn.Format(s, verb)
 		}
-		io.WriteString(s, "]")
+		_, _ = io.WriteString(s, "]")
 	case 'v':
-		io.WriteString(s, "[")
+		_, _ = io.WriteString(s, "[")
 		for _, nn := range n {
 			nn.Format(s, verb)
 		}
-		io.WriteString(s, "]")
+		_, _ = io.WriteString(s, "]")
 	}
 }
 
@@ -481,15 +481,15 @@ func (l LangRefValue) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'q':
 		if l.Ref == NilLangRef {
-			io.WriteString(s, string(l.Value))
+			_, _ = io.WriteString(s, string(l.Value))
 		} else {
-			io.WriteString(s, fmt.Sprintf("%q[%s]", l.Value, l.Ref))
+			_, _ = fmt.Fprintf(s, "%q[%s]", l.Value, l.Ref)
 		}
 	case 'v':
 		if l.Ref == NilLangRef {
-			io.WriteString(s, fmt.Sprintf("%q", string(l.Value)))
+			_, _ = fmt.Fprintf(s, "%q", string(l.Value))
 		} else {
-			io.WriteString(s, fmt.Sprintf("%q[%s]", string(l.Value), l.Ref))
+			_, _ = fmt.Fprintf(s, "%q[%s]", string(l.Value), l.Ref)
 		}
 	}
 }
@@ -698,9 +698,9 @@ func (c Content) Equals(other Content) bool {
 func (c Content) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'q':
-		io.WriteString(s, string(c))
+		_, _ = io.WriteString(s, string(c))
 	case 'v':
-		io.WriteString(s, fmt.Sprintf("%q", string(c)))
+		_, _ = fmt.Fprintf(s, "%q", string(c))
 	}
 }
 

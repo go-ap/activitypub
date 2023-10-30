@@ -518,7 +518,7 @@ func getFileContents(path string) ([]byte, error) {
 	}
 
 	data := make([]byte, st.Size())
-	io.ReadFull(f, data)
+	_, _ = io.ReadFull(f, data)
 	data = bytes.Trim(data, "\x00")
 
 	return data, nil

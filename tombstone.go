@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -233,7 +232,7 @@ func (t *Tombstone) Clean() {
 func (t Tombstone) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		io.WriteString(s, fmt.Sprintf("%T[%s] { formerType: %q }", t, t.Type, t.FormerType))
+		_, _ = fmt.Fprintf(s, "%T[%s] { formerType: %q }", t, t.Type, t.FormerType)
 	}
 }
 

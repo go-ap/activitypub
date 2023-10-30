@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"io"
 	"reflect"
 	"time"
 	"unsafe"
@@ -245,11 +244,11 @@ func (r *Relationship) Clean() {
 func (r Relationship) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		io.WriteString(s, fmt.Sprintf("%T[%s] { }", r, r.Type))
+		_, _ = fmt.Fprintf(s, "%T[%s] { }", r, r.Type)
 	}
 }
 
-// ToRelationship tries to convert the it Item to a Relationship object.
+// ToRelationship tries to convert the "it" Item to a Relationship object.
 func ToRelationship(it Item) (*Relationship, error) {
 	switch i := it.(type) {
 	case *Relationship:

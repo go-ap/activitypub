@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"io"
 	"reflect"
 	"time"
 
@@ -254,7 +253,7 @@ func (p *Place) Clean() {
 func (p Place) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		io.WriteString(s, fmt.Sprintf("%T[%s] { }", p, p.Type))
+		_, _ = fmt.Fprintf(s, "%T[%s] { }", p, p.Type)
 	}
 }
 

@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
-	"io"
 	"reflect"
 	"time"
 
@@ -410,7 +409,7 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 func (a Actor) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		io.WriteString(s, fmt.Sprintf("%T[%s] { }", a, a.Type))
+		_, _ = fmt.Fprintf(s, "%T[%s] { }", a, a.Type)
 	}
 }
 

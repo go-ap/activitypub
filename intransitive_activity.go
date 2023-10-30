@@ -346,19 +346,19 @@ func (i IntransitiveActivity) Equals(with Item) bool {
 func fmtIntransitiveActivityProps(w io.Writer) func(*IntransitiveActivity) error {
 	return func(ia *IntransitiveActivity) error {
 		if !IsNil(ia.Actor) {
-			io.WriteString(w, fmt.Sprintf(" actor: %s", ia.Actor))
+			_, _ = fmt.Fprintf(w, " actor: %s", ia.Actor)
 		}
 		if !IsNil(ia.Target) {
-			io.WriteString(w, fmt.Sprintf(" target: %s", ia.Target))
+			_, _ = fmt.Fprintf(w, " target: %s", ia.Target)
 		}
 		if !IsNil(ia.Result) {
-			io.WriteString(w, fmt.Sprintf(" result: %s", ia.Result))
+			_, _ = fmt.Fprintf(w, " result: %s", ia.Result)
 		}
 		if !IsNil(ia.Origin) {
-			io.WriteString(w, fmt.Sprintf(" origin: %s", ia.Origin))
+			_, _ = fmt.Fprintf(w, " origin: %s", ia.Origin)
 		}
 		if !IsNil(ia.Instrument) {
-			io.WriteString(w, fmt.Sprintf(" instrument: %s", ia.Instrument))
+			_, _ = fmt.Fprintf(w, " instrument: %s", ia.Instrument)
 		}
 		return OnObject(ia, fmtObjectProps(w))
 	}
@@ -367,6 +367,6 @@ func fmtIntransitiveActivityProps(w io.Writer) func(*IntransitiveActivity) error
 func (i IntransitiveActivity) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		io.WriteString(s, fmt.Sprintf("%T[%s] {  }", i, i.Type))
+		_, _ = fmt.Fprintf(s, "%T[%s] {  }", i, i.Type)
 	}
 }
