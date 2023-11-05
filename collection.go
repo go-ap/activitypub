@@ -425,3 +425,12 @@ func (c Collection) Equals(with Item) bool {
 	})
 	return result
 }
+
+func (c *Collection) Recipients() ItemCollection {
+	return ItemCollectionDeduplication(&c.To, &c.Bto, &c.CC, &c.BCC, &c.Audience)
+}
+
+func (c *Collection) Clean() {
+	c.BCC = nil
+	c.Bto = nil
+}

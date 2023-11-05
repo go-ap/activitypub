@@ -380,3 +380,12 @@ func (o OrderedCollectionPage) Format(s fmt.State, verb rune) {
 		_, _ = fmt.Fprintf(s, "%T[%s] { totalItems: %d }", o, o.Type, o.TotalItems)
 	}
 }
+
+func (o *OrderedCollectionPage) Recipients() ItemCollection {
+	return ItemCollectionDeduplication(&o.To, &o.Bto, &o.CC, &o.BCC, &o.Audience)
+}
+
+func (o *OrderedCollectionPage) Clean() {
+	o.BCC = nil
+	o.Bto = nil
+}

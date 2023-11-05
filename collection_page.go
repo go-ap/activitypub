@@ -422,3 +422,12 @@ func (c CollectionPage) Format(s fmt.State, verb rune) {
 		_, _ = fmt.Fprintf(s, "%T[%s] { totalItems: %d }", c, c.Type, c.TotalItems)
 	}
 }
+
+func (c *CollectionPage) Recipients() ItemCollection {
+	return ItemCollectionDeduplication(&c.To, &c.Bto, &c.CC, &c.BCC, &c.Audience)
+}
+
+func (c *CollectionPage) Clean() {
+	c.BCC = nil
+	c.Bto = nil
+}
