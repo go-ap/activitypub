@@ -182,6 +182,14 @@ func ToItemCollection(it Item) (*ItemCollection, error) {
 		return i, nil
 	case ItemCollection:
 		return &i, nil
+	case *OrderedCollection:
+		return &i.OrderedItems, nil
+	case *OrderedCollectionPage:
+		return &i.OrderedItems, nil
+	case *Collection:
+		return &i.Items, nil
+	case *CollectionPage:
+		return &i.Items, nil
 	default:
 		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
 		typ := reflect.TypeOf(new(ItemCollection))
