@@ -53,8 +53,11 @@ func CopyCollectionProperties(to, from *Collection) (*Collection, error) {
 	return to, err
 }
 
-// CopyObjectProperties updates the "old" object properties with "new's"
+// CopyObjectProperties updates the "old" object properties with the "new's"
+// Including ID and Type
 func CopyObjectProperties(to, from *Object) (*Object, error) {
+	to.ID = from.ID
+	to.Type = from.Type
 	to.Name = replaceIfNaturalLanguageValues(to.Name, from.Name)
 	to.Attachment = replaceIfItem(to.Attachment, from.Attachment)
 	to.AttributedTo = replaceIfItem(to.AttributedTo, from.AttributedTo)
@@ -99,21 +102,7 @@ func CopyObjectProperties(to, from *Object) (*Object, error) {
 	return to, nil
 }
 
-// CopyItemProperties delegates to the correct per type functions for copying
-// properties between matching Activity Objects
-func CopyItemProperties(to, from Item) (Item, error) {
-	if to == nil {
-		return to, fmt.Errorf("nil object to update")
-	}
-	if from == nil {
-		return to, fmt.Errorf("nil object for update")
-	}
-	if !to.GetLink().Equals(from.GetLink(), false) {
-		return to, fmt.Errorf("object IDs don't match")
-	}
-	if to.GetType() != "" && to.GetType() != from.GetType() {
-		return to, fmt.Errorf("invalid object types for update %s(old) and %s(new)", from.GetType(), to.GetType())
-	}
+func copyAllItemProperties(to, from Item) (Item, error) {
 	if CollectionType == to.GetType() {
 		o, err := ToCollection(to)
 		if err != nil {
@@ -181,6 +170,24 @@ func CopyItemProperties(to, from Item) (Item, error) {
 		return CopyObjectProperties(o, n)
 	}
 	return to, fmt.Errorf("could not process objects with type %s", to.GetType())
+}
+
+// CopyItemProperties delegates to the correct per type functions for copying
+// properties between matching Activity Objects
+func CopyItemProperties(to, from Item) (Item, error) {
+	if to == nil {
+		return to, fmt.Errorf("nil object to update")
+	}
+	if from == nil {
+		return to, fmt.Errorf("nil object for update")
+	}
+	if !to.GetLink().Equals(from.GetLink(), false) {
+		return to, fmt.Errorf("object IDs don't match")
+	}
+	if to.GetType() != "" && to.GetType() != from.GetType() {
+		return to, fmt.Errorf("invalid object types for update %s(old) and %s(new)", from.GetType(), to.GetType())
+	}
+	return copyAllItemProperties(to, from)
 }
 
 // UpdatePersonProperties
