@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"reflect"
 	"testing"
 	"time"
@@ -846,7 +847,7 @@ func TestObject_MarshalJSON(t *testing.T) {
 				t.Errorf("MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if !bytes.Equal(got, tt.want) {
 				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
 			}
 		})
