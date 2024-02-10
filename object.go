@@ -801,7 +801,7 @@ func (s Source) GobEncode() ([]byte, error) {
 
 // Equals verifies if our receiver Object is equals with the "with" Object
 func (o Object) Equals(with Item) bool {
-	if with.IsCollection() {
+	if IsItemCollection(with) {
 		return false
 	}
 	if withID := with.GetID(); !o.ID.Equals(withID, true) {

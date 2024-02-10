@@ -383,8 +383,8 @@ func (c Collection) Equals(with Item) bool {
 		return false
 	}
 	result := true
-	OnCollection(with, func(w *Collection) error {
-		OnObject(w, func(wo *Object) error {
+	_ = OnCollection(with, func(w *Collection) error {
+		_ = OnObject(w, func(wo *Object) error {
 			if !wo.Equals(c) {
 				result = false
 				return nil

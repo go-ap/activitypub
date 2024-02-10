@@ -933,7 +933,7 @@ func (a *Activity) GobDecode(data []byte) error {
 func (a Activity) Equals(with Item) bool {
 	result := true
 	err := OnActivity(with, func(w *Activity) error {
-		OnIntransitiveActivity(a, func(oi *IntransitiveActivity) error {
+		_ = OnIntransitiveActivity(a, func(oi *IntransitiveActivity) error {
 			result = oi.Equals(w)
 			return nil
 		})

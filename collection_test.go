@@ -3,6 +3,7 @@ package activitypub
 import (
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestCollectionNew(t *testing.T) {
@@ -234,6 +235,121 @@ func TestToCollection(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("ToCollection() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCollection_Equals(t *testing.T) {
+	type fields struct {
+		ID           ID
+		Type         ActivityVocabularyType
+		Name         NaturalLanguageValues
+		Attachment   Item
+		AttributedTo Item
+		Audience     ItemCollection
+		Content      NaturalLanguageValues
+		Context      Item
+		MediaType    MimeType
+		EndTime      time.Time
+		Generator    Item
+		Icon         Item
+		Image        Item
+		InReplyTo    Item
+		Location     Item
+		Preview      Item
+		Published    time.Time
+		Replies      Item
+		StartTime    time.Time
+		Summary      NaturalLanguageValues
+		Tag          ItemCollection
+		Updated      time.Time
+		URL          Item
+		To           ItemCollection
+		Bto          ItemCollection
+		CC           ItemCollection
+		BCC          ItemCollection
+		Duration     time.Duration
+		Likes        Item
+		Shares       Item
+		Source       Source
+		Current      ObjectOrLink
+		First        ObjectOrLink
+		Last         ObjectOrLink
+		TotalItems   uint
+		Items        ItemCollection
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		item   Item
+		want   bool
+	}{
+		{
+			name: "collection with two items",
+			fields: fields{
+				ID:    "https://example.com/1",
+				Type:  CollectionType,
+				First: IRI("https://example.com/1?first"),
+				Items: ItemCollection{
+					Object{ID: "https://example.com/1/1", Type: NoteType},
+					Object{ID: "https://example.com/1/3", Type: ImageType},
+				},
+			},
+			item: &Collection{
+				ID:    "https://example.com/1",
+				Type:  CollectionType,
+				First: IRI("https://example.com/1?first"),
+				Items: ItemCollection{
+					Object{ID: "https://example.com/1/1", Type: NoteType},
+					Object{ID: "https://example.com/1/3", Type: ImageType},
+				},
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := Collection{
+				ID:           tt.fields.ID,
+				Type:         tt.fields.Type,
+				Name:         tt.fields.Name,
+				Attachment:   tt.fields.Attachment,
+				AttributedTo: tt.fields.AttributedTo,
+				Audience:     tt.fields.Audience,
+				Content:      tt.fields.Content,
+				Context:      tt.fields.Context,
+				MediaType:    tt.fields.MediaType,
+				EndTime:      tt.fields.EndTime,
+				Generator:    tt.fields.Generator,
+				Icon:         tt.fields.Icon,
+				Image:        tt.fields.Image,
+				InReplyTo:    tt.fields.InReplyTo,
+				Location:     tt.fields.Location,
+				Preview:      tt.fields.Preview,
+				Published:    tt.fields.Published,
+				Replies:      tt.fields.Replies,
+				StartTime:    tt.fields.StartTime,
+				Summary:      tt.fields.Summary,
+				Tag:          tt.fields.Tag,
+				Updated:      tt.fields.Updated,
+				URL:          tt.fields.URL,
+				To:           tt.fields.To,
+				Bto:          tt.fields.Bto,
+				CC:           tt.fields.CC,
+				BCC:          tt.fields.BCC,
+				Duration:     tt.fields.Duration,
+				Likes:        tt.fields.Likes,
+				Shares:       tt.fields.Shares,
+				Source:       tt.fields.Source,
+				Current:      tt.fields.Current,
+				First:        tt.fields.First,
+				Last:         tt.fields.Last,
+				TotalItems:   tt.fields.TotalItems,
+				Items:        tt.fields.Items,
+			}
+			if got := c.Equals(tt.item); got != tt.want {
+				t.Errorf("Equals() = %v, want %v", got, tt.want)
 			}
 		})
 	}
