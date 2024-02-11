@@ -428,6 +428,6 @@ func (c *CollectionPage) Recipients() ItemCollection {
 }
 
 func (c *CollectionPage) Clean() {
-	c.BCC = nil
-	c.Bto = nil
+	c.BCC = c.BCC[:0]
+	c.Bto = c.Bto[:0]
 }

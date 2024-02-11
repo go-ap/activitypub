@@ -464,28 +464,24 @@ func (a *Activity) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
 }
 
+// CleanRecipients checks if the "it" Item has recipients and cleans them if it does
+func CleanRecipients(it Item) Item {
+	if IsNil(it) {
+		return nil
+	}
+	if s, ok := it.(HasRecipients); ok {
+		s.Clean()
+	}
+	return it
+}
+
 // Clean removes Bto and BCC properties
 func (a *Activity) Clean() {
-	a.BCC = nil
-	a.Bto = nil
-	if a.Object != nil && a.Object.IsObject() {
-		_ = OnObject(a.Object, func(o *Object) error {
-			o.Clean()
-			return nil
-		})
-	}
-	if a.Actor != nil && a.Actor.IsObject() {
-		_ = OnObject(a.Actor, func(o *Object) error {
-			o.Clean()
-			return nil
-		})
-	}
-	if a.Target != nil && a.Target.IsObject() {
-		_ = OnObject(a.Target, func(o *Object) error {
-			o.Clean()
-			return nil
-		})
-	}
+	a.BCC = a.BCC[:0]
+	a.Bto = a.Bto[:0]
+	CleanRecipients(a.Object)
+	CleanRecipients(a.Actor)
+	CleanRecipients(a.Target)
 }
 
 type (

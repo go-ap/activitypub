@@ -420,6 +420,6 @@ func (o *OrderedCollection) Recipients() ItemCollection {
 }
 
 func (o *OrderedCollection) Clean() {
-	o.BCC = nil
-	o.Bto = nil
+	o.BCC = o.BCC[:0]
+	o.Bto = o.Bto[:0]
 }

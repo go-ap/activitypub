@@ -431,6 +431,6 @@ func (c *Collection) Recipients() ItemCollection {
 }
 
 func (c *Collection) Clean() {
-	c.BCC = nil
-	c.Bto = nil
+	c.BCC = c.BCC[:0]
+	c.Bto = c.Bto[:0]
 }

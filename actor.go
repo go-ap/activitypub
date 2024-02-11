@@ -345,8 +345,8 @@ func (a *Actor) Recipients() ItemCollection {
 }
 
 func (a *Actor) Clean() {
-	a.BCC = nil
-	a.Bto = nil
+	a.BCC = a.BCC[:0]
+	a.Bto = a.Bto[:0]
 }
 
 func (a *Actor) UnmarshalJSON(data []byte) error {

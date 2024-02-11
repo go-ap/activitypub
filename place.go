@@ -246,8 +246,8 @@ func (p *Place) Recipients() ItemCollection {
 
 // Clean removes Bto and BCC properties
 func (p *Place) Clean() {
-	p.BCC = nil
-	p.Bto = nil
+	p.BCC = p.BCC[:0]
+	p.Bto = p.Bto[:0]
 }
 
 func (p Place) Format(s fmt.State, verb rune) {

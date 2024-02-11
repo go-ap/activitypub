@@ -270,3 +270,10 @@ func (i ItemCollection) Equals(with Item) bool {
 	})
 	return result
 }
+
+// Clean removes Bto and BCC properties on all the members of the collection
+func (i ItemCollection) Clean() {
+	for _, it := range i {
+		CleanRecipients(it)
+	}
+}

@@ -521,8 +521,8 @@ func (o *Object) Recipients() ItemCollection {
 
 // Clean removes Bto and BCC properties
 func (o *Object) Clean() {
-	o.BCC = nil
-	o.Bto = nil
+	o.BCC = o.BCC[:0]
+	o.Bto = o.Bto[:0]
 }
 
 type (

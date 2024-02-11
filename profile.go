@@ -218,8 +218,8 @@ func (p *Profile) Recipients() ItemCollection {
 
 // Clean removes Bto and BCC properties
 func (p *Profile) Clean() {
-	p.BCC = nil
-	p.Bto = nil
+	p.BCC = p.BCC[:0]
+	p.Bto = p.Bto[:0]
 }
 
 func (p Profile) Format(s fmt.State, verb rune) {
@@ -229,7 +229,7 @@ func (p Profile) Format(s fmt.State, verb rune) {
 	}
 }
 
-// ToProfile tries to convert the it Item to a Profile object
+// ToProfile tries to convert the "it" Item to a Profile object
 func ToProfile(it Item) (*Profile, error) {
 	switch i := it.(type) {
 	case *Profile:

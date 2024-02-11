@@ -386,6 +386,6 @@ func (o *OrderedCollectionPage) Recipients() ItemCollection {
 }
 
 func (o *OrderedCollectionPage) Clean() {
-	o.BCC = nil
-	o.Bto = nil
+	o.BCC = o.BCC[:0]
+	o.Bto = o.Bto[:0]
 }

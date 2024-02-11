@@ -1588,3 +1588,124 @@ func TestActivity_Equals(t *testing.T) {
 		})
 	}
 }
+
+func TestCleanRecipients(t *testing.T) {
+	tests := []struct {
+		name string
+		it   Item
+	}{
+		{
+			name: "nil",
+			it:   nil,
+		},
+		{
+			name: "empty Object",
+			it:   &Object{},
+		},
+		{
+			name: "Object with Bto",
+			it:   &Object{Bto: ItemCollection{IRI("https://example.com")}},
+		},
+		{
+			name: "Object with BCC",
+			it:   &Object{BCC: ItemCollection{IRI("https://example.com")}},
+		},
+		{
+			name: "Object with Bto/BCC",
+			it: &Object{
+				Bto: ItemCollection{IRI("https://example.com/1")},
+				BCC: ItemCollection{IRI("https://example.com/2")},
+			},
+		},
+		{
+			name: "empty Actor",
+			it:   &Actor{},
+		},
+		{
+			name: "Actor with Bto",
+			it:   &Actor{Bto: ItemCollection{IRI("https://example.com")}},
+		},
+		{
+			name: "Actor with BCC",
+			it:   &Actor{BCC: ItemCollection{IRI("https://example.com")}},
+		},
+		{
+			name: "Actor with Bto/BCC",
+			it: &Actor{
+				Bto: ItemCollection{IRI("https://example.com/1")},
+				BCC: ItemCollection{IRI("https://example.com/2")},
+			},
+		},
+		{
+			name: "empty Activity",
+			it:   &Activity{},
+		},
+		{
+			name: "Activity with Bto",
+			it:   &Activity{Bto: ItemCollection{IRI("https://example.com")}},
+		},
+		{
+			name: "Activity with BCC",
+			it:   &Activity{BCC: ItemCollection{IRI("https://example.com")}},
+		},
+		{
+			name: "Activity with Bto/BCC",
+			it: &Activity{
+				Bto: ItemCollection{IRI("https://example.com/1")},
+				BCC: ItemCollection{IRI("https://example.com/2")},
+			},
+		},
+		{
+			name: "empty IntransitiveActivity",
+			it:   &IntransitiveActivity{},
+		},
+		{
+			name: "IntransitiveActivity with Bto",
+			it:   &IntransitiveActivity{Bto: ItemCollection{IRI("https://example.com")}},
+		},
+		{
+			name: "IntransitiveActivity with BCC",
+			it:   &IntransitiveActivity{BCC: ItemCollection{IRI("https://example.com")}},
+		},
+		{
+			name: "IntransitiveActivity with Bto/BCC",
+			it: &IntransitiveActivity{
+				Bto: ItemCollection{IRI("https://example.com/1")},
+				BCC: ItemCollection{IRI("https://example.com/2")},
+			},
+		},
+		{
+			name: "empty Collection",
+			it:   &Collection{},
+		},
+		{
+			name: "Collection with Bto",
+			it:   &Collection{Bto: ItemCollection{IRI("https://example.com")}},
+		},
+		{
+			name: "Collection with BCC",
+			it:   &Collection{BCC: ItemCollection{IRI("https://example.com")}},
+		},
+		{
+			name: "Collection with Bto/BCC",
+			it: &Collection{
+				Bto: ItemCollection{IRI("https://example.com/1")},
+				BCC: ItemCollection{IRI("https://example.com/2")},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			it := CleanRecipients(tt.it)
+			_ = OnObject(it, func(o *Object) error {
+				if len(o.Bto) > 0 {
+					t.Errorf("Bto failed to be cleaned: %v", o.Bto)
+				}
+				if len(o.BCC) > 0 {
+					t.Errorf("BCC failed to be cleaned: %v", o.BCC)
+				}
+				return nil
+			})
+		})
+	}
+}

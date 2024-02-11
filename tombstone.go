@@ -225,8 +225,8 @@ func (t *Tombstone) Recipients() ItemCollection {
 
 // Clean removes Bto and BCC properties
 func (t *Tombstone) Clean() {
-	t.BCC = nil
-	t.Bto = nil
+	t.BCC = t.BCC[:0]
+	t.Bto = t.Bto[:0]
 }
 
 func (t Tombstone) Format(s fmt.State, verb rune) {
