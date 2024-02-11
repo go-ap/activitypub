@@ -273,7 +273,18 @@ func (i ItemCollection) Equals(with Item) bool {
 
 // Clean removes Bto and BCC properties on all the members of the collection
 func (i ItemCollection) Clean() {
-	for _, it := range i {
-		CleanRecipients(it)
+	for j, it := range i {
+		i[j] = CleanRecipients(it)
 	}
+}
+
+func (i ItemCollection) Recipients() ItemCollection {
+	all := make(ItemCollection, 0)
+	for _, it := range i {
+		_ = OnObject(it, func(ob *Object) error {
+			_ = all.Append(ItemCollectionDeduplication(&ob.To, &ob.Bto, &ob.CC, &ob.BCC, &ob.Audience)...)
+			return nil
+		})
+	}
+	return ItemCollectionDeduplication(&all)
 }

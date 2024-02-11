@@ -477,8 +477,10 @@ func CleanRecipients(it Item) Item {
 
 // Clean removes Bto and BCC properties
 func (a *Activity) Clean() {
-	a.BCC = a.BCC[:0]
-	a.Bto = a.Bto[:0]
+	_ = OnObject(a, func(o *Object) error {
+		o.Clean()
+		return nil
+	})
 	CleanRecipients(a.Object)
 	CleanRecipients(a.Actor)
 	CleanRecipients(a.Target)

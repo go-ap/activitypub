@@ -218,8 +218,10 @@ func (p *Profile) Recipients() ItemCollection {
 
 // Clean removes Bto and BCC properties
 func (p *Profile) Clean() {
-	p.BCC = p.BCC[:0]
-	p.Bto = p.Bto[:0]
+	_ = OnObject(p, func(o *Object) error {
+		o.Clean()
+		return nil
+	})
 }
 
 func (p Profile) Format(s fmt.State, verb rune) {

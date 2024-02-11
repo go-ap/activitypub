@@ -345,8 +345,10 @@ func (a *Actor) Recipients() ItemCollection {
 }
 
 func (a *Actor) Clean() {
-	a.BCC = a.BCC[:0]
-	a.Bto = a.Bto[:0]
+	_ = OnObject(a, func(o *Object) error {
+		o.Clean()
+		return nil
+	})
 }
 
 func (a *Actor) UnmarshalJSON(data []byte) error {

@@ -150,8 +150,10 @@ func (i *IntransitiveActivity) Recipients() ItemCollection {
 
 // Clean removes Bto and BCC properties
 func (i *IntransitiveActivity) Clean() {
-	i.BCC = i.BCC[:0]
-	i.Bto = i.Bto[:0]
+	_ = OnObject(i, func(o *Object) error {
+		o.Clean()
+		return nil
+	})
 }
 
 // GetType returns the ActivityVocabulary type of the current Intransitive Activity

@@ -269,6 +269,8 @@ func (q *Question) Recipients() ItemCollection {
 
 // Clean removes Bto and BCC properties
 func (q *Question) Clean() {
-	q.BCC = q.BCC[:0]
-	q.Bto = q.Bto[:0]
+	_ = OnObject(q, func(o *Object) error {
+		o.Clean()
+		return nil
+	})
 }

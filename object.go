@@ -523,6 +523,15 @@ func (o *Object) Recipients() ItemCollection {
 func (o *Object) Clean() {
 	o.BCC = o.BCC[:0]
 	o.Bto = o.Bto[:0]
+	CleanRecipients(o.Audience)
+	CleanRecipients(o.Attachment)
+	CleanRecipients(o.Icon)
+	CleanRecipients(o.Image)
+	CleanRecipients(o.Context)
+	CleanRecipients(o.Generator)
+	CleanRecipients(o.AttributedTo)
+	CleanRecipients(o.Preview)
+	CleanRecipients(o.Tag)
 }
 
 type (

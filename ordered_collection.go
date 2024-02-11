@@ -420,6 +420,8 @@ func (o *OrderedCollection) Recipients() ItemCollection {
 }
 
 func (o *OrderedCollection) Clean() {
-	o.BCC = o.BCC[:0]
-	o.Bto = o.Bto[:0]
+	_ = OnObject(o, func(o *Object) error {
+		o.Clean()
+		return nil
+	})
 }

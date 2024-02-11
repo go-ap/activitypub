@@ -386,6 +386,8 @@ func (o *OrderedCollectionPage) Recipients() ItemCollection {
 }
 
 func (o *OrderedCollectionPage) Clean() {
-	o.BCC = o.BCC[:0]
-	o.Bto = o.Bto[:0]
+	_ = OnObject(o, func(o *Object) error {
+		o.Clean()
+		return nil
+	})
 }

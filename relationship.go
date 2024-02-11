@@ -237,8 +237,10 @@ func (r *Relationship) Recipients() ItemCollection {
 
 // Clean removes Bto and BCC properties
 func (r *Relationship) Clean() {
-	r.BCC = r.BCC[:0]
-	r.Bto = r.Bto[:0]
+	_ = OnObject(r, func(o *Object) error {
+		o.Clean()
+		return nil
+	})
 }
 
 func (r Relationship) Format(s fmt.State, verb rune) {
