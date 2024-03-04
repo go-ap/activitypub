@@ -160,3 +160,25 @@ func IsNil(it Item) bool {
 func ErrorInvalidType[T Objects | Links | IRIs](received Item) error {
 	return fmt.Errorf("unable to convert %T to %T", received, new(T))
 }
+
+// OnItem runs function "fn" on the Item "it", with the benefit of destructuring "it" to individual
+// items if it's actually an ItemCollection or an object holding an ItemCollection
+//
+// It is expected that the caller handles the logic of dealing with different Item implementations
+// internally in "fn".
+func OnItem(it Item, fn func(Item) error) error {
+	if it == nil {
+		return nil
+	}
+	if !IsItemCollection(it) {
+		return fn(it)
+	}
+	return OnItemCollection(it, func(col *ItemCollection) error {
+		for _, it := range *col {
+			if err := OnItem(it, fn); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
