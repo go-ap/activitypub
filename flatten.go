@@ -2,7 +2,10 @@ package activitypub
 
 // FlattenActivityProperties flattens the Activity's properties from Object type to IRI
 func FlattenActivityProperties(act *Activity) *Activity {
-	OnIntransitiveActivity(act, func(in *IntransitiveActivity) error {
+	if act == nil {
+		return nil
+	}
+	_ = OnIntransitiveActivity(act, func(in *IntransitiveActivity) error {
 		FlattenIntransitiveActivityProperties(in)
 		return nil
 	})
@@ -12,13 +15,16 @@ func FlattenActivityProperties(act *Activity) *Activity {
 
 // FlattenIntransitiveActivityProperties flattens the Activity's properties from Object type to IRI
 func FlattenIntransitiveActivityProperties(act *IntransitiveActivity) *IntransitiveActivity {
+	if act == nil {
+		return nil
+	}
 	act.Actor = FlattenToIRI(act.Actor)
 	act.Target = FlattenToIRI(act.Target)
 	act.Result = FlattenToIRI(act.Result)
 	act.Origin = FlattenToIRI(act.Origin)
 	act.Result = FlattenToIRI(act.Result)
 	act.Instrument = FlattenToIRI(act.Instrument)
-	OnObject(act, func(o *Object) error {
+	_ = OnObject(act, func(o *Object) error {
 		FlattenObjectProperties(o)
 		return nil
 	})
@@ -60,6 +66,9 @@ func FlattenOrderedCollection(col *OrderedCollection) *OrderedCollection {
 
 // FlattenActorProperties flattens the Actor's properties from Object types to IRI
 func FlattenActorProperties(a *Actor) *Actor {
+	if a == nil {
+		return nil
+	}
 	OnObject(a, func(o *Object) error {
 		FlattenObjectProperties(o)
 		return nil
@@ -69,6 +78,9 @@ func FlattenActorProperties(a *Actor) *Actor {
 
 // FlattenObjectProperties flattens the Object's properties from Object types to IRI
 func FlattenObjectProperties(o *Object) *Object {
+	if o == nil {
+		return nil
+	}
 	o.Replies = Flatten(o.Replies)
 	o.Shares = Flatten(o.Shares)
 	o.Likes = Flatten(o.Likes)
@@ -84,14 +96,17 @@ func FlattenObjectProperties(o *Object) *Object {
 
 // FlattenProperties flattens the Item's properties from Object types to IRI
 func FlattenProperties(it Item) Item {
+	if IsNil(it) {
+		return nil
+	}
 	typ := it.GetType()
 	if IntransitiveActivityTypes.Contains(typ) {
-		OnIntransitiveActivity(it, func(a *IntransitiveActivity) error {
+		_ = OnIntransitiveActivity(it, func(a *IntransitiveActivity) error {
 			FlattenIntransitiveActivityProperties(a)
 			return nil
 		})
 	} else if ActivityTypes.Contains(typ) {
-		OnActivity(it, func(a *Activity) error {
+		_ = OnActivity(it, func(a *Activity) error {
 			FlattenActivityProperties(a)
 			return nil
 		})
