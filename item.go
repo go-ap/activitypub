@@ -3,6 +3,7 @@ package activitypub
 import (
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 // Item struct
@@ -131,7 +132,9 @@ func IsNil(it Item) bool {
 	}
 	// This is the default if the argument can't be cast to Object, as is the case for an ItemCollection
 	isNil := false
-	if IsItemCollection(it) {
+	if IsIRI(it) {
+		isNil = len(it.GetLink()) == 0 || strings.EqualFold(it.GetLink().String(), NilIRI.String())
+	} else if IsItemCollection(it) {
 		OnItemCollection(it, func(c *ItemCollection) error {
 			isNil = c == nil
 			return nil
@@ -146,8 +149,6 @@ func IsNil(it Item) bool {
 			isNil = l == nil
 			return nil
 		})
-	} else if IsIRI(it) {
-		isNil = len(it.GetLink()) == 0
 	} else {
 		// NOTE(marius): we're not dealing with a type that we know about, so we use slow reflection
 		// as we still care about the result
