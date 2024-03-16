@@ -80,7 +80,7 @@ func (i IRI) GetLink() IRI {
 
 // URL
 func (i IRI) URL() (*url.URL, error) {
-	return url.Parse(i.String())
+	return url.ParseRequestURI(string(i))
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
