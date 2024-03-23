@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"io"
-	"reflect"
 	"time"
 	"unsafe"
 
@@ -275,15 +274,8 @@ func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
 	case Activity:
 		return (*IntransitiveActivity)(unsafe.Pointer(&i)), nil
 	default:
-		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
-		typ := reflect.TypeOf(new(IntransitiveActivity))
-		if reflect.TypeOf(it).ConvertibleTo(typ) {
-			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*IntransitiveActivity); ok {
-				return i, nil
-			}
-		}
+		return reflectedItemByType[IntransitiveActivity](it)
 	}
-	return nil, ErrorInvalidType[IntransitiveActivity](it)
 }
 
 // ArriveNew initializes an Arrive activity

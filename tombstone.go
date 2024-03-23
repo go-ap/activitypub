@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"reflect"
 	"time"
 	"unsafe"
 
@@ -251,15 +250,8 @@ func ToTombstone(it Item) (*Tombstone, error) {
 	case Object:
 		return (*Tombstone)(unsafe.Pointer(&i)), nil
 	default:
-		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
-		typ := reflect.TypeOf(new(Tombstone))
-		if reflect.TypeOf(it).ConvertibleTo(typ) {
-			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Tombstone); ok {
-				return i, nil
-			}
-		}
+		return reflectedItemByType[Tombstone](it)
 	}
-	return nil, ErrorInvalidType[Tombstone](it)
 }
 
 type withTombstoneFn func(*Tombstone) error

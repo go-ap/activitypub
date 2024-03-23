@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/valyala/fastjson"
@@ -268,15 +267,8 @@ func ToPlace(it Item) (*Place, error) {
 	case Place:
 		return &i, nil
 	default:
-		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
-		typ := reflect.TypeOf(new(Place))
-		if reflect.TypeOf(it).ConvertibleTo(typ) {
-			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Place); ok {
-				return i, nil
-			}
-		}
+		return reflectedItemByType[Place](it)
 	}
-	return nil, ErrorInvalidType[Place](it)
 }
 
 type withPlaceFn func(*Place) error

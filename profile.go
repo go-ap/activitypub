@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/valyala/fastjson"
@@ -240,15 +239,8 @@ func ToProfile(it Item) (*Profile, error) {
 	case Profile:
 		return &i, nil
 	default:
-		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
-		typ := reflect.TypeOf(new(Profile))
-		if reflect.TypeOf(it).ConvertibleTo(typ) {
-			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Profile); ok {
-				return i, nil
-			}
-		}
+		return reflectedItemByType[Profile](it)
 	}
-	return nil, ErrorInvalidType[Profile](it)
 }
 
 type withProfileFn func(*Profile) error

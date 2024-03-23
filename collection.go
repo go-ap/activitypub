@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"reflect"
 	"time"
 	"unsafe"
 
@@ -351,17 +350,8 @@ func ToCollection(it Item) (*Collection, error) {
 	case CollectionPage:
 		return (*Collection)(unsafe.Pointer(&i)), nil
 	default:
-		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
-		typ := reflect.TypeOf(new(Collection))
-		val := reflect.ValueOf(it)
-		if val.IsValid() && typ.Elem().Name() == val.Type().Elem().Name() {
-			conv := val.Convert(typ)
-			if i, ok := conv.Interface().(*Collection); ok {
-				return i, nil
-			}
-		}
+		return reflectedItemByType[Collection](it)
 	}
-	return nil, ErrorInvalidType[Collection](it)
 }
 
 // ItemsMatch

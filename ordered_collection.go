@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"reflect"
 	"time"
 	"unsafe"
 
@@ -322,17 +321,8 @@ func ToOrderedCollection(it Item) (*OrderedCollection, error) {
 	case OrderedCollectionPage:
 		return (*OrderedCollection)(unsafe.Pointer(&i)), nil
 	default:
-		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
-		typ := reflect.TypeOf(new(OrderedCollection))
-		val := reflect.ValueOf(it)
-		if val.IsValid() && typ.Elem().Name() == val.Type().Elem().Name() {
-			conv := val.Convert(typ)
-			if i, ok := conv.Interface().(*OrderedCollection); ok {
-				return i, nil
-			}
-		}
+		return reflectedItemByType[OrderedCollection](it)
 	}
-	return nil, ErrorInvalidType[OrderedCollection](it)
 }
 
 func copyOrderedCollectionToPage(c *OrderedCollection, p *OrderedCollectionPage) error {

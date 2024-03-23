@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/valyala/fastjson"
@@ -506,15 +505,8 @@ func ToActor(it Item) (*Actor, error) {
 	case Actor:
 		return &i, nil
 	default:
-		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
-		typ := reflect.TypeOf(new(Actor))
-		if reflect.TypeOf(it).ConvertibleTo(typ) {
-			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Actor); ok {
-				return i, nil
-			}
-		}
+		return reflectedItemByType[Actor](it)
 	}
-	return nil, ErrorInvalidType[Actor](it)
 }
 
 // Equals verifies if our receiver Object is equals with the "with" Object

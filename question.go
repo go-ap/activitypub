@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/valyala/fastjson"
@@ -251,15 +250,8 @@ func ToQuestion(it Item) (*Question, error) {
 	case Question:
 		return &i, nil
 	default:
-		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
-		typ := reflect.TypeOf(new(Question))
-		if reflect.TypeOf(it).ConvertibleTo(typ) {
-			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Question); ok {
-				return i, nil
-			}
-		}
+		return reflectedItemByType[Question](it)
 	}
-	return nil, ErrorInvalidType[Question](it)
 }
 
 // Recipients performs recipient de-duplication on the Question's To, Bto, CC and BCC properties

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"reflect"
 	"time"
 	"unsafe"
 
@@ -263,13 +262,8 @@ func ToRelationship(it Item) (*Relationship, error) {
 	case Object:
 		return (*Relationship)(unsafe.Pointer(&i)), nil
 	default:
-		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
-		typ := reflect.TypeOf(new(Relationship))
-		if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Relationship); ok {
-			return i, nil
-		}
+		return reflectedItemByType[Relationship](it)
 	}
-	return nil, ErrorInvalidType[Relationship](it)
 }
 
 type withRelationshipFn func(*Relationship) error

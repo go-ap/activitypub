@@ -674,18 +674,23 @@ func ToObject(it Item) (*Object, error) {
 	case OrderedCollectionPage:
 		return (*Object)(unsafe.Pointer(&i)), nil
 	default:
-		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
-		typ := reflect.TypeOf(new(Object))
-		if reflect.TypeOf(it).ConvertibleTo(typ) {
-			if reflect.ValueOf(it).IsNil() {
-				return nil, nil
-			}
-			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Object); ok {
-				return i, nil
-			}
-		}
+		return reflectedItemByType[Object](it)
 	}
-	return nil, ErrorInvalidType[Object](it)
+}
+
+func reflectedItemByType[T Objects | Links](it Item) (*T, error) {
+	// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
+	typ := reflect.TypeFor[T]()
+	if !reflect.TypeOf(it).ConvertibleTo(typ) {
+		return nil, ErrorInvalidType[T](it)
+	}
+	if reflect.ValueOf(it).IsNil() {
+		return nil, ErrorInvalidType[T](it)
+	}
+	if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*T); ok {
+		return i, nil
+	}
+	return nil, ErrorInvalidType[T](it)
 }
 
 // Source is intended to convey some sort of source from which the content markup was derived,

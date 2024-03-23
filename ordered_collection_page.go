@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/valyala/fastjson"
@@ -292,17 +291,8 @@ func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
 	case OrderedCollectionPage:
 		return &i, nil
 	default:
-		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
-		typ := reflect.TypeOf(new(OrderedCollectionPage))
-		val := reflect.ValueOf(it)
-		if val.IsValid() && typ.Elem().Name() == val.Type().Elem().Name() {
-			conv := val.Convert(typ)
-			if i, ok := conv.Interface().(*OrderedCollectionPage); ok {
-				return i, nil
-			}
-		}
+		return reflectedItemByType[OrderedCollectionPage](it)
 	}
-	return nil, ErrorInvalidType[OrderedCollectionPage](it)
 }
 
 // ItemsMatch
