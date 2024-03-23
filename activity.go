@@ -455,13 +455,11 @@ func (a *Activity) Recipients() ItemCollection {
 	if a.GetType() == BlockType && a.Object != nil {
 		alwaysRemove = append(alwaysRemove, a.Object)
 	}
-	if a.Actor != nil {
-		alwaysRemove = append(alwaysRemove, a.Actor)
-	}
 	if len(alwaysRemove) > 0 {
 		_ = removeFromAudience(a, alwaysRemove...)
 	}
-	return ItemCollectionDeduplication(&a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
+	aud := a.Audience
+	return ItemCollectionDeduplication(&a.To, &a.CC, &a.Bto, &a.BCC, &aud)
 }
 
 // CleanRecipients checks if the "it" Item has recipients and cleans them if it does

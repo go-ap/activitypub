@@ -341,7 +341,8 @@ func ServiceNew(id ID) *Service {
 }
 
 func (a *Actor) Recipients() ItemCollection {
-	return ItemCollectionDeduplication(&a.To, &a.Bto, &a.CC, &a.BCC, &a.Audience)
+	aud := a.Audience
+	return ItemCollectionDeduplication(&a.To, &a.CC, &a.Bto, &a.BCC, &aud)
 }
 
 func (a *Actor) Clean() {

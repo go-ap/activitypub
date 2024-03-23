@@ -147,3 +147,154 @@ func TestItemCollection_Remove(t *testing.T) {
 		})
 	}
 }
+
+func TestItemCollectionDeduplication(t *testing.T) {
+	tests := []struct {
+		name      string
+		args      []*ItemCollection
+		want      ItemCollection
+		remaining []*ItemCollection
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "no-overlap",
+			args: []*ItemCollection{
+				{
+					IRI("https://example.com"),
+					IRI("https://example.com/2"),
+				},
+				{
+					IRI("https://example.com/1"),
+				},
+			},
+			want: ItemCollection{
+				IRI("https://example.com"),
+				IRI("https://example.com/2"),
+				IRI("https://example.com/1"),
+			},
+			remaining: []*ItemCollection{
+				{
+					IRI("https://example.com"),
+					IRI("https://example.com/2"),
+				},
+				{
+					IRI("https://example.com/1"),
+				},
+			},
+		},
+		{
+			name: "some-overlap",
+			args: []*ItemCollection{
+				{
+					IRI("https://example.com"),
+					IRI("https://example.com/2"),
+				},
+				{
+					IRI("https://example.com/1"),
+					IRI("https://example.com/2"),
+				},
+			},
+			want: ItemCollection{
+				IRI("https://example.com"),
+				IRI("https://example.com/2"),
+				IRI("https://example.com/1"),
+			},
+			remaining: []*ItemCollection{
+				{
+					IRI("https://example.com"),
+					IRI("https://example.com/2"),
+				},
+				{
+					IRI("https://example.com/1"),
+				},
+			},
+		},
+		{
+			name: "test from spammy",
+			args: []*ItemCollection{
+				{
+					IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4/followers"),
+					IRI("https://www.w3.org/ns/activitystreams#Public"),
+				},
+				{
+					IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4"),
+				},
+				{
+					IRI("https://example.dev"),
+					IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4"),
+					IRI("https://www.w3.org/ns/activitystreams#Public"),
+				},
+			},
+			want: ItemCollection{
+				IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4/followers"),
+				IRI("https://www.w3.org/ns/activitystreams#Public"),
+				IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4"),
+				IRI("https://example.dev"),
+			},
+			remaining: []*ItemCollection{
+				{
+					IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4/followers"),
+					IRI("https://www.w3.org/ns/activitystreams#Public"),
+				},
+				{
+					IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4"),
+				},
+				{
+					IRI("https://example.dev"),
+				},
+			},
+		},
+		{
+			name: "different order for spammy test",
+			args: []*ItemCollection{
+				{
+					IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4/followers"),
+					IRI("https://www.w3.org/ns/activitystreams#Public"),
+				},
+				{
+					IRI("https://example.dev"),
+					IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4"),
+					IRI("https://www.w3.org/ns/activitystreams#Public"),
+				},
+				{
+					IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4"),
+				},
+			},
+			want: ItemCollection{
+				IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4/followers"),
+				IRI("https://www.w3.org/ns/activitystreams#Public"),
+				IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4"),
+				IRI("https://example.dev"),
+			},
+			remaining: []*ItemCollection{
+				{
+					IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4/followers"),
+					IRI("https://www.w3.org/ns/activitystreams#Public"),
+				},
+				{
+					IRI("https://example.dev"),
+					IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4"),
+				},
+				{},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ItemCollectionDeduplication(tt.args...); !tt.want.Equals(got) {
+				t.Errorf("ItemCollectionDeduplication() = %v, want %v", got, tt.want)
+			}
+			if len(tt.remaining) != len(tt.args) {
+				t.Errorf("ItemCollectionDeduplication() arguments count %d, want %d", len(tt.args), len(tt.remaining))
+			}
+			for i, remArg := range tt.remaining {
+				arg := tt.args[i]
+				if !remArg.Equals(arg) {
+					t.Errorf("ItemCollectionDeduplication() argument at pos %d = %v, want %v", i, arg, remArg)
+				}
+			}
+		})
+	}
+}

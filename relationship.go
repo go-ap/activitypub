@@ -232,7 +232,8 @@ func (r *Relationship) GobDecode(data []byte) error {
 
 // Recipients performs recipient de-duplication on the Relationship object's To, Bto, CC and BCC properties
 func (r *Relationship) Recipients() ItemCollection {
-	return ItemCollectionDeduplication(&r.To, &r.Bto, &r.CC, &r.BCC, &r.Audience)
+	aud := r.Audience
+	return ItemCollectionDeduplication(&r.To, &r.CC, &r.Bto, &r.BCC, &aud)
 }
 
 // Clean removes Bto and BCC properties

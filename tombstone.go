@@ -220,7 +220,8 @@ func (t *Tombstone) GobDecode(data []byte) error {
 
 // Recipients performs recipient de-duplication on the Tombstone object's To, Bto, CC and BCC properties
 func (t *Tombstone) Recipients() ItemCollection {
-	return ItemCollectionDeduplication(&t.To, &t.Bto, &t.CC, &t.BCC, &t.Audience)
+	aud := t.Audience
+	return ItemCollectionDeduplication(&t.To, &t.CC, &t.Bto, &t.BCC, &aud)
 }
 
 // Clean removes Bto and BCC properties

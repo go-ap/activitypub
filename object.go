@@ -515,8 +515,8 @@ func (o Object) Format(s fmt.State, verb rune) {
 
 // Recipients performs recipient de-duplication on the Object's To, Bto, CC and BCC properties
 func (o *Object) Recipients() ItemCollection {
-	var aud ItemCollection
-	return ItemCollectionDeduplication(&aud, &o.To, &o.Bto, &o.CC, &o.BCC, &o.Audience)
+	aud := o.Audience
+	return ItemCollectionDeduplication(&o.To, &o.CC, &o.Bto, &o.BCC, &aud)
 }
 
 // Clean removes Bto and BCC properties

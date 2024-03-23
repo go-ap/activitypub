@@ -427,7 +427,8 @@ func (c Collection) Equals(with Item) bool {
 }
 
 func (c *Collection) Recipients() ItemCollection {
-	return ItemCollectionDeduplication(&c.To, &c.Bto, &c.CC, &c.BCC, &c.Audience)
+	aud := c.Audience
+	return ItemCollectionDeduplication(&c.To, &c.CC, &c.Bto, &c.BCC, &aud)
 }
 
 func (c *Collection) Clean() {

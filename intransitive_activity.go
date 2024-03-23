@@ -145,7 +145,8 @@ type (
 
 // Recipients performs recipient de-duplication on the IntransitiveActivity's To, Bto, CC and BCC properties
 func (i *IntransitiveActivity) Recipients() ItemCollection {
-	return ItemCollectionDeduplication(&ItemCollection{i.Actor}, &i.To, &i.Bto, &i.CC, &i.BCC, &i.Audience)
+	aud := i.Audience
+	return ItemCollectionDeduplication(&i.To, &i.CC, &i.Bto, &i.BCC, &ItemCollection{i.Actor}, &aud)
 }
 
 // Clean removes Bto and BCC properties

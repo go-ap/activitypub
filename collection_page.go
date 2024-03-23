@@ -424,7 +424,8 @@ func (c CollectionPage) Format(s fmt.State, verb rune) {
 }
 
 func (c *CollectionPage) Recipients() ItemCollection {
-	return ItemCollectionDeduplication(&c.To, &c.Bto, &c.CC, &c.BCC, &c.Audience)
+	aud := c.Audience
+	return ItemCollectionDeduplication(&c.To, &c.CC, &c.Bto, &c.BCC, &aud)
 }
 
 func (c *CollectionPage) Clean() {

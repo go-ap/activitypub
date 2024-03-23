@@ -264,7 +264,8 @@ func ToQuestion(it Item) (*Question, error) {
 
 // Recipients performs recipient de-duplication on the Question's To, Bto, CC and BCC properties
 func (q *Question) Recipients() ItemCollection {
-	return ItemCollectionDeduplication(&ItemCollection{q.Actor}, &q.To, &q.Bto, &q.CC, &q.BCC, &q.Audience)
+	aud := q.Audience
+	return ItemCollectionDeduplication(&q.To, &q.CC, &q.Bto, &q.BCC, &ItemCollection{q.Actor}, &aud)
 }
 
 // Clean removes Bto and BCC properties

@@ -282,7 +282,8 @@ func (i ItemCollection) Recipients() ItemCollection {
 	all := make(ItemCollection, 0)
 	for _, it := range i {
 		_ = OnObject(it, func(ob *Object) error {
-			_ = all.Append(ItemCollectionDeduplication(&ob.To, &ob.Bto, &ob.CC, &ob.BCC, &ob.Audience)...)
+			aud := ob.Audience
+			_ = all.Append(ItemCollectionDeduplication(&ob.To, &ob.CC, &ob.Bto, &ob.BCC, &aud)...)
 			return nil
 		})
 	}

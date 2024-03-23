@@ -416,7 +416,8 @@ func (o OrderedCollection) Format(s fmt.State, verb rune) {
 	}
 }
 func (o *OrderedCollection) Recipients() ItemCollection {
-	return ItemCollectionDeduplication(&o.To, &o.Bto, &o.CC, &o.BCC, &o.Audience)
+	aud := o.Audience
+	return ItemCollectionDeduplication(&o.To, &o.CC, &o.Bto, &o.BCC, &aud)
 }
 
 func (o *OrderedCollection) Clean() {

@@ -213,7 +213,8 @@ func (p *Profile) GobDecode(data []byte) error {
 
 // Recipients performs recipient de-duplication on the Profile object's To, Bto, CC and BCC properties
 func (p *Profile) Recipients() ItemCollection {
-	return ItemCollectionDeduplication(&p.To, &p.Bto, &p.CC, &p.BCC, &p.Audience)
+	aud := p.Audience
+	return ItemCollectionDeduplication(&p.To, &p.CC, &p.Bto, &p.BCC, &aud)
 }
 
 // Clean removes Bto and BCC properties

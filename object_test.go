@@ -521,10 +521,6 @@ func TestTombstone_Recipients(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestItemCollectionDeduplication(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestSource_UnmarshalJSON(t *testing.T) {
 	s := Source{}
 

@@ -241,7 +241,8 @@ func (p *Place) GobDecode(data []byte) error {
 
 // Recipients performs recipient de-duplication on the Place object's To, Bto, CC and BCC properties
 func (p *Place) Recipients() ItemCollection {
-	return ItemCollectionDeduplication(&p.To, &p.Bto, &p.CC, &p.BCC, &p.Audience)
+	aud := p.Audience
+	return ItemCollectionDeduplication(&p.To, &p.CC, &p.Bto, &p.BCC, &aud)
 }
 
 // Clean removes Bto and BCC properties
