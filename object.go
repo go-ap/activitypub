@@ -679,7 +679,9 @@ func ToObject(it Item) (*Object, error) {
 }
 
 func reflectedItemByType[T Objects | Links](it Item) (*T, error) {
-	// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
+	if IsNil(it) {
+		return nil, ErrorInvalidType[T](it)
+	}
 	typ := reflect.TypeFor[T]()
 	if !reflect.TypeOf(it).ConvertibleTo(typ) {
 		return nil, ErrorInvalidType[T](it)
