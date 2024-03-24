@@ -314,31 +314,27 @@ func validURL(u *url.URL) bool {
 	return len(u.Scheme) > 0 && len(u.Host) > 0
 }
 
-// Equals verifies if our receiver IRI is equals with the "with" IRI
-func (i IRI) Equals(with IRI, checkScheme bool) bool {
-	if checkScheme {
-		if strings.EqualFold(string(i), string(with)) {
-			return true
-		}
-	} else {
-		is := string(i)
-		ws := string(with)
-		ip := strings.Index(is, "://")
-		if ip < 0 {
-			ip = 0
-		}
-		wp := strings.Index(ws, "://")
-		if wp < 0 {
-			wp = 0
-		}
-		if strings.EqualFold(is[ip:], ws[wp:]) {
-			return true
-		}
+func stripFragment(u string) string {
+	p := strings.Index(u, "#")
+	if p <= 0 {
+		p = len(u)
 	}
-	u, e := i.URL()
-	uw, ew := with.URL()
+	return u[:p]
+}
+
+func stripScheme(u string) string {
+	p := strings.Index(u, "://")
+	if p < 0 {
+		p = 0
+	}
+	return u[p:]
+}
+
+func irisEqual(i1, i2 IRI, checkScheme bool) bool {
+	u, e := i1.URL()
+	uw, ew := i2.URL()
 	if e != nil || ew != nil || !validURL(u) || !validURL(uw) {
-		return strings.EqualFold(i.String(), with.String())
+		return strings.EqualFold(i1.String(), i2.String())
 	}
 	if checkScheme {
 		if !strings.EqualFold(u.Scheme, uw.Scheme) {
@@ -379,6 +375,20 @@ func (i IRI) Equals(with IRI, checkScheme bool) bool {
 		}
 	}
 	return true
+}
+
+// Equals verifies if our receiver IRI is equals with the "with" IRI
+func (i IRI) Equals(with IRI, checkScheme bool) bool {
+	is := stripFragment(string(i))
+	ws := stripFragment(string(with))
+	if !checkScheme {
+		is = stripScheme(is)
+		ws = stripScheme(ws)
+	}
+	if strings.EqualFold(is, ws) {
+		return true
+	}
+	return irisEqual(i, with, checkScheme)
 }
 
 func hostSplit(h string) (string, string) {
