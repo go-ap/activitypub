@@ -334,7 +334,7 @@ func ToCollectionPage(it Item) (*CollectionPage, error) {
 	case CollectionPage:
 		return &i, nil
 	default:
-		return reflectedItemByType[CollectionPage](it)
+		return reflectItemToType[CollectionPage](it)
 	}
 }
 

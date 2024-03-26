@@ -505,7 +505,7 @@ func ToActor(it Item) (*Actor, error) {
 	case Actor:
 		return &i, nil
 	default:
-		return reflectedItemByType[Actor](it)
+		return reflectItemToType[Actor](it)
 	}
 }
 

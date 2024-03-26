@@ -291,7 +291,7 @@ func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
 	case OrderedCollectionPage:
 		return &i, nil
 	default:
-		return reflectedItemByType[OrderedCollectionPage](it)
+		return reflectItemToType[OrderedCollectionPage](it)
 	}
 }
 

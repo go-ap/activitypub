@@ -274,7 +274,7 @@ func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
 	case Activity:
 		return (*IntransitiveActivity)(unsafe.Pointer(&i)), nil
 	default:
-		return reflectedItemByType[IntransitiveActivity](it)
+		return reflectItemToType[IntransitiveActivity](it)
 	}
 }
 

@@ -239,7 +239,7 @@ func ToProfile(it Item) (*Profile, error) {
 	case Profile:
 		return &i, nil
 	default:
-		return reflectedItemByType[Profile](it)
+		return reflectItemToType[Profile](it)
 	}
 }
 

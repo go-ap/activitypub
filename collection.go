@@ -350,7 +350,7 @@ func ToCollection(it Item) (*Collection, error) {
 	case CollectionPage:
 		return (*Collection)(unsafe.Pointer(&i)), nil
 	default:
-		return reflectedItemByType[Collection](it)
+		return reflectItemToType[Collection](it)
 	}
 }
 

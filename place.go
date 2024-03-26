@@ -267,7 +267,7 @@ func ToPlace(it Item) (*Place, error) {
 	case Place:
 		return &i, nil
 	default:
-		return reflectedItemByType[Place](it)
+		return reflectItemToType[Place](it)
 	}
 }
 

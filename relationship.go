@@ -262,7 +262,7 @@ func ToRelationship(it Item) (*Relationship, error) {
 	case Object:
 		return (*Relationship)(unsafe.Pointer(&i)), nil
 	default:
-		return reflectedItemByType[Relationship](it)
+		return reflectItemToType[Relationship](it)
 	}
 }
 

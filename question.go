@@ -250,7 +250,7 @@ func ToQuestion(it Item) (*Question, error) {
 	case Question:
 		return &i, nil
 	default:
-		return reflectedItemByType[Question](it)
+		return reflectItemToType[Question](it)
 	}
 }
 

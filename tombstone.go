@@ -250,7 +250,7 @@ func ToTombstone(it Item) (*Tombstone, error) {
 	case Object:
 		return (*Tombstone)(unsafe.Pointer(&i)), nil
 	default:
-		return reflectedItemByType[Tombstone](it)
+		return reflectItemToType[Tombstone](it)
 	}
 }
 

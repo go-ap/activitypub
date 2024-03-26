@@ -321,7 +321,7 @@ func ToOrderedCollection(it Item) (*OrderedCollection, error) {
 	case OrderedCollectionPage:
 		return (*OrderedCollection)(unsafe.Pointer(&i)), nil
 	default:
-		return reflectedItemByType[OrderedCollection](it)
+		return reflectItemToType[OrderedCollection](it)
 	}
 }
 

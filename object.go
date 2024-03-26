@@ -674,23 +674,24 @@ func ToObject(it Item) (*Object, error) {
 	case OrderedCollectionPage:
 		return (*Object)(unsafe.Pointer(&i)), nil
 	default:
-		return reflectedItemByType[Object](it)
+		return reflectItemToType[Object](it)
 	}
 }
 
-func reflectedItemByType[T Objects | Links](it Item) (*T, error) {
+func reflectItemToType[T Objects | Links](it Item) (*T, error) {
 	if IsNil(it) {
 		return nil, ErrorInvalidType[T](it)
 	}
-	typ := reflect.TypeFor[T]()
-	if !reflect.TypeOf(it).ConvertibleTo(typ) {
+	tTyp := reflect.TypeFor[*T]()
+	if !reflect.TypeOf(it).ConvertibleTo(tTyp) {
 		return nil, ErrorInvalidType[T](it)
 	}
-	v := reflect.ValueOf(it)
-	if !v.IsValid() {
+
+	iVal := reflect.ValueOf(it)
+	if !iVal.IsValid() {
 		return nil, ErrorInvalidType[T](it)
 	}
-	if i, ok := v.Convert(typ).Interface().(*T); ok {
+	if i, ok := iVal.Convert(tTyp).Interface().(*T); ok {
 		return i, nil
 	}
 	return nil, ErrorInvalidType[T](it)
