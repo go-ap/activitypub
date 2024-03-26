@@ -686,10 +686,11 @@ func reflectedItemByType[T Objects | Links](it Item) (*T, error) {
 	if !reflect.TypeOf(it).ConvertibleTo(typ) {
 		return nil, ErrorInvalidType[T](it)
 	}
-	if reflect.ValueOf(it).IsNil() {
+	v := reflect.ValueOf(it)
+	if !v.IsValid() {
 		return nil, ErrorInvalidType[T](it)
 	}
-	if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*T); ok {
+	if i, ok := v.Convert(typ).Interface().(*T); ok {
 		return i, nil
 	}
 	return nil, ErrorInvalidType[T](it)

@@ -1165,3 +1165,46 @@ func TestObject_GobEncode(t *testing.T) {
 		})
 	}
 }
+
+type apObjects interface {
+	Objects | Links
+}
+
+type test[T apObjects] struct {
+	name    string
+	arg     T
+	want    Item
+	wantErr bool
+}
+
+func Test_reflectedItemByType_Object(t *testing.T) {
+	tests := []test[Object]{
+		{
+			name: "empty object",
+			arg:  Object{},
+			want: &Object{},
+		},
+		{
+			name: "object with ID",
+			arg:  Object{ID: "https://example.com"},
+			want: &Object{ID: "https://example.com"},
+		},
+		{
+			name: "object with ID, type",
+			arg:  Object{ID: "https://example.com", Type: ArticleType},
+			want: &Object{ID: "https://example.com", Type: ArticleType},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := reflectedItemByType[Object](&tt.arg)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("reflectedItemByType() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !ItemsEqual(tt.want, got) {
+				t.Errorf("reflectedItemByType() got = %v, expected %v", got, tt.want)
+			}
+		})
+	}
+}
