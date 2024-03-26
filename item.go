@@ -28,38 +28,18 @@ func ItemsEqual(it, with Item) bool {
 		return with == it
 	}
 	result := false
-	if it.IsCollection() {
-		if it.GetType() == CollectionOfItems {
-			_ = OnItemCollection(it, func(c *ItemCollection) error {
-				result = c.Equals(with)
-				return nil
-			})
-		}
-		if it.GetType() == CollectionType {
-			_ = OnCollection(it, func(c *Collection) error {
-				result = c.Equals(with)
-				return nil
-			})
-		}
-		if it.GetType() == OrderedCollectionType {
-			_ = OnOrderedCollection(it, func(c *OrderedCollection) error {
-				result = c.Equals(with)
-				return nil
-			})
-		}
-		if it.GetType() == CollectionPageType {
-			_ = OnCollectionPage(it, func(c *CollectionPage) error {
-				result = c.Equals(with)
-				return nil
-			})
-		}
-		if it.GetType() == OrderedCollectionPageType {
-			_ = OnOrderedCollectionPage(it, func(c *OrderedCollectionPage) error {
-				result = c.Equals(with)
-				return nil
-			})
-		}
-	} else if it.IsObject() {
+	if IsIRI(with) || IsIRI(it) {
+		result = it.GetLink().Equals(with.GetLink(), false)
+	} else if IsItemCollection(it) {
+		_ = OnItemCollection(it, func(c *ItemCollection) error {
+			result = c.Equals(with)
+			return nil
+		})
+	} else if IsObject(it) {
+		_ = OnObject(it, func(i *Object) error {
+			result = i.Equals(with)
+			return nil
+		})
 		if ActivityTypes.Contains(with.GetType()) {
 			_ = OnActivity(it, func(i *Activity) error {
 				result = i.Equals(with)
@@ -70,15 +50,32 @@ func ItemsEqual(it, with Item) bool {
 				result = i.Equals(with)
 				return nil
 			})
-		} else {
-			_ = OnObject(it, func(i *Object) error {
-				result = i.Equals(with)
-				return nil
-			})
+		} else if it.IsCollection() {
+			if it.GetType() == CollectionType {
+				_ = OnCollection(it, func(c *Collection) error {
+					result = c.Equals(with)
+					return nil
+				})
+			}
+			if it.GetType() == OrderedCollectionType {
+				_ = OnOrderedCollection(it, func(c *OrderedCollection) error {
+					result = c.Equals(with)
+					return nil
+				})
+			}
+			if it.GetType() == CollectionPageType {
+				_ = OnCollectionPage(it, func(c *CollectionPage) error {
+					result = c.Equals(with)
+					return nil
+				})
+			}
+			if it.GetType() == OrderedCollectionPageType {
+				_ = OnOrderedCollectionPage(it, func(c *OrderedCollectionPage) error {
+					result = c.Equals(with)
+					return nil
+				})
+			}
 		}
-	}
-	if with.IsLink() {
-		result = with.GetLink().Equals(it.GetLink(), false)
 	}
 	return result
 }

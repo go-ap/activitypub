@@ -473,6 +473,68 @@ func TestObject_GetType(t *testing.T) {
 }
 
 func TestToObject(t *testing.T) {
+	tests := []struct {
+		name    string
+		arg     Item
+		want    Item
+		wantErr bool
+	}{
+		{
+			name: "actor with ID, type, w/o extra properties",
+			arg:  &Actor{ID: "https://example.com", Type: PersonType},
+			want: &Object{ID: "https://example.com", Type: PersonType},
+		},
+		{
+			name: "actor with ID, type, w/ extra properties",
+			arg: &Actor{ID: "https://example.com", Type: PersonType, Endpoints: &Endpoints{
+				OauthAuthorizationEndpoint: IRI("https://example.com/oauth"),
+			}},
+			want: &Object{ID: "https://example.com", Type: PersonType},
+		},
+		{
+			name: "place w/o extra properties",
+			arg:  &Place{ID: "https://example.com", Type: PlaceType},
+			want: &Object{ID: "https://example.com", Type: PlaceType},
+		},
+		{
+			name: "place w/ extra properties",
+			arg:  &Place{ID: "https://example.com", Type: PlaceType, Accuracy: 0.22, Altitude: 66.6},
+			want: &Object{ID: "https://example.com", Type: PlaceType},
+		},
+		{
+			name: "profile w/o extra properties",
+			arg:  &Profile{ID: "https://example.com", Type: ProfileType},
+			want: &Object{ID: "https://example.com", Type: ProfileType},
+		},
+		{
+			name: "profile w/ extra properties",
+			arg:  &Profile{ID: "https://example.com", Type: ProfileType, Describes: IRI("https://alt.example.com/")},
+			want: &Object{ID: "https://example.com", Type: ProfileType},
+		},
+		{
+			name: "Tombstone w/o extra properties",
+			arg:  &Tombstone{ID: "https://example.com", Type: TombstoneType},
+			want: &Object{ID: "https://example.com", Type: TombstoneType},
+		},
+		{
+			name: "Tombstone w/ extra properties",
+			arg:  &Tombstone{ID: "https://example.com", Type: TombstoneType, FormerType: GroupType, Deleted: time.Now()},
+			want: &Object{ID: "https://example.com", Type: TombstoneType},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			arg := tt.arg.(Item)
+			got, err := ToObject(arg)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ToObject() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !ItemsEqual(tt.want, got) {
+				t.Errorf("ToObject() got = %v, expected %v", got, tt.want)
+			}
+		})
+	}
 	var it Item
 	ob := ObjectNew(ArticleType)
 	it = ob
@@ -1189,48 +1251,6 @@ func Test_reflectedItemByType_Object(t *testing.T) {
 			name: "object with ID, type",
 			arg:  &Object{ID: "https://example.com", Type: ArticleType},
 			want: &Object{ID: "https://example.com", Type: ArticleType},
-		},
-		{
-			name: "actor with ID, type, w/o extra properties",
-			arg:  &Actor{ID: "https://example.com", Type: PersonType},
-			want: &Object{ID: "https://example.com", Type: PersonType},
-		},
-		{
-			name: "actor with ID, type, w/ extra properties",
-			arg: &Actor{ID: "https://example.com", Type: PersonType, Endpoints: &Endpoints{
-				OauthAuthorizationEndpoint: IRI("https://example.com/oauth"),
-			}},
-			want: &Object{ID: "https://example.com", Type: PersonType},
-		},
-		{
-			name: "place w/o extra properties",
-			arg:  &Place{ID: "https://example.com", Type: PlaceType},
-			want: &Object{ID: "https://example.com", Type: PlaceType},
-		},
-		{
-			name: "place w/ extra properties",
-			arg:  &Place{ID: "https://example.com", Type: PlaceType, Accuracy: 0.22, Altitude: 66.6},
-			want: &Object{ID: "https://example.com", Type: PlaceType},
-		},
-		{
-			name: "profile w/o extra properties",
-			arg:  &Profile{ID: "https://example.com", Type: ProfileType},
-			want: &Object{ID: "https://example.com", Type: ProfileType},
-		},
-		{
-			name: "profile w/ extra properties",
-			arg:  &Profile{ID: "https://example.com", Type: ProfileType, Describes: IRI("https://alt.example.com/")},
-			want: &Object{ID: "https://example.com", Type: ProfileType},
-		},
-		{
-			name: "Tombstone w/o extra properties",
-			arg:  &Tombstone{ID: "https://example.com", Type: TombstoneType},
-			want: &Object{ID: "https://example.com", Type: TombstoneType},
-		},
-		{
-			name: "Tombstone w/ extra properties",
-			arg:  &Tombstone{ID: "https://example.com", Type: TombstoneType, FormerType: GroupType, Deleted: time.Now()},
-			want: &Object{ID: "https://example.com", Type: TombstoneType},
 		},
 	}
 	for _, tt := range tests {

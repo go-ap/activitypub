@@ -406,7 +406,7 @@ func (c Collection) Equals(with Item) bool {
 			}
 		}
 		if w.Items != nil {
-			if !c.Items.Equals(w.Items) {
+			if !ItemsEqual(c.Items, w.Items) {
 				result = false
 				return nil
 			}
