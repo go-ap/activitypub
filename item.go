@@ -22,13 +22,30 @@ const (
 	NilID = NilIRI
 )
 
+func itemsNeedSwapping(i1, i2 Item) bool {
+	if IsIRI(i1) && !IsIRI(i2) {
+		return true
+	}
+	t1 := i1.GetType()
+	t2 := i2.GetType()
+	if ObjectTypes.Contains(t2) {
+		return !ObjectTypes.Contains(t1)
+	}
+	return false
+}
+
 // ItemsEqual checks if it and with Items are equal
 func ItemsEqual(it, with Item) bool {
 	if IsNil(it) || IsNil(with) {
 		return with == it
 	}
+	if itemsNeedSwapping(it, with) {
+		return ItemsEqual(with, it)
+	}
 	result := false
 	if IsIRI(with) || IsIRI(it) {
+		// NOTE(marius): I'm not sure this logic is sound:
+		// if only one item is an IRI it should not be equal to the other even if it has the same ID
 		result = it.GetLink().Equals(with.GetLink(), false)
 	} else if IsItemCollection(it) {
 		_ = OnItemCollection(it, func(c *ItemCollection) error {

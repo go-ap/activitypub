@@ -480,34 +480,34 @@ func TestToObject(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "actor with ID, type, w/o extra properties",
+			name: "Actor with ID, type, w/o extra properties",
 			arg:  &Actor{ID: "https://example.com", Type: PersonType},
 			want: &Object{ID: "https://example.com", Type: PersonType},
 		},
 		{
-			name: "actor with ID, type, w/ extra properties",
+			name: "Actor with ID, type, w/ extra properties",
 			arg: &Actor{ID: "https://example.com", Type: PersonType, Endpoints: &Endpoints{
 				OauthAuthorizationEndpoint: IRI("https://example.com/oauth"),
 			}},
 			want: &Object{ID: "https://example.com", Type: PersonType},
 		},
 		{
-			name: "place w/o extra properties",
+			name: "Place w/o extra properties",
 			arg:  &Place{ID: "https://example.com", Type: PlaceType},
 			want: &Object{ID: "https://example.com", Type: PlaceType},
 		},
 		{
-			name: "place w/ extra properties",
+			name: "Place w/ extra properties",
 			arg:  &Place{ID: "https://example.com", Type: PlaceType, Accuracy: 0.22, Altitude: 66.6},
 			want: &Object{ID: "https://example.com", Type: PlaceType},
 		},
 		{
-			name: "profile w/o extra properties",
+			name: "Profile w/o extra properties",
 			arg:  &Profile{ID: "https://example.com", Type: ProfileType},
 			want: &Object{ID: "https://example.com", Type: ProfileType},
 		},
 		{
-			name: "profile w/ extra properties",
+			name: "Profile w/ extra properties",
 			arg:  &Profile{ID: "https://example.com", Type: ProfileType, Describes: IRI("https://alt.example.com/")},
 			want: &Object{ID: "https://example.com", Type: ProfileType},
 		},
@@ -520,6 +520,26 @@ func TestToObject(t *testing.T) {
 			name: "Tombstone w/ extra properties",
 			arg:  &Tombstone{ID: "https://example.com", Type: TombstoneType, FormerType: GroupType, Deleted: time.Now()},
 			want: &Object{ID: "https://example.com", Type: TombstoneType},
+		},
+		{
+			name: "Create w/o extra properties",
+			arg:  &Create{ID: "https://example.com", Type: CreateType},
+			want: &Object{ID: "https://example.com", Type: CreateType},
+		},
+		{
+			name: "Create w/ extra properties",
+			arg:  &Create{ID: "https://example.com", Type: CreateType, Actor: IRI("https://example.com/1")},
+			want: &Object{ID: "https://example.com", Type: CreateType},
+		},
+		{
+			name: "Question w/o extra properties",
+			arg:  &Question{ID: "https://example.com", Type: QuestionType},
+			want: &Object{ID: "https://example.com", Type: QuestionType},
+		},
+		{
+			name: "Question w/ extra properties",
+			arg:  &Question{ID: "https://example.com", Type: QuestionType, AnyOf: ItemCollection{IRI("https://example.com")}},
+			want: &Object{ID: "https://example.com", Type: QuestionType},
 		},
 	}
 	for _, tt := range tests {
@@ -534,28 +554,6 @@ func TestToObject(t *testing.T) {
 				t.Errorf("ToObject() got = %v, expected %v", got, tt.want)
 			}
 		})
-	}
-	var it Item
-	ob := ObjectNew(ArticleType)
-	it = ob
-
-	o, err := ToObject(it)
-	if err != nil {
-		t.Error(err)
-	}
-	if o != ob {
-		t.Errorf("Invalid activity returned by ToObject #%v", ob)
-	}
-
-	act := ActivityNew("test", CreateType, nil)
-	it = act
-
-	a, err := ToObject(it)
-	if err != nil {
-		t.Errorf("Error returned when calling ToObject with activity should be nil, received %s", err)
-	}
-	if IsNil(a) {
-		t.Errorf("Invalid return by ToObject #%v, should have not been nil", a)
 	}
 }
 
