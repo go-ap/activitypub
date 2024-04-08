@@ -1,6 +1,9 @@
 package activitypub
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestItemCollection_Append(t *testing.T) {
 	t.Skipf("TODO")
@@ -294,6 +297,73 @@ func TestItemCollectionDeduplication(t *testing.T) {
 				if !remArg.Equals(arg) {
 					t.Errorf("ItemCollectionDeduplication() argument at pos %d = %v, want %v", i, arg, remArg)
 				}
+			}
+		})
+	}
+}
+
+func TestToItemCollection1(t *testing.T) {
+	tests := []struct {
+		name    string
+		it      Item
+		want    *ItemCollection
+		wantErr bool
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name:    "IRIs to ItemCollection",
+			it:      IRIs{"https://example.com", "https://example.com/example"},
+			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+			wantErr: false,
+		},
+		{
+			name:    "ItemCollection to ItemCollection",
+			it:      ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+			wantErr: false,
+		},
+		{
+			name:    "*ItemCollection to ItemCollection",
+			it:      &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+			wantErr: false,
+		},
+		{
+			name:    "Collection to ItemCollection",
+			it:      &Collection{Items: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
+			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+			wantErr: false,
+		},
+		{
+			name:    "CollectionPage to ItemCollection",
+			it:      &CollectionPage{Items: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
+			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+			wantErr: false,
+		},
+		{
+			name:    "OrderedCollection to ItemCollection",
+			it:      &OrderedCollection{OrderedItems: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
+			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+			wantErr: false,
+		},
+		{
+			name:    "OrderedCollectionPage to ItemOrderedCollection",
+			it:      &OrderedCollectionPage{OrderedItems: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
+			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ToItemCollection(tt.it)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ToItemCollection() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ToItemCollection() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

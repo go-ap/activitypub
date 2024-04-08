@@ -680,7 +680,7 @@ func ToObject(it Item) (*Object, error) {
 
 func reflectItemToType[T Objects | Links](it Item) (*T, error) {
 	if IsNil(it) {
-		return nil, ErrorInvalidType[T](it)
+		return nil, nil
 	}
 	tTyp := reflect.TypeFor[*T]()
 	if !reflect.TypeOf(it).ConvertibleTo(tTyp) {

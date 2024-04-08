@@ -101,7 +101,7 @@ func ItemsEqual(it, with Item) bool {
 func IsItemCollection(it Item) bool {
 	_, ok := it.(ItemCollection)
 	_, okP := it.(*ItemCollection)
-	return ok || okP
+	return ok || okP || IsIRIs(it)
 }
 
 // IsIRI returns if the current Item interface holds an IRI
@@ -149,10 +149,18 @@ func IsNil(it Item) bool {
 	if IsIRI(it) {
 		isNil = len(it.GetLink()) == 0 || strings.EqualFold(it.GetLink().String(), NilIRI.String())
 	} else if IsItemCollection(it) {
-		OnItemCollection(it, func(c *ItemCollection) error {
-			isNil = c == nil
-			return nil
-		})
+		if v, ok := it.(ItemCollection); ok {
+			return v == nil
+		}
+		if v, ok := it.(*ItemCollection); ok {
+			return v == nil
+		}
+		if v, ok := it.(IRIs); ok {
+			return v == nil
+		}
+		if v, ok := it.(*IRIs); ok {
+			return v == nil
+		}
 	} else if IsObject(it) {
 		OnObject(it, func(o *Object) error {
 			isNil = o == nil

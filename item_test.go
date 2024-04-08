@@ -88,8 +88,10 @@ func TestIsNil(t *testing.T) {
 	var (
 		o      *Object
 		col    *ItemCollection
+		iris   *IRIs
 		obNil  Item = o
 		colNil Item = col
+		itIRIs Item = iris
 	)
 	tests := []struct {
 		name string
@@ -97,35 +99,70 @@ func TestIsNil(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "plain-nil",
+			name: "nil is nil",
 			args: args{
 				it: nil,
 			},
 			want: true,
 		},
 		{
-			name: "interface-nil",
+			name: "Item is nil",
 			args: args{
 				it: Item(nil),
 			},
 			want: true,
 		},
 		{
-			name: "object-nil",
+			name: "Object nil",
 			args: args{
 				it: obNil,
 			},
 			want: true,
 		},
 		{
-			name: "collection-nil",
+			name: "IRIs nil",
+			args: args{
+				it: iris,
+			},
+			want: true,
+		},
+		{
+			name: "IRIs as Item nil",
+			args: args{
+				it: itIRIs,
+			},
+			want: true,
+		},
+		{
+			name: "IRIs not nil",
+			args: args{
+				it: IRIs{},
+			},
+			want: false,
+		},
+		{
+			name: "IRIs as Item not nil",
+			args: args{
+				it: Item(IRIs{}),
+			},
+			want: false,
+		},
+		{
+			name: "ItemCollection nil",
+			args: args{
+				it: col,
+			},
+			want: true,
+		},
+		{
+			name: "ItemCollection as Item nil",
 			args: args{
 				it: colNil,
 			},
 			want: true,
 		},
 		{
-			name: "collection-not-nil",
+			name: "ItemCollection not nil",
 			args: args{
 				it: ItemCollection{},
 			},
