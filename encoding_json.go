@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	xsd "git.sr.ht/~mariusor/go-xsd-duration"
+	"git.sr.ht/~mariusor/go-xsd-duration"
 	"github.com/go-ap/jsonld"
 )
 
@@ -382,6 +382,6 @@ func JSONWriteLinkValue(b *[]byte, l Link) (notEmpty bool) {
 }
 
 // MarshalJSON represents just a wrapper for the jsonld.Marshal function
-func MarshalJSON(it Item) ([]byte, error) {
+func MarshalJSON(it LinkOrIRI) ([]byte, error) {
 	return jsonld.Marshal(it)
 }

@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"reflect"
 	"testing"
 	"time"
 )
@@ -448,6 +449,45 @@ func Test_JSONWriteValue(t *testing.T) {
 	}
 }
 
+func mockOb(id IRI, typ ActivityVocabularyType) LinkOrIRI {
+	ob := ObjectNew(typ)
+	ob.ID = id
+	return ob
+}
+
 func TestMarshalJSON(t *testing.T) {
-	t.Skip("TODO")
+	tests := []struct {
+		name    string
+		arg     LinkOrIRI
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name: "empty",
+			arg:  nil,
+			want: []byte("null"),
+		},
+		{
+			name: "Link to example.com",
+			arg:  LinkNew("https://example.com", MentionType),
+			want: []byte(`{"id":"https://example.com","type":"Mention"}`),
+		},
+		{
+			name: "Note",
+			arg:  mockOb("https://example.com", NoteType),
+			want: []byte(`{"id":"https://example.com","type":"Note"}`),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := MarshalJSON(tt.arg)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
