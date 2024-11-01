@@ -3,6 +3,7 @@ package activitypub
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"reflect"
 	"testing"
 )
@@ -91,7 +92,42 @@ func TestFlattenToIRI(t *testing.T) {
 }
 
 func TestIRI_URL(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name    string
+		i       IRI
+		want    *url.URL
+		wantErr bool
+	}{
+		{
+			name:    "empty",
+			i:       "",
+			want:    nil,
+			wantErr: true, // empty IRI
+		},
+		{
+			name: "example with fragment",
+			i:    "https://example.com/#fragment",
+			want: &url.URL{
+				Scheme:   "https",
+				Host:     "example.com",
+				Path:     "/",
+				Fragment: "fragment",
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.i.URL()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("URL() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("URL() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestIRIs_Contains(t *testing.T) {

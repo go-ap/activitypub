@@ -3,6 +3,7 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
+	"errors"
 	"fmt"
 	"io"
 	"net/url"
@@ -80,7 +81,10 @@ func (i IRI) GetLink() IRI {
 
 // URL
 func (i IRI) URL() (*url.URL, error) {
-	return url.ParseRequestURI(string(i))
+	if i == "" {
+		return nil, errors.New("empty IRI")
+	}
+	return url.Parse(string(i))
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
@@ -311,7 +315,7 @@ func (i IRIs) Contains(r Item) bool {
 }
 
 func validURL(u *url.URL) bool {
-	return len(u.Scheme) > 0 && len(u.Host) > 0
+	return u != nil && len(u.Scheme) > 0 && len(u.Host) > 0
 }
 
 func stripFragment(u string) string {
