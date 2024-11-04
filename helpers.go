@@ -530,3 +530,26 @@ func NotEmpty(i Item) bool {
 	}
 	return notEmpty
 }
+
+// DerefItem dereferences
+func DerefItem(it Item) ItemCollection {
+	if IsNil(it) {
+		return nil
+	}
+
+	var items ItemCollection
+	if IsIRIs(it) {
+		_ = OnIRIs(it, func(col *IRIs) error {
+			items = col.Collection()
+			return nil
+		})
+	} else if IsItemCollection(it) {
+		_ = OnItemCollection(it, func(col *ItemCollection) error {
+			items = col.Collection()
+			return nil
+		})
+	} else {
+		items = ItemCollection{it}
+	}
+	return items
+}

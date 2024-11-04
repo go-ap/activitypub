@@ -368,3 +368,48 @@ func TestToItemCollection1(t *testing.T) {
 		})
 	}
 }
+
+func TestItemCollection_IRIs(t *testing.T) {
+	tests := []struct {
+		name string
+		i    ItemCollection
+		want IRIs
+	}{
+		{
+			name: "empty",
+			i:    nil,
+			want: nil,
+		},
+		{
+			name: "one item",
+			i: ItemCollection{
+				&Object{ID: "https://example.com"},
+			},
+			want: IRIs{"https://example.com"},
+		},
+		{
+			name: "two items",
+			i: ItemCollection{
+				&Object{ID: "https://example.com"},
+				&Actor{ID: "https://example.com/~jdoe"},
+			},
+			want: IRIs{"https://example.com", "https://example.com/~jdoe"},
+		},
+		{
+			name: "mixed items",
+			i: ItemCollection{
+				&Object{ID: "https://example.com"},
+				IRI("https://example.com/666"),
+				&Actor{ID: "https://example.com/~jdoe"},
+			},
+			want: IRIs{"https://example.com", "https://example.com/666", "https://example.com/~jdoe"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.IRIs(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("IRIs() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

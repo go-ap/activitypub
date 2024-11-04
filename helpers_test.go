@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -481,5 +482,63 @@ func Benchmark_OnObjectNotHappyCol(b *testing.B) {
 func Benchmark_On_T_ObjectNotHappyCol(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		On[Object](colOfNotObjects, fnObj)
+	}
+}
+
+func TestDerefItem(t *testing.T) {
+	tests := []struct {
+		name string
+		arg  Item
+		want ItemCollection
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "simple object",
+			arg:  &Object{ID: "https://example.com"},
+			want: ItemCollection{&Object{ID: "https://example.com"}},
+		},
+		{
+			name: "simple IRI",
+			arg:  IRI("https://example.com"),
+			want: ItemCollection{IRI("https://example.com")},
+		},
+		{
+			name: "IRI collection",
+			arg:  IRIs{IRI("https://example.com"), IRI("https://example.com/~jdoe")},
+			want: ItemCollection{IRI("https://example.com"), IRI("https://example.com/~jdoe")},
+		},
+		{
+			name: "Item collection",
+			arg: ItemCollection{
+				&Object{ID: "https://example.com"},
+				&Actor{ID: "https://example.com/~jdoe"},
+			},
+			want: ItemCollection{
+				&Object{ID: "https://example.com"},
+				&Actor{ID: "https://example.com/~jdoe"},
+			},
+		},
+		{
+			name: "mixed item collection",
+			arg: ItemCollection{
+				&Object{ID: "https://example.com"},
+				IRI("https://example.com/666"),
+				&Actor{ID: "https://example.com/~jdoe"},
+			},
+			want: ItemCollection{
+				&Object{ID: "https://example.com"},
+				IRI("https://example.com/666"),
+				&Actor{ID: "https://example.com/~jdoe"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := DerefItem(tt.arg); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("DerefItem() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

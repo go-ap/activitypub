@@ -32,6 +32,18 @@ func (i ItemCollection) IsObject() bool {
 	return false
 }
 
+func (i ItemCollection) IRIs() IRIs {
+	if i == nil {
+		return nil
+	}
+
+	iris := make(IRIs, 0, len(i))
+	for _, it := range i {
+		iris = append(iris, it.GetLink())
+	}
+	return iris
+}
+
 // MarshalJSON encodes the receiver object to a JSON document.
 func (i ItemCollection) MarshalJSON() ([]byte, error) {
 	if i == nil {
@@ -217,10 +229,7 @@ func ToIRIs(it Item) (*IRIs, error) {
 	case IRIs:
 		return &i, nil
 	case ItemCollection:
-		iris := make(IRIs, len(i))
-		for j, ob := range i {
-			iris[j] = ob.GetLink()
-		}
+		iris := i.IRIs()
 		return &iris, nil
 	case *ItemCollection:
 		iris := make(IRIs, len(*i))
@@ -256,7 +265,7 @@ func (i ItemCollection) Equals(with Item) bool {
 		return false
 	}
 	result := true
-	OnItemCollection(with, func(w *ItemCollection) error {
+	_ = OnItemCollection(with, func(w *ItemCollection) error {
 		if w.Count() != i.Count() {
 			result = false
 			return nil
