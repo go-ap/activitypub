@@ -349,6 +349,16 @@ func ToCollection(it Item) (*Collection, error) {
 		return (*Collection)(unsafe.Pointer(i)), nil
 	case CollectionPage:
 		return (*Collection)(unsafe.Pointer(&i)), nil
+	// NOTE(marius): let's try again to convert OrderedCollection -> Collection, as they have the same
+	// shape in memory.
+	case *OrderedCollection:
+		return (*Collection)(unsafe.Pointer(i)), nil
+	case OrderedCollection:
+		return (*Collection)(unsafe.Pointer(&i)), nil
+	case *OrderedCollectionPage:
+		return (*Collection)(unsafe.Pointer(i)), nil
+	case OrderedCollectionPage:
+		return (*Collection)(unsafe.Pointer(&i)), nil
 	default:
 		return reflectItemToType[Collection](it)
 	}

@@ -256,7 +256,7 @@ func (i ItemCollection) ItemsMatch(col ...Item) bool {
 // Equals
 func (i ItemCollection) Equals(with Item) bool {
 	if IsNil(with) {
-		return false
+		return IsNil(i) || len(i) == 0
 	}
 	if !with.IsCollection() {
 		return false

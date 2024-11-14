@@ -187,7 +187,7 @@ func TestCollection_ItemMatches(t *testing.T) {
 }
 
 func TestToCollection(t *testing.T) {
-	err := func(it Item) error { return ErrorInvalidType[Collection](it) }
+	//err := func(it Item) error { return ErrorInvalidType[Collection](it) }
 	tests := map[string]struct {
 		it      Item
 		want    *Collection
@@ -206,12 +206,12 @@ func TestToCollection(t *testing.T) {
 		"OrderedCollectionPage": {
 			it:      new(OrderedCollectionPage),
 			want:    new(Collection),
-			wantErr: err(new(OrderedCollectionPage)),
+			wantErr: nil,
 		},
 		"OrderedCollection": {
 			it:      new(OrderedCollection),
 			want:    new(Collection),
-			wantErr: err(new(OrderedCollection)),
+			wantErr: nil,
 		},
 	}
 	for name, tt := range tests {

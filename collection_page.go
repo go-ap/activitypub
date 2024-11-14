@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"time"
+	"unsafe"
 
 	"github.com/valyala/fastjson"
 )
@@ -333,6 +334,12 @@ func ToCollectionPage(it Item) (*CollectionPage, error) {
 		return i, nil
 	case CollectionPage:
 		return &i, nil
+	// NOTE(marius): let's try again to convert OrderedCollectionPage -> CollectionPage, as they have the same
+	// shape in memory.
+	case *OrderedCollectionPage:
+		return (*CollectionPage)(unsafe.Pointer(i)), nil
+	case OrderedCollectionPage:
+		return (*CollectionPage)(unsafe.Pointer(&i)), nil
 	default:
 		return reflectItemToType[CollectionPage](it)
 	}

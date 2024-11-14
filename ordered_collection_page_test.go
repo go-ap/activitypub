@@ -140,7 +140,7 @@ func TestToOrderedCollectionPage(t *testing.T) {
 		"CollectionPage": {
 			it:      new(CollectionPage),
 			want:    new(OrderedCollectionPage),
-			wantErr: err(new(CollectionPage)),
+			wantErr: nil,
 		},
 	}
 	for name, tt := range tests {

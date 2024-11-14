@@ -37,7 +37,7 @@ func itemsNeedSwapping(i1, i2 Item) bool {
 // ItemsEqual checks if it and with Items are equal
 func ItemsEqual(it, with Item) bool {
 	if IsNil(it) || IsNil(with) {
-		return with == it
+		return IsNil(with) && IsNil(it)
 	}
 	if itemsNeedSwapping(it, with) {
 		return ItemsEqual(with, it)
@@ -48,6 +48,9 @@ func ItemsEqual(it, with Item) bool {
 		// if only one item is an IRI it should not be equal to the other even if it has the same ID
 		result = it.GetLink().Equals(with.GetLink(), false)
 	} else if IsItemCollection(it) {
+		if !IsItemCollection(with) {
+			return false
+		}
 		_ = OnItemCollection(it, func(c *ItemCollection) error {
 			result = c.Equals(with)
 			return nil

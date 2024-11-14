@@ -151,7 +151,7 @@ func TestToCollectionPage(t *testing.T) {
 		"OrderedCollectionPage": {
 			it:      new(OrderedCollectionPage),
 			want:    new(CollectionPage),
-			wantErr: err(new(OrderedCollectionPage)),
+			wantErr: nil,
 		},
 		"OrderedCollection": {
 			it:      new(OrderedCollection),

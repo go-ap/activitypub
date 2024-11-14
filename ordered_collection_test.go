@@ -213,7 +213,7 @@ func TestOnOrderedCollection(t *testing.T) {
 }
 
 func TestToOrderedCollection(t *testing.T) {
-	err := func(it Item) error { return ErrorInvalidType[OrderedCollection](it) }
+	//err := func(it Item) error { return ErrorInvalidType[OrderedCollection](it) }
 	tests := map[string]struct {
 		it      Item
 		want    *OrderedCollection
@@ -232,12 +232,12 @@ func TestToOrderedCollection(t *testing.T) {
 		"Collection": {
 			it:      new(Collection),
 			want:    new(OrderedCollection),
-			wantErr: err(new(Collection)),
+			wantErr: nil,
 		},
 		"CollectionPage": {
 			it:      new(CollectionPage),
 			want:    new(OrderedCollection),
-			wantErr: err(new(CollectionPage)),
+			wantErr: nil,
 		},
 	}
 	for name, tt := range tests {

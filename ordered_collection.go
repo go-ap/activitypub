@@ -320,6 +320,16 @@ func ToOrderedCollection(it Item) (*OrderedCollection, error) {
 		return (*OrderedCollection)(unsafe.Pointer(i)), nil
 	case OrderedCollectionPage:
 		return (*OrderedCollection)(unsafe.Pointer(&i)), nil
+	// NOTE(marius): let's try again to convert Collection -> OrderedCollection, as they have the same
+	// shape in memory.
+	case *Collection:
+		return (*OrderedCollection)(unsafe.Pointer(i)), nil
+	case Collection:
+		return (*OrderedCollection)(unsafe.Pointer(&i)), nil
+	case *CollectionPage:
+		return (*OrderedCollection)(unsafe.Pointer(i)), nil
+	case CollectionPage:
+		return (*OrderedCollection)(unsafe.Pointer(&i)), nil
 	default:
 		return reflectItemToType[OrderedCollection](it)
 	}
@@ -380,8 +390,8 @@ func (o OrderedCollection) Equals(with Item) bool {
 		return false
 	}
 	result := true
-	OnOrderedCollection(with, func(w *OrderedCollection) error {
-		OnCollection(w, func(wo *Collection) error {
+	_ = OnOrderedCollection(with, func(w *OrderedCollection) error {
+		_ = OnCollection(w, func(wo *Collection) error {
 			if !wo.Equals(o) {
 				result = false
 				return nil
