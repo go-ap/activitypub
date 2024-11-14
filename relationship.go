@@ -111,13 +111,13 @@ type Relationship struct {
 	// as a form of provenance, or to support future editing by clients.
 	// In general, clients do the conversion from source to content, not the other way around.
 	Source Source `jsonld:"source,omitempty"`
-	// Subject Subject On a Relationship object, the subject property identifies one of the connected individuals.
+	// Subject property identifies one of the connected individuals.
 	// For instance, for a Relationship object describing "John is related to Sally", subject would refer to John.
 	Subject Item `jsonld:"subject,omitempty"`
-	// Object
+	// Object  property identifies one of the connected individuals.
+	// For instance, for a Relationship object describing "John is related to Sally", object would refer to Sally.
 	Object Item `jsonld:"object,omitempty"`
-	// Relationship On a Relationship object, the relationship property identifies the kind
-	// of relationship that exists between subject and object.
+	// Relationship property identifies the kind of relationship that exists between subject and object.
 	Relationship Item `jsonld:"relationship,omitempty"`
 }
 
