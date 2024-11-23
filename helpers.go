@@ -385,6 +385,11 @@ func ItemOrderTimestamp(i1, i2 Item) bool {
 	if e1 != nil || e2 != nil {
 		return false
 	}
+	if o1 == nil {
+		return o2 != nil
+	} else if o2 == nil {
+		return false
+	}
 	t1 := o1.Published
 	if o1.Updated.After(t1) {
 		t1 = o1.Updated

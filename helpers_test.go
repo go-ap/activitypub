@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func assertObjectWithTesting(fn canErrorFunc, expected Item) WithObjectFn {
@@ -538,6 +539,140 @@ func TestDerefItem(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := DerefItem(tt.arg); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("DerefItem() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestItemOrderTimestamp(t *testing.T) {
+	early1 := time.Date(2001, 6, 6, 6, 0, 0, 0, time.UTC)
+	early2 := time.Date(2001, 6, 6, 6, 0, 1, 0, time.UTC)
+	late1 := time.Date(2001, 6, 6, 7, 0, 0, 0, time.UTC)
+	late2 := time.Date(2001, 6, 6, 7, 0, 1, 0, time.UTC)
+	type args struct {
+		i1 Item
+		i2 Item
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "empty",
+			args: args{},
+			want: false,
+		},
+		{
+			name: "first empty",
+			args: args{
+				i1: nil,
+				i2: &Object{},
+			},
+			want: true,
+		},
+		{
+			name: "second empty",
+			args: args{
+				i1: &Object{},
+				i2: nil,
+			},
+			want: false,
+		},
+		{
+			name: "empty published/updated",
+			args: args{
+				i1: &Object{},
+				i2: &Object{},
+			},
+			want: false,
+		},
+		{
+			name: "first has empty published/updated",
+			args: args{
+				i1: &Object{},
+				i2: &Object{Published: early1},
+			},
+			want: false,
+		},
+		{
+			name: "check published equals",
+			args: args{
+				i1: &Object{Published: early1},
+				i2: &Object{Published: early1},
+			},
+			want: false,
+		},
+		{
+			name: "check published/updated equals",
+			args: args{
+				i1: &Object{Published: early2},
+				i2: &Object{Updated: early2},
+			},
+			want: false,
+		},
+		{
+			name: "check updated/published equals",
+			args: args{
+				i1: &Object{Updated: late1},
+				i2: &Object{Published: late1},
+			},
+			want: false,
+		},
+		{
+			name: "check first published earlier",
+			args: args{
+				i1: &Object{Published: early1},
+				i2: &Object{Published: late1},
+			},
+			want: false,
+		},
+		{
+			name: "check second published earlier",
+			args: args{
+				i1: &Object{Published: late1},
+				i2: &Object{Published: early1},
+			},
+			want: true,
+		},
+		{
+			name: "check first updated earlier",
+			args: args{
+				i1: &Object{Updated: early1},
+				i2: &Object{Updated: late1},
+			},
+			want: false,
+		},
+		{
+			name: "check second updated earlier",
+			args: args{
+				i1: &Object{Updated: late1},
+				i2: &Object{Updated: early1},
+			},
+			want: true,
+		},
+
+		{
+			name: "check first earlier",
+			args: args{
+				i1: &Object{Published: early1, Updated: late1},
+				i2: &Object{Published: early1, Updated: late2},
+			},
+			want: false,
+		},
+		{
+			name: "check second earlier",
+			args: args{
+				i1: &Object{Published: early1, Updated: late2},
+				i2: &Object{Published: early1, Updated: late1},
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ItemOrderTimestamp(tt.args.i1, tt.args.i2); got != tt.want {
+				t.Errorf("ItemOrderTimestamp() = %v, want %v", got, tt.want)
 			}
 		})
 	}
