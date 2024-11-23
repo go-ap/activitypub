@@ -378,7 +378,7 @@ func OnOrderedCollectionPage(it Item, fn WithOrderedCollectionPageFn) error {
 }
 
 // ItemOrderTimestamp is used for ordering a ItemCollection slice using the slice.Sort function
-// It orders i1 and i2 based on their Published and Updated timestamps.
+// It orders i1 and i2 based on their Published and Updated timestamps, whichever is later.
 func ItemOrderTimestamp(i1, i2 Item) bool {
 	o1, e1 := ToObject(i1)
 	o2, e2 := ToObject(i2)
@@ -386,14 +386,14 @@ func ItemOrderTimestamp(i1, i2 Item) bool {
 		return false
 	}
 	t1 := o1.Published
-	if !o1.Updated.IsZero() {
+	if o1.Updated.After(t1) {
 		t1 = o1.Updated
 	}
 	t2 := o2.Published
-	if !o2.Updated.IsZero() {
+	if o2.Updated.After(t2) {
 		t2 = o2.Updated
 	}
-	return t1.Sub(t2) > 0
+	return t1.After(t2)
 }
 
 func notEmptyLink(l *Link) bool {
