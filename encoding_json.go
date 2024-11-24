@@ -121,12 +121,30 @@ func JSONWriteItemProp(b *[]byte, n string, i Item) (notEmpty bool) {
 	return notEmpty
 }
 
+func byteInsertAt(raw []byte, b byte, p int) []byte {
+	return append(raw[:p], append([]byte{b}, raw[p:]...)...)
+}
+
+func escapeQuote(s string) string {
+	raw := []byte(s)
+	end := len(s)
+	for i := 0; i < end; i++ {
+		c := raw[i]
+		if c == '"' && (i > 0 && s[i-1] != '\\') {
+			raw = byteInsertAt(raw, '\\', i)
+			i++
+			end++
+		}
+	}
+	return string(raw)
+}
+
 func JSONWriteStringValue(b *[]byte, s string) (notEmpty bool) {
 	if len(s) == 0 {
 		return false
 	}
 	JSONWrite(b, '"')
-	JSONWriteS(b, s)
+	JSONWriteS(b, escapeQuote(s))
 	JSONWrite(b, '"')
 	return true
 }
@@ -192,7 +210,7 @@ func JSONWriteItemCollectionProp(b *[]byte, n string, col ItemCollection, compac
 
 func JSONWriteObjectValue(b *[]byte, o Object) (notEmpty bool) {
 	if v, err := o.ID.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = JSONWriteProp(b, "id", v) || notEmpty
+		notEmpty = JSONWriteProp(b, "id", v)
 	}
 	if v, err := o.Type.MarshalJSON(); err == nil && len(v) > 0 {
 		notEmpty = JSONWriteProp(b, "type", v) || notEmpty
@@ -290,7 +308,7 @@ func JSONWriteObjectValue(b *[]byte, o Object) (notEmpty bool) {
 }
 
 func JSONWriteActivityValue(b *[]byte, a Activity) (notEmpty bool) {
-	OnIntransitiveActivity(a, func(i *IntransitiveActivity) error {
+	_ = OnIntransitiveActivity(a, func(i *IntransitiveActivity) error {
 		if i == nil {
 			return nil
 		}
@@ -304,7 +322,7 @@ func JSONWriteActivityValue(b *[]byte, a Activity) (notEmpty bool) {
 }
 
 func JSONWriteIntransitiveActivityValue(b *[]byte, i IntransitiveActivity) (notEmpty bool) {
-	OnObject(i, func(o *Object) error {
+	_ = OnObject(i, func(o *Object) error {
 		if o == nil {
 			return nil
 		}
@@ -330,7 +348,7 @@ func JSONWriteIntransitiveActivityValue(b *[]byte, i IntransitiveActivity) (notE
 }
 
 func JSONWriteQuestionValue(b *[]byte, q Question) (notEmpty bool) {
-	OnIntransitiveActivity(q, func(i *IntransitiveActivity) error {
+	_ = OnIntransitiveActivity(q, func(i *IntransitiveActivity) error {
 		if i == nil {
 			return nil
 		}
@@ -349,7 +367,7 @@ func JSONWriteQuestionValue(b *[]byte, q Question) (notEmpty bool) {
 
 func JSONWriteLinkValue(b *[]byte, l Link) (notEmpty bool) {
 	if v, err := l.ID.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = JSONWriteProp(b, "id", v) || notEmpty
+		notEmpty = JSONWriteProp(b, "id", v)
 	}
 	if v, err := l.Type.MarshalJSON(); err == nil && len(v) > 0 {
 		notEmpty = JSONWriteProp(b, "type", v) || notEmpty

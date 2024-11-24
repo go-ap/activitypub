@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"reflect"
 	"testing"
 	"time"
@@ -487,6 +488,132 @@ func TestMarshalJSON(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("MarshalJSON() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestJSONWriteValue(t *testing.T) {
+	buff := func(s int) *[]byte {
+		b := make([]byte, 0, s)
+		return &b
+	}
+	type args struct {
+		b *[]byte
+		s []byte
+	}
+	tests := []struct {
+		name         string
+		args         args
+		want         []byte
+		wantNotEmpty bool
+	}{
+		{
+			name: "empty",
+			args: args{
+				b: buff(0),
+			},
+			wantNotEmpty: false,
+		},
+		{
+			name: "do not escape quotes at start-end",
+			args: args{
+				b: buff(20),
+				s: []byte(`"https://example.com"`),
+			},
+			want:         []byte(`"https://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "escape quotes inside string",
+			args: args{
+				b: buff(80),
+				s: []byte(`"application/ld+json; profile="https://www.w3.org/ns/activitystreams""`),
+			},
+			want:         []byte(`"application/ld+json; profile="https://www.w3.org/ns/activitystreams""`),
+			wantNotEmpty: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotNotEmpty := JSONWriteValue(tt.args.b, tt.args.s)
+			if gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("JSONWriteStringValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if tt.wantNotEmpty && !bytes.Equal(*tt.args.b, tt.want) {
+				t.Errorf("JSONWriteValue() = %s, want %s", *tt.args.b, tt.want)
+			}
+		})
+	}
+}
+
+func buff(l int) *[]byte {
+	b := make([]byte, 0, l)
+	return &b
+}
+
+func TestJSONWriteStringValue(t *testing.T) {
+	type args struct {
+		b *[]byte
+		s string
+	}
+	tests := []struct {
+		name         string
+		args         args
+		want         string
+		wantNotEmpty bool
+	}{
+		{
+			name:         "empty",
+			args:         args{},
+			want:         "",
+			wantNotEmpty: false,
+		},
+		{
+			name: "escaped quote",
+			args: args{
+				b: buff(10),
+				s: `ana"are`,
+			},
+			want:         `"ana\"are"`,
+			wantNotEmpty: true,
+		},
+		{
+			name: "already escaped quote",
+			args: args{
+				b: buff(10),
+				s: `ana\"are`,
+			},
+			want:         `"ana\"are"`,
+			wantNotEmpty: true,
+		},
+		{
+			name: "already escaped quote and multiple other quotes",
+			args: args{
+				b: buff(10),
+				s: `ana\"""are`,
+			},
+			want:         `"ana\"\"\"are"`,
+			wantNotEmpty: true,
+		},
+		{
+			name: "quote at the end",
+			args: args{
+				b: buff(10),
+				s: `anaare"`,
+			},
+			want:         `"anaare\""`,
+			wantNotEmpty: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotNotEmpty := JSONWriteStringValue(tt.args.b, tt.args.s)
+			if gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("JSONWriteStringValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if tt.wantNotEmpty && tt.want != string(*tt.args.b) {
+				t.Errorf("JSONWriteStringValue() = %s, want %s", *tt.args.b, tt.want)
 			}
 		})
 	}
