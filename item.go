@@ -101,35 +101,35 @@ func ItemsEqual(it, with Item) bool {
 }
 
 // IsItemCollection returns if the current Item interface holds a Collection
-func IsItemCollection(it Item) bool {
+func IsItemCollection(it LinkOrIRI) bool {
 	_, ok := it.(ItemCollection)
 	_, okP := it.(*ItemCollection)
 	return ok || okP || IsIRIs(it)
 }
 
 // IsIRI returns if the current Item interface holds an IRI
-func IsIRI(it Item) bool {
+func IsIRI(it LinkOrIRI) bool {
 	_, okV := it.(IRI)
 	_, okP := it.(*IRI)
 	return okV || okP
 }
 
 // IsIRIs returns if the current Item interface holds an IRI slice
-func IsIRIs(it Item) bool {
+func IsIRIs(it LinkOrIRI) bool {
 	_, okV := it.(IRIs)
 	_, okP := it.(*IRIs)
 	return okV || okP
 }
 
 // IsLink returns if the current Item interface holds a Link
-func IsLink(it Item) bool {
+func IsLink(it LinkOrIRI) bool {
 	_, okV := it.(Link)
 	_, okP := it.(*Link)
 	return okV || okP
 }
 
 // IsObject returns if the current Item interface holds an Object
-func IsObject(it Item) bool {
+func IsObject(it LinkOrIRI) bool {
 	switch ob := it.(type) {
 	case Actor, *Actor,
 		Object, *Object, Profile, *Profile, Place, *Place, Relationship, *Relationship, Tombstone, *Tombstone,
@@ -143,7 +143,7 @@ func IsObject(it Item) bool {
 }
 
 // IsNil checks if the object matching an ObjectOrLink interface is nil
-func IsNil(it Item) bool {
+func IsNil(it LinkOrIRI) bool {
 	if it == nil {
 		return true
 	}
@@ -165,12 +165,14 @@ func IsNil(it Item) bool {
 			return v == nil
 		}
 	} else if IsObject(it) {
-		OnObject(it, func(o *Object) error {
-			isNil = o == nil
-			return nil
-		})
+		if ob, ok := it.(Item); ok {
+			_ = OnObject(ob, func(o *Object) error {
+				isNil = o == nil
+				return nil
+			})
+		}
 	} else if IsLink(it) {
-		OnLink(it, func(l *Link) error {
+		_ = OnLink(it, func(l *Link) error {
 			isNil = l == nil
 			return nil
 		})
