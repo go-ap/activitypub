@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"fmt"
+	"time"
 )
 
 // WithLinkFn represents a function type that can be used as a parameter for OnLink helper function
@@ -379,24 +380,34 @@ func OnOrderedCollectionPage(it Item, fn WithOrderedCollectionPageFn) error {
 
 // ItemOrderTimestamp is used for ordering a ItemCollection slice using the slice.Sort function
 // It orders i1 and i2 based on their Published and Updated timestamps, whichever is later.
-func ItemOrderTimestamp(i1, i2 Item) bool {
-	o1, e1 := ToObject(i1)
-	o2, e2 := ToObject(i2)
-	if e1 != nil || e2 != nil {
+func ItemOrderTimestamp(i1, i2 LinkOrIRI) bool {
+	if IsNil(i1) {
+		return !IsNil(i2)
+	} else if IsNil(i2) {
 		return false
 	}
-	if o1 == nil {
-		return o2 != nil
-	} else if o2 == nil {
-		return false
+
+	var t1 time.Time
+	var t2 time.Time
+	if IsObject(i1) {
+		o1, e1 := ToObject(i1)
+		if e1 != nil {
+			return false
+		}
+		t1 = o1.Published
+		if o1.Updated.After(t1) {
+			t1 = o1.Updated
+		}
 	}
-	t1 := o1.Published
-	if o1.Updated.After(t1) {
-		t1 = o1.Updated
-	}
-	t2 := o2.Published
-	if o2.Updated.After(t2) {
-		t2 = o2.Updated
+	if IsObject(i2) {
+		o2, e2 := ToObject(i2)
+		if e2 != nil {
+			return false
+		}
+		t2 = o2.Published
+		if o2.Updated.After(t2) {
+			t2 = o2.Updated
+		}
 	}
 	return t1.After(t2)
 }

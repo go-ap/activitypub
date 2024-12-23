@@ -619,7 +619,7 @@ func ToLink(it LinkOrIRI) (*Link, error) {
 
 // ToObject returns an Object pointer to the data in the current Item
 // It relies on the fact that all the types in this package have a data layout compatible with Object.
-func ToObject(it Item) (*Object, error) {
+func ToObject(it LinkOrIRI) (*Object, error) {
 	switch i := it.(type) {
 	case *Object:
 		return i, nil
@@ -678,7 +678,7 @@ func ToObject(it Item) (*Object, error) {
 	}
 }
 
-func reflectItemToType[T Objects | Links](it Item) (*T, error) {
+func reflectItemToType[T Objects | Links](it LinkOrIRI) (*T, error) {
 	if IsNil(it) {
 		return nil, nil
 	}

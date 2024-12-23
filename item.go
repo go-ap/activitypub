@@ -185,7 +185,7 @@ func IsNil(it LinkOrIRI) bool {
 	return isNil
 }
 
-func ErrorInvalidType[T Objects | Links | IRIs](received Item) error {
+func ErrorInvalidType[T Objects | Links | IRIs](received LinkOrIRI) error {
 	return fmt.Errorf("unable to convert %T to %T", received, new(T))
 }
 
