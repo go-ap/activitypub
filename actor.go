@@ -194,7 +194,7 @@ func (a Actor) IsCollection() bool {
 
 // PublicKey holds the ActivityPub compatible public key data
 // The document reference can be found at:
-// https://web-payments.org/vocabs/security#publicKey
+// https://w3c-ccg.github.io/security-vocab/#publicKey
 type PublicKey struct {
 	ID           ID     `jsonld:"id,omitempty"`
 	Owner        IRI    `jsonld:"owner,omitempty"`
