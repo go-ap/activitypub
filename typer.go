@@ -221,11 +221,9 @@ func (t CollectionPath) ofObject(ob *Object) Item {
 	case Replies:
 		it = ob.Replies
 	}
-	if it == nil {
-		it = t.ofIRI(ob.ID)
-	}
 	return it
 }
+
 func (t CollectionPath) ofActor(a *Actor) Item {
 	var it Item
 	switch t {
@@ -240,9 +238,6 @@ func (t CollectionPath) ofActor(a *Actor) Item {
 	case Followers:
 		it = a.Followers
 	}
-	if it == nil {
-		it = t.ofIRI(a.ID)
-	}
 	return it
 }
 
@@ -254,33 +249,37 @@ func (t CollectionPath) ofIRI(iri IRI) Item {
 }
 
 func (t CollectionPath) ofItem(i Item) Item {
-	var it Item
-	return it
-}
-
-// Of gives us the property of the i Item that corresponds to the t CollectionPath type.
-func (t CollectionPath) Of(i Item) Item {
 	if IsNil(i) {
 		return nil
 	}
-	it := t.ofIRI(i.GetLink())
+	var it Item
+	if IsIRI(i) {
+		it = t.ofIRI(i.GetLink())
+	}
 	if IsItemCollection(i) {
-		OnItemCollection(i, func(col *ItemCollection) error {
+		_ = OnItemCollection(i, func(col *ItemCollection) error {
 			it = t.ofItemCollection(*col)
 			return nil
 		})
 	}
 	if OfActor.Contains(t) && ActorTypes.Contains(i.GetType()) {
-		OnActor(i, func(a *Actor) error {
+		_ = OnActor(i, func(a *Actor) error {
 			it = t.ofActor(a)
 			return nil
 		})
+	} else {
+		_ = OnObject(i, func(o *Object) error {
+			it = t.ofObject(o)
+			return nil
+		})
 	}
-	OnObject(i, func(o *Object) error {
-		it = t.ofObject(o)
-		return nil
-	})
 	return it
+}
+
+// Of returns the property of the i [Item] that corresponds to the t [CollectionPath] type.
+// If it's missing, it returns nil.
+func (t CollectionPath) Of(i Item) Item {
+	return t.ofItem(i)
 }
 
 // OfActor returns the base IRI of received i, if i represents an IRI matching CollectionPath type t

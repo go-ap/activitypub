@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -359,6 +360,172 @@ func TestCollectionPaths_Split(t *testing.T) {
 			}
 			if mc != tt.maybeCol {
 				t.Errorf("Split() got Colletion Path = %q, want %q", mc, tt.maybeCol)
+			}
+		})
+	}
+}
+
+func TestCollectionPath_Of(t *testing.T) {
+	tests := []struct {
+		name string
+		t    CollectionPath
+		arg  Item
+		want Item
+	}{
+		{
+			name: "all-nil",
+			t:    "",
+		},
+		{
+			name: "inbox-nil",
+			t:    Inbox,
+		},
+		{
+			name: "outbox-nil",
+			t:    Outbox,
+		},
+		{
+			name: "followers-nil",
+			t:    Followers,
+		},
+		{
+			name: "following-nil",
+			t:    Following,
+		},
+		{
+			name: "liked-nil",
+			t:    Liked,
+		},
+		{
+			name: "likes-nil",
+			t:    Likes,
+		},
+		{
+			name: "shares-nil",
+			t:    Shares,
+		},
+		{
+			name: "replies-nil",
+			t:    Replies,
+		},
+		{
+			name: "inbox-empty",
+			t:    Inbox,
+			arg:  &Actor{},
+		},
+		{
+			name: "outbox-empty",
+			t:    Outbox,
+			arg:  &Actor{},
+		},
+		{
+			name: "followers-empty",
+			t:    Followers,
+			arg:  &Actor{},
+		},
+		{
+			name: "following-empty",
+			t:    Following,
+			arg:  &Actor{},
+		},
+		{
+			name: "liked-empty",
+			t:    Liked,
+			arg:  &Actor{},
+		},
+		{
+			name: "likes-empty",
+			t:    Likes,
+			arg:  &Object{},
+		},
+		{
+			name: "shares-empty",
+			t:    Shares,
+			arg:  &Object{},
+		},
+		{
+			name: "replies-empty",
+			t:    Replies,
+			arg:  &Object{},
+		},
+		//
+		{
+			name: "inbox",
+			t:    Inbox,
+			arg: &Actor{
+				Type:  PersonType,
+				Inbox: IRI("https://example.com/inbox"),
+			},
+			want: IRI("https://example.com/inbox"),
+		},
+		{
+			name: "outbox",
+			t:    Outbox,
+			arg: &Actor{
+				Type:   PersonType,
+				Outbox: IRI("https://example.com/outbox"),
+			},
+			want: IRI("https://example.com/outbox"),
+		},
+		{
+			name: "followers",
+			t:    Followers,
+			arg: &Actor{
+				Type:      GroupType,
+				Followers: IRI("https://example.com/c132-333"),
+			},
+			want: IRI("https://example.com/c132-333"),
+		},
+		{
+			name: "following",
+			t:    Following,
+			arg: &Actor{
+				Type:      GroupType,
+				Following: IRI("https://example.com/c666-333"),
+			},
+			want: IRI("https://example.com/c666-333"),
+		},
+		{
+			name: "liked",
+			t:    Liked,
+			arg: &Actor{
+				Type:  ApplicationType,
+				Liked: IRI("https://example.com/l666"),
+			},
+			want: IRI("https://example.com/l666"),
+		},
+		{
+			name: "likes",
+			t:    Likes,
+			arg: &Object{
+				Type:  NoteType,
+				Likes: IRI("https://example.com/l166"),
+			},
+			want: IRI("https://example.com/l166"),
+		},
+		{
+			name: "shares",
+			t:    Shares,
+			arg: &Object{
+				Type:   PageType,
+				Shares: IRI("https://example.com/s266"),
+			},
+			want: IRI("https://example.com/s266"),
+		},
+		{
+			name: "replies",
+			t:    Replies,
+			arg: &Object{
+				Type:    ArticleType,
+				Replies: IRI("https://example.com/r466"),
+			},
+			want: IRI("https://example.com/r466"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.t.Of(tt.arg); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Of() = %v, want %v", got, tt.want)
 			}
 		})
 	}
