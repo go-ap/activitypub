@@ -314,8 +314,17 @@ func (i IRIs) Contains(r Item) bool {
 	return false
 }
 
-func validURL(u *url.URL) bool {
-	return u != nil && len(u.Scheme) > 0 && len(u.Host) > 0
+func validURL(u *url.URL, checkScheme bool) bool {
+	if u == nil {
+		return false
+	}
+	if len(u.Host) == 0 {
+		return false
+	}
+	if checkScheme {
+		return len(u.Scheme) > 0
+	}
+	return true
 }
 
 func stripFragment(u string) string {
@@ -337,7 +346,7 @@ func stripScheme(u string) string {
 func irisEqual(i1, i2 IRI, checkScheme bool) bool {
 	u, e := i1.URL()
 	uw, ew := i2.URL()
-	if e != nil || ew != nil || !validURL(u) || !validURL(uw) {
+	if e != nil || ew != nil || !validURL(u, checkScheme) || !validURL(uw, checkScheme) {
 		return strings.EqualFold(i1.String(), i2.String())
 	}
 	if checkScheme {
