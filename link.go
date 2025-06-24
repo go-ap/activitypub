@@ -18,12 +18,21 @@ type Links interface {
 	Link | IRI
 }
 
-// A Link is an indirect, qualified reference to a resource identified by a URL.
-// The fundamental model for links is established by [ RFC5988].
-// Many of the properties defined by the Activity Vocabulary allow values that are either instances of APObject or Link.
-// When a Link is used, it establishes a qualified relation connecting the subject
-// (the containing object) to the resource identified by the href.
-// Properties of the Link are properties of the reference as opposed to properties of the resource.
+// Link describes a qualified, indirect reference to another resource that is closely related to the conceptual model
+// of Links as established in [RFC5988]. The properties of the Link object are not the properties of the referenced
+// resource, but are provided as hints for rendering agents to understand how to make use of the resource.
+// For example, height and width might represent the desired rendered size of a referenced image, rather than the
+// actual pixel dimensions of the referenced image.
+// The target URI of the Link is expressed using the required href property. In addition, all Link instances share the
+// following common set of optional properties as normatively defined by the [Activity Vocabulary]:
+//   id | name | hreflang | mediaType | rel | height | width
+// For example, all Objects can contain an image property whose value describes a graphical representation of the
+// containing object. This property will typically be used to provide the URL to an image (e.g. JPEG, GIF or PNG)
+// resource that can be displayed to the user. Any given object might have multiple such visual representations --
+// multiple screenshots, for instance, or the same image at different resolutions. In [Activity Streams 2.0],
+// there are essentially three ways of describing such references.
+//
+// https://www.w3.org/TR/activitystreams-core/#link
 type Link struct {
 	// Provides the globally unique identifier for an APObject or Link.
 	ID ID `jsonld:"id,omitempty"`
@@ -117,7 +126,8 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	return JSONLoadLink(val, l)
+
+	return jsonLoadToLink(val, l)
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.

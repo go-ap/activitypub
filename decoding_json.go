@@ -177,6 +177,10 @@ func JSONItemsFn(val *fastjson.Value) (Item, error) {
 	return JSONLoadItem(val)
 }
 
+func looksLikeALink(val *fastjson.Value) bool {
+	return val.Exists("href")
+}
+
 func JSONLoadItem(val *fastjson.Value) (Item, error) {
 	typ := JSONGetType(val)
 	if typ == "" && val.Type() == fastjson.TypeString {
@@ -193,15 +197,23 @@ func JSONLoadItem(val *fastjson.Value) (Item, error) {
 
 	switch typ {
 	case "":
-		// NOTE(marius): this handles Tags which usually don't have types
-		fallthrough
+		if looksLikeALink(val) {
+			// NOTE(marius): this handles Links without a type
+			return JSONLoadLink(val)
+		}
+		err = OnObject(i, func(ob *Object) error {
+			// NOTE(marius): this handles Tags which usually don't have types
+			return JSONLoadObject(val, ob)
+		})
 	case ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
 		err = OnObject(i, func(ob *Object) error {
 			return JSONLoadObject(val, ob)
 		})
 	case LinkType, MentionType:
+		// NOTE(marius): if we have a clear link type, we override
+		i = new(Link)
 		err = OnLink(i, func(l *Link) error {
-			return JSONLoadLink(val, l)
+			return jsonLoadToLink(val, l)
 		})
 	case ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
 		FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
@@ -446,7 +458,6 @@ func GetItemByType(typ ActivityVocabularyType) (Item, error) {
 		// when no type is available use a plain Object
 		return &Object{}, nil
 	}
-	return nil, fmt.Errorf("empty ActivityStreams type")
 }
 
 func JSONGetActorEndpoints(val *fastjson.Value, prop string) *Endpoints {
@@ -622,7 +633,7 @@ func JSONLoadTombstone(val *fastjson.Value, t *Tombstone) error {
 	})
 }
 
-func JSONLoadLink(val *fastjson.Value, l *Link) error {
+func jsonLoadToLink(val *fastjson.Value, l *Link) error {
 	l.ID = JSONGetID(val)
 	l.Type = JSONGetType(val)
 	l.MediaType = JSONGetMimeType(val, "mediaType")
@@ -650,6 +661,11 @@ func JSONLoadLink(val *fastjson.Value, l *Link) error {
 		}
 	}
 	return nil
+}
+
+func JSONLoadLink(val *fastjson.Value) (Item, error) {
+	l := new(Link)
+	return l, jsonLoadToLink(val, l)
 }
 
 func JSONLoadPublicKey(val *fastjson.Value, p *PublicKey) error {
