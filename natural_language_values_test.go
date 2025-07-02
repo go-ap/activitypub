@@ -841,3 +841,63 @@ func TestNaturalLanguageValues_GobDecode(t *testing.T) {
 		})
 	}
 }
+
+func TestLangRefValue_String(t *testing.T) {
+	type fields struct {
+		Ref   LangRef
+		Value Content
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			name:   "empty",
+			fields: fields{},
+			want:   "",
+		},
+		{
+			name: "empty LangRef, not empty Value",
+			fields: fields{
+				Value: Content("not empty"),
+			},
+			want: "not empty",
+		},
+		{
+			name: "nil LangRef, empty Value",
+			fields: fields{
+				Ref:   NilLangRef,
+				Value: Content(""),
+			},
+			want: "",
+		},
+		{
+			name: "nil LangRef, non empty Value",
+			fields: fields{
+				Ref:   NilLangRef,
+				Value: Content("test"),
+			},
+			want: "test",
+		},
+		{
+			name: "ro-example",
+			fields: fields{
+				Ref:   "ro",
+				Value: Content("example"),
+			},
+			want: "example[ro]",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := LangRefValue{
+				Ref:   tt.fields.Ref,
+				Value: tt.fields.Value,
+			}
+			if got := l.String(); got != tt.want {
+				t.Errorf("String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -463,7 +463,7 @@ func (n *NaturalLanguageValues) Count() uint {
 
 // String adds support for Stringer interface. It returns the Value[LangRef] text or just Value if LangRef is NIL
 func (l LangRefValue) String() string {
-	if l.Ref == NilLangRef {
+	if l.Ref == NilLangRef || l.Ref == "" {
 		return l.Value.String()
 	}
 	return fmt.Sprintf("%s[%s]", l.Value, l.Ref)

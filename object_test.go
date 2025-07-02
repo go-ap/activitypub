@@ -424,10 +424,6 @@ func TestMimeType_GobEncode(t *testing.T) {
 	}
 }
 
-func TestLangRefValue_String(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestLangRefValue_UnmarshalJSON(t *testing.T) {
 	t.Skipf("TODO")
 }
