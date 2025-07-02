@@ -901,3 +901,52 @@ func TestLangRefValue_String(t *testing.T) {
 		})
 	}
 }
+
+func TestLangRefValue_UnmarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		wantErr bool
+		data    []byte
+		want    LangRefValue
+	}{
+		{
+			name: "empty",
+			data: []byte(""),
+			want: LangRefValue{
+				Ref: NilLangRef,
+			},
+		},
+		{
+			name: "empty LangRef, not empty Value",
+			want: LangRefValue{
+				Ref:   NilLangRef,
+				Value: Content("not empty"),
+			},
+			data: []byte("not empty"),
+		},
+		{
+			name: "nil LangRef, non empty Value",
+			want: LangRefValue{
+				Ref:   NilLangRef,
+				Value: Content("test"),
+			},
+			data: []byte("test"),
+		},
+		{
+			name: "ro-example",
+			data: []byte(`{"ro":"example"}`),
+			want: LangRefValue{
+				Ref:   "ro",
+				Value: Content("example"),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := LangRefValue{}
+			if _ = l.UnmarshalJSON(tt.data); !reflect.DeepEqual(l, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %+v, want %+v", l, tt.want)
+			}
+		})
+	}
+}
