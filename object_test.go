@@ -432,8 +432,7 @@ func TestLangRef_UnmarshalText(t *testing.T) {
 	l := LangRef("")
 	dataEmpty := []byte("")
 
-	l.UnmarshalText(dataEmpty)
-	if l != "" {
+	if _ = l.UnmarshalText(dataEmpty); l != "" {
 		t.Errorf("Unmarshaled object %T should be an empty string, received %q", l, l)
 	}
 }
@@ -577,7 +576,7 @@ func TestSource_UnmarshalJSON(t *testing.T) {
 	s := Source{}
 
 	dataEmpty := []byte("{}")
-	s.UnmarshalJSON(dataEmpty)
+	_ = s.UnmarshalJSON(dataEmpty)
 	validateEmptySource(s, t)
 }
 
