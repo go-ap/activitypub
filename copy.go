@@ -3,6 +3,9 @@ package activitypub
 import "fmt"
 
 func CopyOrderedCollectionPageProperties(to, from *OrderedCollectionPage) (*OrderedCollectionPage, error) {
+	to.PartOf = replaceIfItem(to.PartOf, from.PartOf)
+	to.Next = replaceIfItem(to.Next, from.Next)
+	to.Prev = replaceIfItem(to.Prev, from.Prev)
 	oldCol, _ := ToOrderedCollection(to)
 	newCol, _ := ToOrderedCollection(from)
 	_, err := CopyOrderedCollectionProperties(oldCol, newCol)
@@ -13,6 +16,9 @@ func CopyOrderedCollectionPageProperties(to, from *OrderedCollectionPage) (*Orde
 }
 
 func CopyCollectionPageProperties(to, from *CollectionPage) (*CollectionPage, error) {
+	to.PartOf = replaceIfItem(to.PartOf, from.PartOf)
+	to.Next = replaceIfItem(to.Next, from.Next)
+	to.Prev = replaceIfItem(to.Prev, from.Prev)
 	toCol, _ := ToCollection(to)
 	fromCol, _ := ToCollection(from)
 	_, err := CopyCollectionProperties(toCol, fromCol)
@@ -20,6 +26,12 @@ func CopyCollectionPageProperties(to, from *CollectionPage) (*CollectionPage, er
 }
 
 func CopyOrderedCollectionProperties(to, from *OrderedCollection) (*OrderedCollection, error) {
+	to.First = replaceIfItem(to.First, from.First)
+	to.Last = replaceIfItem(to.Last, from.Last)
+	to.OrderedItems = replaceIfItemCollection(to.OrderedItems, from.OrderedItems)
+	if to.TotalItems == 0 {
+		to.TotalItems = from.TotalItems
+	}
 	oldOb, _ := ToObject(to)
 	newOb, _ := ToObject(from)
 	_, err := CopyObjectProperties(oldOb, newOb)
@@ -27,6 +39,12 @@ func CopyOrderedCollectionProperties(to, from *OrderedCollection) (*OrderedColle
 }
 
 func CopyCollectionProperties(to, from *Collection) (*Collection, error) {
+	to.First = replaceIfItem(to.First, from.First)
+	to.Last = replaceIfItem(to.Last, from.Last)
+	to.Items = replaceIfItemCollection(to.Items, from.Items)
+	if to.TotalItems == 0 {
+		to.TotalItems = from.TotalItems
+	}
 	oldOb, _ := ToObject(to)
 	newOb, _ := ToObject(from)
 	_, err := CopyObjectProperties(oldOb, newOb)
