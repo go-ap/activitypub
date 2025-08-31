@@ -182,24 +182,25 @@ func CopyItemProperties(to, from Item) (Item, error) {
 	if !to.GetLink().Equals(from.GetLink(), false) {
 		return to, fmt.Errorf("object IDs don't match")
 	}
-	if to.GetType() != "" && to.GetType() != from.GetType() {
-		return to, fmt.Errorf("invalid object types for update %s(old) and %s(new)", from.GetType(), to.GetType())
-	}
 	return copyAllItemProperties(to, from)
 }
 
 // UpdatePersonProperties
 func UpdatePersonProperties(to, from *Actor) (*Actor, error) {
+	oldOb, _ := ToObject(to)
+	newOb, _ := ToObject(from)
+	_, err := CopyObjectProperties(oldOb, newOb)
+	if err != nil {
+		return to, err
+	}
 	to.Inbox = replaceIfItem(to.Inbox, from.Inbox)
 	to.Outbox = replaceIfItem(to.Outbox, from.Outbox)
 	to.Following = replaceIfItem(to.Following, from.Following)
 	to.Followers = replaceIfItem(to.Followers, from.Followers)
 	to.Liked = replaceIfItem(to.Liked, from.Liked)
 	to.PreferredUsername = replaceIfNaturalLanguageValues(to.PreferredUsername, from.PreferredUsername)
-	oldOb, _ := ToObject(to)
-	newOb, _ := ToObject(from)
-	_, err := CopyObjectProperties(oldOb, newOb)
-	return to, err
+	to.PublicKey = replaceIfPublicKey(to.PublicKey, from.PublicKey)
+	return to, nil
 }
 
 func replaceIfItem(old, new Item) Item {
@@ -228,5 +229,14 @@ func replaceIfSource(to, from Source) Source {
 		return from
 	}
 	to.Content = replaceIfNaturalLanguageValues(to.Content, from.Content)
+	return to
+}
+
+func replaceIfPublicKey(to, from PublicKey) PublicKey {
+	if from.ID != to.ID {
+		return from
+	}
+	to.Owner = from.Owner
+	to.PublicKeyPem = from.PublicKeyPem
 	return to
 }
