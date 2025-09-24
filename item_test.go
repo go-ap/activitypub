@@ -285,6 +285,10 @@ func TestItemsEqual1(t *testing.T) {
 }
 
 var (
+	nilIRI *IRI = nil
+
+	nilLink *Link = nil
+
 	nilObject       *Object       = nil
 	nilTombstone    *Tombstone    = nil
 	nilProfile      *Profile      = nil
@@ -306,103 +310,99 @@ var (
 )
 
 func TestIsObject(t *testing.T) {
-	type args struct {
-		it Item
-	}
 	tests := []struct {
 		name string
-		args args
+		it   Item
 		want bool
 	}{
 		{
 			name: "nil",
-			args: args{},
 			want: false,
 		},
 		{
 			name: "interface with nil value",
-			args: args{Item(nil)},
+			it:   Item(nil),
 			want: false,
 		},
 		{
 			name: "empty object",
-			args: args{Object{}},
+			it:   Object{},
 			want: true,
 		},
 		{
 			name: "pointer to empty object",
-			args: args{&Object{}},
+			it:   &Object{},
 			want: true,
 		},
 		{
 			name: "pointer to nil object",
-			args: args{nilObject},
+			it:   nilObject,
 			want: false,
 		},
 		{
 			name: "pointer to nil tombstone",
-			args: args{nilTombstone},
+			it:   nilTombstone,
 			want: false,
 		},
 		{
 			name: "pointer to nil profile",
-			args: args{nilProfile},
+			it:   nilProfile,
 			want: false,
 		},
 		{
 			name: "pointer to nil place",
-			args: args{nilPlace},
+			it:   nilPlace,
 			want: false,
 		},
 		{
 			name: "pointer to nil relationship",
-			args: args{nilRelationship},
+			it:   nilRelationship,
 			want: false,
 		},
 		{
 			name: "pointer to nil actor",
-			args: args{nilActor},
+			it:   nilActor,
 			want: false,
 		},
 		{
 			name: "pointer to nil activity",
-			args: args{nilActivity},
+			it:   nilActivity,
 			want: false,
 		},
 		{
 			name: "pointer to nil intransitive activity",
-			args: args{nilIntransitiveActivity},
+			it:   nilIntransitiveActivity,
 			want: false,
 		},
 		{
 			name: "pointer to nil collection interface",
-			args: args{nilCollectionIntf},
+			it:   nilCollectionIntf,
 			want: false,
 		},
 		{
 			name: "pointer to nil collection",
-			args: args{nilCollection},
+			it:   nilCollection,
 			want: false,
 		},
 		{
 			name: "pointer to nil collection page",
-			args: args{nilCollectionPage},
+			it:   nilCollectionPage,
 			want: false,
 		},
 		{
 			name: "pointer to nil ordered collection",
-			args: args{nilOrderedCollection},
+			it:   nilOrderedCollection,
 			want: false,
 		},
 		{
 			name: "pointer to nil ordered collection page",
-			args: args{nilOrderedCollectionPage},
+			it:   nilOrderedCollectionPage,
 			want: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsObject(tt.args.it); got != tt.want {
+			if got := IsObject(tt.it); got != tt.want {
 				t.Errorf("IsObject() = %v, want %v", got, tt.want)
 			}
 		})
@@ -472,6 +472,205 @@ func TestItemsEqual2(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := ItemsEqual(tt.args.it, tt.args.with); got != tt.want {
 				t.Errorf("ItemsEqual() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIsItemCollection(t *testing.T) {
+	tests := []struct {
+		name string
+		it   LinkOrIRI
+		want bool
+	}{
+		{
+			name: "empty",
+			it:   nil,
+			want: false,
+		},
+		{
+			name: "object",
+			it:   Object{},
+			want: false,
+		},
+		{
+			name: "nil item",
+			it:   Item(nil),
+			want: false,
+		},
+		{
+			name: "nil item collection",
+			it:   ItemCollection(nil),
+			want: false,
+		},
+		{
+			name: "item collection with nil item",
+			it:   ItemCollection{nil},
+			want: true,
+		},
+		{
+			name: "item collection with one item",
+			it:   ItemCollection{Object{}},
+			want: true,
+		},
+		{
+			name: "nil iris",
+			it:   IRIs(nil),
+			want: false,
+		},
+		{
+			name: "iris with no items",
+			it:   IRIs{},
+			want: true,
+		},
+		{
+			name: "iris with one item",
+			it:   IRIs{""},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsItemCollection(tt.it); got != tt.want {
+				t.Errorf("IsItemCollection() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIsIRI(t *testing.T) {
+	tests := []struct {
+		name string
+		it   LinkOrIRI
+		want bool
+	}{
+		{
+			name: "empty",
+			it:   nil,
+			want: false,
+		},
+		{
+			name: "nil iri",
+			it:   nilIRI,
+			want: false,
+		},
+		{
+			name: "empty string",
+			it:   IRI(""),
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsIRI(tt.it); got != tt.want {
+				t.Errorf("IsIRI() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIsIRIs(t *testing.T) {
+	tests := []struct {
+		name string
+		it   LinkOrIRI
+		want bool
+	}{
+		{
+			name: "empty",
+			it:   nil,
+			want: false,
+		},
+		{
+			name: "object",
+			it:   Object{},
+			want: false,
+		},
+		{
+			name: "nil iri",
+			it:   nilIRI,
+			want: false,
+		},
+		{
+			name: "nil item",
+			it:   Item(nil),
+			want: false,
+		},
+		{
+			name: "nil item collection",
+			it:   ItemCollection(nil),
+			want: false,
+		},
+		{
+			name: "item collection with nil item",
+			it:   ItemCollection{nil},
+			want: false,
+		},
+		{
+			name: "item collection with one item",
+			it:   ItemCollection{Object{}},
+			want: false,
+		},
+		{
+			name: "nil iris",
+			it:   IRIs(nil),
+			want: false,
+		},
+		{
+			name: "iris with no items",
+			it:   IRIs{},
+			want: true,
+		},
+		{
+			name: "iris with one item",
+			it:   IRIs{""},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsIRIs(tt.it); got != tt.want {
+				t.Errorf("IsIRIs() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIsLink(t *testing.T) {
+	tests := []struct {
+		name string
+		it   LinkOrIRI
+		want bool
+	}{
+		{
+			name: "empty",
+			it:   nil,
+			want: false,
+		},
+		{
+			name: "nil link",
+			it:   nilLink,
+			want: false,
+		},
+		{
+			name: "object",
+			it:   Object{},
+			want: false,
+		},
+		{
+			name: "link",
+			it:   Link{},
+			want: true,
+		},
+		{
+			name: "link pointer",
+			it:   &Link{},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsLink(tt.it); got != tt.want {
+				t.Errorf("IsLink() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -102,16 +102,30 @@ func ItemsEqual(it, with Item) bool {
 
 // IsItemCollection returns if the current Item interface holds a Collection
 func IsItemCollection(it LinkOrIRI) bool {
-	_, ok := it.(ItemCollection)
-	_, okP := it.(*ItemCollection)
-	return ok || okP || IsIRIs(it)
+	if it == nil {
+		return false
+	}
+	if col, ok := it.(ItemCollection); ok {
+		return col != nil
+	}
+	if col, ok := it.(*ItemCollection); ok {
+		return col != nil
+	}
+	return IsIRIs(it)
 }
 
 // IsIRI returns if the current Item interface holds an IRI
 func IsIRI(it LinkOrIRI) bool {
-	_, okV := it.(IRI)
-	_, okP := it.(*IRI)
-	return okV || okP
+	if it == nil {
+		return false
+	}
+	if _, ok := it.(IRI); ok {
+		return true
+	}
+	if iri, ok := it.(*IRI); ok {
+		return iri != nil
+	}
+	return false
 }
 
 // IsIRIs returns if the current Item interface holds an IRI slice
@@ -119,9 +133,13 @@ func IsIRIs(it LinkOrIRI) bool {
 	if it == nil {
 		return false
 	}
-	_, okV := it.(IRIs)
-	_, okP := it.(*IRIs)
-	return okV || okP
+	if iris, ok := it.(IRIs); ok {
+		return iris != nil
+	}
+	if iris, ok := it.(*IRIs); ok {
+		return iris != nil
+	}
+	return false
 }
 
 // IsLink returns if the current Item interface holds a Link
@@ -129,9 +147,13 @@ func IsLink(it LinkOrIRI) bool {
 	if it == nil {
 		return false
 	}
-	_, okV := it.(Link)
-	_, okP := it.(*Link)
-	return okV || okP
+	if _, ok := it.(Link); ok {
+		return true
+	}
+	if l, ok := it.(*Link); ok {
+		return l != nil
+	}
+	return false
 }
 
 // IsObject returns if the current Item interface holds an Object
