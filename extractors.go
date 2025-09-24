@@ -27,15 +27,16 @@ func ContentOf(it Item) string {
 }
 
 func SummaryOf(it Item) string {
-	var cont string
-	if IsObject(it) {
-		_ = OnObject(it, func(ob *Object) error {
-			if ob.Summary != nil {
-				cont = ob.Summary.First().String()
-			}
-			return nil
-		})
+	if !IsObject(it) {
+		return ""
 	}
+	var cont string
+	_ = OnObject(it, func(ob *Object) error {
+		if ob.Summary != nil {
+			cont = ob.Summary.First().String()
+		}
+		return nil
+	})
 	return cont
 }
 
