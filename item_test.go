@@ -284,6 +284,27 @@ func TestItemsEqual1(t *testing.T) {
 	}
 }
 
+var (
+	nilObject       *Object       = nil
+	nilTombstone    *Tombstone    = nil
+	nilProfile      *Profile      = nil
+	nilPlace        *Place        = nil
+	nilRelationship *Relationship = nil
+
+	nilActor *Actor = nil
+
+	nilActivity             *Activity             = nil
+	nilIntransitiveActivity *IntransitiveActivity = nil
+
+	nilCollectionIntf CollectionInterface = nil
+
+	nilCollection     *Collection     = nil
+	nilCollectionPage *CollectionPage = nil
+
+	nilOrderedCollection     *OrderedCollection     = nil
+	nilOrderedCollectionPage *OrderedCollectionPage = nil
+)
+
 func TestIsObject(t *testing.T) {
 	type args struct {
 		it Item
@@ -312,6 +333,71 @@ func TestIsObject(t *testing.T) {
 			name: "pointer to empty object",
 			args: args{&Object{}},
 			want: true,
+		},
+		{
+			name: "pointer to nil object",
+			args: args{nilObject},
+			want: false,
+		},
+		{
+			name: "pointer to nil tombstone",
+			args: args{nilTombstone},
+			want: false,
+		},
+		{
+			name: "pointer to nil profile",
+			args: args{nilProfile},
+			want: false,
+		},
+		{
+			name: "pointer to nil place",
+			args: args{nilPlace},
+			want: false,
+		},
+		{
+			name: "pointer to nil relationship",
+			args: args{nilRelationship},
+			want: false,
+		},
+		{
+			name: "pointer to nil actor",
+			args: args{nilActor},
+			want: false,
+		},
+		{
+			name: "pointer to nil activity",
+			args: args{nilActivity},
+			want: false,
+		},
+		{
+			name: "pointer to nil intransitive activity",
+			args: args{nilIntransitiveActivity},
+			want: false,
+		},
+		{
+			name: "pointer to nil collection interface",
+			args: args{nilCollectionIntf},
+			want: false,
+		},
+		{
+			name: "pointer to nil collection",
+			args: args{nilCollection},
+			want: false,
+		},
+		{
+			name: "pointer to nil collection page",
+			args: args{nilCollectionPage},
+			want: false,
+		},
+		{
+			name: "pointer to nil ordered collection",
+			args: args{nilOrderedCollection},
+			want: false,
+		},
+		{
+			name: "pointer to nil ordered collection page",
+			args: args{nilOrderedCollectionPage},
+			want: false,
 		},
 	}
 	for _, tt := range tests {

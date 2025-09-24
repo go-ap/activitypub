@@ -116,6 +116,9 @@ func IsIRI(it LinkOrIRI) bool {
 
 // IsIRIs returns if the current Item interface holds an IRI slice
 func IsIRIs(it LinkOrIRI) bool {
+	if it == nil {
+		return false
+	}
 	_, okV := it.(IRIs)
 	_, okP := it.(*IRIs)
 	return okV || okP
@@ -123,6 +126,9 @@ func IsIRIs(it LinkOrIRI) bool {
 
 // IsLink returns if the current Item interface holds a Link
 func IsLink(it LinkOrIRI) bool {
+	if it == nil {
+		return false
+	}
 	_, okV := it.(Link)
 	_, okP := it.(*Link)
 	return okV || okP
@@ -130,12 +136,61 @@ func IsLink(it LinkOrIRI) bool {
 
 // IsObject returns if the current Item interface holds an Object
 func IsObject(it LinkOrIRI) bool {
+	if it == nil {
+		return false
+	}
 	switch ob := it.(type) {
-	case Actor, *Actor,
-		Object, *Object, Profile, *Profile, Place, *Place, Relationship, *Relationship, Tombstone, *Tombstone,
-		Activity, *Activity, IntransitiveActivity, *IntransitiveActivity, Question, *Question,
-		Collection, *Collection, CollectionPage, *CollectionPage,
-		OrderedCollection, *OrderedCollection, OrderedCollectionPage, *OrderedCollectionPage:
+	case Object:
+		return true
+	case *Object:
+		return ob != nil
+	case Actor:
+		return true
+	case *Actor:
+		return ob != nil
+	case Profile:
+		return true
+	case *Profile:
+		return ob != nil
+	case Place:
+		return true
+	case *Place:
+		return ob != nil
+	case Relationship:
+		return true
+	case *Relationship:
+		return ob != nil
+	case Tombstone:
+		return true
+	case *Tombstone:
+		return ob != nil
+	case Activity:
+		return true
+	case *Activity:
+		return ob != nil
+	case IntransitiveActivity:
+		return true
+	case *IntransitiveActivity:
+		return ob != nil
+	case Question:
+		return true
+	case *Question:
+		return ob != nil
+	case Collection:
+		return true
+	case *Collection:
+		return ob != nil
+	case CollectionPage:
+		return true
+	case *CollectionPage:
+		return ob != nil
+	case OrderedCollection:
+		return true
+	case *OrderedCollection:
+		return ob != nil
+	case OrderedCollectionPage:
+		return true
+	case *OrderedCollectionPage:
 		return ob != nil
 	default:
 		return false
