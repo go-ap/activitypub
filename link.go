@@ -61,7 +61,7 @@ type Link struct {
 	HrefLang LangRef `jsonld:"hrefLang,omitempty"`
 }
 
-// Mention is a specialized Link that represents an @mention.
+// Mention is a specialized Link that represents a @mention.
 type Mention = Link
 
 // LinkNew initializes a new Link
@@ -171,6 +171,6 @@ func (l *Link) GobDecode(data []byte) error {
 func (l Link) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] {  }", l, l.Type)
+		_, _ = fmt.Fprintf(s, "%T[%s] { %s }", l, l.Type, l.Href)
 	}
 }
