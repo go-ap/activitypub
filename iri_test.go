@@ -403,3 +403,86 @@ func TestIRI_Equals(t *testing.T) {
 		})
 	}
 }
+
+func TestIRIs_Remove(t *testing.T) {
+	tests := []struct {
+		name      string
+		items     IRIs
+		toRemove  ItemCollection
+		remaining IRIs
+	}{
+		{
+			name:      "empty_collection_nil_item",
+			items:     IRIs{},
+			toRemove:  nil,
+			remaining: IRIs{},
+		},
+		{
+			name:      "empty_collection_non_nil_item",
+			items:     IRIs{},
+			toRemove:  ItemCollection{},
+			remaining: IRIs{},
+		},
+		{
+			name:      "non_empty_collection_nil_item",
+			items:     IRIs{"test"},
+			toRemove:  nil,
+			remaining: IRIs{"test"},
+		},
+		{
+			name:      "non_empty_collection_non_contained_item_empty_ID",
+			items:     IRIs{"test"},
+			toRemove:  ItemCollection{},
+			remaining: IRIs{"test"},
+		},
+		{
+			name:      "non_empty_collection_non_contained_item",
+			items:     IRIs{"test"},
+			toRemove:  ItemCollection{IRI("test123")},
+			remaining: IRIs{"test"},
+		},
+		{
+			name:      "non_empty_collection_just_contained_item",
+			items:     IRIs{"test"},
+			toRemove:  ItemCollection{IRI("test")},
+			remaining: IRIs{},
+		},
+		{
+			name:      "non_empty_collection_contained_item_first_pos",
+			items:     IRIs{"test", "test123"},
+			toRemove:  ItemCollection{IRI("test")},
+			remaining: IRIs{"test123"},
+		},
+		{
+			name:      "non_empty_collection_contained_item_not_first_pos",
+			items:     IRIs{"test123", "test", "test321"},
+			toRemove:  ItemCollection{IRI("test")},
+			remaining: IRIs{"test123", "test321"},
+		},
+		{
+			name:      "non_empty_collection_contained_item_last_pos",
+			items:     IRIs{"test123", "test"},
+			toRemove:  ItemCollection{&Object{ID: "test"}},
+			remaining: IRIs{"test123"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.items.Remove(tt.toRemove...)
+
+			if tt.remaining.Count() != tt.items.Count() {
+				t.Errorf("Post Remove() %T has count %d different than expected %d", tt.items, tt.items.Count(), tt.remaining.Count())
+			}
+			for _, it := range tt.toRemove {
+				if tt.items.Contains(it) {
+					t.Errorf("Post Remove() was still able to find %s in %T Items %v", it.GetLink(), tt.items, tt.items)
+				}
+			}
+			for _, it := range tt.remaining {
+				if !tt.items.Contains(it) {
+					t.Errorf("Post Remove() unable to find %s in %T Items %v", it.GetLink(), tt.items, tt.items)
+				}
+			}
+		})
+	}
+}

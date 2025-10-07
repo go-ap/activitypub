@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/url"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/valyala/fastjson"
@@ -277,8 +278,7 @@ func (i IRIs) IsCollection() bool {
 	return true
 }
 
-// Append facilitates adding elements to IRI slices
-// and ensures IRIs implements the Collection interface
+// Append facilitates adding elements to the IRIs slices
 func (i *IRIs) Append(it ...Item) error {
 	for _, ob := range it {
 		if (*i).Contains(ob.GetLink()) {
@@ -287,6 +287,14 @@ func (i *IRIs) Append(it ...Item) error {
 		*i = append(*i, ob.GetLink())
 	}
 	return nil
+}
+
+// Remove removes the items from the IRIs slice
+func (i *IRIs) Remove(it ...Item) {
+	items := ItemCollection(it)
+	*i = slices.DeleteFunc(*i, func(iri IRI) bool {
+		return items.Contains(iri)
+	})
 }
 
 func (i *IRIs) Collection() ItemCollection {

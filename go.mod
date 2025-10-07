@@ -1,6 +1,6 @@
 module github.com/go-ap/activitypub
 
-go 1.18
+go 1.21
 
 require (
 	git.sr.ht/~mariusor/go-xsd-duration v0.0.0-20220703122237-02e73435a078

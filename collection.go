@@ -47,6 +47,7 @@ type CollectionInterface interface {
 	ObjectOrLink
 	Collection() ItemCollection
 	Append(ob ...Item) error
+	Remove(ob ...Item)
 	Count() uint
 	Contains(Item) bool
 }
