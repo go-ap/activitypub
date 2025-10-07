@@ -153,7 +153,7 @@ func TestCollectionPage_Count(t *testing.T) {
 	p := CollectionPageNew(c)
 
 	if p.TotalItems != 0 {
-		t.Errorf("Empty object should have empty TotalItems, received %d", p.TotalItems)
+		t.Errorf("Object should have empty TotalItems, received %d", p.TotalItems)
 	}
 	if len(p.Items) > 0 {
 		t.Errorf("Empty object should have empty Items, received %v", p.Items)
@@ -162,9 +162,9 @@ func TestCollectionPage_Count(t *testing.T) {
 		t.Errorf("%T.Count() returned %d, expected %d", c, p.Count(), len(p.Items))
 	}
 
-	p.Append(IRI("test"))
-	if p.TotalItems != 0 {
-		t.Errorf("Empty object should have empty TotalItems, received %d", p.TotalItems)
+	_ = p.Append(IRI("test"))
+	if p.TotalItems != 1 {
+		t.Errorf("Empty object should have %d TotalItems, received %d", 1, p.TotalItems)
 	}
 	if p.Count() != uint(len(p.Items)) {
 		t.Errorf("%T.Count() returned %d, expected %d", c, p.Count(), len(p.Items))

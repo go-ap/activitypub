@@ -203,9 +203,9 @@ func TestCollection_Count(t *testing.T) {
 		t.Errorf("%T.Count() returned %d, expected %d", c, c.Count(), len(c.Items))
 	}
 
-	c.Append(IRI("test"))
-	if c.TotalItems != 0 {
-		t.Errorf("Empty object should have empty TotalItems, received %d", c.TotalItems)
+	_ = c.Append(IRI("test"))
+	if c.TotalItems != 1 {
+		t.Errorf("Object should have %d TotalItems, received %d", 1, c.TotalItems)
 	}
 	if c.Count() != uint(len(c.Items)) {
 		t.Errorf("%T.Count() returned %d, expected %d", c, c.Count(), len(c.Items))

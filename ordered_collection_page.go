@@ -174,12 +174,22 @@ func (o *OrderedCollectionPage) Count() uint {
 // Append adds an element to an OrderedCollectionPage
 func (o *OrderedCollectionPage) Append(it ...Item) error {
 	for _, ob := range it {
-		if o.OrderedItems.Contains(ob) {
-			continue
+		if !o.OrderedItems.Contains(ob) {
+			o.OrderedItems = append(o.OrderedItems, ob)
+			o.TotalItems += 1
 		}
-		o.OrderedItems = append(o.OrderedItems, ob)
 	}
 	return nil
+}
+
+// Remove removes items from an OrderedCollectionPage
+func (o *OrderedCollectionPage) Remove(it ...Item) {
+	for _, ob := range it {
+		if o.OrderedItems.Contains(ob) {
+			o.OrderedItems.Remove(ob)
+			o.TotalItems -= 1
+		}
+	}
 }
 
 // Contains verifies if OrderedCollectionPage array contains the received one

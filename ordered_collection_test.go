@@ -3,7 +3,23 @@ package activitypub
 import (
 	"reflect"
 	"testing"
+
+	"github.com/go-ap/errors"
 )
+
+func mockOrderedCollection(items ...Item) OrderedCollection {
+	cc := OrderedCollection{
+		ID:   IRIf("https://example.com", Inbox),
+		Type: OrderedCollectionType,
+	}
+	if len(items) == 0 {
+		cc.OrderedItems = make(ItemCollection, 0)
+	} else {
+		cc.OrderedItems = items
+		cc.TotalItems = uint(len(items))
+	}
+	return cc
+}
 
 func TestOrderedCollectionNew(t *testing.T) {
 	testValue := ID("test")
@@ -18,40 +34,53 @@ func TestOrderedCollectionNew(t *testing.T) {
 	}
 }
 
-func Test_OrderedCollection_Append(t *testing.T) {
-	id := ID("test")
-
-	val := Object{ID: ID("grrr")}
-
-	c := OrderedCollectionNew(id)
-	c.Append(val)
-
-	if c.Count() != 1 {
-		t.Errorf("Inbox collection of %q should have one element", c.GetID())
-	}
-	if !reflect.DeepEqual(c.OrderedItems[0], val) {
-		t.Errorf("First item in Inbox is does not match %q", val.ID)
-	}
-}
-
 func TestOrderedCollection_Append(t *testing.T) {
-	id := ID("test")
-
-	val := Object{ID: ID("grrr")}
-
-	c := OrderedCollectionNew(id)
-
-	p := OrderedCollectionPageNew(c)
-	p.Append(val)
-
-	if p.PartOf != c.GetLink() {
-		t.Errorf("Ordereed collection page should point to ordered collection %q", c.GetLink())
+	tests := []struct {
+		name    string
+		col     OrderedCollection
+		it      []Item
+		wantErr error
+	}{
+		{
+			name: "empty",
+			col:  mockOrderedCollection(),
+			it:   ItemCollection{},
+		},
+		{
+			name: "add one item",
+			col:  mockOrderedCollection(),
+			it: ItemCollection{
+				Object{ID: ID("grrr")},
+			},
+		},
+		{
+			name: "add multiple items",
+			col:  mockOrderedCollection(),
+			it: ItemCollection{
+				Object{ID: ID("grrr")},
+				Activity{ID: ID("one")},
+				Actor{ID: ID("jdoe")},
+			},
+		},
 	}
-	if p.Count() != 1 {
-		t.Errorf("Ordered collection page of %q should have exactly one element", p.GetID())
-	}
-	if !reflect.DeepEqual(p.OrderedItems[0], val) {
-		t.Errorf("First item in Inbox is does not match %q", val.ID)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				tt.col.OrderedItems = tt.col.OrderedItems[:0]
+				tt.col.TotalItems = 0
+			}()
+			if err := tt.col.Append(tt.it...); (err != nil) && errors.Is(err, tt.wantErr) {
+				t.Errorf("Append() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if tt.col.TotalItems != uint(len(tt.it)) {
+				t.Errorf("Post Append() %T TotalItems %d different than added count %d", tt.col, tt.col.TotalItems, len(tt.it))
+			}
+			for _, it := range tt.it {
+				if !tt.col.OrderedItems.Contains(it) {
+					t.Errorf("Post Append() unable to find %s in %T Items %v", tt.col, it.GetLink(), tt.col.OrderedItems)
+				}
+			}
+		})
 	}
 }
 
@@ -174,37 +203,12 @@ func TestOrderedCollection_Count(t *testing.T) {
 		t.Errorf("%T.Count() returned %d, expected %d", c, c.Count(), len(c.OrderedItems))
 	}
 
-	c.Append(IRI("test"))
-	if c.TotalItems != 0 {
-		t.Errorf("Empty object should have empty TotalItems, received %d", c.TotalItems)
+	_ = c.Append(IRI("test"))
+	if c.TotalItems != 1 {
+		t.Errorf("Object should have %d TotalItems, received %d", 1, c.TotalItems)
 	}
 	if c.Count() != uint(len(c.OrderedItems)) {
 		t.Errorf("%T.Count() returned %d, expected %d", c, c.Count(), len(c.OrderedItems))
-	}
-}
-
-func TestOrderedCollectionPage_Count(t *testing.T) {
-	id := ID("test")
-
-	c := OrderedCollectionNew(id)
-	p := OrderedCollectionPageNew(c)
-
-	if p.TotalItems != 0 {
-		t.Errorf("Empty object should have empty TotalItems, received %d", p.TotalItems)
-	}
-	if len(p.OrderedItems) > 0 {
-		t.Errorf("Empty object should have empty Items, received %v", p.OrderedItems)
-	}
-	if p.Count() != uint(len(p.OrderedItems)) {
-		t.Errorf("%T.Count() returned %d, expected %d", c, p.Count(), len(p.OrderedItems))
-	}
-
-	p.Append(IRI("test"))
-	if p.TotalItems != 0 {
-		t.Errorf("Empty object should have empty TotalItems, received %d", p.TotalItems)
-	}
-	if p.Count() != uint(len(p.OrderedItems)) {
-		t.Errorf("%T.Count() returned %d, expected %d", c, p.Count(), len(p.OrderedItems))
 	}
 }
 
@@ -279,4 +283,125 @@ func TestOrderedCollection_ItemMatches(t *testing.T) {
 
 func TestOrderedCollection_IsCollection(t *testing.T) {
 	t.Skipf("TODO")
+}
+
+func TestOrderedCollection_Remove(t *testing.T) {
+	tests := []struct {
+		name      string
+		col       OrderedCollection
+		toRemove  ItemCollection
+		remaining ItemCollection
+	}{
+		{
+			name: "empty",
+			col:  mockOrderedCollection(),
+		},
+		{
+			name:     "remove one item from empty collection",
+			col:      mockOrderedCollection(),
+			toRemove: ItemCollection{Object{ID: ID("grrr")}},
+		},
+		{
+			name: "remove all from collection",
+			col: mockOrderedCollection(
+				Object{ID: ID("grrr")},
+				Activity{ID: ID("one")},
+				Actor{ID: ID("jdoe")},
+			),
+			toRemove: ItemCollection{
+				Object{ID: ID("grrr")},
+				Activity{ID: ID("one")},
+				Actor{ID: ID("jdoe")},
+			},
+			remaining: ItemCollection{},
+		},
+		{
+			name:      "empty_collection_non_nil_item",
+			col:       mockOrderedCollection(),
+			toRemove:  ItemCollection{&Object{}},
+			remaining: ItemCollection{},
+		},
+		{
+			name:      "non_empty_collection_nil_item",
+			col:       mockOrderedCollection(&Object{ID: "test"}),
+			toRemove:  nil,
+			remaining: ItemCollection{&Object{ID: "test"}},
+		},
+		{
+			name:     "non_empty_collection_non_contained_item_empty_ID",
+			col:      mockOrderedCollection(&Object{ID: "test"}),
+			toRemove: ItemCollection{&Object{}},
+			remaining: ItemCollection{
+				&Object{ID: "test"},
+			},
+		},
+		{
+			name:     "non_empty_collection_non_contained_item",
+			col:      mockOrderedCollection(&Object{ID: "test"}),
+			toRemove: ItemCollection{&Object{ID: "test123"}},
+			remaining: ItemCollection{
+				&Object{ID: "test"},
+			},
+		},
+		{
+			name:      "non_empty_collection_just_contained_item",
+			col:       mockOrderedCollection(&Object{ID: "test"}),
+			toRemove:  ItemCollection{&Object{ID: "test"}},
+			remaining: ItemCollection{},
+		},
+		{
+			name: "non_empty_collection_contained_item_first_pos",
+			col: mockOrderedCollection(
+				&Object{ID: "test"},
+				&Object{ID: "test123"},
+			),
+			toRemove: ItemCollection{&Object{ID: "test"}},
+			remaining: ItemCollection{
+				&Object{ID: "test123"},
+			},
+		},
+		{
+			name: "non_empty_collection_contained_item_not_first_pos",
+			col: mockOrderedCollection(
+				&Object{ID: "test123"},
+				&Object{ID: "test"},
+				&Object{ID: "test321"},
+			),
+			toRemove: ItemCollection{&Object{ID: "test"}},
+			remaining: ItemCollection{
+				&Object{ID: "test123"},
+				&Object{ID: "test321"},
+			},
+		},
+		{
+			name: "non_empty_collection_contained_item_last_pos",
+			col: mockOrderedCollection(
+				&Object{ID: "test123"},
+				&Object{ID: "test"},
+			),
+			toRemove: ItemCollection{&Object{ID: "test"}},
+			remaining: ItemCollection{
+				&Object{ID: "test123"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.col.Remove(tt.toRemove...)
+
+			if tt.col.TotalItems != uint(len(tt.remaining)) {
+				t.Errorf("Post Remove() %T TotalItems %d different than expected %d", tt.col, tt.col.TotalItems, len(tt.remaining))
+			}
+			for _, it := range tt.remaining {
+				if !tt.col.OrderedItems.Contains(it) {
+					t.Errorf("Post Remove() unable to find %s in %T Items %v", it.GetLink(), tt.col, tt.col.OrderedItems)
+				}
+			}
+			for _, it := range tt.toRemove {
+				if tt.col.OrderedItems.Contains(it) {
+					t.Errorf("Post Remove() was still able to find %s in %T Items %v", it.GetLink(), tt.col, tt.col.OrderedItems)
+				}
+			}
+		})
+	}
 }

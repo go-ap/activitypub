@@ -179,7 +179,7 @@ func (c *CollectionPage) Append(it ...Item) error {
 	return nil
 }
 
-// Remove removes items from a collection
+// Remove removes items from a CollectionPage
 func (c *CollectionPage) Remove(it ...Item) {
 	for _, ob := range it {
 		if c.Items.Contains(ob) {
