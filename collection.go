@@ -221,13 +221,14 @@ func (c Collection) Collection() ItemCollection {
 	return c.Items
 }
 
-// Append adds an element to a Collection
+// Append adds items to a Collection
 func (c *Collection) Append(it ...Item) error {
 	for _, ob := range it {
 		if c.Items.Contains(ob) {
 			continue
 		}
 		c.Items = append(c.Items, ob)
+		c.TotalItems += 1
 	}
 	return nil
 }

@@ -3,7 +3,23 @@ package activitypub
 import (
 	"reflect"
 	"testing"
+
+	"github.com/go-ap/errors"
 )
+
+func mockCollection(items ...Item) Collection {
+	cc := Collection{
+		ID:         IRIf("https://example.com", Inbox),
+		Type:       CollectionType,
+		TotalItems: 0,
+	}
+	if len(items) == 0 {
+		cc.Items = make(ItemCollection, 0)
+	} else {
+		cc.Items = items
+	}
+	return cc
+}
 
 func TestCollectionNew(t *testing.T) {
 	testValue := ID("test")
@@ -19,18 +35,52 @@ func TestCollectionNew(t *testing.T) {
 }
 
 func TestCollection_Append(t *testing.T) {
-	id := ID("test")
-
-	val := Object{ID: ID("grrr")}
-
-	c := CollectionNew(id)
-	c.Append(val)
-
-	if c.Count() != 1 {
-		t.Errorf("Inbox collectionPath of %q should have one element", c.GetID())
+	tests := []struct {
+		name    string
+		col     Collection
+		it      []Item
+		wantErr error
+	}{
+		{
+			name: "empty",
+			col:  mockCollection(),
+			it:   ItemCollection{},
+		},
+		{
+			name: "add one item",
+			col:  mockCollection(),
+			it: ItemCollection{
+				Object{ID: ID("grrr")},
+			},
+		},
+		{
+			name: "add multiple items",
+			col:  mockCollection(),
+			it: ItemCollection{
+				Object{ID: ID("grrr")},
+				Activity{ID: ID("one")},
+				Actor{ID: ID("jdoe")},
+			},
+		},
 	}
-	if !reflect.DeepEqual(c.Items[0], val) {
-		t.Errorf("First item in Inbox is does not match %q", val.ID)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				tt.col.Items = tt.col.Items[:0]
+				tt.col.TotalItems = 0
+			}()
+			if err := tt.col.Append(tt.it...); (err != nil) && errors.Is(err, tt.wantErr) {
+				t.Errorf("Append() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if tt.col.TotalItems != uint(len(tt.it)) {
+				t.Errorf("Post Append() %T TotalItems %d different than added count %d", tt.col, tt.col.TotalItems, len(tt.it))
+			}
+			for _, it := range tt.it {
+				if !tt.col.Items.Contains(it) {
+					t.Errorf("Post Append() unable to find %s in %T Items %v", tt.col, it.GetLink(), tt.col.Items)
+				}
+			}
+		})
 	}
 }
 

@@ -1,9 +1,24 @@
 package activitypub
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 )
+
+func mockCollectionPage(items ...Item) CollectionPage {
+	cc := CollectionPage{
+		ID:         IRIf("https://example.com", Inbox),
+		Type:       CollectionPageType,
+		TotalItems: 0,
+	}
+	if len(items) == 0 {
+		cc.Items = make(ItemCollection, 0)
+	} else {
+		cc.Items = items
+	}
+	return cc
+}
 
 func TestCollectionPageNew(t *testing.T) {
 	testValue := ID("test")
@@ -19,23 +34,43 @@ func TestCollectionPageNew(t *testing.T) {
 }
 
 func TestCollectionPage_Append(t *testing.T) {
-	id := ID("test")
-
-	val := Object{ID: ID("grrr")}
-
-	c := CollectionNew(id)
-
-	p := CollectionPageNew(c)
-	p.Append(val)
-
-	if p.PartOf != c.GetLink() {
-		t.Errorf("Collection page should point to collection %q", c.GetLink())
+	tests := []struct {
+		name    string
+		col     CollectionPage
+		it      []Item
+		wantErr error
+	}{
+		{
+			name: "empty",
+			col:  mockCollectionPage(),
+			it:   ItemCollection{},
+		},
+		{
+			name: "add one item",
+			col:  mockCollectionPage(),
+			it: ItemCollection{
+				Object{ID: ID("grrr")},
+			},
+		},
 	}
-	if p.Count() != 1 {
-		t.Errorf("Collection page of %q should have exactly one element", p.GetID())
-	}
-	if !reflect.DeepEqual(p.Items[0], val) {
-		t.Errorf("First item in Inbox is does not match %q", val.ID)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				tt.col.Items = tt.col.Items[:0]
+				tt.col.TotalItems = 0
+			}()
+			if err := tt.col.Append(tt.it...); (err != nil) && errors.Is(err, tt.wantErr) {
+				t.Errorf("Append() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if tt.col.TotalItems != uint(len(tt.it)) {
+				t.Errorf("Post Append() %T TotalItems %d different than added count %d", tt.col, tt.col.TotalItems, len(tt.it))
+			}
+			for _, it := range tt.it {
+				if !tt.col.Items.Contains(it) {
+					t.Errorf("Post Append() unable to find %s in %T Items %v", tt.col, it.GetLink(), tt.col.Items)
+				}
+			}
+		})
 	}
 }
 
