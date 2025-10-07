@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"slices"
 	"sort"
 )
 
@@ -118,29 +119,9 @@ func (i ItemCollection) Contains(r Item) bool {
 	return false
 }
 
-// Remove removes the r Item from the i ItemCollection if it contains it
-func (i *ItemCollection) Remove(r Item) {
-	li := len(*i)
-	if li == 0 {
-		return
-	}
-	if r == nil {
-		return
-	}
-	remIdx := -1
-	for idx, it := range *i {
-		if ItemsEqual(it, r) {
-			remIdx = idx
-		}
-	}
-	if remIdx == -1 {
-		return
-	}
-	if remIdx < li-1 {
-		*i = append((*i)[:remIdx], (*i)[remIdx+1:]...)
-	} else {
-		*i = (*i)[:remIdx]
-	}
+// Remove removes the items from the ItemCollection
+func (i *ItemCollection) Remove(it ...Item) {
+	*i = slices.DeleteFunc(*i, ItemCollection(it).Contains)
 }
 
 // ItemCollectionDeduplication normalizes the received arguments lists into a single unified one

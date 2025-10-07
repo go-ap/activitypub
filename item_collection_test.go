@@ -55,96 +55,112 @@ func TestToItemCollection(t *testing.T) {
 
 func TestItemCollection_Remove(t *testing.T) {
 	tests := []struct {
-		name string
-		i    ItemCollection
-		arg  Item
+		name      string
+		items     ItemCollection
+		toRemove  ItemCollection
+		remaining ItemCollection
 	}{
 		{
-			name: "empty_collection_nil_item",
-			i:    ItemCollection{},
-			arg:  nil,
+			name:      "empty_collection_nil_item",
+			items:     ItemCollection{},
+			toRemove:  nil,
+			remaining: ItemCollection{},
 		},
 		{
-			name: "empty_collection_non_nil_item",
-			i:    ItemCollection{},
-			arg:  &Object{},
+			name:      "empty_collection_non_nil_item",
+			items:     ItemCollection{},
+			toRemove:  ItemCollection{&Object{}},
+			remaining: ItemCollection{},
 		},
 		{
 			name: "non_empty_collection_nil_item",
-			i: ItemCollection{
+			items: ItemCollection{
 				&Object{ID: "test"},
 			},
-			arg: nil,
+			toRemove: nil,
+			remaining: ItemCollection{
+				&Object{ID: "test"},
+			},
 		},
 		{
 			name: "non_empty_collection_non_contained_item_empty_ID",
-			i: ItemCollection{
+			items: ItemCollection{
 				&Object{ID: "test"},
 			},
-			arg: &Object{},
+			toRemove: ItemCollection{&Object{}},
+			remaining: ItemCollection{
+				&Object{ID: "test"},
+			},
 		},
 		{
 			name: "non_empty_collection_non_contained_item",
-			i: ItemCollection{
+			items: ItemCollection{
 				&Object{ID: "test"},
 			},
-			arg: &Object{ID: "test123"},
+			toRemove: ItemCollection{&Object{ID: "test123"}},
+			remaining: ItemCollection{
+				&Object{ID: "test"},
+			},
 		},
 		{
 			name: "non_empty_collection_just_contained_item",
-			i: ItemCollection{
+			items: ItemCollection{
 				&Object{ID: "test"},
 			},
-			arg: &Object{ID: "test"},
+			toRemove:  ItemCollection{&Object{ID: "test"}},
+			remaining: ItemCollection{},
 		},
 		{
 			name: "non_empty_collection_contained_item_first_pos",
-			i: ItemCollection{
+			items: ItemCollection{
 				&Object{ID: "test"},
 				&Object{ID: "test123"},
 			},
-			arg: &Object{ID: "test"},
+			toRemove: ItemCollection{&Object{ID: "test"}},
+			remaining: ItemCollection{
+				&Object{ID: "test123"},
+			},
 		},
 		{
 			name: "non_empty_collection_contained_item_not_first_pos",
-			i: ItemCollection{
+			items: ItemCollection{
 				&Object{ID: "test123"},
 				&Object{ID: "test"},
 				&Object{ID: "test321"},
 			},
-			arg: &Object{ID: "test"},
+			toRemove: ItemCollection{&Object{ID: "test"}},
+			remaining: ItemCollection{
+				&Object{ID: "test123"},
+				&Object{ID: "test321"},
+			},
 		},
 		{
 			name: "non_empty_collection_contained_item_last_pos",
-			i: ItemCollection{
+			items: ItemCollection{
 				&Object{ID: "test123"},
 				&Object{ID: "test"},
 			},
-			arg: &Object{ID: "test"},
+			toRemove: ItemCollection{&Object{ID: "test"}},
+			remaining: ItemCollection{
+				&Object{ID: "test123"},
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			origContains := tt.i.Contains(tt.arg)
-			origLen := tt.i.Count()
-			should := ""
-			does := "n't"
-			if origContains {
-				should = "n't"
-				does = ""
-			}
+			tt.items.Remove(tt.toRemove...)
 
-			tt.i.Remove(tt.arg)
-			if tt.i.Contains(tt.arg) {
-				t.Errorf("%T should%s contain %T, but it does%s: %#v", tt.i, should, tt.arg, does, tt.i)
+			if tt.remaining.Count() != tt.items.Count() {
+				t.Errorf("Post Remove() %T has count %d different than expected %d", tt.items, tt.items.Count(), tt.remaining.Count())
 			}
-			if origContains {
-				if tt.i.Count() > origLen-1 {
-					t.Errorf("%T should have a count lower than %d, got %d", tt.i, origLen, tt.i.Count())
+			for _, it := range tt.toRemove {
+				if tt.items.Contains(it) {
+					t.Errorf("Post Remove() was still able to find %s in %T Items %v", it.GetLink(), tt.items, tt.items)
 				}
-			} else {
-				if tt.i.Count() != origLen {
-					t.Errorf("%T should have a count equal to %d, got %d", tt.i, origLen, tt.i.Count())
+			}
+			for _, it := range tt.remaining {
+				if !tt.items.Contains(it) {
+					t.Errorf("Post Remove() unable to find %s in %T Items %v", it.GetLink(), tt.items, tt.items)
 				}
 			}
 		})
