@@ -185,6 +185,16 @@ func CopyItemProperties(to, from Item) (Item, error) {
 	return copyAllItemProperties(to, from)
 }
 
+func CopyUnsafeItemProperties(to, from Item) (Item, error) {
+	if to == nil {
+		return to, fmt.Errorf("nil object to update")
+	}
+	if from == nil {
+		return to, fmt.Errorf("nil object for update")
+	}
+	return copyAllItemProperties(to, from)
+}
+
 // UpdatePersonProperties
 func UpdatePersonProperties(to, from *Actor) (*Actor, error) {
 	oldOb, _ := ToObject(to)
