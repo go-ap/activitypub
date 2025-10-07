@@ -224,13 +224,22 @@ func (c Collection) Collection() ItemCollection {
 // Append adds items to a Collection
 func (c *Collection) Append(it ...Item) error {
 	for _, ob := range it {
-		if c.Items.Contains(ob) {
-			continue
+		if !c.Items.Contains(ob) {
+			c.Items = append(c.Items, ob)
+			c.TotalItems += 1
 		}
-		c.Items = append(c.Items, ob)
-		c.TotalItems += 1
 	}
 	return nil
+}
+
+// Remove removes items from a collection
+func (c *Collection) Remove(it ...Item) {
+	for _, ob := range it {
+		if c.Items.Contains(ob) {
+			c.Items.Remove(ob)
+			c.TotalItems -= 1
+		}
+	}
 }
 
 // Count returns the maximum between the length of Items in collection and its TotalItems property
