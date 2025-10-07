@@ -14,7 +14,6 @@ func mockCollection(items ...Item) Collection {
 	}
 	if len(items) == 0 {
 		cc.Items = make(ItemCollection, 0)
-		cc.TotalItems = 0
 	} else {
 		cc.Items = items
 		cc.TotalItems = uint(len(items))

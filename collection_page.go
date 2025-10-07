@@ -171,12 +171,22 @@ func (c *CollectionPage) Count() uint {
 // Append adds an element to a CollectionPage
 func (c *CollectionPage) Append(it ...Item) error {
 	for _, ob := range it {
-		if c.Items.Contains(ob) {
-			continue
+		if !c.Items.Contains(ob) {
+			c.Items = append(c.Items, ob)
+			c.TotalItems += 1
 		}
-		c.Items = append(c.Items, ob)
 	}
 	return nil
+}
+
+// Remove removes items from a collection
+func (c *CollectionPage) Remove(it ...Item) {
+	for _, ob := range it {
+		if c.Items.Contains(ob) {
+			c.Items.Remove(ob)
+			c.TotalItems -= 1
+		}
+	}
 }
 
 // Contains verifies if CollectionPage array contains the received one

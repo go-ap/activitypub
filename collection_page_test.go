@@ -8,14 +8,14 @@ import (
 
 func mockCollectionPage(items ...Item) CollectionPage {
 	cc := CollectionPage{
-		ID:         IRIf("https://example.com", Inbox),
-		Type:       CollectionPageType,
-		TotalItems: 0,
+		ID:   IRIf("https://example.com", Inbox),
+		Type: CollectionPageType,
 	}
 	if len(items) == 0 {
 		cc.Items = make(ItemCollection, 0)
 	} else {
 		cc.Items = items
+		cc.TotalItems = uint(len(items))
 	}
 	return cc
 }
@@ -258,4 +258,125 @@ func TestCollectionPage_MarshalJSON(t *testing.T) {
 
 func TestCollectionPage_ItemMatches(t *testing.T) {
 	t.Skipf("TODO")
+}
+
+func TestCollectionPage_Remove(t *testing.T) {
+	tests := []struct {
+		name      string
+		col       CollectionPage
+		toRemove  ItemCollection
+		remaining ItemCollection
+	}{
+		{
+			name: "empty",
+			col:  mockCollectionPage(),
+		},
+		{
+			name:     "remove one item from empty collection",
+			col:      mockCollectionPage(),
+			toRemove: ItemCollection{Object{ID: ID("grrr")}},
+		},
+		{
+			name: "remove all from collection",
+			col: mockCollectionPage(
+				Object{ID: ID("grrr")},
+				Activity{ID: ID("one")},
+				Actor{ID: ID("jdoe")},
+			),
+			toRemove: ItemCollection{
+				Object{ID: ID("grrr")},
+				Activity{ID: ID("one")},
+				Actor{ID: ID("jdoe")},
+			},
+			remaining: ItemCollection{},
+		},
+		{
+			name:      "empty_collection_non_nil_item",
+			col:       mockCollectionPage(),
+			toRemove:  ItemCollection{&Object{}},
+			remaining: ItemCollection{},
+		},
+		{
+			name:      "non_empty_collection_nil_item",
+			col:       mockCollectionPage(&Object{ID: "test"}),
+			toRemove:  nil,
+			remaining: ItemCollection{&Object{ID: "test"}},
+		},
+		{
+			name:     "non_empty_collection_non_contained_item_empty_ID",
+			col:      mockCollectionPage(&Object{ID: "test"}),
+			toRemove: ItemCollection{&Object{}},
+			remaining: ItemCollection{
+				&Object{ID: "test"},
+			},
+		},
+		{
+			name:     "non_empty_collection_non_contained_item",
+			col:      mockCollectionPage(&Object{ID: "test"}),
+			toRemove: ItemCollection{&Object{ID: "test123"}},
+			remaining: ItemCollection{
+				&Object{ID: "test"},
+			},
+		},
+		{
+			name:      "non_empty_collection_just_contained_item",
+			col:       mockCollectionPage(&Object{ID: "test"}),
+			toRemove:  ItemCollection{&Object{ID: "test"}},
+			remaining: ItemCollection{},
+		},
+		{
+			name: "non_empty_collection_contained_item_first_pos",
+			col: mockCollectionPage(
+				&Object{ID: "test"},
+				&Object{ID: "test123"},
+			),
+			toRemove: ItemCollection{&Object{ID: "test"}},
+			remaining: ItemCollection{
+				&Object{ID: "test123"},
+			},
+		},
+		{
+			name: "non_empty_collection_contained_item_not_first_pos",
+			col: mockCollectionPage(
+				&Object{ID: "test123"},
+				&Object{ID: "test"},
+				&Object{ID: "test321"},
+			),
+			toRemove: ItemCollection{&Object{ID: "test"}},
+			remaining: ItemCollection{
+				&Object{ID: "test123"},
+				&Object{ID: "test321"},
+			},
+		},
+		{
+			name: "non_empty_collection_contained_item_last_pos",
+			col: mockCollectionPage(
+				&Object{ID: "test123"},
+				&Object{ID: "test"},
+			),
+			toRemove: ItemCollection{&Object{ID: "test"}},
+			remaining: ItemCollection{
+				&Object{ID: "test123"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.col.Remove(tt.toRemove...)
+
+			if tt.col.TotalItems != uint(len(tt.remaining)) {
+				t.Errorf("Post Remove() %T TotalItems %d different than expected %d", tt.col, tt.col.TotalItems, len(tt.remaining))
+			}
+			for _, it := range tt.remaining {
+				if !tt.col.Items.Contains(it) {
+					t.Errorf("Post Remove() unable to find %s in %T Items %v", it.GetLink(), tt.col, tt.col.Items)
+				}
+			}
+			for _, it := range tt.toRemove {
+				if tt.col.Items.Contains(it) {
+					t.Errorf("Post Remove() was still able to find %s in %T Items %v", it.GetLink(), tt.col, tt.col.Items)
+				}
+			}
+		})
+	}
 }
