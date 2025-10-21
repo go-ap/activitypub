@@ -362,18 +362,18 @@ func TestActivityRecipients(t *testing.T) {
 
 	a := ActivityNew("t", "test", nil)
 
-	a.To.Append(bob)
-	a.To.Append(alice)
-	a.To.Append(foo)
-	a.To.Append(bar)
+	_ = a.To.Append(bob)
+	_ = a.To.Append(alice)
+	_ = a.To.Append(foo)
+	_ = a.To.Append(bar)
 	if len(a.To) != 4 {
 		t.Errorf("%T.To should have exactly 4(four) elements, not %d", a, len(a.To))
 	}
 
-	a.To.Append(bar)
-	a.To.Append(alice)
-	a.To.Append(foo)
-	a.To.Append(bob)
+	_ = a.To.Append(bar)
+	_ = a.To.Append(alice)
+	_ = a.To.Append(foo)
+	_ = a.To.Append(bob)
 	if len(a.To) != 4 {
 		t.Errorf("%T.To should still have exactly 4(eight) elements, not %d", a, len(a.To))
 	}
@@ -385,22 +385,22 @@ func TestActivityRecipients(t *testing.T) {
 
 	b := ActivityNew("t", "test", nil)
 
-	b.To.Append(bar)
-	b.To.Append(alice)
-	b.To.Append(foo)
-	b.To.Append(bob)
-	b.Bto.Append(bar)
-	b.Bto.Append(alice)
-	b.Bto.Append(foo)
-	b.Bto.Append(bob)
-	b.CC.Append(bar)
-	b.CC.Append(alice)
-	b.CC.Append(foo)
-	b.CC.Append(bob)
-	b.BCC.Append(bar)
-	b.BCC.Append(alice)
-	b.BCC.Append(foo)
-	b.BCC.Append(bob)
+	_ = b.To.Append(bar)
+	_ = b.To.Append(alice)
+	_ = b.To.Append(foo)
+	_ = b.To.Append(bob)
+	_ = b.Bto.Append(bar)
+	_ = b.Bto.Append(alice)
+	_ = b.Bto.Append(foo)
+	_ = b.Bto.Append(bob)
+	_ = b.CC.Append(bar)
+	_ = b.CC.Append(alice)
+	_ = b.CC.Append(foo)
+	_ = b.CC.Append(bob)
+	_ = b.BCC.Append(bar)
+	_ = b.BCC.Append(alice)
+	_ = b.BCC.Append(foo)
+	_ = b.BCC.Append(bob)
 
 	b.Recipients()
 	if len(b.To) != 4 {
@@ -1062,8 +1062,8 @@ func TestActivity_MarshalJSON(t *testing.T) {
 			name: "MoreNames",
 			fields: fields{
 				Name: NaturalLanguageValues{
-					{Ref: "en", Value: Content("anna")},
-					{Ref: "fr", Value: Content("anne")},
+					{Ref: MakeRef([]byte("en")), Value: Content("anna")},
+					{Ref: MakeRef([]byte("fr")), Value: Content("anne")},
 				},
 			},
 			want:    []byte(`{"nameMap":{"en":"anna","fr":"anne"}}`),
@@ -1083,8 +1083,8 @@ func TestActivity_MarshalJSON(t *testing.T) {
 			name: "MoreSummaryEntries",
 			fields: fields{
 				Summary: NaturalLanguageValues{
-					{Ref: "en", Value: Content("test summary")},
-					{Ref: "fr", Value: Content("teste summary")},
+					{Ref: MakeRef([]byte("en")), Value: Content("test summary")},
+					{Ref: MakeRef([]byte("fr")), Value: Content("teste summary")},
 				},
 			},
 			want:    []byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
@@ -1104,8 +1104,8 @@ func TestActivity_MarshalJSON(t *testing.T) {
 			name: "MoreContentEntries",
 			fields: fields{
 				Content: NaturalLanguageValues{
-					{Ref: "en", Value: Content("test content")},
-					{Ref: "fr", Value: Content("teste content")},
+					{Ref: MakeRef([]byte("en")), Value: Content("test content")},
+					{Ref: MakeRef([]byte("fr")), Value: Content("teste content")},
 				},
 			},
 			want:    []byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),
@@ -1304,8 +1304,8 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 			name: "MoreNames",
 			fields: fields{
 				Name: NaturalLanguageValues{
-					{Ref: "en", Value: Content("anna")},
-					{Ref: "fr", Value: Content("anne")},
+					{Ref: MakeRef([]byte("en")), Value: Content("anna")},
+					{Ref: MakeRef([]byte("fr")), Value: Content("anne")},
 				},
 			},
 			want:    []byte(`{"nameMap":{"en":"anna","fr":"anne"}}`),
@@ -1325,8 +1325,8 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 			name: "MoreSummaryEntries",
 			fields: fields{
 				Summary: NaturalLanguageValues{
-					{Ref: "en", Value: Content("test summary")},
-					{Ref: "fr", Value: Content("teste summary")},
+					{Ref: MakeRef([]byte("en")), Value: Content("test summary")},
+					{Ref: MakeRef([]byte("fr")), Value: Content("teste summary")},
 				},
 			},
 			want:    []byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
@@ -1346,8 +1346,8 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 			name: "MoreContentEntries",
 			fields: fields{
 				Content: NaturalLanguageValues{
-					{Ref: "en", Value: Content("test content")},
-					{Ref: "fr", Value: Content("teste content")},
+					{Ref: MakeRef([]byte("en")), Value: Content("test content")},
+					{Ref: MakeRef([]byte("fr")), Value: Content("teste content")},
 				},
 			},
 			want:    []byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),

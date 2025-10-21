@@ -628,7 +628,7 @@ func mapLinkProperties(mm map[string][]byte, l Link) (hasData bool, err error) {
 		}
 		hasData = true
 	}
-	if len(l.HrefLang) > 0 {
+	if l.HrefLang.Valid() {
 		if mm["hrefLang"], err = l.HrefLang.GobEncode(); err != nil {
 			return
 		}

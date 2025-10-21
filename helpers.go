@@ -420,7 +420,7 @@ func notEmptyLink(l *Link) bool {
 		l.Name != nil ||
 		len(l.Href) > 0 ||
 		len(l.Rel) > 0 ||
-		len(l.HrefLang) > 0 ||
+		l.HrefLang.Valid() ||
 		l.Height > 0 ||
 		l.Width > 0
 }

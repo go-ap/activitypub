@@ -1,6 +1,6 @@
 module github.com/go-ap/activitypub
 
-go 1.21
+go 1.24.0
 
 require (
 	git.sr.ht/~mariusor/go-xsd-duration v0.0.0-20220703122237-02e73435a078
@@ -8,3 +8,5 @@ require (
 	github.com/go-ap/jsonld v0.0.0-20250905102310-8480b0fe24d9
 	github.com/valyala/fastjson v1.6.4
 )
+
+require golang.org/x/text v0.30.0

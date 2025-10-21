@@ -11,16 +11,7 @@ import (
 	"github.com/valyala/fastjson"
 )
 
-// NilLangRef represents a convention for a nil language reference.
-// It is used for LangRefValue objects without an explicit language key.
-const NilLangRef LangRef = "-"
-
-// DefaultLang represents the default language reference used when using the convenience content generation.
-var DefaultLang = NilLangRef
-
 type (
-	// LangRef is the type for a language reference code, should be an ISO639-1 language specifier.
-	LangRef string
 	Content []byte
 
 	// LangRefValue is a type for storing per language values
@@ -80,7 +71,7 @@ func (n *NaturalLanguageValues) Set(ref LangRef, v Content) error {
 		}
 	}
 	if !found {
-		n.Append(ref, v)
+		_ = n.Append(ref, v)
 	}
 	return nil
 }
@@ -393,7 +384,7 @@ func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 	b.Write([]byte{'{'})
 	empty := true
 	for _, val := range n {
-		if len(val.Ref) == 0 || len(val.Value) == 0 {
+		if !val.Ref.Valid() || len(val.Value) == 0 {
 			continue
 		}
 		if !empty {
@@ -463,7 +454,7 @@ func (n *NaturalLanguageValues) Count() uint {
 
 // String adds support for Stringer interface. It returns the Value[LangRef] text or just Value if LangRef is NIL
 func (l LangRefValue) String() string {
-	if l.Ref == NilLangRef || l.Ref == "" {
+	if l.Ref == NilLangRef || !l.Ref.Valid() {
 		return l.Value.String()
 	}
 	return fmt.Sprintf("%s[%s]", l.Value, l.Ref)
@@ -507,7 +498,7 @@ func (l *LangRefValue) UnmarshalJSON(data []byte) error {
 	case fastjson.TypeObject:
 		o, _ := val.Object()
 		o.Visit(func(key []byte, v *fastjson.Value) {
-			l.Ref = LangRef(key)
+			l.Ref = MakeRef(key)
 			l.Value = unescape(v.GetStringBytes())
 		})
 	case fastjson.TypeString:
@@ -525,39 +516,14 @@ func (l *LangRefValue) UnmarshalText(data []byte) error {
 	return nil
 }
 
-func (l LangRef) GobEncode() ([]byte, error) {
-	if len(l) == 0 {
-		return []byte{}, nil
-	}
-	b := new(bytes.Buffer)
-	gg := gob.NewEncoder(b)
-	if err := gobEncodeStringLikeType(gg, []byte(l)); err != nil {
-		return nil, err
-	}
-	return b.Bytes(), nil
-}
-
-func (l *LangRef) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		// NOTE(marius): this behaviour diverges from vanilla gob package
-		return nil
-	}
-	var bb []byte
-	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
-		return err
-	}
-	*l = LangRef(bb)
-	return nil
-}
-
 // MarshalJSON encodes the receiver object to a JSON document.
 func (l LangRefValue) MarshalJSON() ([]byte, error) {
 	buf := bytes.Buffer{}
-	if l.Ref != NilLangRef && len(l.Ref) > 0 {
+	if l.Ref != NilLangRef && l.Ref.Valid() {
 		if l.Value.Equals(Content("")) {
 			return nil, nil
 		}
-		stringBytes(&buf, []byte(l.Ref), false)
+		stringBytes(&buf, []byte(l.Ref.String()), false)
 		buf.Write([]byte{':'})
 	}
 	stringBytes(&buf, l.Value, false)
@@ -585,13 +551,13 @@ type kv struct {
 }
 
 func (l LangRefValue) GobEncode() ([]byte, error) {
-	if len(l.Value) == 0 && len(l.Ref) == 0 {
+	if len(l.Value) == 0 && !l.Ref.Valid() {
 		return []byte{}, nil
 	}
 	b := new(bytes.Buffer)
 	gg := gob.NewEncoder(b)
 	mm := kv{
-		K: []byte(l.Ref),
+		K: []byte(l.Ref.String()),
 		V: []byte(l.Value),
 	}
 	if err := gg.Encode(mm); err != nil {
@@ -609,34 +575,9 @@ func (l *LangRefValue) GobDecode(data []byte) error {
 	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&mm); err != nil {
 		return err
 	}
-	l.Ref = LangRef(mm.K)
+	l.Ref = MakeRef(mm.K)
 	l.Value = mm.V
 	return nil
-}
-
-// UnmarshalJSON decodes an incoming JSON document into the receiver object.
-func (l *LangRef) UnmarshalJSON(data []byte) error {
-	return l.UnmarshalText(data)
-}
-
-// UnmarshalText implements the TextEncoder interface
-func (l *LangRef) UnmarshalText(data []byte) error {
-	*l = ""
-	if len(data) == 0 {
-		return nil
-	}
-	if len(data) > 2 {
-		if data[0] == '"' && data[len(data)-1] == '"' {
-			*l = LangRef(data[1 : len(data)-1])
-		}
-	} else {
-		*l = LangRef(data)
-	}
-	return nil
-}
-
-func (l LangRef) String() string {
-	return string(l)
 }
 
 func (l LangRefValue) Equals(other LangRefValue) bool {
@@ -732,7 +673,7 @@ func (n *NaturalLanguageValues) UnmarshalJSON(data []byte) error {
 		ob, _ := val.Object()
 		ob.Visit(func(key []byte, v *fastjson.Value) {
 			if dat := v.GetStringBytes(); len(dat) > 0 {
-				n.Append(LangRef(key), unescape(dat))
+				n.Append(MakeRef(key), unescape(dat))
 			}
 		})
 	case fastjson.TypeString:
@@ -759,7 +700,7 @@ func (n *NaturalLanguageValues) UnmarshalText(data []byte) error {
 		if data[len(data)-1] != '"' {
 			return fmt.Errorf("invalid string value when unmarshaling %T value", n)
 		}
-		n.Append(LangRef(NilLangRef), Content(data[1:len(data)-1]))
+		n.Append(NilLangRef, Content(data[1:len(data)-1]))
 	}
 	return nil
 }
@@ -772,7 +713,7 @@ func (n NaturalLanguageValues) GobEncode() ([]byte, error) {
 	gg := gob.NewEncoder(b)
 	mm := make([]kv, len(n))
 	for i, l := range n {
-		mm[i] = kv{K: []byte(l.Ref), V: l.Value}
+		mm[i] = kv{K: []byte(l.Ref.String()), V: l.Value}
 	}
 	if err := gg.Encode(mm); err != nil {
 		return nil, err
@@ -790,7 +731,7 @@ func (n *NaturalLanguageValues) GobDecode(data []byte) error {
 		return err
 	}
 	for _, m := range mm {
-		*n = append(*n, LangRefValue{Ref: LangRef(m.K), Value: m.V})
+		*n = append(*n, LangRefValue{Ref: MakeRef(m.K), Value: m.V})
 	}
 	return nil
 }

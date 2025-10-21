@@ -111,7 +111,7 @@ func TestLink_GobEncode(t *testing.T) {
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GobEncode() got = %v, want %v", got, tt.want)
+				t.Errorf("GobEncode() got = %#v, want %#v", got, tt.want)
 			}
 		})
 	}

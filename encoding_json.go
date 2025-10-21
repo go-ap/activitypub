@@ -393,8 +393,8 @@ func JSONWriteLinkValue(b *[]byte, l Link) (notEmpty bool) {
 	if v, err := l.Href.MarshalJSON(); err == nil && len(v) > 0 {
 		notEmpty = JSONWriteProp(b, "href", v) || notEmpty
 	}
-	if len(l.HrefLang) > 0 {
-		notEmpty = JSONWriteStringProp(b, "hrefLang", string(l.HrefLang)) || notEmpty
+	if l.HrefLang.Valid() {
+		notEmpty = JSONWriteStringProp(b, "hrefLang", l.HrefLang.String()) || notEmpty
 	}
 	return notEmpty
 }

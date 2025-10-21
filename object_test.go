@@ -221,7 +221,7 @@ func TestObjectsArr_Append(t *testing.T) {
 
 	val := Object{ID: ID("grrr")}
 
-	d.Append(val)
+	_ = d.Append(val)
 
 	if len(d) != 1 {
 		t.Errorf("Objects array should have exactly an element")
@@ -429,10 +429,10 @@ func TestLangRefValue_UnmarshalText(t *testing.T) {
 }
 
 func TestLangRef_UnmarshalText(t *testing.T) {
-	l := LangRef("")
+	l := NilLangRef
 	dataEmpty := []byte("")
 
-	if _ = l.UnmarshalText(dataEmpty); l != "" {
+	if _ = l.UnmarshalText(dataEmpty); l != NilLangRef {
 		t.Errorf("Unmarshaled object %T should be an empty string, received %q", l, l)
 	}
 }
@@ -746,8 +746,8 @@ func TestObject_MarshalJSON(t *testing.T) {
 			name: "MoreNames",
 			fields: fields{
 				Name: NaturalLanguageValues{
-					{Ref: "en", Value: Content("anna")},
-					{Ref: "fr", Value: Content("anne")},
+					{Ref: MakeRef([]byte("en")), Value: Content("anna")},
+					{Ref: MakeRef([]byte("fr")), Value: Content("anne")},
 				},
 			},
 			want:    []byte(`{"nameMap":{"en":"anna","fr":"anne"}}`),
@@ -767,8 +767,8 @@ func TestObject_MarshalJSON(t *testing.T) {
 			name: "MoreSummaryEntries",
 			fields: fields{
 				Summary: NaturalLanguageValues{
-					{Ref: "en", Value: Content("test summary")},
-					{Ref: "fr", Value: Content("teste summary")},
+					{Ref: MakeRef([]byte("en")), Value: Content("test summary")},
+					{Ref: MakeRef([]byte("fr")), Value: Content("teste summary")},
 				},
 			},
 			want:    []byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
@@ -788,8 +788,8 @@ func TestObject_MarshalJSON(t *testing.T) {
 			name: "MoreContentEntries",
 			fields: fields{
 				Content: NaturalLanguageValues{
-					{Ref: "en", Value: Content("test content")},
-					{Ref: "fr", Value: Content("teste content")},
+					{Ref: MakeRef([]byte("en")), Value: Content("test content")},
+					{Ref: MakeRef([]byte("fr")), Value: Content("teste content")},
 				},
 			},
 			want:    []byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),
@@ -941,11 +941,11 @@ func TestSource_MarshalJSON(t *testing.T) {
 			fields: fields{
 				Content: NaturalLanguageValues{
 					{
-						Ref:   "en",
+						Ref:   MakeRef([]byte("en")),
 						Value: Content("test"),
 					},
 					{
-						Ref:   "fr",
+						Ref:   MakeRef([]byte("fr")),
 						Value: Content("teste"),
 					},
 				},
@@ -1141,7 +1141,7 @@ func TestObject_GobEncode(t *testing.T) {
 		},
 		{
 			name:    "with ID, type, name",
-			fields:  fields{ID: ID("https://example.com"), Type: ObjectType, Name: NaturalLanguageValues{LangRefValue{LangRef("en"), Content("ana")}}},
+			fields:  fields{ID: ID("https://example.com"), Type: ObjectType, Name: NaturalLanguageValues{LangRefValue{MakeRef([]byte("en")), Content("ana")}}},
 			wantErr: false,
 		},
 		{

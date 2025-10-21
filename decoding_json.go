@@ -111,7 +111,7 @@ func JSONGetNaturalLanguageField(val *fastjson.Value, prop string) NaturalLangua
 		ob, _ := v.Object()
 		ob.Visit(func(key []byte, v *fastjson.Value) {
 			l := LangRefValue{}
-			l.Ref = LangRef(key)
+			l.Ref = MakeRef(key)
 			if err := l.Value.UnmarshalJSON(v.GetStringBytes()); err == nil {
 				if l.Ref != NilLangRef || len(l.Value) > 0 {
 					n = append(n, l)
@@ -401,7 +401,7 @@ func JSONGetItems(val *fastjson.Value, prop string) ItemCollection {
 
 func JSONGetLangRefField(val *fastjson.Value, prop string) LangRef {
 	s := val.Get(prop).GetStringBytes()
-	return LangRef(s)
+	return MakeRef(s)
 }
 
 func JSONGetIRI(val *fastjson.Value, prop string) IRI {
@@ -645,7 +645,7 @@ func jsonLoadToLink(val *fastjson.Value, l *Link) error {
 		l.Width = uint(w)
 	}
 	l.Name = JSONGetNaturalLanguageField(val, "name")
-	if hrefLang := JSONGetLangRefField(val, "hrefLang"); len(hrefLang) > 0 {
+	if hrefLang := JSONGetLangRefField(val, "hrefLang"); hrefLang.Valid() {
 		l.HrefLang = hrefLang
 	}
 	if href := JSONGetURIItem(val, "href"); href != nil {
