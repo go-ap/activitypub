@@ -198,9 +198,11 @@ func unmapObjectProperties(mm map[string][]byte, o *Object) error {
 		}
 	}
 	if raw, ok := mm["name"]; ok {
-		if err = o.Name.GobDecode(raw); err != nil {
+		name := make(NaturalLanguageValues)
+		if err = name.GobDecode(raw); err != nil {
 			return err
 		}
+		o.Name = name
 	}
 	if raw, ok := mm["attachment"]; ok {
 		if o.Attachment, err = gobDecodeItem(raw); err != nil {
@@ -218,9 +220,11 @@ func unmapObjectProperties(mm map[string][]byte, o *Object) error {
 		}
 	}
 	if raw, ok := mm["content"]; ok {
-		if o.Content, err = gobDecodeNaturalLanguageValues(raw); err != nil {
+		content := make(NaturalLanguageValues)
+		if content, err = gobDecodeNaturalLanguageValues(raw); err != nil {
 			return err
 		}
+		o.Content = content
 	}
 	if raw, ok := mm["context"]; ok {
 		if o.Context, err = gobDecodeItem(raw); err != nil {
@@ -283,9 +287,11 @@ func unmapObjectProperties(mm map[string][]byte, o *Object) error {
 		}
 	}
 	if raw, ok := mm["summary"]; ok {
-		if o.Summary, err = gobDecodeNaturalLanguageValues(raw); err != nil {
+		summary := make(NaturalLanguageValues)
+		if summary, err = gobDecodeNaturalLanguageValues(raw); err != nil {
 			return err
 		}
+		o.Summary = summary
 	}
 	if raw, ok := mm["tag"]; ok {
 		if o.Tag, err = gobDecodeItems(raw); err != nil {

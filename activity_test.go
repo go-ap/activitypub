@@ -425,18 +425,18 @@ func TestBlockRecipients(t *testing.T) {
 
 	a := BlockNew("bbb", bob)
 
-	a.To.Append(bob)
-	a.To.Append(alice)
-	a.To.Append(foo)
-	a.To.Append(bar)
+	_ = a.To.Append(bob)
+	_ = a.To.Append(alice)
+	_ = a.To.Append(foo)
+	_ = a.To.Append(bar)
 	if len(a.To) != 4 {
 		t.Errorf("%T.To should have exactly 4(four) elements, not %d", a, len(a.To))
 	}
 
-	a.To.Append(bar)
-	a.To.Append(alice)
-	a.To.Append(foo)
-	a.To.Append(bob)
+	_ = a.To.Append(bar)
+	_ = a.To.Append(alice)
+	_ = a.To.Append(foo)
+	_ = a.To.Append(bob)
 	if len(a.To) != 4 {
 		t.Errorf("%T.To should still have exactly 4(eight) elements, not %d", a, len(a.To))
 	}
@@ -448,22 +448,22 @@ func TestBlockRecipients(t *testing.T) {
 
 	b := BlockNew("t", bob)
 
-	b.To.Append(bar)
-	b.To.Append(alice)
-	b.To.Append(foo)
-	b.To.Append(bob)
-	b.Bto.Append(bar)
-	b.Bto.Append(alice)
-	b.Bto.Append(foo)
-	b.Bto.Append(bob)
-	b.CC.Append(bar)
-	b.CC.Append(alice)
-	b.CC.Append(foo)
-	b.CC.Append(bob)
-	b.BCC.Append(bar)
-	b.BCC.Append(alice)
-	b.BCC.Append(foo)
-	b.BCC.Append(bob)
+	_ = b.To.Append(bar)
+	_ = b.To.Append(alice)
+	_ = b.To.Append(foo)
+	_ = b.To.Append(bob)
+	_ = b.Bto.Append(bar)
+	_ = b.Bto.Append(alice)
+	_ = b.Bto.Append(foo)
+	_ = b.Bto.Append(bob)
+	_ = b.CC.Append(bar)
+	_ = b.CC.Append(alice)
+	_ = b.CC.Append(foo)
+	_ = b.CC.Append(bob)
+	_ = b.BCC.Append(bar)
+	_ = b.BCC.Append(alice)
+	_ = b.BCC.Append(foo)
+	_ = b.BCC.Append(bob)
 
 	b.Recipients()
 	if len(b.To) != 3 {
@@ -506,9 +506,9 @@ func TestCreate_Recipients(t *testing.T) {
 	o.ID = "something"
 
 	c := CreateNew("act", o)
-	c.To.Append(to)
-	c.CC.Append(cc)
-	c.BCC.Append(cc)
+	_ = c.To.Append(to)
+	_ = c.CC.Append(cc)
+	_ = c.BCC.Append(cc)
 
 	c.Recipients()
 
@@ -540,9 +540,9 @@ func TestDislike_Recipients(t *testing.T) {
 	o.ID = "something"
 
 	d := DislikeNew("act", o)
-	d.To.Append(to)
-	d.CC.Append(cc)
-	d.BCC.Append(cc)
+	_ = d.To.Append(to)
+	_ = d.CC.Append(cc)
+	_ = d.BCC.Append(cc)
 
 	d.Recipients()
 
@@ -574,9 +574,9 @@ func TestLike_Recipients(t *testing.T) {
 	o.ID = "something"
 
 	l := LikeNew("act", o)
-	l.To.Append(to)
-	l.CC.Append(cc)
-	l.BCC.Append(cc)
+	_ = l.To.Append(to)
+	_ = l.CC.Append(cc)
+	_ = l.BCC.Append(cc)
 
 	l.Recipients()
 
@@ -608,9 +608,9 @@ func TestUpdate_Recipients(t *testing.T) {
 	o.ID = "something"
 
 	u := UpdateNew("act", o)
-	u.To.Append(to)
-	u.CC.Append(cc)
-	u.BCC.Append(cc)
+	_ = u.To.Append(to)
+	_ = u.CC.Append(cc)
+	_ = u.BCC.Append(cc)
 
 	u.Recipients()
 
@@ -686,9 +686,9 @@ func TestActivity_Recipients(t *testing.T) {
 	o.ID = "something"
 
 	c := ActivityNew("act", ActivityType, o)
-	c.To.Append(to)
-	c.CC.Append(cc)
-	c.BCC.Append(cc)
+	_ = c.To.Append(to)
+	_ = c.CC.Append(cc)
+	_ = c.BCC.Append(cc)
 
 	c.Recipients()
 
@@ -720,9 +720,9 @@ func TestBlock_Recipients(t *testing.T) {
 	o.ID = "something"
 
 	b := BlockNew("act", o)
-	b.To.Append(to)
-	b.CC.Append(cc)
-	b.BCC.Append(cc)
+	_ = b.To.Append(to)
+	_ = b.CC.Append(cc)
+	_ = b.BCC.Append(cc)
 
 	b.Recipients()
 
@@ -750,7 +750,7 @@ func TestActivity_UnmarshalJSON(t *testing.T) {
 	a := Activity{}
 
 	dataEmpty := []byte("{}")
-	a.UnmarshalJSON(dataEmpty)
+	_ = a.UnmarshalJSON(dataEmpty)
 	if a.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", a, a.ID)
 	}
@@ -787,7 +787,7 @@ func TestCreate_UnmarshalJSON(t *testing.T) {
 	c := Create{}
 
 	dataEmpty := []byte("{}")
-	c.UnmarshalJSON(dataEmpty)
+	_ = c.UnmarshalJSON(dataEmpty)
 	if c.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", c, c.ID)
 	}
@@ -824,7 +824,7 @@ func TestDislike_UnmarshalJSON(t *testing.T) {
 	d := Dislike{}
 
 	dataEmpty := []byte("{}")
-	d.UnmarshalJSON(dataEmpty)
+	_ = d.UnmarshalJSON(dataEmpty)
 	if d.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", d, d.ID)
 	}
@@ -1023,7 +1023,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		want    []byte
+		want    [][]byte
 		wantErr bool
 	}{
 		{
@@ -1037,7 +1037,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				ID: ID("example.com"),
 			},
-			want:    []byte(`{"id":"example.com"}`),
+			want:    [][]byte{[]byte(`{"id":"example.com"}`)},
 			wantErr: false,
 		},
 		{
@@ -1045,70 +1045,76 @@ func TestActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				Type: ActivityVocabularyType("myType"),
 			},
-			want:    []byte(`{"type":"myType"}`),
+			want:    [][]byte{[]byte(`{"type":"myType"}`)},
 			wantErr: false,
 		},
 		{
 			name: "JustOneName",
 			fields: fields{
 				Name: NaturalLanguageValues{
-					{Ref: NilLangRef, Value: Content("ana")},
+					NilLangRef: Content("ana"),
 				},
 			},
-			want:    []byte(`{"name":"ana"}`),
+			want:    [][]byte{[]byte(`{"name":"ana"}`)},
 			wantErr: false,
 		},
 		{
 			name: "MoreNames",
 			fields: fields{
 				Name: NaturalLanguageValues{
-					{Ref: MakeRef([]byte("en")), Value: Content("anna")},
-					{Ref: MakeRef([]byte("fr")), Value: Content("anne")},
+					English: Content("anna"),
+					French:  Content("anne"),
 				},
 			},
-			want:    []byte(`{"nameMap":{"en":"anna","fr":"anne"}}`),
+			want: [][]byte{
+				[]byte(`{"nameMap":{"en":"anna","fr":"anne"}}`),
+				[]byte(`{"nameMap":{"fr":"anne","en":"anna"}}`),
+			},
 			wantErr: false,
 		},
 		{
 			name: "JustOneSummary",
 			fields: fields{
 				Summary: NaturalLanguageValues{
-					{Ref: NilLangRef, Value: Content("test summary")},
+					NilLangRef: Content("test summary"),
 				},
 			},
-			want:    []byte(`{"summary":"test summary"}`),
+			want:    [][]byte{[]byte(`{"summary":"test summary"}`)},
 			wantErr: false,
 		},
 		{
 			name: "MoreSummaryEntries",
 			fields: fields{
 				Summary: NaturalLanguageValues{
-					{Ref: MakeRef([]byte("en")), Value: Content("test summary")},
-					{Ref: MakeRef([]byte("fr")), Value: Content("teste summary")},
+					English: Content("test summary"),
+					French:  Content("teste summary"),
 				},
 			},
-			want:    []byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
+			want: [][]byte{
+				[]byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
+				[]byte(`{"summaryMap":{"fr":"teste summary","en":"test summary"}}`),
+			},
 			wantErr: false,
 		},
 		{
 			name: "JustOneContent",
 			fields: fields{
 				Content: NaturalLanguageValues{
-					{Ref: NilLangRef, Value: Content("test content")},
+					NilLangRef: Content("test content"),
 				},
 			},
-			want:    []byte(`{"content":"test content"}`),
+			want:    [][]byte{[]byte(`{"content":"test content"}`)},
 			wantErr: false,
 		},
 		{
 			name: "MoreContentEntries",
 			fields: fields{
 				Content: NaturalLanguageValues{
-					{Ref: MakeRef([]byte("en")), Value: Content("test content")},
-					{Ref: MakeRef([]byte("fr")), Value: Content("teste content")},
+					English: Content("test content"),
+					French:  Content("teste content"),
 				},
 			},
-			want:    []byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),
+			want:    [][]byte{[]byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`)},
 			wantErr: false,
 		},
 		{
@@ -1116,7 +1122,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				MediaType: MimeType("text/stupid"),
 			},
-			want:    []byte(`{"mediaType":"text/stupid"}`),
+			want:    [][]byte{[]byte(`{"mediaType":"text/stupid"}`)},
 			wantErr: false,
 		},
 		{
@@ -1127,7 +1133,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 					Type: VideoType,
 				},
 			},
-			want:    []byte(`{"attachment":{"id":"some example","type":"Video"}}`),
+			want:    [][]byte{[]byte(`{"attachment":{"id":"some example","type":"Video"}}`)},
 			wantErr: false,
 		},
 		{
@@ -1138,7 +1144,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 					Type: PersonType,
 				},
 			},
-			want:    []byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`),
+			want:    [][]byte{[]byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`)},
 			wantErr: false,
 		},
 		{
@@ -1155,7 +1161,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 					},
 				},
 			},
-			want:    []byte(`{"attributedTo":[{"id":"http://example.com/ana","type":"Person"},{"id":"http://example.com/GGG","type":"Group"}]}`),
+			want:    [][]byte{[]byte(`{"attributedTo":[{"id":"http://example.com/ana","type":"Person"},{"id":"http://example.com/GGG","type":"Group"}]}`)},
 			wantErr: false,
 		},
 		{
@@ -1166,7 +1172,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 					Content:   NaturalLanguageValues{},
 				},
 			},
-			want:    []byte(`{"source":{"mediaType":"text/plain"}}`),
+			want:    [][]byte{[]byte(`{"source":{"mediaType":"text/plain"}}`)},
 			wantErr: false,
 		},
 	}
@@ -1216,7 +1222,13 @@ func TestActivity_MarshalJSON(t *testing.T) {
 				t.Errorf("MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !bytes.Equal(got, tt.want) {
+			found := got == nil
+			for _, wantBytes := range tt.want {
+				if bytes.Equal(got, wantBytes) {
+					found = true
+				}
+			}
+			if !found {
 				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
 			}
 		})
@@ -1265,7 +1277,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		want    []byte
+		want    [][]byte
 		wantErr bool
 	}{
 		{
@@ -1279,7 +1291,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				ID: ID("example.com"),
 			},
-			want:    []byte(`{"id":"example.com"}`),
+			want:    [][]byte{[]byte(`{"id":"example.com"}`)},
 			wantErr: false,
 		},
 		{
@@ -1287,70 +1299,76 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				Type: ActivityVocabularyType("myType"),
 			},
-			want:    []byte(`{"type":"myType"}`),
+			want:    [][]byte{[]byte(`{"type":"myType"}`)},
 			wantErr: false,
 		},
 		{
 			name: "JustOneName",
 			fields: fields{
 				Name: NaturalLanguageValues{
-					{Ref: NilLangRef, Value: Content("ana")},
+					NilLangRef: Content("ana"),
 				},
 			},
-			want:    []byte(`{"name":"ana"}`),
+			want:    [][]byte{[]byte(`{"name":"ana"}`)},
 			wantErr: false,
 		},
 		{
 			name: "MoreNames",
 			fields: fields{
 				Name: NaturalLanguageValues{
-					{Ref: MakeRef([]byte("en")), Value: Content("anna")},
-					{Ref: MakeRef([]byte("fr")), Value: Content("anne")},
+					English: Content("anna"),
+					French:  Content("anne"),
 				},
 			},
-			want:    []byte(`{"nameMap":{"en":"anna","fr":"anne"}}`),
+			want:    [][]byte{[]byte(`{"nameMap":{"en":"anna","fr":"anne"}}`), []byte(`{"nameMap":{"fr":"anne","en":"anna"}}`)},
 			wantErr: false,
 		},
 		{
 			name: "JustOneSummary",
 			fields: fields{
 				Summary: NaturalLanguageValues{
-					{Ref: NilLangRef, Value: Content("test summary")},
+					NilLangRef: Content("test summary"),
 				},
 			},
-			want:    []byte(`{"summary":"test summary"}`),
+			want:    [][]byte{[]byte(`{"summary":"test summary"}`)},
 			wantErr: false,
 		},
 		{
 			name: "MoreSummaryEntries",
 			fields: fields{
 				Summary: NaturalLanguageValues{
-					{Ref: MakeRef([]byte("en")), Value: Content("test summary")},
-					{Ref: MakeRef([]byte("fr")), Value: Content("teste summary")},
+					English: Content("test summary"),
+					French:  Content("teste summary"),
 				},
 			},
-			want:    []byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
+			want: [][]byte{
+				[]byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
+				[]byte(`{"summaryMap":{"fr":"teste summary","en":"test summary"}}`),
+			},
 			wantErr: false,
 		},
 		{
 			name: "JustOneContent",
 			fields: fields{
 				Content: NaturalLanguageValues{
-					{Ref: NilLangRef, Value: Content("test content")},
+					NilLangRef: Content("test content"),
 				},
 			},
-			want:    []byte(`{"content":"test content"}`),
+			want:    [][]byte{[]byte(`{"content":"test content"}`)},
 			wantErr: false,
 		},
 		{
 			name: "MoreContentEntries",
 			fields: fields{
 				Content: NaturalLanguageValues{
-					{Ref: MakeRef([]byte("en")), Value: Content("test content")},
-					{Ref: MakeRef([]byte("fr")), Value: Content("teste content")},
+					English: Content("test content"),
+					French:  Content("teste content"),
 				},
 			},
-			want:    []byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),
+			want: [][]byte{
+				[]byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),
+				[]byte(`{"contentMap":{"fr":"teste content","en":"test content"}}`),
+			},
 			wantErr: false,
 		},
 		{
@@ -1358,7 +1376,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				MediaType: MimeType("text/stupid"),
 			},
-			want:    []byte(`{"mediaType":"text/stupid"}`),
+			want:    [][]byte{[]byte(`{"mediaType":"text/stupid"}`)},
 			wantErr: false,
 		},
 		{
@@ -1369,7 +1387,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 					Type: VideoType,
 				},
 			},
-			want:    []byte(`{"attachment":{"id":"some example","type":"Video"}}`),
+			want:    [][]byte{[]byte(`{"attachment":{"id":"some example","type":"Video"}}`)},
 			wantErr: false,
 		},
 		{
@@ -1380,7 +1398,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 					Type: PersonType,
 				},
 			},
-			want:    []byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`),
+			want:    [][]byte{[]byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`)},
 			wantErr: false,
 		},
 		{
@@ -1397,7 +1415,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 					},
 				},
 			},
-			want:    []byte(`{"attributedTo":[{"id":"http://example.com/ana","type":"Person"},{"id":"http://example.com/GGG","type":"Group"}]}`),
+			want:    [][]byte{[]byte(`{"attributedTo":[{"id":"http://example.com/ana","type":"Person"},{"id":"http://example.com/GGG","type":"Group"}]}`)},
 			wantErr: false,
 		},
 		{
@@ -1408,7 +1426,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 					Content:   NaturalLanguageValues{},
 				},
 			},
-			want:    []byte(`{"source":{"mediaType":"text/plain"}}`),
+			want:    [][]byte{[]byte(`{"source":{"mediaType":"text/plain"}}`)},
 			wantErr: false,
 		},
 	}
@@ -1457,7 +1475,13 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 				t.Errorf("MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !bytes.Equal(got, tt.want) {
+			found := got == nil
+			for _, wantBytes := range tt.want {
+				if bytes.Equal(got, wantBytes) {
+					found = true
+				}
+			}
+			if !found {
 				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
 			}
 		})

@@ -432,7 +432,6 @@ func notEmptyObject(o *Object) bool {
 	return len(o.ID) > 0 ||
 		len(o.Type) > 0 ||
 		ActivityTypes.Contains(o.Type) ||
-		o.Content != nil ||
 		o.Attachment != nil ||
 		o.AttributedTo != nil ||
 		o.Audience != nil ||
@@ -449,15 +448,16 @@ func notEmptyObject(o *Object) bool {
 		o.Likes != nil ||
 		o.Location != nil ||
 		len(o.MediaType) > 0 ||
-		o.Name != nil ||
+		len(o.Name) > 0 ||
+		len(o.Content) > 0 ||
+		len(o.Summary) > 0 ||
 		o.Preview != nil ||
 		!o.Published.IsZero() ||
 		o.Replies != nil ||
 		o.Shares != nil ||
 		o.Source.MediaType != "" ||
-		o.Source.Content != nil ||
+		len(o.Source.Content) > 0 ||
 		!o.StartTime.IsZero() ||
-		o.Summary != nil ||
 		o.Tag != nil ||
 		o.To != nil ||
 		!o.Updated.IsZero() ||
@@ -491,7 +491,7 @@ func notEmptyActivity(a *Activity) bool {
 
 func notEmptyActor(a *Actor) bool {
 	var notEmpty bool
-	OnObject(a, func(o *Object) error {
+	_ = OnObject(a, func(o *Object) error {
 		notEmpty = notEmptyObject(o)
 		return nil
 	})
@@ -518,28 +518,28 @@ func NotEmpty(i Item) bool {
 		notEmpty = len(i.GetLink()) > 0
 	}
 	if i.IsCollection() {
-		OnCollectionIntf(i, func(c CollectionInterface) error {
+		_ = OnCollectionIntf(i, func(c CollectionInterface) error {
 			notEmpty = c != nil || len(c.Collection()) > 0
 			return nil
 		})
 	}
 	if ActivityTypes.Contains(i.GetType()) {
-		OnActivity(i, func(a *Activity) error {
+		_ = OnActivity(i, func(a *Activity) error {
 			notEmpty = notEmptyActivity(a)
 			return nil
 		})
 	} else if ActorTypes.Contains(i.GetType()) {
-		OnActor(i, func(a *Actor) error {
+		_ = OnActor(i, func(a *Actor) error {
 			notEmpty = notEmptyActor(a)
 			return nil
 		})
 	} else if i.IsLink() {
-		OnLink(i, func(l *Link) error {
+		_ = OnLink(i, func(l *Link) error {
 			notEmpty = notEmptyLink(l)
 			return nil
 		})
 	} else {
-		OnObject(i, func(o *Object) error {
+		_ = OnObject(i, func(o *Object) error {
 			notEmpty = notEmptyObject(o)
 			return nil
 		})

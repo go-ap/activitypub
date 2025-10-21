@@ -14,25 +14,20 @@ import (
 
 func TestNaturalLanguageValue_MarshalJSON(t *testing.T) {
 	p := NaturalLanguageValues{
-		{
-			MakeRef([]byte("en")), Content("the test"),
-		},
-		{
-			MakeRef([]byte("fr")), Content("le test"),
-		},
+		English: Content("the test"),
+		French:  Content("le test"),
 	}
-	js := "{\"en\":\"the test\",\"fr\":\"le test\"}"
+	js1 := `{"en":"the test","fr":"le test"}`
+	js2 := `{"fr":"le test","en":"the test"}`
 	out, err := p.MarshalJSON()
 	if err != nil {
 		t.Errorf("Error: '%s'", err)
 	}
-	if js != string(out) {
-		t.Errorf("Different marshal result '%s', instead of '%s'", out, js)
+	if js1 != string(out) && js2 != string(out) {
+		t.Errorf("Different marshal result '%s', instead of '%s' or '%s'", out, js1, js2)
 	}
 	p1 := NaturalLanguageValues{
-		{
-			MakeRef([]byte("en")), Content("the test"),
-		},
+		English: Content("the test"),
 	}
 
 	out1, err1 := p1.MarshalJSON()
@@ -124,28 +119,19 @@ func TestLangRefValue_MarshalText(t *testing.T) {
 
 func TestNaturalLanguageValue_Get(t *testing.T) {
 	testVal := Content("test")
-	a := NaturalLanguageValues{{NilLangRef, testVal}}
+	a := NaturalLanguageValues{NilLangRef: testVal}
 	if !a.Get(NilLangRef).Equals(testVal) {
 		t.Errorf("Invalid Get result. Expected %s received %s", testVal, a.Get(NilLangRef))
 	}
 }
 
-func TestNaturalLanguageValue_Set(t *testing.T) {
-	testVal := Content("test")
-	a := NaturalLanguageValues{{NilLangRef, Content("ana are mere")}}
-	err := a.Set(MakeRef([]byte("en")), testVal)
-	if err != nil {
-		t.Errorf("Received error when doing Set %s", err)
-	}
-}
-
 func TestNaturalLanguageValue_Append(t *testing.T) {
-	var a NaturalLanguageValues
+	a := make(NaturalLanguageValues)
 
 	if len(a) != 0 {
 		t.Errorf("Invalid initialization of %T. Size %d > 0 ", a, len(a))
 	}
-	langEn := MakeRef([]byte("en"))
+	langEn := English
 	valEn := Content("random value")
 
 	_ = a.Append(langEn, valEn)
@@ -171,9 +157,9 @@ func TestNaturalLanguageValue_Append(t *testing.T) {
 }
 
 func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
-	langEn := []byte("en-US")
+	langEn := []byte(AmericanEnglish.String())
 	valEn := Content("random")
-	langDe := []byte("de-DE")
+	langDe := []byte(German.String())
 	valDe := Content("zufällig\n")
 
 	// m := make(map[string]string)
@@ -185,23 +171,23 @@ func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
 		"` + string(langDe) + `": "` + valDe.String() + `"
 	}`
 
-	a := make(NaturalLanguageValues, 0)
-	_ = a.Append(MakeRef(langEn), valEn)
-	_ = a.Append(MakeRef(langDe), valDe)
+	a := make(NaturalLanguageValues)
+	_ = a.Append(AmericanEnglish, valEn)
+	_ = a.Append(German, valDe)
 	err := a.UnmarshalJSON([]byte(rawJson))
 	if err != nil {
 		t.Error(err)
 	}
 	for lang, val := range a {
-		if val.Ref != MakeRef(langEn) && val.Ref != MakeRef(langDe) {
+		if lang != AmericanEnglish && lang != German {
 			t.Errorf("Invalid json unmarshal for %T. Expected lang %q or %q, found %q", a, langEn, langDe, lang)
 		}
 
-		if val.Ref == MakeRef(langEn) && !val.Value.Equals(valEn) {
-			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valEn, val.Value)
+		if lang == AmericanEnglish && !val.Equals(valEn) {
+			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valEn, val)
 		}
-		if val.Ref == MakeRef(langDe) && !val.Value.Equals(valDe) {
-			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valDe, val.Value)
+		if lang == German && !val.Equals(valDe) {
+			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valDe, val)
 		}
 	}
 }
@@ -239,11 +225,8 @@ func TestNaturalLanguageValueNew(t *testing.T) {
 }
 
 func TestNaturalLanguageValue_MarshalText(t *testing.T) {
-	nlv := LangRefValue{
-		Ref:   MakeRef([]byte("en")),
-		Value: Content("test"),
-	}
-	tst := NaturalLanguageValues{nlv}
+	val := Content("test")
+	tst := NaturalLanguageValues{English: val}
 	j, err := tst.MarshalText()
 	if err != nil {
 		t.Errorf("Error marshaling: %s", err)
@@ -251,7 +234,7 @@ func TestNaturalLanguageValue_MarshalText(t *testing.T) {
 	if j == nil {
 		t.Errorf("Error marshaling: nil value returned")
 	}
-	expected := fmt.Sprintf("%s[%s]", nlv.Value, nlv.Ref)
+	expected := fmt.Sprintf("%s[%s]", val, English)
 	if string(j) != expected {
 		t.Errorf("Wrong value: %s, expected %s", j, expected)
 	}
@@ -272,44 +255,38 @@ func TestNaturalLanguageValues_Get(t *testing.T) {
 func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 	{
 		m := NaturalLanguageValues{
-			{
-				MakeRef([]byte("en")), Content("test"),
-			},
-			{
-				MakeRef([]byte("de")), Content("test"),
-			},
+			English: Content("test"),
+			German:  Content("test"),
 		}
 		result, err := m.MarshalJSON()
 		if err != nil {
 			t.Errorf("Failed marshaling '%v'", err)
 		}
-		mRes := "{\"en\":\"test\",\"de\":\"test\"}"
-		if string(result) != mRes {
-			t.Errorf("Different results '%v' vs. '%v'", string(result), mRes)
+		mRes1 := `{"en":"test","de":"test"}`
+		mRes2 := `{"de":"test","en":"test"}`
+		if string(result) != mRes1 && string(result) != mRes2 {
+			t.Errorf("Different results '%v' vs. '%v' or '%v'", string(result), mRes1, mRes2)
 		}
 		// n := NaturalLanguageValuesNew()
 		// result, err := n.MarshalJSON()
 
 		s := make(map[LangRef]string)
 		s[LangRef(language.English)] = "test"
-		n1 := NaturalLanguageValues{{
-			MakeRef([]byte("en")), Content("test"),
-		}}
+		n1 := NaturalLanguageValues{
+			English: Content("test"),
+		}
 		result1, err1 := n1.MarshalJSON()
 		if err1 != nil {
 			t.Errorf("Failed marshaling '%v'", err1)
 		}
-		mRes1 := `"test"`
-		if string(result1) != mRes1 {
-			t.Errorf("Different results '%v' vs. '%v'", string(result1), mRes1)
+		mRes3 := `"test"`
+		if string(result1) != mRes3 {
+			t.Errorf("Different results '%v' vs. '%v'", string(result1), mRes3)
 		}
 	}
 	{
-		nlv := LangRefValue{
-			Ref:   NilLangRef,
-			Value: Content("test"),
-		}
-		tst := NaturalLanguageValues{nlv}
+		val := Content("test")
+		tst := NaturalLanguageValues{NilLangRef: val}
 		j, err := tst.MarshalJSON()
 		if err != nil {
 			t.Errorf("Error marshaling: %s", err)
@@ -317,17 +294,14 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		if j == nil {
 			t.Errorf("Error marshaling: nil value returned")
 		}
-		expected := fmt.Sprintf("\"%s\"", nlv.Value)
+		expected := fmt.Sprintf("\"%s\"", val)
 		if string(j) != expected {
 			t.Errorf("Wrong value: %s, expected %s", j, expected)
 		}
 	}
 	{
-		nlv := LangRefValue{
-			Ref:   MakeRef([]byte("en")),
-			Value: Content("test"),
-		}
-		tst := NaturalLanguageValues{nlv}
+		val := Content("test")
+		tst := NaturalLanguageValues{English: val}
 		j, err := tst.MarshalJSON()
 		if err != nil {
 			t.Errorf("Error marshaling: %s", err)
@@ -335,21 +309,15 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		if j == nil {
 			t.Errorf("Error marshaling: nil value returned")
 		}
-		expected := fmt.Sprintf("\"%s\"", nlv.Value)
+		expected := fmt.Sprintf("\"%s\"", val)
 		if string(j) != expected {
 			t.Errorf("Wrong value: %s, expected %s", j, expected)
 		}
 	}
 	{
-		nlvEn := LangRefValue{
-			Ref:   MakeRef([]byte("en")),
-			Value: Content("test"),
-		}
-		nlvFr := LangRefValue{
-			Ref:   MakeRef([]byte("fr")),
-			Value: Content("teste"),
-		}
-		tst := NaturalLanguageValues{nlvEn, nlvFr}
+		valEn := Content("test")
+		valFr := Content("teste")
+		tst := NaturalLanguageValues{English: valEn, French: valFr}
 		j, err := tst.MarshalJSON()
 		if err != nil {
 			t.Errorf("Error marshaling: %s", err)
@@ -357,21 +325,16 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		if j == nil {
 			t.Errorf("Error marshaling: nil value returned")
 		}
-		expected := fmt.Sprintf("{\"%s\":\"%s\",\"%s\":\"%s\"}", nlvEn.Ref, nlvEn.Value, nlvFr.Ref, nlvFr.Value)
-		if string(j) != expected {
-			t.Errorf("Wrong value: %s, expected %s", j, expected)
+		expected1 := fmt.Sprintf(`{"%s":"%s","%s":"%s"}`, English, valEn, French, valFr)
+		expected2 := fmt.Sprintf(`{"%s":"%s","%s":"%s"}`, French, valFr, English, valEn)
+		if string(j) != expected1 && string(j) != expected2 {
+			t.Errorf("Wrong value: '%s', expected '%s' or '%s'", j, expected1, expected2)
 		}
 	}
 	{
-		nlvEn := LangRefValue{
-			Ref:   MakeRef([]byte("en")),
-			Value: Content("test\nwith new line"),
-		}
-		nlvFr := LangRefValue{
-			Ref:   MakeRef([]byte("fr")),
-			Value: Content("teste\navec une ligne nouvelle"),
-		}
-		tst := NaturalLanguageValues{nlvEn, nlvFr}
+		valEn := Content("test\nwith new line")
+		valFr := Content("teste\navec une ligne nouvelle")
+		tst := NaturalLanguageValues{English: valEn, French: valFr}
 		j, err := tst.MarshalJSON()
 		if err != nil {
 			t.Errorf("Error marshaling: %s", err)
@@ -379,9 +342,10 @@ func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
 		if j == nil {
 			t.Errorf("Error marshaling: nil value returned")
 		}
-		expected := fmt.Sprintf("{\"%s\":%s,\"%s\":%s}", nlvEn.Ref, strconv.Quote(nlvEn.Value.String()), nlvFr.Ref, strconv.Quote(nlvFr.Value.String()))
-		if string(j) != expected {
-			t.Errorf("Wrong value: %s, expected %s", j, expected)
+		expected1 := fmt.Sprintf(`{"%s":%s,"%s":%s}`, English, strconv.Quote(valEn.String()), French, strconv.Quote(valFr.String()))
+		expected2 := fmt.Sprintf(`{"%s":%s,"%s":%s}`, French, strconv.Quote(valFr.String()), English, strconv.Quote(valEn.String()))
+		if string(j) != expected1 && string(j) != expected2 {
+			t.Errorf("Wrong value: '%s', expected '%s' or '%s'", j, expected1, expected2)
 		}
 	}
 }
@@ -470,43 +434,37 @@ func TestNaturalLanguageValues_Equals(t *testing.T) {
 	}{
 		{
 			name: "equal-key-value",
-			n: NaturalLanguageValues{LangRefValue{
-				Ref:   MakeRef([]byte("en")),
-				Value: Content("test123#"),
-			}},
+			n: NaturalLanguageValues{
+				English: Content("test123#"),
+			},
 			args: args{
-				with: NaturalLanguageValues{LangRefValue{
-					Ref:   MakeRef([]byte("en")),
-					Value: Content("test123#"),
-				}},
+				with: NaturalLanguageValues{
+					English: Content("test123#"),
+				},
 			},
 			want: true,
 		},
 		{
 			name: "not-equal-key",
-			n: NaturalLanguageValues{LangRefValue{
-				Ref:   MakeRef([]byte("en")),
-				Value: Content("test123#"),
-			}},
+			n: NaturalLanguageValues{
+				English: Content("test123#"),
+			},
 			args: args{
-				with: NaturalLanguageValues{LangRefValue{
-					Ref:   MakeRef([]byte("fr")),
-					Value: Content("test123#"),
-				}},
+				with: NaturalLanguageValues{
+					French: Content("test123#"),
+				},
 			},
 			want: false,
 		},
 		{
 			name: "not-equal-value",
-			n: NaturalLanguageValues{LangRefValue{
-				Ref:   MakeRef([]byte("en")),
-				Value: Content("test123#"),
-			}},
+			n: NaturalLanguageValues{
+				English: Content("test123#"),
+			},
 			args: args{
-				with: NaturalLanguageValues{LangRefValue{
-					Ref:   MakeRef([]byte("en")),
-					Value: Content("test123"),
-				}},
+				with: NaturalLanguageValues{
+					English: Content("test123"),
+				},
 			},
 			want: false,
 		},
@@ -698,11 +656,10 @@ func TestNaturalLanguageValues_GobEncode(t *testing.T) {
 		},
 		{
 			name: "some values",
-			n: NaturalLanguageValues{{
-				Ref:   MakeRef([]byte("ana")),
-				Value: []byte("are mere"),
-			}},
-			want:    gobValue([]kv{{K: []byte("ana"), V: []byte("are mere")}}),
+			n: NaturalLanguageValues{
+				Und: []byte("are mere"),
+			},
+			want:    gobValue([]kv{{K: []byte("und"), V: []byte("are mere")}}),
 			wantErr: false,
 		},
 	}
@@ -735,10 +692,9 @@ func TestNaturalLanguageValues_GobDecode(t *testing.T) {
 		},
 		{
 			name: "some values",
-			n: NaturalLanguageValues{{
-				Ref:   MakeRef([]byte("ana")),
-				Value: []byte("are mere"),
-			}},
+			n: NaturalLanguageValues{
+				Und: []byte("are mere"),
+			},
 			data:    gobValue([]kv{{K: []byte("ana"), V: []byte("are mere")}}),
 			wantErr: false,
 		},

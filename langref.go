@@ -12,10 +12,10 @@ type LangRef language.Tag
 
 // NilLangRef represents a convention for a nil language reference.
 // It is used for LangRefValue objects without an explicit language key.
-var NilLangRef = LangRef(language.Und)
+var NilLangRef = und
 
 // DefaultLang represents the default language reference used when using the convenience content generation.
-var DefaultLang = LangRef(language.English)
+var DefaultLang = English
 
 // Valid
 func (l LangRef) Valid() bool {

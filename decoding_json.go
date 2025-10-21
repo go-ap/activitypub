@@ -98,7 +98,7 @@ func JSONGetBoolean(val *fastjson.Value, prop string) bool {
 }
 
 func JSONGetNaturalLanguageField(val *fastjson.Value, prop string) NaturalLanguageValues {
-	n := NaturalLanguageValues{}
+	n := make(NaturalLanguageValues)
 	if val == nil {
 		return n
 	}
@@ -110,18 +110,17 @@ func JSONGetNaturalLanguageField(val *fastjson.Value, prop string) NaturalLangua
 	case fastjson.TypeObject:
 		ob, _ := v.Object()
 		ob.Visit(func(key []byte, v *fastjson.Value) {
-			l := LangRefValue{}
-			l.Ref = MakeRef(key)
-			if err := l.Value.UnmarshalJSON(v.GetStringBytes()); err == nil {
-				if l.Ref != NilLangRef || len(l.Value) > 0 {
-					n = append(n, l)
+			cont := Content{}
+			ref := MakeRef(key)
+			if err := cont.UnmarshalJSON(v.GetStringBytes()); err == nil {
+				if ref != NilLangRef || len(cont) > 0 {
+					n[ref] = cont
 				}
 			}
 		})
 	case fastjson.TypeString:
-		l := LangRefValue{}
-		if err := l.UnmarshalJSON(v.GetStringBytes()); err == nil {
-			n = append(n, l)
+		if raw := v.GetStringBytes(); len(raw) > 0 {
+			n[DefaultLang] = raw
 		}
 	}
 
@@ -412,6 +411,9 @@ func JSONGetIRI(val *fastjson.Value, prop string) IRI {
 // UnmarshalJSON tries to detect the type of the object in the json data and then outputs a matching
 // ActivityStreams object, if possible
 func UnmarshalJSON(data []byte) (Item, error) {
+	if len(data) == 0 {
+		return nil, nil
+	}
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
 	if err != nil {

@@ -136,11 +136,11 @@ func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
 
 type Objects interface {
 	Object | Tombstone | Place | Profile | Relationship |
-		Actors |
-		Activities |
-		IntransitiveActivities |
-		Collections |
-		IRI
+	Actors |
+	Activities |
+	IntransitiveActivities |
+	Collections |
+	IRI
 }
 
 // Object describes an ActivityPub object of any kind.
@@ -714,10 +714,11 @@ func GetAPSource(val *fastjson.Value) Source {
 	}
 
 	if contBytes := val.Get("source", "content").GetStringBytes(); len(contBytes) > 0 {
-		s.Content.UnmarshalJSON(contBytes)
+		s.Content = make(NaturalLanguageValues)
+		_ = s.Content.UnmarshalJSON(contBytes)
 	}
 	if mimeBytes := val.Get("source", "mediaType").GetStringBytes(); len(mimeBytes) > 0 {
-		s.MediaType.UnmarshalJSON(mimeBytes)
+		_ = s.MediaType.UnmarshalJSON(mimeBytes)
 	}
 
 	return s
@@ -780,9 +781,11 @@ func (s *Source) GobDecode(data []byte) error {
 		}
 	}
 	if raw, ok := mm["content"]; ok {
-		if err := s.Content.GobDecode(raw); err != nil {
+		content := make(NaturalLanguageValues)
+		if err := content.GobDecode(raw); err != nil {
 			return err
 		}
+		s.Content = content
 	}
 	return nil
 }

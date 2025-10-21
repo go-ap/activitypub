@@ -8,6 +8,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -20,13 +21,13 @@ type (
 		Value Content
 	}
 	// NaturalLanguageValues is a mapping for multiple language values
-	NaturalLanguageValues []LangRefValue
+	NaturalLanguageValues map[LangRef]Content
 )
 
 func NaturalLanguageValuesNew(values ...LangRefValue) NaturalLanguageValues {
 	n := make(NaturalLanguageValues, len(values))
-	for i, val := range values {
-		n[i] = val
+	for _, val := range values {
+		n[val.Ref] = val.Value
 	}
 	return n
 }
@@ -38,14 +39,20 @@ func DefaultNaturalLanguageValue(content string) NaturalLanguageValues {
 func (n NaturalLanguageValues) String() string {
 	cnt := len(n)
 	if cnt == 1 {
-		return n[0].String()
+		return n.First().String()
 	}
+	firstRef := n.First().Ref
 	s := strings.Builder{}
 	s.Write([]byte{'['})
 	for k, v := range n {
-		s.WriteString(v.String())
-		if k != cnt-1 {
+		if k != firstRef {
 			s.Write([]byte{','})
+		}
+		s.WriteString(v.String())
+		if k != NilLangRef {
+			s.WriteString("[")
+			s.WriteString(k.String())
+			s.WriteString("]")
 		}
 	}
 	s.Write([]byte{']'})
@@ -53,9 +60,9 @@ func (n NaturalLanguageValues) String() string {
 }
 
 func (n NaturalLanguageValues) Get(ref LangRef) Content {
-	for _, val := range n {
-		if val.Ref == ref {
-			return val.Value
+	for k, val := range n {
+		if k == ref {
+			return val
 		}
 	}
 	return nil
@@ -63,21 +70,8 @@ func (n NaturalLanguageValues) Get(ref LangRef) Content {
 
 // Set sets a language, value pair in a NaturalLanguageValues array
 func (n *NaturalLanguageValues) Set(ref LangRef, v Content) error {
-	found := false
-	for k, vv := range *n {
-		if vv.Ref == ref {
-			(*n)[k] = LangRefValue{ref, v}
-			found = true
-		}
-	}
-	if !found {
-		_ = n.Append(ref, v)
-	}
+	(*n)[ref] = v
 	return nil
-}
-
-func (n *NaturalLanguageValues) Add(ref LangRefValue) {
-	*n = append(*n, ref)
 }
 
 var hex = "0123456789abcdef"
@@ -374,7 +368,7 @@ func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 
 	b := bytes.Buffer{}
 	if l == 1 {
-		v := n[0]
+		v := n.First()
 		if len(v.Value) > 0 {
 			v.Value = unescape(v.Value)
 			stringBytes(&b, v.Value, false)
@@ -383,19 +377,19 @@ func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 	}
 	b.Write([]byte{'{'})
 	empty := true
-	for _, val := range n {
-		if !val.Ref.Valid() || len(val.Value) == 0 {
+	for ref, val := range n {
+		if len(val) == 0 {
 			continue
 		}
 		if !empty {
 			b.Write([]byte{','})
 		}
-		if v, err := val.MarshalJSON(); err == nil && len(v) > 0 {
-			l, err := b.Write(v)
-			if err == nil && l > 0 {
-				empty = false
-			}
+		if ref.Valid() {
+			stringBytes(&b, []byte(ref.String()), false)
+			b.Write([]byte{':'})
 		}
+		stringBytes(&b, val, false)
+		empty = len(val) == 0
 	}
 	b.Write([]byte{'}'})
 	if !empty {
@@ -406,18 +400,29 @@ func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 
 // First returns the first element in the array
 func (n NaturalLanguageValues) First() LangRefValue {
-	for _, v := range n {
-		return v
+	for k, v := range n {
+		return LangRefValue{Ref: k, Value: v}
 	}
 	return LangRefValue{}
 }
 
 // MarshalText serializes the NaturalLanguageValues into Text
 func (n NaturalLanguageValues) MarshalText() ([]byte, error) {
-	for _, v := range n {
-		return []byte(fmt.Sprintf("%q", v)), nil
+	bb := bytes.Buffer{}
+	first := true
+	for ref, val := range n {
+		if !first {
+			bb.WriteString(",")
+		}
+		bb.Write(val)
+		if ref.Valid() {
+			bb.WriteString("[")
+			bb.WriteString(ref.String())
+			bb.WriteString("]")
+		}
+		first = false
 	}
-	return nil, nil
+	return bb.Bytes(), nil
 }
 
 func (n NaturalLanguageValues) Format(s fmt.State, verb rune) {
@@ -440,7 +445,8 @@ func (n NaturalLanguageValues) Format(s fmt.State, verb rune) {
 // Append is syntactic sugar for resizing the NaturalLanguageValues map
 // and appending an element
 func (n *NaturalLanguageValues) Append(lang LangRef, value Content) error {
-	*n = append(*n, LangRefValue{lang, value})
+	//*n = append(*n, LangRefValue{lang, value})
+	(*n)[lang] = value
 	return nil
 }
 
@@ -661,24 +667,26 @@ func unescape(b []byte) []byte {
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (n *NaturalLanguageValues) UnmarshalJSON(data []byte) error {
+	if n == nil {
+		return errors.Newf("nil %T value to unmarshal to", n)
+	}
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
 	if err != nil {
 		// try our luck if data contains an unquoted string
-		n.Append(NilLangRef, unescape(data))
-		return nil
+		return n.Append(NilLangRef, unescape(data))
 	}
 	switch val.Type() {
 	case fastjson.TypeObject:
 		ob, _ := val.Object()
 		ob.Visit(func(key []byte, v *fastjson.Value) {
 			if dat := v.GetStringBytes(); len(dat) > 0 {
-				n.Append(MakeRef(key), unescape(dat))
+				_ = n.Append(MakeRef(key), unescape(dat))
 			}
 		})
 	case fastjson.TypeString:
 		if dat := val.GetStringBytes(); len(dat) > 0 {
-			n.Append(NilLangRef, unescape(dat))
+			_ = n.Append(NilLangRef, unescape(dat))
 		}
 	case fastjson.TypeArray:
 		for _, v := range val.GetArray() {
@@ -711,9 +719,9 @@ func (n NaturalLanguageValues) GobEncode() ([]byte, error) {
 	}
 	b := new(bytes.Buffer)
 	gg := gob.NewEncoder(b)
-	mm := make([]kv, len(n))
-	for i, l := range n {
-		mm[i] = kv{K: []byte(l.Ref.String()), V: l.Value}
+	mm := make([]kv, 0, len(n))
+	for ref, val := range n {
+		mm = append(mm, kv{K: []byte(ref.String()), V: val})
 	}
 	if err := gg.Encode(mm); err != nil {
 		return nil, err
@@ -731,7 +739,7 @@ func (n *NaturalLanguageValues) GobDecode(data []byte) error {
 		return err
 	}
 	for _, m := range mm {
-		*n = append(*n, LangRefValue{Ref: MakeRef(m.K), Value: m.V})
+		_ = n.Append(MakeRef(m.K), m.V)
 	}
 	return nil
 }
@@ -741,13 +749,16 @@ func (n NaturalLanguageValues) Equals(with NaturalLanguageValues) bool {
 	if n.Count() != with.Count() {
 		return false
 	}
-	for _, wv := range with {
-		for _, nv := range n {
-			if nv.Equals(wv) {
-				continue
-			}
+
+	for l, wv := range with {
+		nv, ok := n[l]
+		if !ok {
 			return false
 		}
+		if nv.Equals(wv) {
+			continue
+		}
+		return false
 	}
 	return true
 }
