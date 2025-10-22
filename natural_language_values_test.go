@@ -373,11 +373,8 @@ func TestNaturalLanguageValues_UnmarshalJSON(t *testing.T) {
 			t.Errorf("Invalid number of elements %d, expected %d", n.Count(), 1)
 		}
 		l := n.First()
-		if !l.Value.Equals(Content("ana are mere\n")) {
-			t.Errorf("Invalid %T value %q, expected %q", l, l.Value, "ana are mere\n")
-		}
-		if l.Ref != LangRef(language.English) {
-			t.Errorf("Invalid %T ref %q, expected %q", l, l.Ref, "en")
+		if !l.Equals(Content("ana are mere\n")) {
+			t.Errorf("Invalid %T value %q, expected %q", l, l, "ana are mere\n")
 		}
 	}
 	{
@@ -397,11 +394,8 @@ func TestNaturalLanguageValues_UnmarshalJSON(t *testing.T) {
 			t.Errorf("Invalid number of elements %d, expected %d", n.Count(), 1)
 		}
 		l := n.First()
-		if !l.Value.Equals(Content("ana are mere\n")) {
-			t.Errorf("Invalid %T value %q, expected %q", l, l.Value, "ana are mere\n")
-		}
-		if l.Ref != LangRef(language.English) {
-			t.Errorf("Invalid %T ref %q, expected %q", l, l.Ref, "en")
+		if !l.Equals(Content("ana are mere\n")) {
+			t.Errorf("Invalid %T value %q, expected %q", l, l, "ana are mere\n")
 		}
 	}
 }

@@ -382,7 +382,7 @@ func gobDecodeDuration(data []byte) (time.Duration, error) {
 }
 
 func gobDecodeNaturalLanguageValues(data []byte) (NaturalLanguageValues, error) {
-	n := make(NaturalLanguageValues, 0)
+	n := make(NaturalLanguageValues)
 	err := n.GobDecode(data)
 	return n, err
 }
