@@ -41,11 +41,11 @@ func (n NaturalLanguageValues) String() string {
 	if cnt == 1 {
 		return n.First().String()
 	}
-	firstRef := n.First().Ref
+	first := true
 	s := strings.Builder{}
 	s.Write([]byte{'['})
 	for k, v := range n {
-		if k != firstRef {
+		if !first {
 			s.Write([]byte{','})
 		}
 		s.WriteString(v.String())
@@ -54,6 +54,7 @@ func (n NaturalLanguageValues) String() string {
 			s.WriteString(k.String())
 			s.WriteString("]")
 		}
+		first = false
 	}
 	s.Write([]byte{']'})
 	return s.String()
@@ -368,10 +369,10 @@ func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 
 	b := bytes.Buffer{}
 	if l == 1 {
-		v := n.First()
-		if len(v.Value) > 0 {
-			v.Value = unescape(v.Value)
-			stringBytes(&b, v.Value, false)
+		val := n.First()
+		if len(val) > 0 {
+			val = unescape(val)
+			stringBytes(&b, val, false)
 			return b.Bytes(), nil
 		}
 	}
@@ -398,12 +399,18 @@ func (n NaturalLanguageValues) MarshalJSON() ([]byte, error) {
 	return nil, nil
 }
 
-// First returns the first element in the array
-func (n NaturalLanguageValues) First() LangRefValue {
-	for k, v := range n {
-		return LangRefValue{Ref: k, Value: v}
+// First returns the first element in the map
+func (n NaturalLanguageValues) First() Content {
+	for _, v := range n {
+		return v
 	}
-	return LangRefValue{}
+	return nil
+}
+
+// Default returns the default NaturalLanguageValue
+func (n NaturalLanguageValues) Default() Content {
+	v, _ := n[DefaultLang]
+	return v
 }
 
 // MarshalText serializes the NaturalLanguageValues into Text
