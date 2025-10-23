@@ -24,15 +24,19 @@ type (
 	NaturalLanguageValues map[LangRef]Content
 )
 
+func RefValue[T ~string](l LangRef, v T) LangRefValue {
+	return LangRefValue{l, []byte(v)}
+}
+
 func NaturalLanguageValuesNew(values ...LangRefValue) NaturalLanguageValues {
-	n := make(NaturalLanguageValues, len(values))
+	n := make(NaturalLanguageValues)
 	for _, val := range values {
 		n[val.Ref] = val.Value
 	}
 	return n
 }
 
-func DefaultNaturalLanguageValue(content string) NaturalLanguageValues {
+func DefaultNaturalLanguage[T ~string](content T) NaturalLanguageValues {
 	return NaturalLanguageValuesNew(DefaultLangRef(content))
 }
 
@@ -473,12 +477,8 @@ func (l LangRefValue) String() string {
 	return fmt.Sprintf("%s[%s]", l.Value, l.Ref)
 }
 
-func DefaultLangRef(value string) LangRefValue {
-	return LangRefValue{Ref: DefaultLang, Value: Content(value)}
-}
-
-func LangRefValueNew(lang LangRef, value string) LangRefValue {
-	return LangRefValue{Ref: lang, Value: Content(value)}
+func DefaultLangRef[T ~string](value T) LangRefValue {
+	return RefValue(DefaultLang, value)
 }
 
 func (l LangRefValue) Format(s fmt.State, verb rune) {
