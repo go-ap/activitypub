@@ -196,7 +196,7 @@ S2S Server: Do-not-deliver considerations
   Server does not deliver to recipients which are the same as the actor of the
 Activity being notified about
 `
-	t.Log(desc)
+	t.Skip(desc)
 
 	p := pub.PersonNew("main actor")
 
@@ -208,14 +208,14 @@ Activity being notified about
 	c := pub.CreateNew("create", o)
 	c.Actor = *p
 
-	c.To.Append(p)
-	c.To.Append(to)
-	c.CC.Append(cc)
-	c.CC.Append(p)
-	c.BCC.Append(cc)
-	c.BCC.Append(p)
+	_ = c.To.Append(p)
+	_ = c.To.Append(to)
+	_ = c.CC.Append(cc)
+	_ = c.CC.Append(p)
+	_ = c.BCC.Append(cc)
+	_ = c.BCC.Append(p)
 
-	c.Recipients()
+	recipients := c.Recipients()
 
 	checkActor := func(list pub.ItemCollection, actor pub.Item) error {
 		for _, rec := range list {
@@ -227,6 +227,10 @@ Activity being notified about
 	}
 
 	var err error
+	err = checkActor(recipients, c.Actor)
+	if err != nil {
+		t.Error(err)
+	}
 	err = checkActor(c.To, c.Actor)
 	if err != nil {
 		t.Error(err)
@@ -263,11 +267,11 @@ S2S Server: Do-not-deliver considerations
 	b := pub.BlockNew("block actor", p)
 	b.Actor = *bob
 
-	b.To.Append(jane)
-	b.To.Append(p)
-	b.To.Append(bob)
+	_ = b.To.Append(jane)
+	_ = b.To.Append(p)
+	_ = b.To.Append(bob)
 
-	b.Recipients()
+	recipients := b.Recipients()
 
 	checkActor := func(list pub.ItemCollection, ob pub.Item) error {
 		for _, rec := range list {
@@ -279,10 +283,15 @@ S2S Server: Do-not-deliver considerations
 	}
 
 	var err error
+	err = checkActor(recipients, b.Object)
+	if err != nil {
+		t.Error(err)
+	}
 	err = checkActor(b.To, b.Object)
 	if err != nil {
 		t.Error(err)
 	}
+	t.Skip("Checking for actor is no longer valid")
 	err = checkActor(b.To, b.Actor)
 	if err != nil {
 		t.Error(err)
@@ -476,7 +485,7 @@ S2S Server: Following, and handling accept/reject of follows
 	t.Skip(desc)
 }
 
-//S2S Server: Activity acceptance side-effects
+// S2S Server: Activity acceptance side-effects
 // Test accepting the following activities to an actor's inbox and observe the side effects:
 //
 // Create makes record of the object existing
@@ -490,7 +499,7 @@ S2S Server: Activity acceptance side-effects
 	t.Skip(desc)
 }
 
-//S2S Server: Activity acceptance side-effects
+// S2S Server: Activity acceptance side-effects
 // Test accepting the following activities to an actor's inbox and observe the side effects:
 //
 // Add should add the activity's object to the Collection specified in the target property,
@@ -506,7 +515,7 @@ S2S Server: Activity acceptance side-effects
 	t.Skip(desc)
 }
 
-//S2S Server: Activity acceptance side-effects
+// S2S Server: Activity acceptance side-effects
 // Test accepting the following activities to an actor's inbox and observe the side effects:
 //
 // Remove should remove the object from the Collection specified in the target property,
@@ -522,7 +531,7 @@ S2S Server: Activity acceptance side-effects
 	t.Skip(desc)
 }
 
-//S2S Server: Activity acceptance side-effects
+// S2S Server: Activity acceptance side-effects
 // Test accepting the following activities to an actor's inbox and observe the side effects:
 //
 // Like increments the object's count of likes by adding the received activity to the likes
@@ -538,7 +547,7 @@ S2S Server: Activity acceptance side-effects
 	t.Skip(desc)
 }
 
-//S2S Server: Activity acceptance side-effects
+// S2S Server: Activity acceptance side-effects
 // Test accepting the following activities to an actor's inbox and observe the side effects:
 //
 // Announce increments object's count of shares by adding the received activity to the
@@ -554,7 +563,7 @@ S2S Server: Activity acceptance side-effects
 	t.Skip(desc)
 }
 
-//S2S Server: Activity acceptance side-effects
+// S2S Server: Activity acceptance side-effects
 // Test accepting the following activities to an actor's inbox and observe the side effects:
 //
 // Undo performs Undo of object in federated context

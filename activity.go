@@ -451,9 +451,9 @@ func removeFromAudience(a *Activity, items ...Item) error {
 
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (a *Activity) Recipients() ItemCollection {
-	var alwaysRemove ItemCollection
-	if a.GetType() == BlockType && a.Object != nil {
-		alwaysRemove = append(alwaysRemove, a.Object)
+	alwaysRemove := make(ItemCollection, 0)
+	if a.GetType() == BlockType && !IsNil(a.Object) {
+		_ = alwaysRemove.Append(a.Object)
 	}
 	if len(alwaysRemove) > 0 {
 		_ = removeFromAudience(a, alwaysRemove...)
