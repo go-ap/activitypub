@@ -385,8 +385,8 @@ func (c Collection) ItemsMatch(col ...Item) bool {
 	return true
 }
 
-// Equals
-func (c Collection) Equals(with Item) bool {
+// Equal
+func (c Collection) Equal(with Item) bool {
 	if IsNil(with) {
 		return false
 	}
@@ -396,7 +396,7 @@ func (c Collection) Equals(with Item) bool {
 	result := true
 	_ = OnCollection(with, func(w *Collection) error {
 		_ = OnObject(w, func(wo *Object) error {
-			if !wo.Equals(c) {
+			if !wo.Equal(c) {
 				result = false
 				return nil
 			}

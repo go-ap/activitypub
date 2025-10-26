@@ -509,12 +509,12 @@ func ToActor(it Item) (*Actor, error) {
 	}
 }
 
-// Equals verifies if our receiver Object is equals with the "with" Object
-func (a Actor) Equals(with Item) bool {
+// Equal verifies if our receiver Object is equals with the "with" Object
+func (a Actor) Equal(with Item) bool {
 	result := true
 	err := OnActor(with, func(w *Actor) error {
 		_ = OnObject(a, func(oa *Object) error {
-			result = oa.Equals(w)
+			result = oa.Equal(w)
 			return nil
 		})
 		if w.Inbox != nil {
@@ -536,7 +536,7 @@ func (a Actor) Equals(with Item) bool {
 			}
 		}
 		if w.PreferredUsername != nil {
-			if !a.PreferredUsername.Equals(w.PreferredUsername) {
+			if !a.PreferredUsername.Equal(w.PreferredUsername) {
 				result = false
 				return nil
 			}

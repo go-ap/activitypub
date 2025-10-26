@@ -292,12 +292,12 @@ func TravelNew(id ID) *Travel {
 	return &o
 }
 
-// Equals verifies if our receiver Object is equals with the "with" Object
-func (i IntransitiveActivity) Equals(with Item) bool {
+// Equal verifies if our receiver Object is equals with the "with" Object
+func (i IntransitiveActivity) Equal(with Item) bool {
 	result := true
 	err := OnIntransitiveActivity(with, func(w *IntransitiveActivity) error {
 		_ = OnObject(i, func(oa *Object) error {
-			result = oa.Equals(w)
+			result = oa.Equal(w)
 			return nil
 		})
 		if w.Actor != nil {

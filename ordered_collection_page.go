@@ -322,8 +322,8 @@ func (o OrderedCollectionPage) ItemsMatch(col ...Item) bool {
 	return true
 }
 
-// Equals
-func (o OrderedCollectionPage) Equals(with Item) bool {
+// Equal
+func (o OrderedCollectionPage) Equal(with Item) bool {
 	if IsNil(with) {
 		return false
 	}
@@ -332,9 +332,9 @@ func (o OrderedCollectionPage) Equals(with Item) bool {
 	}
 	result := true
 
-	OnOrderedCollectionPage(with, func(w *OrderedCollectionPage) error {
-		OnOrderedCollection(w, func(wo *OrderedCollection) error {
-			if !wo.Equals(o) {
+	_ = OnOrderedCollectionPage(with, func(w *OrderedCollectionPage) error {
+		_ = OnOrderedCollection(w, func(wo *OrderedCollection) error {
+			if !wo.Equal(o) {
 				result = false
 				return nil
 			}

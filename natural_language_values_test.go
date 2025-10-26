@@ -120,7 +120,7 @@ func TestLangRefValue_MarshalText(t *testing.T) {
 func TestNaturalLanguageValue_Get(t *testing.T) {
 	testVal := Content("test")
 	a := NaturalLanguageValues{NilLangRef: testVal}
-	if !a.Get(NilLangRef).Equals(testVal) {
+	if !a.Get(NilLangRef).Equal(testVal) {
 		t.Errorf("Invalid Get result. Expected %s received %s", testVal, a.Get(NilLangRef))
 	}
 }
@@ -138,7 +138,7 @@ func TestNaturalLanguageValue_Append(t *testing.T) {
 	if len(a) != 1 {
 		t.Errorf("Invalid append of one element to %T. Size %d != 1", a, len(a))
 	}
-	if !a.Get(langEn).Equals(valEn) {
+	if !a.Get(langEn).Equal(valEn) {
 		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langEn, valEn, a.Get(langEn))
 	}
 	langDe := MakeRef([]byte("de"))
@@ -148,10 +148,10 @@ func TestNaturalLanguageValue_Append(t *testing.T) {
 	if len(a) != 2 {
 		t.Errorf("Invalid append of one element to %T. Size %d != 2", a, len(a))
 	}
-	if !a.Get(langEn).Equals(valEn) {
+	if !a.Get(langEn).Equal(valEn) {
 		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langEn, valEn, a.Get(langEn))
 	}
-	if !a.Get(langDe).Equals(valDe) {
+	if !a.Get(langDe).Equal(valDe) {
 		t.Errorf("Invalid append of one element to %T. Value of %q not equal to %q, but %q", a, langDe, valDe, a.Get(langDe))
 	}
 }
@@ -183,10 +183,10 @@ func TestNaturalLanguageValue_UnmarshalFullObjectJSON(t *testing.T) {
 			t.Errorf("Invalid json unmarshal for %T. Expected lang %q or %q, found %q", a, langEn, langDe, lang)
 		}
 
-		if lang == AmericanEnglish && !val.Equals(valEn) {
+		if lang == AmericanEnglish && !val.Equal(valEn) {
 			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valEn, val)
 		}
-		if lang == German && !val.Equals(valDe) {
+		if lang == German && !val.Equal(valDe) {
 			t.Errorf("Invalid json unmarshal for %T. Expected value %q, found %q", a, valDe, val)
 		}
 	}
@@ -373,7 +373,7 @@ func TestNaturalLanguageValues_UnmarshalJSON(t *testing.T) {
 			t.Errorf("Invalid number of elements %d, expected %d", n.Count(), 1)
 		}
 		l := n.First()
-		if !l.Equals(Content("ana are mere\n")) {
+		if !l.Equal(Content("ana are mere\n")) {
 			t.Errorf("Invalid %T value %q, expected %q", l, l, "ana are mere\n")
 		}
 	}
@@ -394,7 +394,7 @@ func TestNaturalLanguageValues_UnmarshalJSON(t *testing.T) {
 			t.Errorf("Invalid number of elements %d, expected %d", n.Count(), 1)
 		}
 		l := n.First()
-		if !l.Equals(Content("ana are mere\n")) {
+		if !l.Equal(Content("ana are mere\n")) {
 			t.Errorf("Invalid %T value %q, expected %q", l, l, "ana are mere\n")
 		}
 	}
@@ -465,8 +465,8 @@ func TestNaturalLanguageValues_Equals(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.n.Equals(tt.args.with); got != tt.want {
-				t.Errorf("Equals() = %v, want %v", got, tt.want)
+			if got := tt.n.Equal(tt.args.with); got != tt.want {
+				t.Errorf("Equal() = %v, want %v", got, tt.want)
 			}
 		})
 	}

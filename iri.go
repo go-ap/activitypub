@@ -315,7 +315,7 @@ func (i IRIs) Contains(r Item) bool {
 		return false
 	}
 	for _, iri := range i {
-		if r.GetLink().Equals(iri, false) {
+		if r.GetLink().Equal(iri, false) {
 			return true
 		}
 	}
@@ -398,8 +398,8 @@ func irisEqual(i1, i2 IRI, checkScheme bool) bool {
 	return true
 }
 
-// Equals verifies if our receiver IRI is equals with the "with" IRI
-func (i IRI) Equals(with IRI, checkScheme bool) bool {
+// Equal verifies if our receiver IRI is equals with the "with" IRI
+func (i IRI) Equal(with IRI, checkScheme bool) bool {
 	is := stripFragment(string(i))
 	ws := stripFragment(string(with))
 	if !checkScheme {

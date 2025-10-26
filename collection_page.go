@@ -365,8 +365,8 @@ func (c CollectionPage) ItemsMatch(col ...Item) bool {
 	return true
 }
 
-// Equals
-func (c CollectionPage) Equals(with Item) bool {
+// Equal
+func (c CollectionPage) Equal(with Item) bool {
 	if IsNil(with) {
 		return false
 	}
@@ -374,9 +374,9 @@ func (c CollectionPage) Equals(with Item) bool {
 		return false
 	}
 	result := true
-	OnCollectionPage(with, func(w *CollectionPage) error {
-		OnCollection(w, func(wo *Collection) error {
-			if !wo.Equals(c) {
+	_ = OnCollectionPage(with, func(w *CollectionPage) error {
+		_ = OnCollection(w, func(wo *Collection) error {
+			if !wo.Equal(c) {
 				result = false
 				return nil
 			}

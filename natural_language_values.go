@@ -533,7 +533,7 @@ func (l *LangRefValue) UnmarshalText(data []byte) error {
 func (l LangRefValue) MarshalJSON() ([]byte, error) {
 	buf := bytes.Buffer{}
 	if l.Ref != NilLangRef && l.Ref.Valid() {
-		if l.Value.Equals(Content("")) {
+		if l.Value.Equal(Content("")) {
 			return nil, nil
 		}
 		stringBytes(&buf, []byte(l.Ref.String()), false)
@@ -545,7 +545,7 @@ func (l LangRefValue) MarshalJSON() ([]byte, error) {
 
 // MarshalText serializes the LangRefValue into JSON
 func (l LangRefValue) MarshalText() ([]byte, error) {
-	if l.Ref != NilLangRef && l.Value.Equals(Content("")) {
+	if l.Ref != NilLangRef && l.Value.Equal(Content("")) {
 		return nil, nil
 	}
 	buf := bytes.Buffer{}
@@ -593,8 +593,8 @@ func (l *LangRefValue) GobDecode(data []byte) error {
 	return nil
 }
 
-func (l LangRefValue) Equals(other LangRefValue) bool {
-	return l.Ref == other.Ref && l.Value.Equals(other.Value)
+func (l LangRefValue) Equal(other LangRefValue) bool {
+	return l.Ref == other.Ref && l.Value.Equal(other.Value)
 }
 
 func (c *Content) UnmarshalJSON(data []byte) error {
@@ -645,7 +645,7 @@ func (c Content) String() string {
 	return string(c)
 }
 
-func (c Content) Equals(other Content) bool {
+func (c Content) Equal(other Content) bool {
 	return bytes.Equal(c, other)
 }
 
@@ -751,8 +751,8 @@ func (n *NaturalLanguageValues) GobDecode(data []byte) error {
 	return nil
 }
 
-// Equals
-func (n NaturalLanguageValues) Equals(with NaturalLanguageValues) bool {
+// Equal
+func (n NaturalLanguageValues) Equal(with NaturalLanguageValues) bool {
 	if n.Count() != with.Count() {
 		return false
 	}
@@ -762,7 +762,7 @@ func (n NaturalLanguageValues) Equals(with NaturalLanguageValues) bool {
 		if !ok {
 			return false
 		}
-		if nv.Equals(wv) {
+		if nv.Equal(wv) {
 			continue
 		}
 		return false

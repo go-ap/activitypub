@@ -130,7 +130,7 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 	return jsonLoadToLink(val, l)
 }
 
-func (l *Link) Equals(other Item) bool {
+func (l *Link) Equal(other Item) bool {
 	if l == nil {
 		return IsNil(other)
 	}
@@ -138,7 +138,7 @@ func (l *Link) Equals(other Item) bool {
 	if err != nil {
 		return false
 	}
-	if !l.ID.Equals(otherLink.ID, true) {
+	if !l.ID.Equal(otherLink.ID, true) {
 		return false
 	}
 	if l.Type != otherLink.Type {
@@ -147,13 +147,13 @@ func (l *Link) Equals(other Item) bool {
 	if l.HrefLang != otherLink.HrefLang {
 		return false
 	}
-	if !l.Href.Equals(otherLink.Href, true) {
+	if !l.Href.Equal(otherLink.Href, true) {
 		return false
 	}
 	if l.Rel != otherLink.Rel {
 		return false
 	}
-	if !l.Name.Equals(otherLink.Name) {
+	if !l.Name.Equal(otherLink.Name) {
 		return false
 	}
 	if l.Height != otherLink.Height {

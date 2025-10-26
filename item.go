@@ -46,57 +46,57 @@ func ItemsEqual(it, with Item) bool {
 	if IsIRI(with) || IsIRI(it) {
 		// NOTE(marius): I'm not sure this logic is sound:
 		// if only one item is an IRI it should not be equal to the other even if it has the same ID
-		result = it.GetLink().Equals(with.GetLink(), false)
+		result = it.GetLink().Equal(with.GetLink(), false)
 	} else if IsItemCollection(it) {
 		if !IsItemCollection(with) {
 			return false
 		}
 		_ = OnItemCollection(it, func(c *ItemCollection) error {
-			result = c.Equals(with)
+			result = c.Equal(with)
 			return nil
 		})
 	} else if IsLink(it) {
 		_ = OnLink(it, func(l *Link) error {
-			result = l.Equals(with)
+			result = l.Equal(with)
 			return nil
 		})
 	} else if IsObject(it) {
 		_ = OnObject(it, func(i *Object) error {
-			result = i.Equals(with)
+			result = i.Equal(with)
 			return nil
 		})
 		if ActivityTypes.Contains(with.GetType()) {
 			_ = OnActivity(it, func(i *Activity) error {
-				result = i.Equals(with)
+				result = i.Equal(with)
 				return nil
 			})
 		} else if ActorTypes.Contains(with.GetType()) {
 			_ = OnActor(it, func(i *Actor) error {
-				result = i.Equals(with)
+				result = i.Equal(with)
 				return nil
 			})
 		} else if it.IsCollection() {
 			if it.GetType() == CollectionType {
 				_ = OnCollection(it, func(c *Collection) error {
-					result = c.Equals(with)
+					result = c.Equal(with)
 					return nil
 				})
 			}
 			if it.GetType() == OrderedCollectionType {
 				_ = OnOrderedCollection(it, func(c *OrderedCollection) error {
-					result = c.Equals(with)
+					result = c.Equal(with)
 					return nil
 				})
 			}
 			if it.GetType() == CollectionPageType {
 				_ = OnCollectionPage(it, func(c *CollectionPage) error {
-					result = c.Equals(with)
+					result = c.Equal(with)
 					return nil
 				})
 			}
 			if it.GetType() == OrderedCollectionPageType {
 				_ = OnOrderedCollectionPage(it, func(c *OrderedCollectionPage) error {
-					result = c.Equals(with)
+					result = c.Equal(with)
 					return nil
 				})
 			}

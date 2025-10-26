@@ -820,36 +820,36 @@ func (s Source) GobEncode() ([]byte, error) {
 	return bb.Bytes(), nil
 }
 
-// Equals verifies if our receiver Object is equals with the "with" Object
-func (o Object) Equals(with Item) bool {
+// Equal verifies if our receiver Object is equals with the "with" Object
+func (o Object) Equal(with Item) bool {
 	if IsItemCollection(with) {
 		return false
 	}
-	if withID := with.GetID(); !o.ID.Equals(withID, true) {
+	if withID := with.GetID(); !o.ID.Equal(withID, true) {
 		return false
 	}
 	if withType := with.GetType(); !strings.EqualFold(string(o.Type), string(withType)) {
 		return false
 	}
-	if with.IsLink() && !with.GetLink().Equals(o.GetLink(), false) {
+	if with.IsLink() && !with.GetLink().Equal(o.GetLink(), false) {
 		return false
 	}
 	result := true
 	err := OnObject(with, func(w *Object) error {
 		if len(w.Name) > 0 {
-			if !w.Name.Equals(o.Name) {
+			if !w.Name.Equal(o.Name) {
 				result = false
 				return nil
 			}
 		}
 		if len(w.Summary) > 0 {
-			if !w.Summary.Equals(o.Summary) {
+			if !w.Summary.Equal(o.Summary) {
 				result = false
 				return nil
 			}
 		}
 		if len(w.Content) > 0 {
-			if !w.Content.Equals(o.Content) {
+			if !w.Content.Equal(o.Content) {
 				result = false
 				return nil
 			}
@@ -931,7 +931,7 @@ func (o Object) Equals(with Item) bool {
 				result = false
 				return nil
 			}
-			if !w.URL.GetLink().Equals(o.URL.GetLink(), false) {
+			if !w.URL.GetLink().Equal(o.URL.GetLink(), false) {
 				result = false
 				return nil
 			}

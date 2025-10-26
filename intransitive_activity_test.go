@@ -383,8 +383,8 @@ func TestIntransitiveActivity_Equals(t *testing.T) {
 				Origin:       tt.fields.Origin,
 				Instrument:   tt.fields.Instrument,
 			}
-			if got := a.Equals(tt.arg); got != tt.want {
-				t.Errorf("Equals() = %v, want %v", got, tt.want)
+			if got := a.Equal(tt.arg); got != tt.want {
+				t.Errorf("Equal() = %v, want %v", got, tt.want)
 			}
 		})
 	}

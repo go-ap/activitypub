@@ -391,8 +391,8 @@ func (o OrderedCollection) ItemsMatch(col ...Item) bool {
 	return true
 }
 
-// Equals
-func (o OrderedCollection) Equals(with Item) bool {
+// Equal
+func (o OrderedCollection) Equal(with Item) bool {
 	if IsNil(with) {
 		return false
 	}
@@ -402,14 +402,14 @@ func (o OrderedCollection) Equals(with Item) bool {
 	result := true
 	_ = OnOrderedCollection(with, func(w *OrderedCollection) error {
 		_ = OnCollection(w, func(wo *Collection) error {
-			if !wo.Equals(o) {
+			if !wo.Equal(o) {
 				result = false
 				return nil
 			}
 			return nil
 		})
 		if w.OrderedItems != nil {
-			if !o.OrderedItems.Equals(w.OrderedItems) {
+			if !o.OrderedItems.Equal(w.OrderedItems) {
 				result = false
 				return nil
 			}

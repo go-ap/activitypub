@@ -418,7 +418,7 @@ func removeFromCollection(col ItemCollection, items ...Item) ItemCollection {
 	for _, ob := range col {
 		found := false
 		for _, it := range items {
-			if ob.GetID().Equals(it.GetID(), false) {
+			if ob.GetID().Equal(it.GetID(), false) {
 				found = true
 				break
 			}
@@ -925,12 +925,12 @@ func (a *Activity) GobDecode(data []byte) error {
 	return unmapActivityProperties(mm, a)
 }
 
-// Equals verifies if our receiver Object is equals with the "with" Object
-func (a Activity) Equals(with Item) bool {
+// Equal verifies if our receiver Object is equals with the "with" Object
+func (a Activity) Equal(with Item) bool {
 	result := true
 	err := OnActivity(with, func(w *Activity) error {
 		_ = OnIntransitiveActivity(a, func(oi *IntransitiveActivity) error {
-			result = oi.Equals(w)
+			result = oi.Equal(w)
 			return nil
 		})
 		if w.Object != nil {

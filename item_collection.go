@@ -148,7 +148,7 @@ func ItemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
 				continue
 			}
 			for _, it := range rec {
-				if testIt.Equals(it.GetID(), false) {
+				if testIt.Equal(it.GetID(), false) {
 					// mark the element for removal
 					toRemove = append(toRemove, i)
 					save = false
@@ -234,8 +234,8 @@ func (i ItemCollection) ItemsMatch(col ...Item) bool {
 	return true
 }
 
-// Equals
-func (i ItemCollection) Equals(with Item) bool {
+// Equal
+func (i ItemCollection) Equal(with Item) bool {
 	if IsNil(with) {
 		return IsNil(i) || len(i) == 0
 	}
