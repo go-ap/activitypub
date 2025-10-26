@@ -130,6 +130,44 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 	return jsonLoadToLink(val, l)
 }
 
+func (l *Link) Equals(other Item) bool {
+	if l == nil {
+		return IsNil(other)
+	}
+	otherLink, err := ToLink(other)
+	if err != nil {
+		return false
+	}
+	if !l.ID.Equals(otherLink.ID, true) {
+		return false
+	}
+	if l.Type != otherLink.Type {
+		return false
+	}
+	if l.HrefLang != otherLink.HrefLang {
+		return false
+	}
+	if !l.Href.Equals(otherLink.Href, true) {
+		return false
+	}
+	if l.Rel != otherLink.Rel {
+		return false
+	}
+	if !l.Name.Equals(otherLink.Name) {
+		return false
+	}
+	if l.Height != otherLink.Height {
+		return false
+	}
+	if l.Width != otherLink.Width {
+		return false
+	}
+	if !ItemsEqual(l.Preview, otherLink.Preview) {
+		return false
+	}
+	return true
+}
+
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (l *Link) UnmarshalBinary(data []byte) error {
 	return l.GobDecode(data)

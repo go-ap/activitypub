@@ -55,6 +55,11 @@ func ItemsEqual(it, with Item) bool {
 			result = c.Equals(with)
 			return nil
 		})
+	} else if IsLink(it) {
+		_ = OnLink(it, func(l *Link) error {
+			result = l.Equals(with)
+			return nil
+		})
 	} else if IsObject(it) {
 		_ = OnObject(it, func(i *Object) error {
 			result = i.Equals(with)

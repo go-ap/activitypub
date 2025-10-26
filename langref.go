@@ -22,6 +22,11 @@ func (l LangRef) Valid() bool {
 	return len(l.String()) > 0 && l != LangRef(language.Und)
 }
 
+// Equal
+func (l LangRef) Equal(other LangRef) bool {
+	return l.Valid() && other.Valid() && l == other
+}
+
 // MakeRef
 func MakeRef(raw []byte) LangRef {
 	return LangRef(language.Make(string(raw)))
