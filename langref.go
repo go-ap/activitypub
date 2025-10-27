@@ -22,7 +22,7 @@ func (l LangRef) Valid() bool {
 	return len(l.String()) > 0 && l != LangRef(language.Und)
 }
 
-// Equal
+// Equal checks if the language ref is equal to the "other"
 func (l LangRef) Equal(other LangRef) bool {
 	return l.Valid() && other.Valid() && l == other
 }

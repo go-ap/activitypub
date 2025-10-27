@@ -148,7 +148,7 @@ func ItemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
 				continue
 			}
 			for _, it := range rec {
-				if testIt.Equal(it.GetID(), false) {
+				if testIt.Equal(it.GetID()) {
 					// mark the element for removal
 					toRemove = append(toRemove, i)
 					save = false
@@ -234,10 +234,10 @@ func (i ItemCollection) ItemsMatch(col ...Item) bool {
 	return true
 }
 
-// Equal
-func (i ItemCollection) Equal(with Item) bool {
+// Equals verifies if our receiver ItemCollection is equals with the "with" Item
+func (i *ItemCollection) Equals(with Item) bool {
 	if IsNil(with) {
-		return IsNil(i) || len(i) == 0
+		return i == nil
 	}
 	if !with.IsCollection() {
 		return false
@@ -245,20 +245,24 @@ func (i ItemCollection) Equal(with Item) bool {
 	if with.GetType() != CollectionOfItems {
 		return false
 	}
+	itemCollection, err := ToItemCollection(with)
+	if err != nil {
+		return false
+	}
+	return i.equal(*itemCollection)
+}
+
+// equal verifies if our receiver ItemCollection is equals with the "with" ItemCollection
+func (i ItemCollection) equal(with ItemCollection) bool {
+	if len(i) != len(with) {
+		return false
+	}
 	result := true
-	_ = OnItemCollection(with, func(w *ItemCollection) error {
-		if w.Count() != i.Count() {
+	for _, it := range i {
+		if !with.Contains(it.GetLink()) {
 			result = false
-			return nil
 		}
-		for _, it := range i {
-			if !w.Contains(it.GetLink()) {
-				result = false
-				return nil
-			}
-		}
-		return nil
-	})
+	}
 	return result
 }
 

@@ -1096,7 +1096,7 @@ func TestObject_Equals(t *testing.T) {
 				Shares:       tt.fields.Shares,
 				Source:       tt.fields.Source,
 			}
-			if got := o.Equal(tt.arg); got != tt.want {
+			if got := o.Equals(tt.arg); got != tt.want {
 				t.Errorf("Equal() = %v, want %v", got, tt.want)
 			}
 		})

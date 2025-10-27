@@ -130,7 +130,8 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 	return jsonLoadToLink(val, l)
 }
 
-func (l *Link) Equal(other Item) bool {
+// Equals verifies if our receiver Link is equals with the "with" Item
+func (l *Link) Equals(other Item) bool {
 	if l == nil {
 		return IsNil(other)
 	}
@@ -138,31 +139,36 @@ func (l *Link) Equal(other Item) bool {
 	if err != nil {
 		return false
 	}
-	if !l.ID.Equal(otherLink.ID, true) {
+	return l.equal(*otherLink)
+}
+
+// equal verifies if our receiver Link is equals with the "with" Link
+func (l Link) equal(with Link) bool {
+	if !l.ID.Equal(with.ID) {
 		return false
 	}
-	if l.Type != otherLink.Type {
+	if l.Type != with.Type {
 		return false
 	}
-	if l.HrefLang != otherLink.HrefLang {
+	if l.HrefLang != with.HrefLang {
 		return false
 	}
-	if !l.Href.Equal(otherLink.Href, true) {
+	if !l.Href.Equal(with.Href) {
 		return false
 	}
-	if l.Rel != otherLink.Rel {
+	if l.Rel != with.Rel {
 		return false
 	}
-	if !l.Name.Equal(otherLink.Name) {
+	if !l.Name.Equal(with.Name) {
 		return false
 	}
-	if l.Height != otherLink.Height {
+	if l.Height != with.Height {
 		return false
 	}
-	if l.Width != otherLink.Width {
+	if l.Width != with.Width {
 		return false
 	}
-	if !ItemsEqual(l.Preview, otherLink.Preview) {
+	if !ItemsEqual(l.Preview, with.Preview) {
 		return false
 	}
 	return true

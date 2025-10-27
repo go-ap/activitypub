@@ -563,7 +563,7 @@ func TestActor_Equals(t *testing.T) {
 				Streams:           tt.fields.Streams,
 				PublicKey:         tt.fields.PublicKey,
 			}
-			if got := a.Equal(tt.arg); got != tt.want {
+			if got := a.Equals(tt.arg); got != tt.want {
 				t.Errorf("Equal() = %v, want %v", got, tt.want)
 			}
 		})

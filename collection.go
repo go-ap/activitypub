@@ -385,55 +385,56 @@ func (c Collection) ItemsMatch(col ...Item) bool {
 	return true
 }
 
-// Equal
-func (c Collection) Equal(with Item) bool {
+// Equals verifies if our receiver Collection is equals with the "with" Item
+func (c *Collection) Equals(with Item) bool {
 	if IsNil(with) {
-		return false
+		return c == nil
 	}
 	if !with.IsCollection() {
 		return false
 	}
+	withCollection, err := ToCollection(with)
+	if err != nil {
+		return false
+	}
+	return c.equal(*withCollection)
+}
+
+// equal verifies if our receiver Collection is equals with the "with" Collection
+func (c Collection) equal(with Collection) bool {
 	result := true
-	_ = OnCollection(with, func(w *Collection) error {
-		_ = OnObject(w, func(wo *Object) error {
-			if !wo.Equal(c) {
-				result = false
-				return nil
-			}
+	_ = OnObject(with, func(wo *Object) error {
+		if !wo.Equals(c) {
+			result = false
 			return nil
-		})
-		if w.TotalItems > 0 {
-			if w.TotalItems != c.TotalItems {
-				result = false
-				return nil
-			}
-		}
-		if w.Current != nil {
-			if !ItemsEqual(c.Current, w.Current) {
-				result = false
-				return nil
-			}
-		}
-		if w.First != nil {
-			if !ItemsEqual(c.First, w.First) {
-				result = false
-				return nil
-			}
-		}
-		if w.Last != nil {
-			if !ItemsEqual(c.Last, w.Last) {
-				result = false
-				return nil
-			}
-		}
-		if w.Items != nil {
-			if !ItemsEqual(c.Items, w.Items) {
-				result = false
-				return nil
-			}
 		}
 		return nil
 	})
+	if with.TotalItems > 0 {
+		if with.TotalItems != c.TotalItems {
+			result = false
+		}
+	}
+	if with.Current != nil {
+		if !ItemsEqual(c.Current, with.Current) {
+			result = false
+		}
+	}
+	if with.First != nil {
+		if !ItemsEqual(c.First, with.First) {
+			result = false
+		}
+	}
+	if with.Last != nil {
+		if !ItemsEqual(c.Last, with.Last) {
+			result = false
+		}
+	}
+	if with.Items != nil {
+		if !ItemsEqual(c.Items, with.Items) {
+			result = false
+		}
+	}
 	return result
 }
 

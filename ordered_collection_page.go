@@ -322,62 +322,61 @@ func (o OrderedCollectionPage) ItemsMatch(col ...Item) bool {
 	return true
 }
 
-// Equal
-func (o OrderedCollectionPage) Equal(with Item) bool {
+// Equals verifies if our receiver OrderedCollectionPage is equals with the "with" Item
+func (o *OrderedCollectionPage) Equals(with Item) bool {
 	if IsNil(with) {
-		return false
+		return o == nil
 	}
 	if !with.IsCollection() {
 		return false
 	}
+	withPage, err := ToOrderedCollectionPage(with)
+	if err != nil {
+		return false
+	}
+	return o.equal(*withPage)
+}
+
+// equal verifies if our receiver OrderedCollectionPage is equals with the "with" OrderedCollectionPage
+func (o OrderedCollectionPage) equal(with OrderedCollectionPage) bool {
 	result := true
 
-	_ = OnOrderedCollectionPage(with, func(w *OrderedCollectionPage) error {
-		_ = OnOrderedCollection(w, func(wo *OrderedCollection) error {
-			if !wo.Equal(o) {
-				result = false
-				return nil
-			}
-			return nil
-		})
-		if w.PartOf != nil {
-			if !ItemsEqual(o.PartOf, w.PartOf) {
-				result = false
-				return nil
-			}
-		}
-		if w.Current != nil {
-			if !ItemsEqual(o.Current, w.Current) {
-				result = false
-				return nil
-			}
-		}
-		if w.First != nil {
-			if !ItemsEqual(o.First, w.First) {
-				result = false
-				return nil
-			}
-		}
-		if w.Last != nil {
-			if !ItemsEqual(o.Last, w.Last) {
-				result = false
-				return nil
-			}
-		}
-		if w.Next != nil {
-			if !ItemsEqual(o.Next, w.Next) {
-				result = false
-				return nil
-			}
-		}
-		if w.Prev != nil {
-			if !ItemsEqual(o.Prev, w.Prev) {
-				result = false
-				return nil
-			}
+	_ = OnOrderedCollection(with, func(wo *OrderedCollection) error {
+		if !wo.Equals(o) {
+			result = false
 		}
 		return nil
 	})
+	if with.PartOf != nil {
+		if !ItemsEqual(o.PartOf, with.PartOf) {
+			result = false
+		}
+	}
+	if with.Current != nil {
+		if !ItemsEqual(o.Current, with.Current) {
+			result = false
+		}
+	}
+	if with.First != nil {
+		if !ItemsEqual(o.First, with.First) {
+			result = false
+		}
+	}
+	if with.Last != nil {
+		if !ItemsEqual(o.Last, with.Last) {
+			result = false
+		}
+	}
+	if with.Next != nil {
+		if !ItemsEqual(o.Next, with.Next) {
+			result = false
+		}
+	}
+	if with.Prev != nil {
+		if !ItemsEqual(o.Prev, with.Prev) {
+			result = false
+		}
+	}
 	return result
 }
 

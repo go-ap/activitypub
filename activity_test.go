@@ -1114,7 +1114,10 @@ func TestActivity_MarshalJSON(t *testing.T) {
 					French:  Content("teste content"),
 				},
 			},
-			want:    [][]byte{[]byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`)},
+			want: [][]byte{
+				[]byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),
+				[]byte(`{"contentMap":{"fr":"teste content","en":"test content"}}`),
+			},
 			wantErr: false,
 		},
 		{
@@ -1606,7 +1609,7 @@ func TestActivity_Equals(t *testing.T) {
 				Instrument:   tt.fields.Instrument,
 				Object:       tt.fields.Object,
 			}
-			if got := a.Equal(tt.arg); got != tt.want {
+			if got := a.Equals(tt.arg); got != tt.want {
 				t.Errorf("Equal() = %v, want %v", got, tt.want)
 			}
 		})

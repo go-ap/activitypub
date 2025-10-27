@@ -391,31 +391,56 @@ func (o OrderedCollection) ItemsMatch(col ...Item) bool {
 	return true
 }
 
-// Equal
-func (o OrderedCollection) Equal(with Item) bool {
+// Equals verifies if our receiver OrderedCollection is equals with the "with" Item
+func (o *OrderedCollection) Equals(with Item) bool {
 	if IsNil(with) {
-		return false
+		return o == nil
 	}
 	if !with.IsCollection() {
 		return false
 	}
+	withCollection, err := ToOrderedCollection(with)
+	if err != nil {
+		return false
+	}
+	return o.equal(*withCollection)
+}
+
+// equal verifies if our receiver OrderedCollection is equals with the "with" OrderedCollection
+func (o OrderedCollection) equal(with OrderedCollection) bool {
 	result := true
-	_ = OnOrderedCollection(with, func(w *OrderedCollection) error {
-		_ = OnCollection(w, func(wo *Collection) error {
-			if !wo.Equal(o) {
-				result = false
-				return nil
-			}
+	_ = OnObject(with, func(wo *Object) error {
+		if !wo.Equals(o) {
+			result = false
 			return nil
-		})
-		if w.OrderedItems != nil {
-			if !o.OrderedItems.Equal(w.OrderedItems) {
-				result = false
-				return nil
-			}
 		}
 		return nil
 	})
+	if with.TotalItems > 0 {
+		if with.TotalItems != o.TotalItems {
+			result = false
+		}
+	}
+	if with.Current != nil {
+		if !ItemsEqual(o.Current, with.Current) {
+			result = false
+		}
+	}
+	if with.First != nil {
+		if !ItemsEqual(o.First, with.First) {
+			result = false
+		}
+	}
+	if with.Last != nil {
+		if !ItemsEqual(o.Last, with.Last) {
+			result = false
+		}
+	}
+	if with.OrderedItems != nil {
+		if !ItemsEqual(o.OrderedItems, with.OrderedItems) {
+			result = false
+		}
+	}
 	return result
 }
 

@@ -179,7 +179,7 @@ func CopyItemProperties(to, from Item) (Item, error) {
 	if from == nil {
 		return to, fmt.Errorf("nil object for update")
 	}
-	if !to.GetLink().Equal(from.GetLink(), false) {
+	if !to.GetLink().Equal(from.GetLink()) {
 		return to, fmt.Errorf("object IDs don't match")
 	}
 	return copyAllItemProperties(to, from)

@@ -292,48 +292,50 @@ func TravelNew(id ID) *Travel {
 	return &o
 }
 
-// Equal verifies if our receiver Object is equals with the "with" Object
-func (i IntransitiveActivity) Equal(with Item) bool {
+// Equal verifies if our receiver IntransitiveActivity is equals with the "with" Item
+func (i *IntransitiveActivity) Equals(with Item) bool {
+	if IsNil(with) {
+		return i == nil
+	}
+	withActivity, err := ToIntransitiveActivity(with)
+	if err != nil {
+		return false
+	}
+	return i.equal(*withActivity)
+}
+
+// equal verifies if our receiver IntransitiveActivity is equals with the "with" IntransitiveActivity
+func (i IntransitiveActivity) equal(with IntransitiveActivity) bool {
 	result := true
-	err := OnIntransitiveActivity(with, func(w *IntransitiveActivity) error {
-		_ = OnObject(i, func(oa *Object) error {
-			result = oa.Equal(w)
-			return nil
-		})
-		if w.Actor != nil {
-			if !ItemsEqual(i.Actor, w.Actor) {
-				result = false
-				return nil
-			}
-		}
-		if w.Target != nil {
-			if !ItemsEqual(i.Target, w.Target) {
-				result = false
-				return nil
-			}
-		}
-		if w.Result != nil {
-			if !ItemsEqual(i.Result, w.Result) {
-				result = false
-				return nil
-			}
-		}
-		if w.Origin != nil {
-			if !ItemsEqual(i.Origin, w.Origin) {
-				result = false
-				return nil
-			}
-		}
-		if w.Instrument != nil {
-			if !ItemsEqual(i.Instrument, w.Instrument) {
-				result = false
-				return nil
-			}
-		}
+
+	_ = OnObject(i, func(oa *Object) error {
+		result = oa.Equals(with)
 		return nil
 	})
-	if err != nil {
-		result = false
+	if with.Actor != nil {
+		if !ItemsEqual(i.Actor, with.Actor) {
+			result = false
+		}
+	}
+	if with.Target != nil {
+		if !ItemsEqual(i.Target, with.Target) {
+			result = false
+		}
+	}
+	if with.Result != nil {
+		if !ItemsEqual(i.Result, with.Result) {
+			result = false
+		}
+	}
+	if with.Origin != nil {
+		if !ItemsEqual(i.Origin, with.Origin) {
+			result = false
+		}
+	}
+	if with.Instrument != nil {
+		if !ItemsEqual(i.Instrument, with.Instrument) {
+			result = false
+		}
 	}
 	return result
 }

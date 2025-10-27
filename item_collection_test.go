@@ -302,7 +302,7 @@ func TestItemCollectionDeduplication(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ItemCollectionDeduplication(tt.args...); !tt.want.Equal(got) {
+			if got := ItemCollectionDeduplication(tt.args...); !tt.want.Equals(got) {
 				t.Errorf("ItemCollectionDeduplication() = %v, want %v", got, tt.want)
 			}
 			if len(tt.remaining) != len(tt.args) {
@@ -310,7 +310,7 @@ func TestItemCollectionDeduplication(t *testing.T) {
 			}
 			for i, remArg := range tt.remaining {
 				arg := tt.args[i]
-				if !remArg.Equal(arg) {
+				if !remArg.Equals(arg) {
 					t.Errorf("ItemCollectionDeduplication() argument at pos %d = %v, want %v", i, arg, remArg)
 				}
 			}

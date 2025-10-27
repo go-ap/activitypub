@@ -397,7 +397,7 @@ func TestIRI_Equals(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.i.Equal(tt.args.with, tt.args.check); got != tt.want {
+			if got := tt.i.Equals(tt.args.with, tt.args.check); got != tt.want {
 				t.Errorf("Equal() = %v, want %v", got, tt.want)
 			}
 		})

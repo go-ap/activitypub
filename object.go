@@ -820,192 +820,171 @@ func (s Source) GobEncode() ([]byte, error) {
 	return bb.Bytes(), nil
 }
 
-// Equal verifies if our receiver Object is equals with the "with" Object
-func (o Object) Equal(with Item) bool {
+// Equals verifies if our receiver Object is equals with the "with" Item
+func (o *Object) Equals(with Item) bool {
+	if IsNil(with) {
+		return o == nil
+	}
 	if IsItemCollection(with) {
 		return false
 	}
-	if withID := with.GetID(); !o.ID.Equal(withID, true) {
+	withObject, err := ToObject(with)
+	if err != nil {
+		return false
+	}
+	if withID := with.GetID(); !o.ID.Equal(withID) {
 		return false
 	}
 	if withType := with.GetType(); !strings.EqualFold(string(o.Type), string(withType)) {
 		return false
 	}
-	if with.IsLink() && !with.GetLink().Equal(o.GetLink(), false) {
+	if with.IsLink() && !with.GetLink().Equal(o.GetLink()) {
 		return false
 	}
+	return o.equal(withObject)
+}
+
+// equal verifies if our receiver Object is equals with the "with" Object
+func (o *Object) equal(with *Object) bool {
+	if with == nil {
+		return o == nil
+	}
 	result := true
-	err := OnObject(with, func(w *Object) error {
-		if len(w.Name) > 0 {
-			if !w.Name.Equal(o.Name) {
-				result = false
-				return nil
-			}
+
+	if len(with.Name) > 0 {
+		if !with.Name.Equal(o.Name) {
+			result = false
 		}
-		if len(w.Summary) > 0 {
-			if !w.Summary.Equal(o.Summary) {
-				result = false
-				return nil
-			}
+	}
+	if len(with.Summary) > 0 {
+		if !with.Summary.Equal(o.Summary) {
+			result = false
 		}
-		if len(w.Content) > 0 {
-			if !w.Content.Equal(o.Content) {
-				result = false
-				return nil
-			}
+	}
+	if len(with.Content) > 0 {
+		if !with.Content.Equal(o.Content) {
+			result = false
 		}
-		if w.Attachment != nil {
-			if !ItemsEqual(o.Attachment, w.Attachment) {
-				result = false
-				return nil
-			}
+	}
+	if with.Attachment != nil {
+		if !ItemsEqual(o.Attachment, with.Attachment) {
+			result = false
 		}
-		if w.AttributedTo != nil {
-			if !ItemsEqual(o.AttributedTo, w.AttributedTo) {
-				result = false
-				return nil
-			}
+	}
+	if with.AttributedTo != nil {
+		if !ItemsEqual(o.AttributedTo, with.AttributedTo) {
+			result = false
 		}
-		if w.Audience != nil {
-			if !ItemsEqual(o.Audience, w.Audience) {
-				result = false
-				return nil
-			}
+	}
+	if with.Audience != nil {
+		if !ItemsEqual(o.Audience, with.Audience) {
+			result = false
 		}
-		if w.Context != nil {
-			if !ItemsEqual(o.Context, w.Context) {
-				result = false
-				return nil
-			}
+	}
+	if with.Context != nil {
+		if !ItemsEqual(o.Context, with.Context) {
+			result = false
 		}
-		if w.Generator != nil {
-			if !ItemsEqual(o.Generator, w.Generator) {
-				result = false
-				return nil
-			}
+	}
+	if with.Generator != nil {
+		if !ItemsEqual(o.Generator, with.Generator) {
+			result = false
 		}
-		if w.Icon != nil {
-			if !ItemsEqual(o.Icon, w.Icon) {
-				result = false
-				return nil
-			}
+	}
+	if with.Icon != nil {
+		if !ItemsEqual(o.Icon, with.Icon) {
+			result = false
 		}
-		if w.Image != nil {
-			if !ItemsEqual(o.Image, w.Image) {
-				result = false
-				return nil
-			}
+	}
+	if with.Image != nil {
+		if !ItemsEqual(o.Image, with.Image) {
+			result = false
 		}
-		if w.InReplyTo != nil {
-			if !ItemsEqual(o.InReplyTo, w.InReplyTo) {
-				result = false
-				return nil
-			}
+	}
+	if with.InReplyTo != nil {
+		if !ItemsEqual(o.InReplyTo, with.InReplyTo) {
+			result = false
 		}
-		if w.Location != nil {
-			if !ItemsEqual(o.Location, w.Location) {
-				result = false
-				return nil
-			}
+	}
+	if with.Location != nil {
+		if !ItemsEqual(o.Location, with.Location) {
+			result = false
 		}
-		if w.Preview != nil {
-			if !ItemsEqual(o.Preview, w.Preview) {
-				result = false
-				return nil
-			}
+	}
+	if with.Preview != nil {
+		if !ItemsEqual(o.Preview, with.Preview) {
+			result = false
 		}
-		if w.Replies != nil {
-			if !ItemsEqual(o.Replies, w.Replies) {
-				result = false
-				return nil
-			}
+	}
+	if with.Replies != nil {
+		if !ItemsEqual(o.Replies, with.Replies) {
+			result = false
 		}
-		if w.Tag != nil {
-			if !ItemsEqual(o.Tag, w.Tag) {
-				result = false
-				return nil
-			}
+	}
+	if with.Tag != nil {
+		if !ItemsEqual(o.Tag, with.Tag) {
+			result = false
 		}
-		if w.URL != nil {
-			if o.URL == nil {
-				result = false
-				return nil
-			}
-			if !w.URL.GetLink().Equal(o.URL.GetLink(), false) {
-				result = false
-				return nil
-			}
+	}
+	if with.URL != nil {
+		if !ItemsEqual(o.URL, with.URL) {
+			result = false
 		}
-		if w.To != nil {
-			if !ItemsEqual(o.To, w.To) {
-				result = false
-				return nil
-			}
+	}
+	if with.To != nil {
+		if !ItemsEqual(o.To, with.To) {
+			result = false
 		}
-		if w.Bto != nil {
-			if !ItemsEqual(o.Bto, w.Bto) {
-				result = false
-				return nil
-			}
+	}
+	if with.Bto != nil {
+		if !ItemsEqual(o.Bto, with.Bto) {
+			result = false
 		}
-		if w.CC != nil {
-			if !ItemsEqual(o.CC, w.CC) {
-				result = false
-				return nil
-			}
+	}
+	if with.CC != nil {
+		if !ItemsEqual(o.CC, with.CC) {
+			result = false
 		}
-		if w.BCC != nil {
-			if !ItemsEqual(o.BCC, w.BCC) {
-				result = false
-				return nil
-			}
+	}
+	if with.BCC != nil {
+		if !ItemsEqual(o.BCC, with.BCC) {
+			result = false
 		}
-		if !w.Published.IsZero() {
-			if !w.Published.Equal(o.Published) {
-				result = false
-				return nil
-			}
+	}
+	if !with.Published.IsZero() {
+		if !with.Published.Equal(o.Published) {
+			result = false
 		}
-		if !w.Updated.IsZero() {
-			if !w.Updated.Equal(o.Updated) {
-				result = false
-				return nil
-			}
+	}
+	if !with.Updated.IsZero() {
+		if !with.Updated.Equal(o.Updated) {
+			result = false
 		}
-		if !w.StartTime.IsZero() {
-			if !w.StartTime.Equal(o.StartTime) {
-				result = false
-				return nil
-			}
+	}
+	if !with.StartTime.IsZero() {
+		if !with.StartTime.Equal(o.StartTime) {
+			result = false
 		}
-		if !w.EndTime.IsZero() {
-			if !w.EndTime.Equal(o.EndTime) {
-				result = false
-				return nil
-			}
+	}
+	if !with.EndTime.IsZero() {
+		if !with.EndTime.Equal(o.EndTime) {
+			result = false
 		}
-		if w.Duration != 0 {
-			if w.Duration != o.Duration {
-				result = false
-				return nil
-			}
+	}
+	if with.Duration != 0 {
+		if with.Duration != o.Duration {
+			result = false
 		}
-		if w.Likes != nil {
-			if !ItemsEqual(o.Likes, w.Likes) {
-				result = false
-				return nil
-			}
+	}
+	if with.Likes != nil {
+		if !ItemsEqual(o.Likes, with.Likes) {
+			result = false
 		}
-		if w.Shares != nil {
-			if !ItemsEqual(o.Shares, w.Shares) {
-				result = false
-				return nil
-			}
+	}
+	if with.Shares != nil {
+		if !ItemsEqual(o.Shares, with.Shares) {
+			result = false
 		}
-		return nil
-	})
-	if err != nil {
-		result = false
 	}
 	return result
 }

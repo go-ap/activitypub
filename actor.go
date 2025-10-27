@@ -509,42 +509,45 @@ func ToActor(it Item) (*Actor, error) {
 	}
 }
 
-// Equal verifies if our receiver Object is equals with the "with" Object
-func (a Actor) Equal(with Item) bool {
+// Equals verifies if our receiver Object is equals with the "with" Item
+func (a *Actor) Equals(with Item) bool {
+	if IsNil(with) {
+		return a == nil
+	}
+	withActor, err := ToActor(with)
+	if err != nil {
+		return false
+	}
+	return a.equal(*withActor)
+}
+
+// equal verifies if our receiver Object is equals with the "with" Object
+func (a Actor) equal(with Actor) bool {
 	result := true
-	err := OnActor(with, func(w *Actor) error {
-		_ = OnObject(a, func(oa *Object) error {
-			result = oa.Equal(w)
-			return nil
-		})
-		if w.Inbox != nil {
-			if !ItemsEqual(a.Inbox, w.Inbox) {
-				result = false
-				return nil
-			}
-		}
-		if w.Outbox != nil {
-			if !ItemsEqual(a.Outbox, w.Outbox) {
-				result = false
-				return nil
-			}
-		}
-		if w.Liked != nil {
-			if !ItemsEqual(a.Liked, w.Liked) {
-				result = false
-				return nil
-			}
-		}
-		if w.PreferredUsername != nil {
-			if !a.PreferredUsername.Equal(w.PreferredUsername) {
-				result = false
-				return nil
-			}
-		}
+
+	_ = OnObject(a, func(oa *Object) error {
+		result = oa.Equals(with)
 		return nil
 	})
-	if err != nil {
-		result = false
+	if with.Inbox != nil {
+		if !ItemsEqual(a.Inbox, with.Inbox) {
+			result = false
+		}
+	}
+	if with.Outbox != nil {
+		if !ItemsEqual(a.Outbox, with.Outbox) {
+			result = false
+		}
+	}
+	if with.Liked != nil {
+		if !ItemsEqual(a.Liked, with.Liked) {
+			result = false
+		}
+	}
+	if with.PreferredUsername != nil {
+		if !a.PreferredUsername.Equal(with.PreferredUsername) {
+			result = false
+		}
 	}
 	return result
 }
