@@ -3,7 +3,6 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
 	"fmt"
 	"io"
 	"net/url"
@@ -11,6 +10,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -83,7 +83,7 @@ func (i IRI) GetLink() IRI {
 // URL
 func (i IRI) URL() (*url.URL, error) {
 	if i == "" {
-		return nil, errors.New("empty IRI")
+		return nil, errors.Newf("empty IRI")
 	}
 	return url.Parse(string(i))
 }
@@ -279,12 +279,15 @@ func (i IRIs) IsCollection() bool {
 }
 
 // Append facilitates adding elements to the IRIs slices
-func (i *IRIs) Append(it ...Item) error {
-	for _, ob := range it {
-		if (*i).Contains(ob.GetLink()) {
+func (i *IRIs) Append(items ...Item) error {
+	for _, it := range items {
+		if IsNil(it) {
 			continue
 		}
-		*i = append(*i, ob.GetLink())
+		if (*i).Contains(it.GetLink()) {
+			continue
+		}
+		*i = append(*i, it.GetLink())
 	}
 	return nil
 }
