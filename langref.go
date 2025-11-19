@@ -24,7 +24,7 @@ func (l LangRef) Valid() bool {
 
 // Equal checks if the language ref is equal to the "other"
 func (l LangRef) Equal(other LangRef) bool {
-	return l.Valid() && other.Valid() && l == other
+	return (l.Valid() == other.Valid()) || l == other
 }
 
 // MakeRef
