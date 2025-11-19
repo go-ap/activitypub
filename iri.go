@@ -318,7 +318,7 @@ func (i IRIs) Contains(r Item) bool {
 		return false
 	}
 	for _, iri := range i {
-		if r.GetLink().Equal(iri) {
+		if r.GetLink().Equals(iri, false) {
 			return true
 		}
 	}
