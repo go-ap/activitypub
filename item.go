@@ -107,14 +107,11 @@ func ItemsEqual(it, with Item) bool {
 
 // IsItemCollection returns if the current Item interface holds a Collection
 func IsItemCollection(it LinkOrIRI) bool {
-	if it == nil {
-		return false
+	if _, ok := it.(ItemCollection); ok {
+		return ok
 	}
-	if col, ok := it.(ItemCollection); ok {
-		return col != nil
-	}
-	if col, ok := it.(*ItemCollection); ok {
-		return col != nil
+	if _, ok := it.(*ItemCollection); ok {
+		return ok
 	}
 	return IsIRIs(it)
 }

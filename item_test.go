@@ -501,7 +501,7 @@ func TestIsItemCollection(t *testing.T) {
 		{
 			name: "nil item collection",
 			it:   ItemCollection(nil),
-			want: false,
+			want: true,
 		},
 		{
 			name: "item collection with nil item",

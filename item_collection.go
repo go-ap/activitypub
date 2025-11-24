@@ -40,6 +40,9 @@ func (i ItemCollection) IRIs() IRIs {
 
 	iris := make(IRIs, 0, len(i))
 	for _, it := range i {
+		if IsNil(it) {
+			continue
+		}
 		iris = append(iris, it.GetLink())
 	}
 	return iris
