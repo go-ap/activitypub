@@ -453,7 +453,10 @@ func removeFromAudience(a *Activity, items ...Item) error {
 func (a *Activity) Recipients() ItemCollection {
 	alwaysRemove := make(ItemCollection, 0)
 	if a.GetType() == BlockType && !IsNil(a.Object) {
-		_ = alwaysRemove.Append(a.Object)
+		_ = OnItem(a.Object, func(object Item) error {
+			_ = alwaysRemove.Append(object)
+			return nil
+		})
 	}
 	if len(alwaysRemove) > 0 {
 		_ = removeFromAudience(a, alwaysRemove...)

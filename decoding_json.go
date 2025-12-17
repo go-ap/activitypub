@@ -168,7 +168,7 @@ func JSONItemsFn(val *fastjson.Value) (Item, error) {
 		items := make(ItemCollection, 0)
 		for _, v := range it {
 			if it, _ := JSONLoadItem(v); it != nil {
-				items.Append(it)
+				_ = items.Append(it)
 			}
 		}
 		return items, nil
@@ -380,16 +380,16 @@ func JSONGetItems(val *fastjson.Value, prop string) ItemCollection {
 	case fastjson.TypeArray:
 		for _, v := range val.GetArray() {
 			if i, _ := JSONLoadItem(v); i != nil {
-				it.Append(i)
+				_ = it.Append(i)
 			}
 		}
 	case fastjson.TypeObject:
 		if i := JSONGetItem(val, prop); i != nil {
-			it.Append(i)
+			_ = it.Append(i)
 		}
 	case fastjson.TypeString:
 		if iri := val.GetStringBytes(); len(iri) > 0 {
-			it.Append(IRI(iri))
+			_ = it.Append(IRI(iri))
 		}
 	}
 	if len(it) == 0 {
