@@ -598,21 +598,20 @@ func (l LangRefValue) Equal(other LangRefValue) bool {
 }
 
 func (c *Content) UnmarshalJSON(data []byte) error {
-	return c.UnmarshalText(data)
-}
-
-func (c *Content) UnmarshalText(data []byte) error {
-	*c = Content{}
 	if len(data) == 0 {
 		return nil
 	}
-	if len(data) > 2 {
-		if data[0] == '"' && data[len(data)-1] == '"' {
-			*c = Content(data[1 : len(data)-1])
-		}
-	} else {
-		*c = Content(data)
+	if len(data) >= 2 && data[0] == '"' && data[len(data)-1] == '"' {
+		return c.UnmarshalText(data[1 : len(data)-1])
 	}
+	return errors.Newf("unquoted string value when unmarshaling Content type")
+}
+
+func (c *Content) UnmarshalText(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
+	*c = data
 	return nil
 }
 
@@ -677,30 +676,35 @@ func (n *NaturalLanguageValues) UnmarshalJSON(data []byte) error {
 	if n == nil {
 		return errors.Newf("nil %T value to unmarshal to", n)
 	}
+	if len(data) == 0 {
+		return nil
+	}
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
 	if err != nil {
 		// try our luck if data contains an unquoted string
-		return n.Append(NilLangRef, unescape(data))
+		cont := Content{}
+		if err := cont.UnmarshalJSON(data); err != nil {
+			return err
+		}
+		return n.Append(NilLangRef, cont)
 	}
 	switch val.Type() {
 	case fastjson.TypeObject:
 		ob, _ := val.Object()
 		ob.Visit(func(key []byte, v *fastjson.Value) {
+			cont := Content{}
 			if dat := v.GetStringBytes(); len(dat) > 0 {
-				_ = n.Append(MakeRef(key), unescape(dat))
+				if err := cont.UnmarshalText(dat); err == nil {
+					_ = n.Append(MakeRef(key), cont)
+				}
 			}
 		})
 	case fastjson.TypeString:
 		if dat := val.GetStringBytes(); len(dat) > 0 {
-			_ = n.Append(NilLangRef, unescape(dat))
-		}
-	case fastjson.TypeArray:
-		for _, v := range val.GetArray() {
-			l := LangRefValue{}
-			l.UnmarshalJSON([]byte(v.String()))
-			if len(l.Value) > 0 {
-				n.Append(l.Ref, l.Value)
+			cont := Content{}
+			if err := cont.UnmarshalText(dat); err == nil {
+				_ = n.Append(NilLangRef, cont)
 			}
 		}
 	}
@@ -710,14 +714,14 @@ func (n *NaturalLanguageValues) UnmarshalJSON(data []byte) error {
 
 // UnmarshalText tries to load the NaturalLanguage array from the incoming Text value
 func (n *NaturalLanguageValues) UnmarshalText(data []byte) error {
-	if data[0] == '"' {
-		// a quoted string - loading it to c.URL
-		if data[len(data)-1] != '"' {
-			return fmt.Errorf("invalid string value when unmarshaling %T value", n)
-		}
-		n.Append(NilLangRef, Content(data[1:len(data)-1]))
+	if len(data) == 0 {
+		return nil
 	}
-	return nil
+	c := Content{}
+	if err := c.UnmarshalText(data); err != nil {
+		return err
+	}
+	return n.Append(NilLangRef, c)
 }
 
 func (n NaturalLanguageValues) GobEncode() ([]byte, error) {

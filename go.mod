@@ -10,3 +10,5 @@ require (
 )
 
 require golang.org/x/text v0.30.0
+
+require github.com/google/go-cmp v0.7.0 // indirect

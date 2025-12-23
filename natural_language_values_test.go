@@ -8,7 +8,8 @@ import (
 	"strconv"
 	"testing"
 
-	json "github.com/go-ap/jsonld"
+	"github.com/go-ap/errors"
+	"github.com/google/go-cmp/cmp"
 	"golang.org/x/text/language"
 )
 
@@ -210,6 +211,49 @@ func TestNaturalLanguageValue_UnmarshalText(t *testing.T) {
 	if l != NilLangRef {
 		t.Errorf("Unmarshaled object %T should be an empty string, received %q", l, l)
 	}
+	tests := []struct {
+		name    string
+		data    []byte
+		want    NaturalLanguageValues
+		wantErr error
+	}{
+		{
+			name: "empty string",
+			data: []byte(""),
+			want: nil,
+		},
+		{
+			name: "string w/ quotes",
+			data: []byte(`"ana"`),
+			want: NaturalLanguageValues{und: Content(`"ana"`)},
+		},
+		{
+			name: "string w/o quotes",
+			data: []byte(`foo-bar`),
+			want: NaturalLanguageValues{und: Content("foo-bar")},
+		},
+		// TODO(marius): actually unmarshal langRef:Content\n text lines
+		//{
+		//	name: "en:ana are mere",
+		//	data: []byte(`en:ana are mere`),
+		//	want: NaturalLanguageValues{English: Content("ana are mere")},
+		//},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := make(NaturalLanguageValues)
+			err := c.UnmarshalText(tt.data)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalText() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if tt.wantErr != nil {
+				return
+			}
+			if !cmp.Equal(c, tt.want) {
+				t.Errorf("UnmarshalText() got = %s", cmp.Diff(tt.want, c, EquateWeakErrors))
+			}
+		})
+	}
 }
 
 func TestNaturalLanguageValue_First(t *testing.T) {
@@ -359,44 +403,47 @@ func TestNaturalLanguageValues_Set(t *testing.T) {
 }
 
 func TestNaturalLanguageValues_UnmarshalJSON(t *testing.T) {
-	{
-		lang := []byte{'e', 'n'}
-		val := []byte{'a', 'n', 'a', ' ', 'a', 'r', 'e', ' ', 'm', 'e', 'r', 'e', '\n'}
-		js := fmt.Sprintf(`[{"%s": "%s"}]`, lang, val)
-		n := NaturalLanguageValues{}
-		err := n.UnmarshalJSON([]byte(js))
-		if err != nil {
-			t.Errorf("Unexpected error when unmarshaling %T: %s", n, err)
-		}
-
-		if n.Count() != 1 {
-			t.Errorf("Invalid number of elements %d, expected %d", n.Count(), 1)
-		}
-		l := n.First()
-		if !l.Equal(Content("ana are mere\n")) {
-			t.Errorf("Invalid %T value %q, expected %q", l, l, "ana are mere\n")
-		}
+	tests := []struct {
+		name    string
+		data    []byte
+		want    NaturalLanguageValues
+		wantErr error
+	}{
+		{
+			name: "empty string",
+			data: []byte(""),
+			want: nil,
+		},
+		{
+			name: "string w/ quotes",
+			data: []byte(`"ana"`),
+			want: NaturalLanguageValues{und: Content("ana")},
+		},
+		{
+			name:    "string w/o quotes",
+			data:    []byte(`foo-bar`),
+			wantErr: errors.Newf("unquoted string value when unmarshaling Content type"),
+		},
+		{
+			name: "en:ana are mere",
+			data: []byte(`{"en":"ana are mere"}`),
+			want: NaturalLanguageValues{English: Content("ana are mere")},
+		},
 	}
-	{
-		ob := make(map[string]string)
-		ob["en"] = "ana are mere\n"
-		js, err := json.Marshal(ob)
-		if err != nil {
-			t.Errorf("Unexpected error when marshaling %T: %s", ob, err)
-		}
-		n := NaturalLanguageValues{}
-		err = n.UnmarshalJSON(js)
-		if err != nil {
-			t.Errorf("Unexpected error when unmarshaling %T: %s", n, err)
-		}
-
-		if n.Count() != 1 {
-			t.Errorf("Invalid number of elements %d, expected %d", n.Count(), 1)
-		}
-		l := n.First()
-		if !l.Equal(Content("ana are mere\n")) {
-			t.Errorf("Invalid %T value %q, expected %q", l, l, "ana are mere\n")
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := make(NaturalLanguageValues)
+			err := c.UnmarshalJSON(tt.data)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if tt.wantErr != nil {
+				return
+			}
+			if !cmp.Equal(c, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, c, EquateWeakErrors))
+			}
+		})
 	}
 }
 
@@ -477,11 +524,83 @@ func TestContent_String(t *testing.T) {
 }
 
 func TestContent_UnmarshalJSON(t *testing.T) {
-	t.Skip("TODO")
+	tests := []struct {
+		name    string
+		data    []byte
+		want    Content
+		wantErr error
+	}{
+		{
+			name: "empty string",
+			data: []byte(""),
+			want: nil,
+		},
+		{
+			name: "string w/ quotes",
+			data: []byte(`"ana"`),
+			want: Content(`ana`),
+		},
+		{
+			name:    "string w/o quotes",
+			data:    []byte(`foo-bar`),
+			wantErr: errors.Newf("unquoted string value when unmarshaling Content type"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := Content{}
+			err := c.UnmarshalJSON(tt.data)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if tt.wantErr != nil {
+				return
+			}
+			if !cmp.Equal(c, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, c))
+			}
+		})
+	}
 }
 
 func TestContent_UnmarshalText(t *testing.T) {
-	t.Skip("TODO")
+	tests := []struct {
+		name    string
+		data    []byte
+		want    Content
+		wantErr error
+	}{
+		{
+			name: "empty string",
+			data: []byte(""),
+			want: nil,
+		},
+		{
+			name: "string w/ quotes",
+			data: []byte(`"ana"`),
+			want: Content(`"ana"`),
+		},
+		{
+			name: "string w/o quotes",
+			data: []byte(`foo-bar`),
+			want: Content(`foo-bar`),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := Content{}
+			err := c.UnmarshalText(tt.data)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalText() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if tt.wantErr != nil {
+				return
+			}
+			if !cmp.Equal(c, tt.want) {
+				t.Errorf("UnmarshalText() got = %s", cmp.Diff(tt.want, c))
+			}
+		})
+	}
 }
 
 func gobValue(a interface{}) []byte {

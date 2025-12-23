@@ -713,12 +713,16 @@ func GetAPSource(val *fastjson.Value) Source {
 		return s
 	}
 
-	if contBytes := val.Get("source", "content").GetStringBytes(); len(contBytes) > 0 {
-		s.Content = make(NaturalLanguageValues)
-		_ = s.Content.UnmarshalJSON(contBytes)
+	if val.Exists("source", "content") {
+		if contBytes := val.Get("source", "content").String(); len(contBytes) > 0 {
+			s.Content = make(NaturalLanguageValues)
+			_ = s.Content.UnmarshalJSON([]byte(contBytes))
+		}
 	}
-	if mimeBytes := val.Get("source", "mediaType").GetStringBytes(); len(mimeBytes) > 0 {
-		_ = s.MediaType.UnmarshalJSON(mimeBytes)
+	if val.Exists("source", "mediaType") {
+		if mimeBytes := val.Get("source", "mediaType").GetStringBytes(); len(mimeBytes) > 0 {
+			_ = s.MediaType.UnmarshalJSON(mimeBytes)
+		}
 	}
 
 	return s
