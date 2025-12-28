@@ -8,10 +8,9 @@ import (
 
 func TestClone(t *testing.T) {
 	tests := []struct {
-		name    string
-		it      Item
-		want    Item
-		wantErr error
+		name string
+		it   Item
+		want Item
 	}{
 		{
 			name: "empty",
@@ -46,14 +45,30 @@ func TestClone(t *testing.T) {
 			it:   Object{Type: NoteType},
 			want: &Object{Type: NoteType},
 		},
+		{
+			name: "*collection",
+			it:   &Collection{Type: CollectionType},
+			want: &Collection{Type: CollectionType},
+		},
+		{
+			name: "collection",
+			it:   Collection{Type: CollectionType},
+			want: &Collection{Type: CollectionType},
+		},
+		{
+			name: "*collection with items",
+			it:   &Collection{Type: CollectionType, Items: ItemCollection{&Object{ID: "http://example.com"}, &Place{ID: "http//:example.com/home"}}},
+			want: &Collection{Type: CollectionType, Items: ItemCollection{&Object{ID: "http://example.com"}, &Place{ID: "http//:example.com/home"}}},
+		},
+		{
+			name: "collection with items",
+			it:   Collection{Type: CollectionType, Items: ItemCollection{&Object{ID: "http://example.com"}, &Place{ID: "http//:example.com/home"}}},
+			want: &Collection{Type: CollectionType, Items: ItemCollection{&Object{ID: "http://example.com"}, &Place{ID: "http//:example.com/home"}}},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Clone(tt.it)
-			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
-				t.Errorf("Clone() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
-				return
-			}
+			got := Clone(tt.it)
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("Clone() got = %s", cmp.Diff(tt.want, got))
 			}

@@ -251,33 +251,82 @@ func replaceIfPublicKey(to, from PublicKey) PublicKey {
 	return to
 }
 
-func Clone(it Item) (Item, error) {
+// Clone returns a copy of item
+func Clone(it Item) Item {
 	var n Item
-	switch it.(type) {
-	case *Object, Object:
-		n = new(Object)
-	case *Place, Place:
-		n = new(Place)
-	case *Relationship, Relationship:
-		n = new(Relationship)
-	case *Tombstone, Tombstone:
-		n = new(Tombstone)
-	case *Activity, Activity:
-		n = new(Activity)
-	case *IntransitiveActivity, IntransitiveActivity:
-		n = new(IntransitiveActivity)
-	case *Question, Question:
-		n = new(Question)
-	case *Actor, Actor:
-		n = new(Actor)
-	case *Collection, Collection:
-		n = new(Collection)
-	case *OrderedCollection, OrderedCollection:
-		n = new(OrderedCollection)
-	case *CollectionPage, CollectionPage:
-		n = new(CollectionPage)
-	case *OrderedCollectionPage, OrderedCollectionPage:
-		n = new(OrderedCollectionPage)
+	switch ob := it.(type) {
+	case *Object:
+		t := *ob
+		n = &t
+	case Object:
+		t := ob
+		n = &t
+	case *Place:
+		t := *ob
+		n = &t
+	case Place:
+		t := ob
+		n = &t
+	case *Relationship:
+		t := *ob
+		n = &t
+	case Relationship:
+		t := ob
+		n = &t
+	case *Tombstone:
+		t := *ob
+		n = &t
+	case Tombstone:
+		t := ob
+		n = &t
+	case *Activity:
+		t := *ob
+		n = &t
+	case Activity:
+		t := ob
+		n = &t
+	case *IntransitiveActivity:
+		t := *ob
+		n = &t
+	case IntransitiveActivity:
+		t := ob
+		n = &t
+	case *Question:
+		t := *ob
+		n = &t
+	case Question:
+		t := ob
+		n = &t
+	case *Actor:
+		t := *ob
+		n = &t
+	case Actor:
+		t := ob
+		n = &t
+	case *Collection:
+		t := *ob
+		n = &t
+	case Collection:
+		t := ob
+		n = &t
+	case *OrderedCollection:
+		t := *ob
+		n = &t
+	case OrderedCollection:
+		t := ob
+		n = &t
+	case *CollectionPage:
+		t := *ob
+		n = &t
+	case CollectionPage:
+		t := ob
+		n = &t
+	case *OrderedCollectionPage:
+		t := *ob
+		n = &t
+	case OrderedCollectionPage:
+		t := ob
+		n = &t
 	}
-	return CopyUnsafeItemProperties(n, it)
+	return n
 }
