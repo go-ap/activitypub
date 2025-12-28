@@ -1,6 +1,6 @@
 package activitypub
 
-import "fmt"
+import "github.com/go-ap/errors"
 
 func CopyOrderedCollectionPageProperties(to, from *OrderedCollectionPage) (*OrderedCollectionPage, error) {
 	to.PartOf = replaceIfItem(to.PartOf, from.PartOf)
@@ -167,30 +167,30 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 		}
 		return CopyObjectProperties(o, n)
 	}
-	return to, fmt.Errorf("could not process objects with type %s", to.GetType())
+	return to, errors.Errorf("could not process objects with type %s", to.GetType())
 }
 
 // CopyItemProperties delegates to the correct per type functions for copying
 // properties between matching Activity Objects
 func CopyItemProperties(to, from Item) (Item, error) {
 	if to == nil {
-		return to, fmt.Errorf("nil object to update")
+		return to, errors.Errorf("nil object to update")
 	}
 	if from == nil {
-		return to, fmt.Errorf("nil object for update")
+		return to, errors.Errorf("nil object for update")
 	}
 	if !to.GetLink().Equal(from.GetLink()) {
-		return to, fmt.Errorf("object IDs don't match")
+		return to, errors.Errorf("object IDs don't match")
 	}
 	return copyAllItemProperties(to, from)
 }
 
 func CopyUnsafeItemProperties(to, from Item) (Item, error) {
-	if to == nil {
-		return to, fmt.Errorf("nil object to update")
+	if from == nil || IsNil(from) {
+		return to, nil
 	}
-	if from == nil {
-		return to, fmt.Errorf("nil object for update")
+	if to == nil {
+		return to, errors.Errorf("nil object to update")
 	}
 	return copyAllItemProperties(to, from)
 }
@@ -249,4 +249,35 @@ func replaceIfPublicKey(to, from PublicKey) PublicKey {
 	to.Owner = from.Owner
 	to.PublicKeyPem = from.PublicKeyPem
 	return to
+}
+
+func Clone(it Item) (Item, error) {
+	var n Item
+	switch it.(type) {
+	case *Object, Object:
+		n = new(Object)
+	case *Place, Place:
+		n = new(Place)
+	case *Relationship, Relationship:
+		n = new(Relationship)
+	case *Tombstone, Tombstone:
+		n = new(Tombstone)
+	case *Activity, Activity:
+		n = new(Activity)
+	case *IntransitiveActivity, IntransitiveActivity:
+		n = new(IntransitiveActivity)
+	case *Question, Question:
+		n = new(Question)
+	case *Actor, Actor:
+		n = new(Actor)
+	case *Collection, Collection:
+		n = new(Collection)
+	case *OrderedCollection, OrderedCollection:
+		n = new(OrderedCollection)
+	case *CollectionPage, CollectionPage:
+		n = new(CollectionPage)
+	case *OrderedCollectionPage, OrderedCollectionPage:
+		n = new(OrderedCollectionPage)
+	}
+	return CopyUnsafeItemProperties(n, it)
 }
