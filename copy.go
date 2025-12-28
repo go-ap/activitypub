@@ -255,6 +255,26 @@ func replaceIfPublicKey(to, from PublicKey) PublicKey {
 func Clone(it Item) Item {
 	var n Item
 	switch ob := it.(type) {
+	case *IRI:
+		n = *ob
+	case IRI:
+		n = ob
+	case *IRIs:
+		t := make(IRIs, len(*ob))
+		copy(t, *ob)
+		n = &t
+	case IRIs:
+		t := make(IRIs, len(ob))
+		copy(t, ob)
+		n = &t
+	case *ItemCollection:
+		t := make(ItemCollection, len(*ob))
+		copy(t, *ob)
+		n = &t
+	case ItemCollection:
+		t := make(ItemCollection, len(ob))
+		copy(t, ob)
+		n = &t
 	case *Object:
 		t := *ob
 		n = &t

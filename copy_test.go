@@ -65,6 +65,56 @@ func TestClone(t *testing.T) {
 			it:   Collection{Type: CollectionType, Items: ItemCollection{&Object{ID: "http://example.com"}, &Place{ID: "http//:example.com/home"}}},
 			want: &Collection{Type: CollectionType, Items: ItemCollection{&Object{ID: "http://example.com"}, &Place{ID: "http//:example.com/home"}}},
 		},
+		{
+			name: "empty item collection",
+			it:   ItemCollection{},
+			want: &ItemCollection{},
+		},
+		{
+			name: "empty *item collection",
+			it:   &ItemCollection{},
+			want: &ItemCollection{},
+		},
+		{
+			name: "not empty item collection",
+			it:   ItemCollection{&Object{ID: "http://example.com"}, &Place{ID: "http//:example.com/home"}},
+			want: &ItemCollection{&Object{ID: "http://example.com"}, &Place{ID: "http//:example.com/home"}},
+		},
+		{
+			name: "not empty *item collection",
+			it:   &ItemCollection{&Actor{ID: "http://example.com/~jdoe"}, Link{ID: "https://example.com/test"}},
+			want: &ItemCollection{&Actor{ID: "http://example.com/~jdoe"}, Link{ID: "https://example.com/test"}},
+		},
+		{
+			name: "empty IRIs",
+			it:   IRIs{},
+			want: &IRIs{},
+		},
+		{
+			name: "empty *IRIs",
+			it:   &IRIs{},
+			want: &IRIs{},
+		},
+		{
+			name: "not empty IRIs",
+			it:   IRIs{"http://example.com", "http//:example.com/home"},
+			want: &IRIs{"http://example.com", "http//:example.com/home"},
+		},
+		{
+			name: "not empty *IRIs",
+			it:   &IRIs{"http://example.com/~jdoe", "https://example.com/test"},
+			want: &IRIs{"http://example.com/~jdoe", "https://example.com/test"},
+		},
+		{
+			name: "empty IRI",
+			it:   IRI(""),
+			want: IRI(""),
+		},
+		{
+			name: "not empty IRI",
+			it:   IRI("http://example.com"),
+			want: IRI("http://example.com"),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
