@@ -158,7 +158,7 @@ func (t Tombstone) MarshalJSON() ([]byte, error) {
 	notEmpty := false
 	JSONWrite(&b, '{')
 
-	OnObject(t, func(o *Object) error {
+	_ = OnObject(t, func(o *Object) error {
 		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
@@ -261,19 +261,12 @@ type withTombstoneFn func(*Tombstone) error
 // This function should be called if trying to access the Tombstone specific properties
 // like "formerType" or "deleted".
 // For the other properties OnObject should be used instead.
-func OnTombstone(it Item, fn withTombstoneFn) error {
+func OnTombstone(it Item, fn func(*Tombstone) error) error {
 	if it == nil {
 		return nil
 	}
 	if IsItemCollection(it) {
-		return OnItemCollection(it, func(col *ItemCollection) error {
-			for _, it := range *col {
-				if err := OnTombstone(it, fn); err != nil {
-					return err
-				}
-			}
-			return nil
-		})
+		return callOnItemCollection(it, OnTombstone, fn)
 	}
 	ob, err := ToTombstone(it)
 	if err != nil {

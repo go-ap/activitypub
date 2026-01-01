@@ -616,3 +616,25 @@ func (p *PublicKey) GobDecode(data []byte) error {
 	}
 	return nil
 }
+
+// WithActorFn represents a function type that can be used as a parameter for OnActor helper function
+type WithActorFn func(*Actor) error
+
+// OnActor calls function fn on it Item if it can be asserted to type *Actor
+//
+// This function should be called if trying to access the Actor specific
+// properties like "preferredName", "publicKey", etc. For the other properties
+// OnObject should be used instead.
+func OnActor(it Item, fn func(*Actor) error) error {
+	if it == nil {
+		return nil
+	}
+	if IsItemCollection(it) {
+		return callOnItemCollection(it, OnActor, fn)
+	}
+	act, err := ToActor(it)
+	if err != nil {
+		return err
+	}
+	return fn(act)
+}

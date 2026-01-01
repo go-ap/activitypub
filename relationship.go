@@ -273,9 +273,12 @@ type withRelationshipFn func(*Relationship) error
 // This function should be called if trying to access the Relationship specific properties
 // like "subject", "object", or "relationship".
 // For the other properties OnObject should be used instead.
-func OnRelationship(it Item, fn withRelationshipFn) error {
+func OnRelationship(it Item, fn func(*Relationship) error) error {
 	if it == nil {
 		return nil
+	}
+	if IsItemCollection(it) {
+		return callOnItemCollection(it, OnRelationship, fn)
 	}
 	ob, err := ToRelationship(it)
 	if err != nil {

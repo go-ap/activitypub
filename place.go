@@ -278,22 +278,12 @@ type withPlaceFn func(*Place) error
 // This function should be called if trying to access the Place specific properties
 // like "accuracy", "altitude", "latitude", "longitude", "radius", or "units".
 // For the other properties OnObject should be used instead.
-func OnPlace(it Item, fn withPlaceFn) error {
+func OnPlace(it Item, fn func(*Place) error) error {
 	if it == nil {
 		return nil
 	}
 	if IsItemCollection(it) {
-		return OnItemCollection(it, func(col *ItemCollection) error {
-			for _, it := range *col {
-				if IsLink(it) {
-					continue
-				}
-				if err := OnPlace(it, fn); err != nil {
-					return err
-				}
-			}
-			return nil
-		})
+		return callOnItemCollection(it, OnPlace, fn)
 	}
 	ob, err := ToPlace(it)
 	if err != nil {

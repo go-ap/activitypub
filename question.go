@@ -242,7 +242,7 @@ func QuestionNew(id ID) *Question {
 	return &q
 }
 
-// ToQuestion tries to convert the it Item to a Question object.
+// ToQuestion tries to convert the "it" Item to a Question object.
 func ToQuestion(it Item) (*Question, error) {
 	switch i := it.(type) {
 	case *Question:
@@ -266,4 +266,26 @@ func (q *Question) Clean() {
 		o.Clean()
 		return nil
 	})
+}
+
+// WithQuestionFn represents a function type that can be used as a parameter for OnQuestion helper function
+type WithQuestionFn func(*Question) error
+
+// OnQuestion calls function fn on it Item if it can be asserted to type Question
+//
+// This function should be called if trying to access the Questions specific
+// properties like "anyOf", "oneOf", "closed", etc. For the other properties
+// OnObject or OnIntransitiveActivity should be used instead.
+func OnQuestion(it Item, fn func(question *Question) error) error {
+	if it == nil {
+		return nil
+	}
+	if IsItemCollection(it) {
+		return callOnItemCollection(it, OnQuestion, fn)
+	}
+	q, err := ToQuestion(it)
+	if err != nil {
+		return err
+	}
+	return fn(q)
 }

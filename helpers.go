@@ -17,12 +17,6 @@ type WithActivityFn func(*Activity) error
 // WithIntransitiveActivityFn represents a function type that can be used as a parameter for OnIntransitiveActivity helper function
 type WithIntransitiveActivityFn func(*IntransitiveActivity) error
 
-// WithQuestionFn represents a function type that can be used as a parameter for OnQuestion helper function
-type WithQuestionFn func(*Question) error
-
-// WithActorFn represents a function type that can be used as a parameter for OnActor helper function
-type WithActorFn func(*Actor) error
-
 // WithCollectionInterfaceFn represents a function type that can be used as a parameter for OnCollectionIntf helper function
 type WithCollectionInterfaceFn func(CollectionInterface) error
 
@@ -78,7 +72,7 @@ func On[T Item](it Item, fn func(*T) error) error {
 	}
 	return OnItemCollection(it, func(col *ItemCollection) error {
 		for _, it := range *col {
-			if err := On(it, fn); err != nil {
+			if err := On[T](it, fn); err != nil {
 				return err
 			}
 		}
@@ -90,22 +84,12 @@ func On[T Item](it Item, fn func(*T) error) error {
 //
 // This function should be safe to be called for all types with a structure compatible
 // to the Object type.
-func OnObject(it Item, fn WithObjectFn) error {
+func OnObject(it Item, fn func(*Object) error) error {
 	if it == nil {
 		return nil
 	}
 	if IsItemCollection(it) {
-		return OnItemCollection(it, func(col *ItemCollection) error {
-			for _, it := range *col {
-				if IsLink(it) {
-					continue
-				}
-				if err := OnObject(it, fn); err != nil {
-					return err
-				}
-			}
-			return nil
-		})
+		return callOnItemCollection(it, OnObject, fn)
 	}
 	ob, err := ToObject(it)
 	if err != nil {
@@ -164,61 +148,6 @@ func OnIntransitiveActivity(it Item, fn WithIntransitiveActivityFn) error {
 		})
 	}
 	act, err := ToIntransitiveActivity(it)
-	if err != nil {
-		return err
-	}
-	return fn(act)
-}
-
-// OnQuestion calls function fn on it Item if it can be asserted to type Question
-//
-// This function should be called if trying to access the Questions specific
-// properties like "anyOf", "oneOf", "closed", etc. For the other properties
-// OnObject or OnIntransitiveActivity should be used instead.
-func OnQuestion(it Item, fn WithQuestionFn) error {
-	if it == nil {
-		return nil
-	}
-	if IsItemCollection(it) {
-		return OnItemCollection(it, func(col *ItemCollection) error {
-			for _, it := range *col {
-				if err := OnQuestion(it, fn); err != nil {
-					return err
-				}
-			}
-			return nil
-		})
-	}
-	act, err := ToQuestion(it)
-	if err != nil {
-		return err
-	}
-	return fn(act)
-}
-
-// OnActor calls function fn on it Item if it can be asserted to type *Actor
-//
-// This function should be called if trying to access the Actor specific
-// properties like "preferredName", "publicKey", etc. For the other properties
-// OnObject should be used instead.
-func OnActor(it Item, fn WithActorFn) error {
-	if it == nil {
-		return nil
-	}
-	if IsItemCollection(it) {
-		return OnItemCollection(it, func(col *ItemCollection) error {
-			for _, it := range *col {
-				if IsLink(it) {
-					continue
-				}
-				if err := OnActor(it, fn); err != nil {
-					return err
-				}
-			}
-			return nil
-		})
-	}
-	act, err := ToActor(it)
 	if err != nil {
 		return err
 	}
@@ -568,4 +497,18 @@ func DerefItem(it Item) ItemCollection {
 		items = ItemCollection{it}
 	}
 	return items
+}
+
+func callOnItemCollection[T Objects, F func(*T) error](it Item, callFn func(Item, F) error, fn F) error {
+	return OnItemCollection(it, func(col *ItemCollection) error {
+		for _, ob := range *col {
+			if IsLink(ob) {
+				continue
+			}
+			if err := callFn(ob, fn); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

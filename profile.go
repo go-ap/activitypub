@@ -250,22 +250,12 @@ type withProfileFn func(*Profile) error
 // This function should be called if trying to access the Profile specific properties
 // like "describes".
 // For the other properties OnObject should be used instead.
-func OnProfile(it Item, fn withProfileFn) error {
+func OnProfile(it Item, fn func(*Profile) error) error {
 	if it == nil {
 		return nil
 	}
 	if IsItemCollection(it) {
-		return OnItemCollection(it, func(col *ItemCollection) error {
-			for _, it := range *col {
-				if IsLink(it) {
-					continue
-				}
-				if err := OnProfile(it, fn); err != nil {
-					return err
-				}
-			}
-			return nil
-		})
+		return callOnItemCollection(it, OnProfile, fn)
 	}
 	ob, err := ToProfile(it)
 	if err != nil {
