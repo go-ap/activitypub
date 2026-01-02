@@ -38,21 +38,6 @@ type WithItemCollectionFn func(*ItemCollection) error
 // WithIRIsFn represents a function type that can be used as a parameter for OnIRIs helper function
 type WithIRIsFn func(*IRIs) error
 
-// OnLink calls function fn on it Item if it can be asserted to type *Link
-//
-// This function should be safe to use for all types with a structure compatible
-// with the Link type
-func OnLink(it LinkOrIRI, fn WithLinkFn) error {
-	if it == nil {
-		return nil
-	}
-	ob, err := ToLink(it)
-	if err != nil {
-		return err
-	}
-	return fn(ob)
-}
-
 func To[T Item](it Item) (*T, error) {
 	if ob, ok := it.(T); ok {
 		return &ob, nil
@@ -78,109 +63,6 @@ func On[T Item](it Item, fn func(*T) error) error {
 		}
 		return nil
 	})
-}
-
-// OnObject calls function fn on it Item if it can be asserted to type *Object
-//
-// This function should be safe to be called for all types with a structure compatible
-// to the Object type.
-func OnObject(it Item, fn func(*Object) error) error {
-	if it == nil {
-		return nil
-	}
-	if IsItemCollection(it) {
-		return callOnItemCollection(it, OnObject, fn)
-	}
-	ob, err := ToObject(it)
-	if err != nil {
-		return err
-	}
-	return fn(ob)
-}
-
-// OnActivity calls function fn on it Item if it can be asserted to type *Activity
-//
-// This function should be called if trying to access the Activity specific properties
-// like "object", for the other properties OnObject, or OnIntransitiveActivity
-// should be used instead.
-func OnActivity(it Item, fn WithActivityFn) error {
-	if it == nil {
-		return nil
-	}
-	if IsItemCollection(it) {
-		return OnItemCollection(it, func(col *ItemCollection) error {
-			for _, it := range *col {
-				if IsLink(it) {
-					continue
-				}
-				if err := OnActivity(it, fn); err != nil {
-					return err
-				}
-			}
-			return nil
-		})
-	}
-	act, err := ToActivity(it)
-	if err != nil {
-		return err
-	}
-	return fn(act)
-}
-
-// OnIntransitiveActivity calls function fn on it Item if it can be asserted
-// to type *IntransitiveActivity
-//
-// This function should be called if trying to access the IntransitiveActivity
-// specific properties like "actor", for the other properties OnObject
-// should be used instead.
-func OnIntransitiveActivity(it Item, fn WithIntransitiveActivityFn) error {
-	if it == nil {
-		return nil
-	}
-	if IsItemCollection(it) {
-		return OnItemCollection(it, func(col *ItemCollection) error {
-			for _, it := range *col {
-				if err := OnIntransitiveActivity(it, fn); err != nil {
-					return err
-				}
-			}
-			return nil
-		})
-	}
-	act, err := ToIntransitiveActivity(it)
-	if err != nil {
-		return err
-	}
-	return fn(act)
-}
-
-// OnItemCollection calls function fn on it Item if it can be asserted to type ItemCollection
-//
-// It should be used when Item represents an Item collection and it's usually used as a way
-// to wrap functionality for other functions that will be called on each item in the collection.
-func OnItemCollection(it Item, fn WithItemCollectionFn) error {
-	if it == nil {
-		return nil
-	}
-	col, err := ToItemCollection(it)
-	if err != nil {
-		return err
-	}
-	return fn(col)
-}
-
-// OnIRIs calls function fn on it Item if it can be asserted to type IRIs
-//
-// It should be used when Item represents an IRI slice.
-func OnIRIs(it Item, fn WithIRIsFn) error {
-	if it == nil {
-		return nil
-	}
-	col, err := ToIRIs(it)
-	if err != nil {
-		return err
-	}
-	return fn(col)
 }
 
 // OnCollectionIntf calls function fn on it Item if it can be asserted to a type
@@ -238,73 +120,6 @@ func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 	default:
 		return fmt.Errorf("%T[%s] can't be converted to a Collection type", it, it.GetType())
 	}
-}
-
-// OnCollection calls function fn on it Item if it can be asserted to type *Collection
-//
-// This function should be called if trying to access the Collection specific
-// properties like "totalItems", "items", etc. For the other properties
-// OnObject should be used instead.
-func OnCollection(it Item, fn WithCollectionFn) error {
-	if it == nil {
-		return nil
-	}
-	col, err := ToCollection(it)
-	if err != nil {
-		return err
-	}
-	return fn(col)
-}
-
-// OnCollectionPage calls function fn on it Item if it can be asserted to
-// type *CollectionPage
-//
-// This function should be called if trying to access the CollectionPage specific
-// properties like "partOf", "next", "perv". For the other properties
-// OnObject or OnCollection should be used instead.
-func OnCollectionPage(it Item, fn WithCollectionPageFn) error {
-	if it == nil {
-		return nil
-	}
-	col, err := ToCollectionPage(it)
-	if err != nil {
-		return err
-	}
-	return fn(col)
-}
-
-// OnOrderedCollection calls function fn on it Item if it can be asserted
-// to type *OrderedCollection
-//
-// This function should be called if trying to access the Collection specific
-// properties like "totalItems", "orderedItems", etc. For the other properties
-// OnObject should be used instead.
-func OnOrderedCollection(it Item, fn WithOrderedCollectionFn) error {
-	if it == nil {
-		return nil
-	}
-	col, err := ToOrderedCollection(it)
-	if err != nil {
-		return err
-	}
-	return fn(col)
-}
-
-// OnOrderedCollectionPage calls function fn on it Item if it can be asserted
-// to type *OrderedCollectionPage
-//
-// This function should be called if trying to access the OrderedCollectionPage specific
-// properties like "partOf", "next", "perv". For the other properties
-// OnObject or OnOrderedCollection should be used instead.
-func OnOrderedCollectionPage(it Item, fn WithOrderedCollectionPageFn) error {
-	if it == nil {
-		return nil
-	}
-	col, err := ToOrderedCollectionPage(it)
-	if err != nil {
-		return err
-	}
-	return fn(col)
 }
 
 // ItemOrderTimestamp is used for ordering a ItemCollection slice using the slice.Sort function
@@ -402,7 +217,7 @@ func notEmptyInstransitiveActivity(i *IntransitiveActivity) bool {
 	if notEmpty {
 		return true
 	}
-	OnObject(i, func(ob *Object) error {
+	_ = OnObject(i, func(ob *Object) error {
 		notEmpty = notEmptyObject(ob)
 		return nil
 	})
@@ -411,7 +226,7 @@ func notEmptyInstransitiveActivity(i *IntransitiveActivity) bool {
 
 func notEmptyActivity(a *Activity) bool {
 	var notEmpty bool
-	OnIntransitiveActivity(a, func(i *IntransitiveActivity) error {
+	_ = OnIntransitiveActivity(a, func(i *IntransitiveActivity) error {
 		notEmpty = notEmptyInstransitiveActivity(i)
 		return nil
 	})
@@ -476,7 +291,8 @@ func NotEmpty(i Item) bool {
 	return notEmpty
 }
 
-// DerefItem dereferences
+// DerefItem unpacks an Item into an ItemCollection.
+// If the Item is a slice type, like [IRIs], or [ItemCollection], it returns an [ItemCollection] corresponding to that
 func DerefItem(it Item) ItemCollection {
 	if IsNil(it) {
 		return nil
@@ -484,22 +300,20 @@ func DerefItem(it Item) ItemCollection {
 
 	var items ItemCollection
 	if IsIRIs(it) {
-		_ = OnIRIs(it, func(col *IRIs) error {
+		if col, err := ToIRIs(it); err == nil {
 			items = col.Collection()
-			return nil
-		})
+		}
 	} else if IsItemCollection(it) {
-		_ = OnItemCollection(it, func(col *ItemCollection) error {
-			items = col.Collection()
-			return nil
-		})
+		if col, err := ToItemCollection(it); err == nil {
+			items = *col
+		}
 	} else {
 		items = ItemCollection{it}
 	}
 	return items
 }
 
-func callOnItemCollection[T Objects, F func(*T) error](it Item, callFn func(Item, F) error, fn F) error {
+func callOnItemCollection[T Objects | Links, F func(*T) error](it LinkOrIRI, callFn func(LinkOrIRI, F) error, fn F) error {
 	return OnItemCollection(it, func(col *ItemCollection) error {
 		for _, ob := range *col {
 			if IsLink(ob) {

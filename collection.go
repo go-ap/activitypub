@@ -350,7 +350,7 @@ func (c Collection) Format(s fmt.State, verb rune) {
 }
 
 // ToCollection
-func ToCollection(it Item) (*Collection, error) {
+func ToCollection(it LinkOrIRI) (*Collection, error) {
 	switch i := it.(type) {
 	case *Collection:
 		return i, nil
@@ -448,4 +448,20 @@ func (c *Collection) Clean() {
 		o.Clean()
 		return nil
 	})
+}
+
+// OnCollection calls function fn on it Item if it can be asserted to type *Collection
+//
+// This function should be called if trying to access the Collection specific
+// properties like "totalItems", "items", etc. For the other properties
+// OnObject should be used instead.
+func OnCollection(it Item, fn WithCollectionFn) error {
+	if it == nil {
+		return nil
+	}
+	col, err := ToCollection(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
 }

@@ -173,7 +173,7 @@ func ItemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
 // ToItemCollection returns the item collection contained as part of OrderedCollection, OrderedCollectionPage,
 // Collection and CollectionPage.
 // It also converts an IRI slice into an equivalent ItemCollection.
-func ToItemCollection(it Item) (*ItemCollection, error) {
+func ToItemCollection(it LinkOrIRI) (*ItemCollection, error) {
 	switch i := it.(type) {
 	case *ItemCollection:
 		return i, nil

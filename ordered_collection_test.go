@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/go-ap/errors"
+	"github.com/google/go-cmp/cmp"
 )
 
 func mockOrderedCollection(items ...Item) OrderedCollection {
@@ -217,53 +218,95 @@ func TestOnOrderedCollection(t *testing.T) {
 }
 
 func TestToOrderedCollection(t *testing.T) {
-	//err := func(it Item) error { return ErrorInvalidType[OrderedCollection](it) }
-	tests := map[string]struct {
-		it      Item
+	tests := []struct {
+		name    string
+		it      LinkOrIRI
 		want    *OrderedCollection
 		wantErr error
 	}{
-		"OrderedCollection": {
-			it:      new(OrderedCollection),
-			want:    new(OrderedCollection),
-			wantErr: nil,
+		{
+			name: "empty",
 		},
-		"OrderedCollectionPage": {
-			it:      new(OrderedCollectionPage),
-			want:    new(OrderedCollection),
-			wantErr: nil,
+		{
+			name: "Valid OrderedCollection",
+			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &OrderedCollection{ID: "test", Type: OrderedCollectionType},
 		},
-		"Collection": {
-			it:      new(Collection),
-			want:    new(OrderedCollection),
-			wantErr: nil,
+		{
+			name: "Valid *OrderedCollection",
+			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &OrderedCollection{ID: "test", Type: OrderedCollectionType},
 		},
-		"CollectionPage": {
-			it:      new(CollectionPage),
-			want:    new(OrderedCollection),
-			wantErr: nil,
+		{
+			name: "Valid OrderedCollectionPage",
+			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &OrderedCollection{ID: "test", Type: OrderedCollectionPageType},
+		},
+		{
+			name: "Valid *OrderedCollectionPage",
+			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &OrderedCollection{ID: "test", Type: OrderedCollectionPageType},
+		},
+		{
+			name: "Valid OrderedCollection",
+			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &OrderedCollection{ID: "test", Type: OrderedCollectionType},
+		},
+		{
+			name: "Valid *OrderedCollection",
+			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &OrderedCollection{ID: "test", Type: OrderedCollectionType},
+		},
+		{
+			name: "Valid OrderedCollectionPage",
+			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &OrderedCollection{ID: "test", Type: OrderedCollectionPageType},
+		},
+		{
+			name: "Valid *OrderedCollectionPage",
+			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &OrderedCollection{ID: "test", Type: OrderedCollectionPageType},
+		},
+		{
+			name:    "IRI",
+			it:      IRI("https://example.com"),
+			wantErr: ErrorInvalidType[OrderedCollection](IRI("")),
+		},
+		{
+			name:    "IRIs",
+			it:      IRIs{IRI("https://example.com")},
+			wantErr: ErrorInvalidType[OrderedCollection](IRIs{}),
+		},
+		{
+			name:    "ItemCollection",
+			it:      ItemCollection{},
+			wantErr: ErrorInvalidType[OrderedCollection](ItemCollection{}),
+		},
+		{
+			name:    "Object",
+			it:      &Object{ID: "test", Type: ArticleType},
+			wantErr: ErrorInvalidType[OrderedCollection](&Object{}),
+		},
+		{
+			name:    "Activity",
+			it:      &Activity{ID: "test", Type: CreateType},
+			wantErr: ErrorInvalidType[OrderedCollection](&Activity{}),
+		},
+		{
+			name:    "IntransitiveActivity",
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			wantErr: ErrorInvalidType[OrderedCollection](&IntransitiveActivity{}),
 		},
 	}
-	for name, tt := range tests {
-		t.Run(name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			got, err := ToOrderedCollection(tt.it)
-			if tt.wantErr != nil && err == nil {
-				t.Errorf("ToOrderedCollection() no error returned, wanted error = [%T]%s", tt.wantErr, tt.wantErr)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("ToOrderedCollection() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if err != nil {
-				if tt.wantErr == nil {
-					t.Errorf("ToOrderedCollection() returned unexpected error[%T]%s", err, err)
-					return
-				}
-				if !reflect.DeepEqual(err, tt.wantErr) {
-					t.Errorf("ToOrderedCollection() received error %v, wanted error %v", err, tt.wantErr)
-					return
-				}
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ToOrderedCollection() got = %v, want %v", got, tt.want)
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("ToOrderedCollection() got = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

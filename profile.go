@@ -232,7 +232,7 @@ func (p Profile) Format(s fmt.State, verb rune) {
 }
 
 // ToProfile tries to convert the "it" Item to a Profile object
-func ToProfile(it Item) (*Profile, error) {
+func ToProfile(it LinkOrIRI) (*Profile, error) {
 	switch i := it.(type) {
 	case *Profile:
 		return i, nil
@@ -250,7 +250,7 @@ type withProfileFn func(*Profile) error
 // This function should be called if trying to access the Profile specific properties
 // like "describes".
 // For the other properties OnObject should be used instead.
-func OnProfile(it Item, fn func(*Profile) error) error {
+func OnProfile(it LinkOrIRI, fn func(*Profile) error) error {
 	if it == nil {
 		return nil
 	}

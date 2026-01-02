@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"io"
-	"reflect"
 	"strings"
 	"time"
 
@@ -812,22 +811,15 @@ func (a Activity) Format(s fmt.State, verb rune) {
 }
 
 // ToActivity
-func ToActivity(it Item) (*Activity, error) {
+func ToActivity(it LinkOrIRI) (*Activity, error) {
 	switch i := it.(type) {
 	case *Activity:
 		return i, nil
 	case Activity:
 		return &i, nil
 	default:
-		// NOTE(marius): this is an ugly way of dealing with the interface conversion error: types from different scopes
-		typ := reflect.TypeOf(new(Activity))
-		if reflect.TypeOf(it).ConvertibleTo(typ) {
-			if i, ok := reflect.ValueOf(it).Convert(typ).Interface().(*Activity); ok {
-				return i, nil
-			}
-		}
+		return reflectItemToType[Activity](it)
 	}
-	return nil, ErrorInvalidType[Activity](it)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
@@ -953,4 +945,23 @@ func (a Activity) equal(with Activity) bool {
 		}
 	}
 	return result
+}
+
+// OnActivity calls function fn on it Item if it can be asserted to type *Activity
+//
+// This function should be called if trying to access the Activity specific properties
+// like "object", for the other properties OnObject, or OnIntransitiveActivity
+// should be used instead.
+func OnActivity(it LinkOrIRI, fn func(*Activity) error) error {
+	if it == nil {
+		return nil
+	}
+	if IsItemCollection(it) {
+		return callOnItemCollection(it, OnActivity, fn)
+	}
+	act, err := ToActivity(it)
+	if err != nil {
+		return err
+	}
+	return fn(act)
 }

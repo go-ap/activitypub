@@ -3,6 +3,8 @@ package activitypub
 import (
 	"fmt"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestPlace_Recipients(t *testing.T) {
@@ -10,7 +12,68 @@ func TestPlace_Recipients(t *testing.T) {
 }
 
 func TestToPlace(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name    string
+		it      LinkOrIRI
+		want    *Place
+		wantErr error
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "Valid Place",
+			it:   Place{ID: "test", Type: PlaceType},
+			want: &Place{ID: "test", Type: PlaceType},
+		},
+		{
+			name: "Valid *Place",
+			it:   &Place{ID: "test", Type: PlaceType},
+			want: &Place{ID: "test", Type: PlaceType},
+		},
+		{
+			name:    "IRI",
+			it:      IRI("https://example.com"),
+			wantErr: ErrorInvalidType[Place](IRI("")),
+		},
+		{
+			name:    "IRIs",
+			it:      IRIs{IRI("https://example.com")},
+			wantErr: ErrorInvalidType[Place](IRIs{}),
+		},
+		{
+			name:    "ItemCollection",
+			it:      ItemCollection{},
+			wantErr: ErrorInvalidType[Place](ItemCollection{}),
+		},
+		{
+			name:    "Object",
+			it:      &Object{ID: "test", Type: ArticleType},
+			wantErr: ErrorInvalidType[Place](&Object{}),
+		},
+		{
+			name:    "Activity",
+			it:      &Activity{ID: "test", Type: CreateType},
+			wantErr: ErrorInvalidType[Place](&Activity{}),
+		},
+		{
+			name:    "IntransitiveActivity",
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			wantErr: ErrorInvalidType[Place](&IntransitiveActivity{}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ToPlace(tt.it)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("ToPlace() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("ToPlace() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestPlace_GetID(t *testing.T) {

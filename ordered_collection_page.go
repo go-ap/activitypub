@@ -295,7 +295,7 @@ func (o *OrderedCollectionPage) GobDecode(data []byte) error {
 }
 
 // ToOrderedCollectionPage
-func ToOrderedCollectionPage(it Item) (*OrderedCollectionPage, error) {
+func ToOrderedCollectionPage(it LinkOrIRI) (*OrderedCollectionPage, error) {
 	switch i := it.(type) {
 	case *OrderedCollectionPage:
 		return i, nil
@@ -397,4 +397,21 @@ func (o *OrderedCollectionPage) Clean() {
 		o.Clean()
 		return nil
 	})
+}
+
+// OnOrderedCollectionPage calls function fn on it Item if it can be asserted
+// to type *OrderedCollectionPage
+//
+// This function should be called if trying to access the OrderedCollectionPage specific
+// properties like "partOf", "next", "perv". For the other properties
+// OnObject or OnOrderedCollection should be used instead.
+func OnOrderedCollectionPage(it Item, fn WithOrderedCollectionPageFn) error {
+	if it == nil {
+		return nil
+	}
+	col, err := ToOrderedCollectionPage(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
 }

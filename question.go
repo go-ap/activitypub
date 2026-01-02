@@ -243,7 +243,7 @@ func QuestionNew(id ID) *Question {
 }
 
 // ToQuestion tries to convert the "it" Item to a Question object.
-func ToQuestion(it Item) (*Question, error) {
+func ToQuestion(it LinkOrIRI) (*Question, error) {
 	switch i := it.(type) {
 	case *Question:
 		return i, nil
@@ -276,7 +276,7 @@ type WithQuestionFn func(*Question) error
 // This function should be called if trying to access the Questions specific
 // properties like "anyOf", "oneOf", "closed", etc. For the other properties
 // OnObject or OnIntransitiveActivity should be used instead.
-func OnQuestion(it Item, fn func(question *Question) error) error {
+func OnQuestion(it LinkOrIRI, fn func(question *Question) error) error {
 	if it == nil {
 		return nil
 	}

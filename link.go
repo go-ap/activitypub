@@ -218,3 +218,21 @@ func (l Link) Format(s fmt.State, verb rune) {
 		_, _ = fmt.Fprintf(s, "%T[%s] { %s }", l, l.Type, l.Href)
 	}
 }
+
+// OnLink calls function fn on the "it" LinkOrIRI if it can be asserted to type *Link
+//
+// This function should be safe to use for all types with a structure compatible
+// with the Link type
+func OnLink(it LinkOrIRI, fn func(*Link) error) error {
+	if it == nil {
+		return nil
+	}
+	if IsItemCollection(it) {
+		return callOnItemCollection(it, OnLink, fn)
+	}
+	ob, err := ToLink(it)
+	if err != nil {
+		return err
+	}
+	return fn(ob)
+}

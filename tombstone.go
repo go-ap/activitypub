@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"time"
-	"unsafe"
 
 	"github.com/valyala/fastjson"
 )
@@ -239,16 +238,12 @@ func (t Tombstone) Format(s fmt.State, verb rune) {
 }
 
 // ToTombstone
-func ToTombstone(it Item) (*Tombstone, error) {
+func ToTombstone(it LinkOrIRI) (*Tombstone, error) {
 	switch i := it.(type) {
 	case *Tombstone:
 		return i, nil
 	case Tombstone:
 		return &i, nil
-	case *Object:
-		return (*Tombstone)(unsafe.Pointer(i)), nil
-	case Object:
-		return (*Tombstone)(unsafe.Pointer(&i)), nil
 	default:
 		return reflectItemToType[Tombstone](it)
 	}
@@ -261,7 +256,7 @@ type withTombstoneFn func(*Tombstone) error
 // This function should be called if trying to access the Tombstone specific properties
 // like "formerType" or "deleted".
 // For the other properties OnObject should be used instead.
-func OnTombstone(it Item, fn func(*Tombstone) error) error {
+func OnTombstone(it LinkOrIRI, fn func(*Tombstone) error) error {
 	if it == nil {
 		return nil
 	}

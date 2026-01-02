@@ -260,7 +260,7 @@ func (p Place) Format(s fmt.State, verb rune) {
 }
 
 // ToPlace
-func ToPlace(it Item) (*Place, error) {
+func ToPlace(it LinkOrIRI) (*Place, error) {
 	switch i := it.(type) {
 	case *Place:
 		return i, nil
@@ -278,7 +278,7 @@ type withPlaceFn func(*Place) error
 // This function should be called if trying to access the Place specific properties
 // like "accuracy", "altitude", "latitude", "longitude", "radius", or "units".
 // For the other properties OnObject should be used instead.
-func OnPlace(it Item, fn func(*Place) error) error {
+func OnPlace(it LinkOrIRI, fn func(*Place) error) error {
 	if it == nil {
 		return nil
 	}

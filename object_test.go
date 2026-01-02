@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/valyala/fastjson"
 )
 
@@ -466,6 +467,151 @@ func TestObject_GetType(t *testing.T) {
 func TestToObject(t *testing.T) {
 	tests := []struct {
 		name    string
+		it      LinkOrIRI
+		want    *Object
+		wantErr error
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "Valid Object",
+			it:   Object{ID: "test", Type: UpdateType},
+			want: &Object{ID: "test", Type: UpdateType},
+		},
+		{
+			name: "Valid *Object",
+			it:   &Object{ID: "test", Type: CreateType},
+			want: &Object{ID: "test", Type: CreateType},
+		},
+		{
+			name: "Valid Place",
+			it:   Place{ID: "test", Type: PlaceType},
+			want: &Object{ID: "test", Type: PlaceType},
+		},
+		{
+			name: "Valid *Place",
+			it:   &Place{ID: "test", Type: PlaceType},
+			want: &Object{ID: "test", Type: PlaceType},
+		},
+		{
+			name: "Valid Profile",
+			it:   Profile{ID: "test", Type: ProfileType},
+			want: &Object{ID: "test", Type: ProfileType},
+		},
+		{
+			name: "Valid *Profile",
+			it:   &Profile{ID: "test", Type: ProfileType},
+			want: &Object{ID: "test", Type: ProfileType},
+		},
+		{
+			name: "Valid Relationship",
+			it:   Relationship{ID: "test", Type: RelationshipType},
+			want: &Object{ID: "test", Type: RelationshipType},
+		},
+		{
+			name: "Valid *Relationship",
+			it:   &Relationship{ID: "test", Type: RelationshipType},
+			want: &Object{ID: "test", Type: RelationshipType},
+		},
+		{
+			name: "Valid Tombstone",
+			it:   Tombstone{ID: "test", Type: TombstoneType},
+			want: &Object{ID: "test", Type: TombstoneType},
+		},
+		{
+			name: "Valid *Tombstone",
+			it:   &Tombstone{ID: "test", Type: TombstoneType},
+			want: &Object{ID: "test", Type: TombstoneType},
+		},
+		{
+			name: "Valid Activity",
+			it:   &Activity{ID: "test", Type: CreateType},
+			want: &Object{ID: "test", Type: CreateType},
+		},
+		{
+			name: "Valid IntransitiveActivity",
+			it:   &IntransitiveActivity{ID: "test", Type: ArriveType},
+			want: &Object{ID: "test", Type: ArriveType},
+		},
+		{
+			name: "Valid Question",
+			it:   &Question{ID: "test", Type: QuestionType},
+			want: &Object{ID: "test", Type: QuestionType},
+		},
+		{
+			name: "Valid OrderedCollection",
+			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &Object{ID: "test", Type: OrderedCollectionType},
+		},
+		{
+			name: "Valid *OrderedCollection",
+			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &Object{ID: "test", Type: OrderedCollectionType},
+		},
+		{
+			name: "Valid OrderedCollectionPage",
+			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &Object{ID: "test", Type: OrderedCollectionPageType},
+		},
+		{
+			name: "Valid *OrderedCollectionPage",
+			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &Object{ID: "test", Type: OrderedCollectionPageType},
+		},
+		{
+			name: "Valid OrderedCollection",
+			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &Object{ID: "test", Type: OrderedCollectionType},
+		},
+		{
+			name: "Valid *OrderedCollection",
+			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &Object{ID: "test", Type: OrderedCollectionType},
+		},
+		{
+			name: "Valid OrderedCollectionPage",
+			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &Object{ID: "test", Type: OrderedCollectionPageType},
+		},
+		{
+			name: "Valid *OrderedCollectionPage",
+			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &Object{ID: "test", Type: OrderedCollectionPageType},
+		},
+		{
+			name:    "IRI",
+			it:      IRI("https://example.com"),
+			wantErr: ErrorInvalidType[Object](IRI("")),
+		},
+		{
+			name:    "IRIs",
+			it:      IRIs{IRI("https://example.com")},
+			wantErr: ErrorInvalidType[Object](IRIs{}),
+		},
+		{
+			name:    "ItemCollection",
+			it:      ItemCollection{},
+			wantErr: ErrorInvalidType[Object](ItemCollection{}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ToObject(tt.it)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("ToObject() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("ToObject() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestToObject1(t *testing.T) {
+	tests := []struct {
+		name    string
 		arg     Item
 		want    Item
 		wantErr bool
@@ -549,14 +695,6 @@ func TestToObject(t *testing.T) {
 }
 
 func TestFlattenObjectProperties(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestToTombstone(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestToRelationship(t *testing.T) {
 	t.Skipf("TODO")
 }
 

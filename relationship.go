@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"time"
-	"unsafe"
 
 	"github.com/valyala/fastjson"
 )
@@ -251,16 +250,12 @@ func (r Relationship) Format(s fmt.State, verb rune) {
 }
 
 // ToRelationship tries to convert the "it" Item to a Relationship object.
-func ToRelationship(it Item) (*Relationship, error) {
+func ToRelationship(it LinkOrIRI) (*Relationship, error) {
 	switch i := it.(type) {
 	case *Relationship:
 		return i, nil
 	case Relationship:
 		return &i, nil
-	case *Object:
-		return (*Relationship)(unsafe.Pointer(i)), nil
-	case Object:
-		return (*Relationship)(unsafe.Pointer(&i)), nil
 	default:
 		return reflectItemToType[Relationship](it)
 	}
@@ -273,7 +268,7 @@ type withRelationshipFn func(*Relationship) error
 // This function should be called if trying to access the Relationship specific properties
 // like "subject", "object", or "relationship".
 // For the other properties OnObject should be used instead.
-func OnRelationship(it Item, fn func(*Relationship) error) error {
+func OnRelationship(it LinkOrIRI, fn func(*Relationship) error) error {
 	if it == nil {
 		return nil
 	}

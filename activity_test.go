@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestActivityNew(t *testing.T) {
@@ -932,27 +934,67 @@ func TestUpdate_UnmarshalJSON(t *testing.T) {
 }
 
 func TestToActivity(t *testing.T) {
-	var it Item
-	act := ActivityNew(ID("test"), CreateType, nil)
-	it = act
-
-	a, err := ToActivity(it)
-	if err != nil {
-		t.Error(err)
+	tests := []struct {
+		name    string
+		it      LinkOrIRI
+		want    *Activity
+		wantErr error
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "Valid Activity",
+			it:   Activity{ID: "test", Type: UpdateType},
+			want: &Activity{ID: "test", Type: UpdateType},
+		},
+		{
+			name: "Valid *Activity",
+			it:   &Activity{ID: "test", Type: CreateType},
+			want: &Activity{ID: "test", Type: CreateType},
+		},
+		{
+			name:    "IRI",
+			it:      IRI("https://example.com"),
+			wantErr: ErrorInvalidType[Activity](IRI("")),
+		},
+		{
+			name:    "IRIs",
+			it:      IRIs{IRI("https://example.com")},
+			wantErr: ErrorInvalidType[Activity](IRIs{}),
+		},
+		{
+			name:    "ItemCollection",
+			it:      ItemCollection{},
+			wantErr: ErrorInvalidType[Activity](ItemCollection{}),
+		},
+		{
+			name:    "IntransitiveActivity",
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			wantErr: ErrorInvalidType[Activity](&IntransitiveActivity{}),
+		},
+		{
+			name:    "Object",
+			it:      &Object{ID: "test", Type: ArticleType},
+			wantErr: ErrorInvalidType[Activity](&Object{}),
+		},
+		{
+			name:    "Actor",
+			it:      &Actor{ID: "test", Type: PersonType},
+			wantErr: ErrorInvalidType[Activity](&Person{}),
+		},
 	}
-	if a != act {
-		t.Errorf("Invalid activity returned by ToActivity #%v", a)
-	}
-
-	ob := ObjectNew(ArticleType)
-	it = ob
-
-	o, err := ToActivity(it)
-	if err == nil {
-		t.Errorf("Error returned when calling ToActivity with object should not be nil")
-	}
-	if o != nil {
-		t.Errorf("Invalid return by ToActivity #%v, should have been nil", o)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ToActivity(tt.it)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("ToActivity() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("ToActivity() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
 	}
 }
 

@@ -320,7 +320,7 @@ func OrderedCollectionPageNew(parent CollectionInterface) *OrderedCollectionPage
 }
 
 // ToOrderedCollection
-func ToOrderedCollection(it Item) (*OrderedCollection, error) {
+func ToOrderedCollection(it LinkOrIRI) (*OrderedCollection, error) {
 	switch i := it.(type) {
 	case *OrderedCollection:
 		return i, nil
@@ -460,4 +460,21 @@ func (o *OrderedCollection) Clean() {
 		o.Clean()
 		return nil
 	})
+}
+
+// OnOrderedCollection calls function fn on it Item if it can be asserted
+// to type *OrderedCollection
+//
+// This function should be called if trying to access the Collection specific
+// properties like "totalItems", "orderedItems", etc. For the other properties
+// OnObject should be used instead.
+func OnOrderedCollection(it Item, fn WithOrderedCollectionFn) error {
+	if it == nil {
+		return nil
+	}
+	col, err := ToOrderedCollection(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
 }

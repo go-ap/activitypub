@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestActorNew(t *testing.T) {
@@ -349,7 +351,68 @@ func TestActor_Clean(t *testing.T) {
 }
 
 func TestToActor(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name    string
+		it      LinkOrIRI
+		want    *Actor
+		wantErr error
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "Valid Actor",
+			it:   Actor{ID: "test", Type: UpdateType},
+			want: &Actor{ID: "test", Type: UpdateType},
+		},
+		{
+			name: "Valid *Actor",
+			it:   &Actor{ID: "test", Type: CreateType},
+			want: &Actor{ID: "test", Type: CreateType},
+		},
+		{
+			name:    "IRI",
+			it:      IRI("https://example.com"),
+			wantErr: ErrorInvalidType[Actor](IRI("")),
+		},
+		{
+			name:    "IRIs",
+			it:      IRIs{IRI("https://example.com")},
+			wantErr: ErrorInvalidType[Actor](IRIs{}),
+		},
+		{
+			name:    "ItemCollection",
+			it:      ItemCollection{},
+			wantErr: ErrorInvalidType[Actor](ItemCollection{}),
+		},
+		{
+			name:    "Object",
+			it:      &Object{ID: "test", Type: ArticleType},
+			wantErr: ErrorInvalidType[Actor](&Object{}),
+		},
+		{
+			name:    "Activity",
+			it:      &Activity{ID: "test", Type: CreateType},
+			wantErr: ErrorInvalidType[Actor](&Activity{}),
+		},
+		{
+			name:    "IntransitiveActivity",
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			wantErr: ErrorInvalidType[Actor](&IntransitiveActivity{}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ToActor(tt.it)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("ToActor() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("ToActor() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestActor_IsCollection(t *testing.T) {

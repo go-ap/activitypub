@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/go-ap/errors"
+	"github.com/google/go-cmp/cmp"
 )
 
 func mockCollection(items ...Item) Collection {
@@ -237,53 +238,95 @@ func TestCollection_ItemMatches(t *testing.T) {
 }
 
 func TestToCollection(t *testing.T) {
-	//err := func(it Item) error { return ErrorInvalidType[Collection](it) }
-	tests := map[string]struct {
-		it      Item
+	tests := []struct {
+		name    string
+		it      LinkOrIRI
 		want    *Collection
 		wantErr error
 	}{
-		"Collection": {
-			it:      new(Collection),
-			want:    new(Collection),
-			wantErr: nil,
+		{
+			name: "empty",
 		},
-		"CollectionPage": {
-			it:      new(CollectionPage),
-			want:    new(Collection),
-			wantErr: nil,
+		{
+			name: "Valid Collection",
+			it:   Collection{ID: "test", Type: CollectionType},
+			want: &Collection{ID: "test", Type: CollectionType},
 		},
-		"OrderedCollectionPage": {
-			it:      new(OrderedCollectionPage),
-			want:    new(Collection),
-			wantErr: nil,
+		{
+			name: "Valid *Collection",
+			it:   &Collection{ID: "test", Type: CollectionType},
+			want: &Collection{ID: "test", Type: CollectionType},
 		},
-		"OrderedCollection": {
-			it:      new(OrderedCollection),
-			want:    new(Collection),
-			wantErr: nil,
+		{
+			name: "Valid CollectionPage",
+			it:   CollectionPage{ID: "test", Type: CollectionPageType},
+			want: &Collection{ID: "test", Type: CollectionPageType},
+		},
+		{
+			name: "Valid *CollectionPage",
+			it:   &CollectionPage{ID: "test", Type: CollectionPageType},
+			want: &Collection{ID: "test", Type: CollectionPageType},
+		},
+		{
+			name: "Valid OrderedCollection",
+			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &Collection{ID: "test", Type: OrderedCollectionType},
+		},
+		{
+			name: "Valid *OrderedCollection",
+			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &Collection{ID: "test", Type: OrderedCollectionType},
+		},
+		{
+			name: "Valid OrderedCollectionPage",
+			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &Collection{ID: "test", Type: OrderedCollectionPageType},
+		},
+		{
+			name: "Valid *OrderedCollectionPage",
+			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &Collection{ID: "test", Type: OrderedCollectionPageType},
+		},
+		{
+			name:    "IRI",
+			it:      IRI("https://example.com"),
+			wantErr: ErrorInvalidType[Collection](IRI("")),
+		},
+		{
+			name:    "IRIs",
+			it:      IRIs{IRI("https://example.com")},
+			wantErr: ErrorInvalidType[Collection](IRIs{}),
+		},
+		{
+			name:    "ItemCollection",
+			it:      ItemCollection{},
+			wantErr: ErrorInvalidType[Collection](ItemCollection{}),
+		},
+		{
+			name:    "Object",
+			it:      &Object{ID: "test", Type: ArticleType},
+			wantErr: ErrorInvalidType[Collection](&Object{}),
+		},
+		{
+			name:    "Activity",
+			it:      &Activity{ID: "test", Type: CreateType},
+			wantErr: ErrorInvalidType[Collection](&Activity{}),
+		},
+		{
+			name:    "IntransitiveActivity",
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			wantErr: ErrorInvalidType[Collection](&IntransitiveActivity{}),
 		},
 	}
-	for name, tt := range tests {
-		t.Run(name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			got, err := ToCollection(tt.it)
-			if tt.wantErr != nil && err == nil {
-				t.Errorf("ToCollection() no error returned, wanted error = [%T]%s", tt.wantErr, tt.wantErr)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("ToCollection() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if err != nil {
-				if tt.wantErr == nil {
-					t.Errorf("ToCollection() returned unexpected error[%T]%s", err, err)
-					return
-				}
-				if !reflect.DeepEqual(err, tt.wantErr) {
-					t.Errorf("ToCollection() received error %v, wanted error %v", err, tt.wantErr)
-					return
-				}
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ToCollection() got = %v, want %v", got, tt.want)
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("ToCollection() got = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

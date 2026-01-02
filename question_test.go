@@ -1,6 +1,10 @@
 package activitypub
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/google/go-cmp/cmp"
+)
 
 func TestQuestionNew(t *testing.T) {
 	testValue := ID("test")
@@ -56,6 +60,85 @@ func TestQuestion_GetType(t *testing.T) {
 }
 
 func TestToQuestion(t *testing.T) {
+	tests := []struct {
+		name    string
+		it      LinkOrIRI
+		want    *Question
+		wantErr error
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "Valid Question",
+			it:   Question{ID: "test", Type: TravelType},
+			want: &Question{ID: "test", Type: TravelType},
+		},
+		{
+			name: "Valid *Question",
+			it:   &Question{ID: "test", Type: ArriveType},
+			want: &Question{ID: "test", Type: ArriveType},
+		},
+		{
+			name: "Valid Question",
+			it:   Question{ID: "test", Type: QuestionType},
+			want: &Question{ID: "test", Type: QuestionType},
+		},
+		{
+			name: "Valid *Question",
+			it:   &Question{ID: "test", Type: QuestionType},
+			want: &Question{ID: "test", Type: QuestionType},
+		},
+		{
+			name:    "IRI",
+			it:      IRI("https://example.com"),
+			wantErr: ErrorInvalidType[Question](IRI("")),
+		},
+		{
+			name:    "IntransitiveActivity",
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			wantErr: ErrorInvalidType[Question](new(IntransitiveActivity)),
+		},
+		{
+			name:    "Activity",
+			it:      &Activity{ID: "test", Type: UpdateType},
+			wantErr: ErrorInvalidType[Question](new(Activity)),
+		},
+		{
+			name:    "IRIs",
+			it:      IRIs{IRI("https://example.com")},
+			wantErr: ErrorInvalidType[Question](IRIs{}),
+		},
+		{
+			name:    "ItemCollection",
+			it:      ItemCollection{},
+			wantErr: ErrorInvalidType[Question](ItemCollection{}),
+		},
+		{
+			name:    "Object",
+			it:      &Object{ID: "test", Type: ArticleType},
+			wantErr: ErrorInvalidType[Question](&Object{}),
+		},
+		{
+			name:    "Actor",
+			it:      &Actor{ID: "test", Type: PersonType},
+			wantErr: ErrorInvalidType[Question](&Person{}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ToQuestion(tt.it)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("ToQuestion() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("ToQuestion() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+func TestToQuestion1(t *testing.T) {
 	var it Item
 	act := QuestionNew("test")
 	it = act

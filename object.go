@@ -992,3 +992,21 @@ func (o *Object) equal(with *Object) bool {
 	}
 	return result
 }
+
+// OnObject calls function fn on it Item if it can be asserted to type *Object
+//
+// This function should be safe to be called for all types with a structure compatible
+// to the Object type.
+func OnObject(it LinkOrIRI, fn func(*Object) error) error {
+	if it == nil {
+		return nil
+	}
+	if IsItemCollection(it) {
+		return callOnItemCollection(it, OnObject, fn)
+	}
+	ob, err := ToObject(it)
+	if err != nil {
+		return err
+	}
+	return fn(ob)
+}

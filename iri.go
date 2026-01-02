@@ -466,3 +466,17 @@ func (i IRI) ItemsMatch(col ...Item) bool {
 	}
 	return true
 }
+
+// OnIRIs calls function fn on it Item if it can be asserted to type IRIs
+//
+// It should be used when Item represents an IRI slice.
+func OnIRIs(it Item, fn WithIRIsFn) error {
+	if it == nil {
+		return nil
+	}
+	col, err := ToIRIs(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
+}

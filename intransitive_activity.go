@@ -259,7 +259,7 @@ func IntransitiveActivityNew(id ID, typ ActivityVocabularyType) *IntransitiveAct
 }
 
 // ToIntransitiveActivity tries to convert it Item to an IntransitiveActivity object
-func ToIntransitiveActivity(it Item) (*IntransitiveActivity, error) {
+func ToIntransitiveActivity(it LinkOrIRI) (*IntransitiveActivity, error) {
 	switch i := it.(type) {
 	case *IntransitiveActivity:
 		return i, nil
@@ -376,4 +376,24 @@ func fmtIntransitiveActivityProps(w io.Writer) func(*IntransitiveActivity) error
 		}
 		return OnObject(ia, fmtObjectProps(w))
 	}
+}
+
+// OnIntransitiveActivity calls function fn on it Item if it can be asserted
+// to type *IntransitiveActivity
+//
+// This function should be called if trying to access the IntransitiveActivity
+// specific properties like "actor", for the other properties OnObject
+// should be used instead.
+func OnIntransitiveActivity(it LinkOrIRI, fn func(*IntransitiveActivity) error) error {
+	if it == nil {
+		return nil
+	}
+	if IsItemCollection(it) {
+		return callOnItemCollection(it, OnIntransitiveActivity, fn)
+	}
+	act, err := ToIntransitiveActivity(it)
+	if err != nil {
+		return err
+	}
+	return fn(act)
 }

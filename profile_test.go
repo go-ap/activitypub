@@ -3,6 +3,8 @@ package activitypub
 import (
 	"fmt"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestProfile_Recipients(t *testing.T) {
@@ -10,7 +12,68 @@ func TestProfile_Recipients(t *testing.T) {
 }
 
 func TestToProfile(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name    string
+		it      LinkOrIRI
+		want    *Profile
+		wantErr error
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "Valid Profile",
+			it:   Profile{ID: "test", Type: ProfileType},
+			want: &Profile{ID: "test", Type: ProfileType},
+		},
+		{
+			name: "Valid *Profile",
+			it:   &Profile{ID: "test", Type: ProfileType},
+			want: &Profile{ID: "test", Type: ProfileType},
+		},
+		{
+			name:    "IRI",
+			it:      IRI("https://example.com"),
+			wantErr: ErrorInvalidType[Profile](IRI("")),
+		},
+		{
+			name:    "IRIs",
+			it:      IRIs{IRI("https://example.com")},
+			wantErr: ErrorInvalidType[Profile](IRIs{}),
+		},
+		{
+			name:    "ItemCollection",
+			it:      ItemCollection{},
+			wantErr: ErrorInvalidType[Profile](ItemCollection{}),
+		},
+		{
+			name:    "Object",
+			it:      &Object{ID: "test", Type: ArticleType},
+			wantErr: ErrorInvalidType[Profile](&Object{}),
+		},
+		{
+			name:    "Activity",
+			it:      &Activity{ID: "test", Type: CreateType},
+			wantErr: ErrorInvalidType[Profile](&Activity{}),
+		},
+		{
+			name:    "IntransitiveActivity",
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			wantErr: ErrorInvalidType[Profile](&IntransitiveActivity{}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ToProfile(tt.it)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("ToProfile() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("ToProfile() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestProfile_GetID(t *testing.T) {

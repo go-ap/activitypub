@@ -3,6 +3,8 @@ package activitypub
 import (
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestIntransitiveActivityNew(t *testing.T) {
@@ -205,27 +207,77 @@ func TestIntransitiveActivity_GetType(t *testing.T) {
 }
 
 func TestToIntransitiveActivity(t *testing.T) {
-	var it Item
-	act := IntransitiveActivityNew("test", TravelType)
-	it = act
-
-	a, err := ToIntransitiveActivity(it)
-	if err != nil {
-		t.Error(err)
+	tests := []struct {
+		name    string
+		it      LinkOrIRI
+		want    *IntransitiveActivity
+		wantErr error
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "Valid IntransitiveActivity",
+			it:   IntransitiveActivity{ID: "test", Type: TravelType},
+			want: &IntransitiveActivity{ID: "test", Type: TravelType},
+		},
+		{
+			name: "Valid *IntransitiveActivity",
+			it:   &IntransitiveActivity{ID: "test", Type: ArriveType},
+			want: &IntransitiveActivity{ID: "test", Type: ArriveType},
+		},
+		{
+			name: "Valid Question",
+			it:   Question{ID: "test", Type: QuestionType},
+			want: &IntransitiveActivity{ID: "test", Type: QuestionType},
+		},
+		{
+			name: "Valid *Question",
+			it:   &Question{ID: "test", Type: QuestionType},
+			want: &IntransitiveActivity{ID: "test", Type: QuestionType},
+		},
+		{
+			name:    "IRI",
+			it:      IRI("https://example.com"),
+			wantErr: ErrorInvalidType[IntransitiveActivity](IRI("")),
+		},
+		{
+			name: "Activity",
+			it:   &Activity{ID: "test", Type: UpdateType},
+			want: &IntransitiveActivity{ID: "test", Type: UpdateType},
+		},
+		{
+			name:    "IRIs",
+			it:      IRIs{IRI("https://example.com")},
+			wantErr: ErrorInvalidType[IntransitiveActivity](IRIs{}),
+		},
+		{
+			name:    "ItemCollection",
+			it:      ItemCollection{},
+			wantErr: ErrorInvalidType[IntransitiveActivity](ItemCollection{}),
+		},
+		{
+			name:    "Object",
+			it:      &Object{ID: "test", Type: ArticleType},
+			wantErr: ErrorInvalidType[IntransitiveActivity](&Object{}),
+		},
+		{
+			name:    "Actor",
+			it:      &Actor{ID: "test", Type: PersonType},
+			wantErr: ErrorInvalidType[IntransitiveActivity](&Person{}),
+		},
 	}
-	if a != act {
-		t.Errorf("Invalid activity returned by ToActivity #%v", a)
-	}
-
-	ob := ObjectNew(ArticleType)
-	it = ob
-
-	o, err := ToIntransitiveActivity(it)
-	if err == nil {
-		t.Errorf("Error returned when calling ToActivity with object should not be nil")
-	}
-	if o != nil {
-		t.Errorf("Invalid return by ToActivity #%v, should have been nil", o)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ToIntransitiveActivity(tt.it)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("ToIntransitiveActivity() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("ToIntransitiveActivity() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
 	}
 }
 

@@ -264,7 +264,7 @@ func IsNil(it LinkOrIRI) bool {
 	return isNil
 }
 
-func ErrorInvalidType[T Objects | Links | IRIs](received LinkOrIRI) error {
+func ErrorInvalidType[T Objects | Links](received LinkOrIRI) error {
 	return fmt.Errorf("unable to convert %T to %T", received, new(T))
 }
 
@@ -288,4 +288,19 @@ func OnItem(it Item, fn func(Item) error) error {
 		}
 		return nil
 	})
+}
+
+// OnItemCollection calls function fn on it Item if it can be asserted to type ItemCollection
+//
+// It should be used when Item represents an Item collection and it's usually used as a way
+// to wrap functionality for other functions that will be called on each item in the collection.
+func OnItemCollection(it LinkOrIRI, fn WithItemCollectionFn) error {
+	if it == nil {
+		return nil
+	}
+	col, err := ToItemCollection(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
 }

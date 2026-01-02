@@ -365,7 +365,7 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 	notEmpty := false
 	JSONWrite(&b, '{')
 
-	OnObject(a, func(o *Object) error {
+	_ = OnObject(a, func(o *Object) error {
 		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
@@ -498,7 +498,7 @@ func (e Endpoints) MarshalJSON() ([]byte, error) {
 }
 
 // ToActor
-func ToActor(it Item) (*Actor, error) {
+func ToActor(it LinkOrIRI) (*Actor, error) {
 	switch i := it.(type) {
 	case *Actor:
 		return i, nil
@@ -625,7 +625,7 @@ type WithActorFn func(*Actor) error
 // This function should be called if trying to access the Actor specific
 // properties like "preferredName", "publicKey", etc. For the other properties
 // OnObject should be used instead.
-func OnActor(it Item, fn func(*Actor) error) error {
+func OnActor(it LinkOrIRI, fn func(*Actor) error) error {
 	if it == nil {
 		return nil
 	}

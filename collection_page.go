@@ -338,7 +338,7 @@ func copyCollectionToPage(c *Collection, p *CollectionPage) error {
 }
 
 // ToCollectionPage
-func ToCollectionPage(it Item) (*CollectionPage, error) {
+func ToCollectionPage(it LinkOrIRI) (*CollectionPage, error) {
 	switch i := it.(type) {
 	case *CollectionPage:
 		return i, nil
@@ -441,4 +441,21 @@ func (c *CollectionPage) Clean() {
 		o.Clean()
 		return nil
 	})
+}
+
+// OnCollectionPage calls function fn on it Item if it can be asserted to
+// type *CollectionPage
+//
+// This function should be called if trying to access the CollectionPage specific
+// properties like "partOf", "next", "perv". For the other properties
+// OnObject or OnCollection should be used instead.
+func OnCollectionPage(it Item, fn WithCollectionPageFn) error {
+	if it == nil {
+		return nil
+	}
+	col, err := ToCollectionPage(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
 }

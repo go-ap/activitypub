@@ -3,6 +3,8 @@ package activitypub
 import (
 	"fmt"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestTombstone_GetID(t *testing.T) {
@@ -90,6 +92,71 @@ func TestOnTombstone(t *testing.T) {
 			}
 			if err := OnTombstone(tt.args.it, tt.args.fn(logFn, &testTombstone)); (err != nil) != tt.wantErr {
 				t.Errorf("OnTombstone() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestToTombstone(t *testing.T) {
+	tests := []struct {
+		name    string
+		it      LinkOrIRI
+		want    *Tombstone
+		wantErr error
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "Valid Tombstone",
+			it:   Tombstone{ID: "test", Type: TombstoneType},
+			want: &Tombstone{ID: "test", Type: TombstoneType},
+		},
+		{
+			name: "Valid *Tombstone",
+			it:   &Tombstone{ID: "test", Type: TombstoneType},
+			want: &Tombstone{ID: "test", Type: TombstoneType},
+		},
+		{
+			name:    "IRI",
+			it:      IRI("https://example.com"),
+			wantErr: ErrorInvalidType[Tombstone](IRI("")),
+		},
+		{
+			name:    "IRIs",
+			it:      IRIs{IRI("https://example.com")},
+			wantErr: ErrorInvalidType[Tombstone](IRIs{}),
+		},
+		{
+			name:    "ItemCollection",
+			it:      ItemCollection{},
+			wantErr: ErrorInvalidType[Tombstone](ItemCollection{}),
+		},
+		{
+			name:    "Object",
+			it:      &Object{ID: "test", Type: ArticleType},
+			wantErr: ErrorInvalidType[Tombstone](&Object{}),
+		},
+		{
+			name:    "Activity",
+			it:      &Activity{ID: "test", Type: CreateType},
+			wantErr: ErrorInvalidType[Tombstone](&Activity{}),
+		},
+		{
+			name:    "IntransitiveActivity",
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			wantErr: ErrorInvalidType[Tombstone](&IntransitiveActivity{}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ToTombstone(tt.it)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("ToTombstone() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("ToTombstone() got = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}
