@@ -368,8 +368,13 @@ func irisEqual(i1, i2 IRI, checkScheme bool) bool {
 	if !strings.EqualFold(u.Host, uw.Host) {
 		return false
 	}
-	if !(u.Path == "/" && uw.Path == "" || u.Path == "" && uw.Path == "/") &&
-		!strings.EqualFold(filepath.Clean(u.Path), filepath.Clean(uw.Path)) {
+	if u.Path == "" {
+		u.Path = "/"
+	}
+	if uw.Path == "" {
+		uw.Path = "/"
+	}
+	if !strings.EqualFold(filepath.Clean(u.Path), filepath.Clean(uw.Path)) {
 		return false
 	}
 	uq := u.Query()
