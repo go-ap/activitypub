@@ -135,7 +135,58 @@ func TestIRIs_Contains(t *testing.T) {
 }
 
 func TestIRI_Contains(t *testing.T) {
-	t.Skip("TODO")
+	type args struct {
+		what        IRI
+		checkScheme bool
+	}
+	tests := []struct {
+		name string
+		i    IRI
+		args args
+		want bool
+	}{
+		{
+			name: "empty",
+			want: true,
+		},
+		{
+			name: "equal",
+			i:    "http://example.com",
+			args: args{what: "http://example.com"},
+			want: true,
+		},
+		{
+			name: "i has /",
+			i:    "http://example.com/",
+			args: args{what: "http://example.com"},
+			want: true,
+		},
+		{
+			name: "what has /",
+			i:    "http://example.com",
+			args: args{what: "http://example.com/"},
+			want: true,
+		},
+		{
+			name: "different protocol w/ no check",
+			i:    "http://example.com",
+			args: args{what: "https://example.com/"},
+			want: true,
+		},
+		{
+			name: "different protocol",
+			i:    "http://example.com",
+			args: args{what: "https://example.com/", checkScheme: true},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Contains(tt.args.what, tt.args.checkScheme); got != tt.want {
+				t.Errorf("Contains() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestIRI_IsCollection(t *testing.T) {
@@ -393,6 +444,18 @@ func TestIRI_Equals(t *testing.T) {
 			},
 			// This was true in the url.Parse implementation
 			want: false,
+		},
+		{
+			name: "i has /",
+			i:    "http://example.com/",
+			args: args{with: "http://example.com"},
+			want: true,
+		},
+		{
+			name: "what has /",
+			i:    "http://example.com",
+			args: args{with: "http://example.com/"},
+			want: true,
 		},
 	}
 	for _, tt := range tests {

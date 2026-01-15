@@ -455,10 +455,14 @@ func (i IRI) Contains(what IRI, checkScheme bool) bool {
 	p := u.Path
 	if p != "" {
 		p = filepath.Clean(p)
+	} else {
+		p = "/"
 	}
 	pw := uw.Path
 	if pw != "" {
 		pw = filepath.Clean(pw)
+	} else {
+		pw = "/"
 	}
 	return strings.Contains(p, pw)
 }
