@@ -49,6 +49,29 @@ func JSONGetType(val *fastjson.Value) ActivityVocabularyType {
 	return ActivityVocabularyType(t)
 }
 
+func JSONGetTypes(val *fastjson.Value) (types ActivityVocabularyTypes) {
+	value := val.Get("type")
+	if value == nil {
+		return types
+	}
+	switch value.Type() {
+	case fastjson.TypeString:
+			return ActivityVocabularyTypes{ActivityVocabularyType(value.GetStringBytes())}
+	case fastjson.TypeArray:
+		valArr, err := value.Array()
+		if err != nil {
+			return ActivityVocabularyTypes{}
+		}
+		types = make(ActivityVocabularyTypes, len(valArr))
+		for i, v := range valArr {
+			types[i] = ActivityVocabularyType(v.GetStringBytes())
+		}
+		return types
+	default:
+		return types
+	}
+}
+
 func JSONGetMimeType(val *fastjson.Value, prop string) MimeType {
 	if !val.Exists(prop) {
 		return ""

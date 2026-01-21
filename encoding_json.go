@@ -399,6 +399,32 @@ func JSONWriteLinkValue(b *[]byte, l Link) (notEmpty bool) {
 	return notEmpty
 }
 
+func JSONWriteActivityVocabularyTypes(b *[]byte, t ActivityVocabularyTypes) (notEmpty bool) {
+	if b == nil {
+		return notEmpty
+	}
+	tLen := len(t)
+	switch tLen {
+	case 0:
+		return notEmpty
+	case 1:
+		return JSONWriteStringValue(b, string(t[0]))
+	default:
+		JSONWrite(b, '[')
+		for i, ty := range t {
+			if !JSONWriteStringValue(b, string(ty)) {
+				return false
+			}
+			if i < tLen - 1 {
+			  JSONWriteComma(b)
+			}
+			notEmpty = true
+		}
+		JSONWrite(b, ']')
+		return notEmpty
+	}
+}
+
 // MarshalJSON represents just a wrapper for the jsonld.Marshal function
 func MarshalJSON(it LinkOrIRI) ([]byte, error) {
 	return jsonld.Marshal(it)
