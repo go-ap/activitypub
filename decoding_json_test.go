@@ -8,6 +8,7 @@ import (
 	"unsafe"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/valyala/fastjson"
 )
 
 type visit struct {
@@ -473,6 +474,55 @@ func TestJSONGetTime(t *testing.T) {
 
 func TestJSONGetType(t *testing.T) {
 	t.Skipf("TODO")
+}
+
+func TestJSONGetTypes(t *testing.T) {
+	tests := []struct {
+		name string
+		data []byte
+		want ActivityVocabularyTypes
+		err  error
+	}{
+		{
+			name: "empty",
+			data: []byte{'{', '}'},
+			want: nil,
+			err:  nil,
+		},
+		{
+			name: "single Activity type",
+			data: []byte(`{"type":"Activity"}`),
+			want: ActivityVocabularyTypes{
+				ActivityType,
+			},
+			err:  nil,
+		},
+		{
+			name: "multiple Activity type",
+			data: []byte(`{"type":["Activity","Accept"]}`),
+			want: ActivityVocabularyTypes{
+				ActivityType,
+				AcceptType,
+			},
+			err:  nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := fastjson.Parser{}
+			val, err := p.ParseBytes(tt.data)
+			if (err != nil && tt.err == nil) || (err == nil && tt.err != nil) {
+				if !cmp.Equal(err, tt.err, EquateWeakErrors) {
+					t.Errorf("JSONGetTypes() error = %v, wantErr %v", err, tt.err)
+				}
+				return
+			}
+			got := JSONGetTypes(val)
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("JSONGetTypes() got = %s", cmp.Diff(got, tt.want))
+			}
+		})
+	}
 }
 
 func TestJSONGetURIItem(t *testing.T) {

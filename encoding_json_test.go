@@ -618,3 +618,57 @@ func TestJSONWriteStringValue(t *testing.T) {
 		})
 	}
 }
+
+func TestJSONWriteActivityVocabularyTypes(t *testing.T) {
+	type args struct {
+		b *[]byte
+		v ActivityVocabularyTypes
+	}
+	tests := []struct {
+		name         string
+		args         args
+		want         string
+		wantNotEmpty bool
+	}{
+		{
+			name:         "empty",
+			args:         args{},
+			want:         "",
+			wantNotEmpty: false,
+		},
+		{
+			name: "single type",
+			args: args{
+				b: buff(10),
+				v: ActivityVocabularyTypes{
+					ActivityType,
+				},
+			},
+			want:         `"Activity"`,
+			wantNotEmpty: true,
+		},
+		{
+			name: "multiple types",
+			args: args{
+				b: buff(21),
+				v: ActivityVocabularyTypes{
+					ActivityType,
+					AcceptType,
+				},
+			},
+			want:         `["Activity","Accept"]`,
+			wantNotEmpty: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotNotEmpty := JSONWriteActivityVocabularyTypes(tt.args.b, tt.args.v)
+			if gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("JSONWriteActivityVocabularyTypes() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if tt.wantNotEmpty && tt.want != string(*tt.args.b) {
+				t.Errorf("JSONWriteActivityVocabularyTypes() = %s, want %s", *tt.args.b, tt.want)
+			}
+		})
+	}
+}

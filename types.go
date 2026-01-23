@@ -1,5 +1,11 @@
 package activitypub
 
+import (
+	"fmt"
+
+	"github.com/valyala/fastjson"
+)
+
 // ActivityVocabularyTypes is a type alias for a slice of ActivityVocabularyType elements
 type ActivityVocabularyTypes []ActivityVocabularyType
 
@@ -63,4 +69,27 @@ var Types = ActivityVocabularyTypes{
 	ArriveType,
 	TravelType,
 	QuestionType,
+}
+
+// MarshalJSON encodes the receiver object to a JSON document.
+func (t ActivityVocabularyTypes) MarshalJSON() ([]byte, error) {
+	b := []byte{}
+	if !JSONWriteActivityVocabularyTypes(&b, t) {
+		return nil, fmt.Errorf("error JSON encoding ActivityVocabularyTypes")
+	}
+	return b, nil
+}
+
+// UnmarshalJSON decodes the receiver type from the JSON document.
+func (t *ActivityVocabularyTypes) UnmarshalJSON(b []byte) error {
+	if t == nil {
+		return fmt.Errorf("nil ActivityVocabularyTypes receiver")
+	}
+	p := fastjson.Parser{}
+	val, err := p.ParseBytes(b)
+	if err != nil {
+		return err
+	}
+	*t = JSONGetTypes(val)
+	return nil
 }
