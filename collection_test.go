@@ -11,7 +11,7 @@ import (
 func mockCollection(items ...Item) Collection {
 	cc := Collection{
 		ID:   IRIf("https://example.com", Inbox),
-		Type: CollectionType,
+		Type: CollectionType.ToTypes(),
 	}
 	if len(items) == 0 {
 		cc.Items = make(ItemCollection, 0)
@@ -30,8 +30,8 @@ func TestCollectionNew(t *testing.T) {
 	if c.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", c.ID, testValue)
 	}
-	if c.Type != CollectionType {
-		t.Errorf("APObject Type '%v' different than expected '%v'", c.Type, CollectionType)
+	if c.GetType() != CollectionType {
+		t.Errorf("APObject Type '%v' different than expected '%v'", c.GetType(), CollectionType)
 	}
 }
 
@@ -154,8 +154,8 @@ func TestCollection_UnmarshalJSON(t *testing.T) {
 	if c.ID != "" {
 		t.Errorf("Unmarshaled object should have empty ID, received %q", c.ID)
 	}
-	if c.Type != "" {
-		t.Errorf("Unmarshaled object should have empty Type, received %q", c.Type)
+	if c.GetType() != "" {
+		t.Errorf("Unmarshaled object should have empty Type, received %q", c.GetType())
 	}
 	if c.AttributedTo != nil {
 		t.Errorf("Unmarshaled object should have empty AttributedTo, received %q", c.AttributedTo)
@@ -249,43 +249,43 @@ func TestToCollection(t *testing.T) {
 		},
 		{
 			name: "Valid Collection",
-			it:   Collection{ID: "test", Type: CollectionType},
-			want: &Collection{ID: "test", Type: CollectionType},
+			it:   Collection{ID: "test", Type: CollectionType.ToTypes()},
+			want: &Collection{ID: "test", Type: CollectionType.ToTypes()},
 		},
 		{
 			name: "Valid *Collection",
-			it:   &Collection{ID: "test", Type: CollectionType},
-			want: &Collection{ID: "test", Type: CollectionType},
+			it:   &Collection{ID: "test", Type: CollectionType.ToTypes()},
+			want: &Collection{ID: "test", Type: CollectionType.ToTypes()},
 		},
 		{
 			name: "Valid CollectionPage",
-			it:   CollectionPage{ID: "test", Type: CollectionPageType},
-			want: &Collection{ID: "test", Type: CollectionPageType},
+			it:   CollectionPage{ID: "test", Type: CollectionPageType.ToTypes()},
+			want: &Collection{ID: "test", Type: CollectionPageType.ToTypes()},
 		},
 		{
 			name: "Valid *CollectionPage",
-			it:   &CollectionPage{ID: "test", Type: CollectionPageType},
-			want: &Collection{ID: "test", Type: CollectionPageType},
+			it:   &CollectionPage{ID: "test", Type: CollectionPageType.ToTypes()},
+			want: &Collection{ID: "test", Type: CollectionPageType.ToTypes()},
 		},
 		{
 			name: "Valid OrderedCollection",
-			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType},
-			want: &Collection{ID: "test", Type: OrderedCollectionType},
+			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType.ToTypes()},
+			want: &Collection{ID: "test", Type: OrderedCollectionType.ToTypes()},
 		},
 		{
 			name: "Valid *OrderedCollection",
-			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType},
-			want: &Collection{ID: "test", Type: OrderedCollectionType},
+			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType.ToTypes()},
+			want: &Collection{ID: "test", Type: OrderedCollectionType.ToTypes()},
 		},
 		{
 			name: "Valid OrderedCollectionPage",
-			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
-			want: &Collection{ID: "test", Type: OrderedCollectionPageType},
+			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
+			want: &Collection{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
 		},
 		{
 			name: "Valid *OrderedCollectionPage",
-			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
-			want: &Collection{ID: "test", Type: OrderedCollectionPageType},
+			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
+			want: &Collection{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
 		},
 		{
 			name:    "IRI",
@@ -304,17 +304,17 @@ func TestToCollection(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType},
+			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
 			wantErr: ErrorInvalidType[Collection](&Object{}),
 		},
 		{
 			name:    "Activity",
-			it:      &Activity{ID: "test", Type: CreateType},
+			it:      &Activity{ID: "test", Type: CreateType.ToTypes()},
 			wantErr: ErrorInvalidType[Collection](&Activity{}),
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
 			wantErr: ErrorInvalidType[Collection](&IntransitiveActivity{}),
 		},
 	}
@@ -343,20 +343,20 @@ func TestCollection_Equals(t *testing.T) {
 			name: "collection with two items",
 			fields: Collection{
 				ID:    "https://example.com/1",
-				Type:  CollectionType,
+				Type:  CollectionType.ToTypes(),
 				First: IRI("https://example.com/1?first"),
 				Items: ItemCollection{
-					Object{ID: "https://example.com/1/1", Type: NoteType},
-					Object{ID: "https://example.com/1/3", Type: ImageType},
+					Object{ID: "https://example.com/1/1", Type: NoteType.ToTypes()},
+					Object{ID: "https://example.com/1/3", Type: ImageType.ToTypes()},
 				},
 			},
 			item: &Collection{
 				ID:    "https://example.com/1",
-				Type:  CollectionType,
+				Type:  CollectionType.ToTypes(),
 				First: IRI("https://example.com/1?first"),
 				Items: ItemCollection{
-					Object{ID: "https://example.com/1/1", Type: NoteType},
-					Object{ID: "https://example.com/1/3", Type: ImageType},
+					Object{ID: "https://example.com/1/1", Type: NoteType.ToTypes()},
+					Object{ID: "https://example.com/1/3", Type: ImageType.ToTypes()},
 				},
 			},
 			want: true,

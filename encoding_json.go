@@ -415,8 +415,8 @@ func JSONWriteActivityVocabularyTypes(b *[]byte, t ActivityVocabularyTypes) (not
 			if !JSONWriteStringValue(b, string(ty)) {
 				return false
 			}
-			if i < tLen - 1 {
-			  JSONWriteComma(b)
+			if i < tLen-1 {
+				JSONWriteComma(b)
 			}
 			notEmpty = true
 		}

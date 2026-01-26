@@ -57,7 +57,7 @@ type Collection struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyType `jsonld:"type,omitempty"`
+	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -171,7 +171,7 @@ type (
 
 // CollectionNew initializes a new Collection
 func CollectionNew(id ID) *Collection {
-	c := Collection{ID: id, Type: CollectionType}
+	c := Collection{ID: id, Type: CollectionType.ToTypes()}
 	c.Name = NaturalLanguageValuesNew()
 	c.Content = NaturalLanguageValuesNew()
 	c.Summary = NaturalLanguageValuesNew()
@@ -180,7 +180,7 @@ func CollectionNew(id ID) *Collection {
 
 // OrderedCollectionNew initializes a new OrderedCollection
 func OrderedCollectionNew(id ID) *OrderedCollection {
-	o := OrderedCollection{ID: id, Type: OrderedCollectionType}
+	o := OrderedCollection{ID: id, Type: OrderedCollectionType.ToTypes()}
 	o.Name = NaturalLanguageValuesNew()
 	o.Content = NaturalLanguageValuesNew()
 
@@ -194,7 +194,12 @@ func (c Collection) GetID() ID {
 
 // GetType returns the Collection's type
 func (c Collection) GetType() ActivityVocabularyType {
-	return c.Type
+	switch len(c.Type) {
+	case 0:
+		return NilType
+	default:
+		return c.Type[0]
+	}
 }
 
 // IsLink returns false for a Collection object

@@ -46,7 +46,7 @@ type Actor struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyType `jsonld:"type,omitempty"`
+	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -174,7 +174,7 @@ func (a Actor) GetLink() IRI {
 
 // GetType returns the type of the current Actor
 func (a Actor) GetType() ActivityVocabularyType {
-	return a.Type
+	return a.Type.GetType()
 }
 
 // IsLink validates if currentActivity Pub Actor is a Link
@@ -295,7 +295,7 @@ func ActorNew(id ID, typ ActivityVocabularyType) *Actor {
 		typ = ActorType
 	}
 
-	a := Actor{ID: id, Type: typ}
+	a := Actor{ID: id, Type: typ.ToTypes()}
 	a.Name = NaturalLanguageValuesNew()
 	a.Content = NaturalLanguageValuesNew()
 	a.Summary = NaturalLanguageValuesNew()
@@ -411,8 +411,8 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 func (a Actor) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's':
-		if a.Type != "" && a.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", a, a.Type, a.ID)
+		if a.GetType() != "" && a.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", a, a.GetType(), a.ID)
 		} else if a.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T( %s )", a, a.ID)
 		} else {

@@ -68,7 +68,7 @@ func TestItemsEqual(t *testing.T) {
 		},
 		{
 			name: "different_id_types",
-			args: args{&Object{ID: "test", Type: NoteType}, &Object{ID: "test", Type: ArticleType}},
+			args: args{&Object{ID: "test", Type: NoteType.ToTypes()}, &Object{ID: "test", Type: ArticleType.ToTypes()}},
 			want: false,
 		},
 	}
@@ -270,7 +270,7 @@ func TestItemsEqual1(t *testing.T) {
 			name: "different properties",
 			args: args{
 				it:   &Object{ID: "example-1"},
-				with: &Object{Type: ArticleType},
+				with: &Object{Type: ArticleType.ToTypes()},
 			},
 			want: false,
 		},

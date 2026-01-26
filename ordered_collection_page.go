@@ -18,7 +18,7 @@ type OrderedCollectionPage struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyType `jsonld:"type,omitempty"`
+	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -135,7 +135,7 @@ func (o OrderedCollectionPage) GetID() ID {
 
 // GetType returns the OrderedCollectionPage's type
 func (o OrderedCollectionPage) GetType() ActivityVocabularyType {
-	return o.Type
+	return o.Type.GetType()
 }
 
 // IsLink returns false for a OrderedCollectionPage object
@@ -383,7 +383,7 @@ func (o OrderedCollectionPage) equal(with OrderedCollectionPage) bool {
 func (o OrderedCollectionPage) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] { totalItems: %d }", o, o.Type, o.TotalItems)
+		_, _ = fmt.Fprintf(s, "%T[%s] { totalItems: %d }", o, o.GetType(), o.TotalItems)
 	}
 }
 

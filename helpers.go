@@ -158,7 +158,7 @@ func ItemOrderTimestamp(i1, i2 LinkOrIRI) bool {
 
 func notEmptyLink(l *Link) bool {
 	return len(l.ID) > 0 ||
-		LinkTypes.Contains(l.Type) ||
+		LinkTypes.Contains(l.GetType()) ||
 		len(l.MediaType) > 0 ||
 		l.Preview != nil ||
 		l.Name != nil ||
@@ -175,7 +175,7 @@ func notEmptyObject(o *Object) bool {
 	}
 	return len(o.ID) > 0 ||
 		len(o.Type) > 0 ||
-		ActivityTypes.Contains(o.Type) ||
+		ActivityTypes.Contains(o.GetType()) ||
 		o.Attachment != nil ||
 		o.AttributedTo != nil ||
 		o.Audience != nil ||

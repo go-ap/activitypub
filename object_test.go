@@ -20,8 +20,8 @@ func TestObjectNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.Type != testType {
-		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, testType)
+	if o.GetType() != testType {
+		t.Errorf("APObject Type '%v' different than expected '%v'", o.GetType(), testType)
 	}
 
 	n := ObjectNew("")
@@ -29,8 +29,8 @@ func TestObjectNew(t *testing.T) {
 	if n.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", n.ID, testValue)
 	}
-	if n.Type != ObjectType {
-		t.Errorf("APObject Type '%v' different than expected '%v'", n.Type, ObjectType)
+	if n.GetType() != ObjectType {
+		t.Errorf("APObject Type '%v' different than expected '%v'", n.GetType(), ObjectType)
 	}
 }
 
@@ -281,8 +281,8 @@ func validateEmptyObject(o Object, t *testing.T) {
 	if o.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", o, o.ID)
 	}
-	if o.Type != "" {
-		t.Errorf("Unmarshaled object %T should have empty Type, received %q", o, o.Type)
+	if o.GetType() != "" {
+		t.Errorf("Unmarshaled object %T should have empty Type, received %q", o, o.GetType())
 	}
 	if o.AttributedTo != nil {
 		t.Errorf("Unmarshaled object %T should have empty AttributedTo, received %q", o, o.AttributedTo)
@@ -458,9 +458,9 @@ func TestObject_GetLink(t *testing.T) {
 
 func TestObject_GetType(t *testing.T) {
 	a := Object{}
-	a.Type = ActorType
+	a.Type = ActorType.ToTypes()
 	if a.GetType() != ActorType {
-		t.Errorf("%T should return %q, Received %q", a.GetType, ActorType, a.GetType())
+		t.Errorf("%T should return %q, Received %q", a.GetType(), ActorType, a.GetType())
 	}
 }
 
@@ -476,108 +476,108 @@ func TestToObject(t *testing.T) {
 		},
 		{
 			name: "Valid Object",
-			it:   Object{ID: "test", Type: UpdateType},
-			want: &Object{ID: "test", Type: UpdateType},
+			it:   Object{ID: "test", Type: UpdateType.ToTypes()},
+			want: &Object{ID: "test", Type: UpdateType.ToTypes()},
 		},
 		{
 			name: "Valid *Object",
-			it:   &Object{ID: "test", Type: CreateType},
-			want: &Object{ID: "test", Type: CreateType},
+			it:   &Object{ID: "test", Type: CreateType.ToTypes()},
+			want: &Object{ID: "test", Type: CreateType.ToTypes()},
 		},
 		{
 			name: "Valid Place",
-			it:   Place{ID: "test", Type: PlaceType},
-			want: &Object{ID: "test", Type: PlaceType},
+			it:   Place{ID: "test", Type: PlaceType.ToTypes()},
+			want: &Object{ID: "test", Type: PlaceType.ToTypes()},
 		},
 		{
 			name: "Valid *Place",
-			it:   &Place{ID: "test", Type: PlaceType},
-			want: &Object{ID: "test", Type: PlaceType},
+			it:   &Place{ID: "test", Type: PlaceType.ToTypes()},
+			want: &Object{ID: "test", Type: PlaceType.ToTypes()},
 		},
 		{
 			name: "Valid Profile",
-			it:   Profile{ID: "test", Type: ProfileType},
-			want: &Object{ID: "test", Type: ProfileType},
+			it:   Profile{ID: "test", Type: ProfileType.ToTypes()},
+			want: &Object{ID: "test", Type: ProfileType.ToTypes()},
 		},
 		{
 			name: "Valid *Profile",
-			it:   &Profile{ID: "test", Type: ProfileType},
-			want: &Object{ID: "test", Type: ProfileType},
+			it:   &Profile{ID: "test", Type: ProfileType.ToTypes()},
+			want: &Object{ID: "test", Type: ProfileType.ToTypes()},
 		},
 		{
 			name: "Valid Relationship",
-			it:   Relationship{ID: "test", Type: RelationshipType},
-			want: &Object{ID: "test", Type: RelationshipType},
+			it:   Relationship{ID: "test", Type: RelationshipType.ToTypes()},
+			want: &Object{ID: "test", Type: RelationshipType.ToTypes()},
 		},
 		{
 			name: "Valid *Relationship",
-			it:   &Relationship{ID: "test", Type: RelationshipType},
-			want: &Object{ID: "test", Type: RelationshipType},
+			it:   &Relationship{ID: "test", Type: RelationshipType.ToTypes()},
+			want: &Object{ID: "test", Type: RelationshipType.ToTypes()},
 		},
 		{
 			name: "Valid Tombstone",
-			it:   Tombstone{ID: "test", Type: TombstoneType},
-			want: &Object{ID: "test", Type: TombstoneType},
+			it:   Tombstone{ID: "test", Type: TombstoneType.ToTypes()},
+			want: &Object{ID: "test", Type: TombstoneType.ToTypes()},
 		},
 		{
 			name: "Valid *Tombstone",
-			it:   &Tombstone{ID: "test", Type: TombstoneType},
-			want: &Object{ID: "test", Type: TombstoneType},
+			it:   &Tombstone{ID: "test", Type: TombstoneType.ToTypes()},
+			want: &Object{ID: "test", Type: TombstoneType.ToTypes()},
 		},
 		{
 			name: "Valid Activity",
-			it:   &Activity{ID: "test", Type: CreateType},
-			want: &Object{ID: "test", Type: CreateType},
+			it:   &Activity{ID: "test", Type: CreateType.ToTypes()},
+			want: &Object{ID: "test", Type: CreateType.ToTypes()},
 		},
 		{
 			name: "Valid IntransitiveActivity",
-			it:   &IntransitiveActivity{ID: "test", Type: ArriveType},
-			want: &Object{ID: "test", Type: ArriveType},
+			it:   &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
+			want: &Object{ID: "test", Type: ArriveType.ToTypes()},
 		},
 		{
 			name: "Valid Question",
-			it:   &Question{ID: "test", Type: QuestionType},
-			want: &Object{ID: "test", Type: QuestionType},
+			it:   &Question{ID: "test", Type: QuestionType.ToTypes()},
+			want: &Object{ID: "test", Type: QuestionType.ToTypes()},
 		},
 		{
 			name: "Valid OrderedCollection",
-			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType},
-			want: &Object{ID: "test", Type: OrderedCollectionType},
+			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType.ToTypes()},
+			want: &Object{ID: "test", Type: OrderedCollectionType.ToTypes()},
 		},
 		{
 			name: "Valid *OrderedCollection",
-			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType},
-			want: &Object{ID: "test", Type: OrderedCollectionType},
+			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType.ToTypes()},
+			want: &Object{ID: "test", Type: OrderedCollectionType.ToTypes()},
 		},
 		{
 			name: "Valid OrderedCollectionPage",
-			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
-			want: &Object{ID: "test", Type: OrderedCollectionPageType},
+			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
+			want: &Object{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
 		},
 		{
 			name: "Valid *OrderedCollectionPage",
-			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
-			want: &Object{ID: "test", Type: OrderedCollectionPageType},
+			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
+			want: &Object{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
 		},
 		{
 			name: "Valid OrderedCollection",
-			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType},
-			want: &Object{ID: "test", Type: OrderedCollectionType},
+			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType.ToTypes()},
+			want: &Object{ID: "test", Type: OrderedCollectionType.ToTypes()},
 		},
 		{
 			name: "Valid *OrderedCollection",
-			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType},
-			want: &Object{ID: "test", Type: OrderedCollectionType},
+			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType.ToTypes()},
+			want: &Object{ID: "test", Type: OrderedCollectionType.ToTypes()},
 		},
 		{
 			name: "Valid OrderedCollectionPage",
-			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
-			want: &Object{ID: "test", Type: OrderedCollectionPageType},
+			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
+			want: &Object{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
 		},
 		{
 			name: "Valid *OrderedCollectionPage",
-			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
-			want: &Object{ID: "test", Type: OrderedCollectionPageType},
+			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
+			want: &Object{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
 		},
 		{
 			name:    "IRI",
@@ -618,65 +618,65 @@ func TestToObject1(t *testing.T) {
 	}{
 		{
 			name: "Actor with ID, type, w/o extra properties",
-			arg:  &Actor{ID: "https://example.com", Type: PersonType},
-			want: &Object{ID: "https://example.com", Type: PersonType},
+			arg:  &Actor{ID: "https://example.com", Type: PersonType.ToTypes()},
+			want: &Object{ID: "https://example.com", Type: PersonType.ToTypes()},
 		},
 		{
 			name: "Actor with ID, type, w/ extra properties",
-			arg: &Actor{ID: "https://example.com", Type: PersonType, Endpoints: &Endpoints{
+			arg: &Actor{ID: "https://example.com", Type: PersonType.ToTypes(), Endpoints: &Endpoints{
 				OauthAuthorizationEndpoint: IRI("https://example.com/oauth"),
 			}},
-			want: &Object{ID: "https://example.com", Type: PersonType},
+			want: &Object{ID: "https://example.com", Type: PersonType.ToTypes()},
 		},
 		{
 			name: "Place w/o extra properties",
-			arg:  &Place{ID: "https://example.com", Type: PlaceType},
-			want: &Object{ID: "https://example.com", Type: PlaceType},
+			arg:  &Place{ID: "https://example.com", Type: PlaceType.ToTypes()},
+			want: &Object{ID: "https://example.com", Type: PlaceType.ToTypes()},
 		},
 		{
 			name: "Place w/ extra properties",
-			arg:  &Place{ID: "https://example.com", Type: PlaceType, Accuracy: 0.22, Altitude: 66.6},
-			want: &Object{ID: "https://example.com", Type: PlaceType},
+			arg:  &Place{ID: "https://example.com", Type: PlaceType.ToTypes(), Accuracy: 0.22, Altitude: 66.6},
+			want: &Object{ID: "https://example.com", Type: PlaceType.ToTypes()},
 		},
 		{
 			name: "Profile w/o extra properties",
-			arg:  &Profile{ID: "https://example.com", Type: ProfileType},
-			want: &Object{ID: "https://example.com", Type: ProfileType},
+			arg:  &Profile{ID: "https://example.com", Type: ProfileType.ToTypes()},
+			want: &Object{ID: "https://example.com", Type: ProfileType.ToTypes()},
 		},
 		{
 			name: "Profile w/ extra properties",
-			arg:  &Profile{ID: "https://example.com", Type: ProfileType, Describes: IRI("https://alt.example.com/")},
-			want: &Object{ID: "https://example.com", Type: ProfileType},
+			arg:  &Profile{ID: "https://example.com", Type: ProfileType.ToTypes(), Describes: IRI("https://alt.example.com/")},
+			want: &Object{ID: "https://example.com", Type: ProfileType.ToTypes()},
 		},
 		{
 			name: "Tombstone w/o extra properties",
-			arg:  &Tombstone{ID: "https://example.com", Type: TombstoneType},
-			want: &Object{ID: "https://example.com", Type: TombstoneType},
+			arg:  &Tombstone{ID: "https://example.com", Type: TombstoneType.ToTypes()},
+			want: &Object{ID: "https://example.com", Type: TombstoneType.ToTypes()},
 		},
 		{
 			name: "Tombstone w/ extra properties",
-			arg:  &Tombstone{ID: "https://example.com", Type: TombstoneType, FormerType: GroupType, Deleted: time.Now()},
-			want: &Object{ID: "https://example.com", Type: TombstoneType},
+			arg:  &Tombstone{ID: "https://example.com", Type: TombstoneType.ToTypes(), FormerType: GroupType, Deleted: time.Now()},
+			want: &Object{ID: "https://example.com", Type: TombstoneType.ToTypes()},
 		},
 		{
 			name: "Create w/o extra properties",
-			arg:  &Create{ID: "https://example.com", Type: CreateType},
-			want: &Object{ID: "https://example.com", Type: CreateType},
+			arg:  &Create{ID: "https://example.com", Type: CreateType.ToTypes()},
+			want: &Object{ID: "https://example.com", Type: CreateType.ToTypes()},
 		},
 		{
 			name: "Create w/ extra properties",
-			arg:  &Create{ID: "https://example.com", Type: CreateType, Actor: IRI("https://example.com/1")},
-			want: &Object{ID: "https://example.com", Type: CreateType},
+			arg:  &Create{ID: "https://example.com", Type: CreateType.ToTypes(), Actor: IRI("https://example.com/1")},
+			want: &Object{ID: "https://example.com", Type: CreateType.ToTypes()},
 		},
 		{
 			name: "Question w/o extra properties",
-			arg:  &Question{ID: "https://example.com", Type: QuestionType},
-			want: &Object{ID: "https://example.com", Type: QuestionType},
+			arg:  &Question{ID: "https://example.com", Type: QuestionType.ToTypes()},
+			want: &Object{ID: "https://example.com", Type: QuestionType.ToTypes()},
 		},
 		{
 			name: "Question w/ extra properties",
-			arg:  &Question{ID: "https://example.com", Type: QuestionType, AnyOf: ItemCollection{IRI("https://example.com")}},
-			want: &Object{ID: "https://example.com", Type: QuestionType},
+			arg:  &Question{ID: "https://example.com", Type: QuestionType.ToTypes(), AnyOf: ItemCollection{IRI("https://example.com")}},
+			want: &Object{ID: "https://example.com", Type: QuestionType.ToTypes()},
 		},
 	}
 	for _, tt := range tests {
@@ -955,7 +955,7 @@ func TestObject_MarshalJSON(t *testing.T) {
 			fields: fields{
 				Attachment: &Object{
 					ID:   "some example",
-					Type: VideoType,
+					Type: VideoType.ToTypes(),
 				},
 			},
 			want:    [][]byte{[]byte(`{"attachment":{"id":"some example","type":"Video"}}`)},
@@ -966,7 +966,7 @@ func TestObject_MarshalJSON(t *testing.T) {
 			fields: fields{
 				AttributedTo: &Actor{
 					ID:   "http://example.com/ana",
-					Type: PersonType,
+					Type: PersonType.ToTypes(),
 				},
 			},
 			want:    [][]byte{[]byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`)},
@@ -978,11 +978,11 @@ func TestObject_MarshalJSON(t *testing.T) {
 				AttributedTo: ItemCollection{
 					&Actor{
 						ID:   "http://example.com/ana",
-						Type: PersonType,
+						Type: PersonType.ToTypes(),
 					},
 					&Actor{
 						ID:   "http://example.com/GGG",
-						Type: GroupType,
+						Type: GroupType.ToTypes(),
 					},
 				},
 			},
@@ -1005,7 +1005,7 @@ func TestObject_MarshalJSON(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			o := Object{
 				ID:           tt.fields.ID,
-				Type:         tt.fields.Type,
+				Type:         tt.fields.Type.ToTypes(),
 				Name:         tt.fields.Name,
 				Attachment:   tt.fields.Attachment,
 				AttributedTo: tt.fields.AttributedTo,
@@ -1203,7 +1203,7 @@ func TestObject_Equals(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			o := Object{
 				ID:           tt.fields.ID,
-				Type:         tt.fields.Type,
+				Type:         tt.fields.Type.ToTypes(),
 				Name:         tt.fields.Name,
 				Attachment:   tt.fields.Attachment,
 				AttributedTo: tt.fields.AttributedTo,
@@ -1244,7 +1244,7 @@ func TestObject_Equals(t *testing.T) {
 func TestObject_GobEncode(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         ActivityVocabularyType
+		Type         ActivityVocabularyTypes
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item
@@ -1292,12 +1292,12 @@ func TestObject_GobEncode(t *testing.T) {
 		},
 		{
 			name:    "with ID, type",
-			fields:  fields{ID: ID("https://example.com"), Type: ObjectType},
+			fields:  fields{ID: ID("https://example.com"), Type: ObjectType.ToTypes()},
 			wantErr: false,
 		},
 		{
 			name:    "with ID, type, name",
-			fields:  fields{ID: ID("https://example.com"), Type: ObjectType, Name: NaturalLanguageValues{English: Content("ana")}},
+			fields:  fields{ID: ID("https://example.com"), Type: ObjectType.ToTypes(), Name: NaturalLanguageValues{English: Content("ana")}},
 			wantErr: false,
 		},
 		{
@@ -1394,8 +1394,8 @@ func Test_reflectedItemByType_Object(t *testing.T) {
 		},
 		{
 			name: "object with ID, type",
-			arg:  &Object{ID: "https://example.com", Type: ArticleType},
-			want: &Object{ID: "https://example.com", Type: ArticleType},
+			arg:  &Object{ID: "https://example.com", Type: ArticleType.ToTypes()},
+			want: &Object{ID: "https://example.com", Type: ArticleType.ToTypes()},
 		},
 	}
 	for _, tt := range tests {

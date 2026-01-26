@@ -23,13 +23,13 @@ func TestToPlace(t *testing.T) {
 		},
 		{
 			name: "Valid Place",
-			it:   Place{ID: "test", Type: PlaceType},
-			want: &Place{ID: "test", Type: PlaceType},
+			it:   Place{ID: "test", Type: PlaceType.ToTypes()},
+			want: &Place{ID: "test", Type: PlaceType.ToTypes()},
 		},
 		{
 			name: "Valid *Place",
-			it:   &Place{ID: "test", Type: PlaceType},
-			want: &Place{ID: "test", Type: PlaceType},
+			it:   &Place{ID: "test", Type: PlaceType.ToTypes()},
+			want: &Place{ID: "test", Type: PlaceType.ToTypes()},
 		},
 		{
 			name:    "IRI",
@@ -48,17 +48,17 @@ func TestToPlace(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType},
+			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
 			wantErr: ErrorInvalidType[Place](&Object{}),
 		},
 		{
 			name:    "Activity",
-			it:      &Activity{ID: "test", Type: CreateType},
+			it:      &Activity{ID: "test", Type: CreateType.ToTypes()},
 			wantErr: ErrorInvalidType[Place](&Activity{}),
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
 			wantErr: ErrorInvalidType[Place](&IntransitiveActivity{}),
 		},
 	}

@@ -17,7 +17,7 @@ type CollectionPage struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyType `jsonld:"type,omitempty"`
+	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -132,7 +132,7 @@ func (c CollectionPage) GetID() ID {
 
 // GetType returns the CollectionPage's type
 func (c CollectionPage) GetType() ActivityVocabularyType {
-	return c.Type
+	return c.Type.GetType()
 }
 
 // IsLink returns false for a CollectionPage object
@@ -297,12 +297,12 @@ func CollectionPageNew(parent CollectionInterface) *CollectionPage {
 	if pc, ok := parent.(*Collection); ok {
 		copyCollectionToPage(pc, &p)
 	}
-	p.Type = CollectionPageType
+	p.Type = CollectionPageType.ToTypes()
 	return &p
 }
 
 func copyCollectionToPage(c *Collection, p *CollectionPage) error {
-	p.Type = CollectionPageType
+	p.Type = CollectionPageType.ToTypes()
 	p.Name = c.Name
 	p.Content = c.Content
 	p.Summary = c.Summary
