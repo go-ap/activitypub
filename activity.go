@@ -5,7 +5,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"io"
-	"strings"
+	"slices"
 	"time"
 
 	"github.com/valyala/fastjson"
@@ -44,12 +44,11 @@ const (
 )
 
 func (a ActivityVocabularyTypes) Contains(typ ActivityVocabularyType) bool {
-	for _, v := range a {
-		if strings.EqualFold(string(v), string(typ)) {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(a, typ)
+}
+
+func (a ActivityVocabularyType) ToTypes() ActivityVocabularyTypes {
+	return ActivityVocabularyTypes{a}
 }
 
 // ContentManagementActivityTypes use case primarily deals with activities that involve the creation, modification or
@@ -265,7 +264,7 @@ type Activity struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyType `jsonld:"type,omitempty"`
+	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -381,7 +380,7 @@ type Activity struct {
 
 // GetType returns the ActivityVocabulary type of the current Activity
 func (a Activity) GetType() ActivityVocabularyType {
-	return a.Type
+	return a.Type.GetType()
 }
 
 // IsLink returns false for Activity objects
@@ -765,7 +764,7 @@ func ActivityNew(id ID, typ ActivityVocabularyType, ob Item) *Activity {
 	if !ActivityTypes.Contains(typ) {
 		typ = ActivityType
 	}
-	a := Activity{ID: id, Type: typ}
+	a := Activity{ID: id, Type: typ.ToTypes()}
 	a.Name = NaturalLanguageValuesNew()
 	a.Content = NaturalLanguageValuesNew()
 
@@ -796,15 +795,15 @@ func fmtActivityProps(w io.Writer) func(*Activity) error {
 func (a Activity) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's':
-		if a.Type != "" && a.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", a, a.Type, a.ID)
+		if a.GetType() != "" && a.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", a, a.GetType(), a.ID)
 		} else if a.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T( %s )", a, a.ID)
 		} else {
 			_, _ = fmt.Fprintf(s, "%T[%p]", a, &a)
 		}
 	case 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] {", a, a.Type)
+		_, _ = fmt.Fprintf(s, "%T[%s] {", a, a.GetType())
 		fmtActivityProps(s)(&a)
 		_, _ = io.WriteString(s, " }")
 	}

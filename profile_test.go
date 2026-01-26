@@ -23,13 +23,13 @@ func TestToProfile(t *testing.T) {
 		},
 		{
 			name: "Valid Profile",
-			it:   Profile{ID: "test", Type: ProfileType},
-			want: &Profile{ID: "test", Type: ProfileType},
+			it:   Profile{ID: "test", Type: ProfileType.ToTypes()},
+			want: &Profile{ID: "test", Type: ProfileType.ToTypes()},
 		},
 		{
 			name: "Valid *Profile",
-			it:   &Profile{ID: "test", Type: ProfileType},
-			want: &Profile{ID: "test", Type: ProfileType},
+			it:   &Profile{ID: "test", Type: ProfileType.ToTypes()},
+			want: &Profile{ID: "test", Type: ProfileType.ToTypes()},
 		},
 		{
 			name:    "IRI",
@@ -48,17 +48,17 @@ func TestToProfile(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType},
+			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
 			wantErr: ErrorInvalidType[Profile](&Object{}),
 		},
 		{
 			name:    "Activity",
-			it:      &Activity{ID: "test", Type: CreateType},
+			it:      &Activity{ID: "test", Type: CreateType.ToTypes()},
 			wantErr: ErrorInvalidType[Profile](&Activity{}),
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
 			wantErr: ErrorInvalidType[Profile](&IntransitiveActivity{}),
 		},
 	}

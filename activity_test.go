@@ -17,8 +17,8 @@ func TestActivityNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != testType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, testType)
+	if a.GetType() != testType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), testType)
 	}
 
 	g := ActivityNew(testValue, "", nil)
@@ -26,8 +26,8 @@ func TestActivityNew(t *testing.T) {
 	if g.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", g.ID, testValue)
 	}
-	if g.Type != ActivityType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", g.Type, ActivityType)
+	if g.GetType() != ActivityType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", g.GetType(), ActivityType)
 	}
 }
 
@@ -39,8 +39,8 @@ func TestAcceptNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != AcceptType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, AcceptType)
+	if a.GetType() != AcceptType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), AcceptType)
 	}
 }
 
@@ -52,8 +52,8 @@ func TestAddNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != AddType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, AddType)
+	if a.GetType() != AddType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), AddType)
 	}
 }
 
@@ -65,8 +65,8 @@ func TestAnnounceNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != AnnounceType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, AnnounceType)
+	if a.GetType() != AnnounceType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), AnnounceType)
 	}
 }
 
@@ -78,8 +78,8 @@ func TestBlockNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != BlockType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, BlockType)
+	if a.GetType() != BlockType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), BlockType)
 	}
 }
 
@@ -91,8 +91,8 @@ func TestCreateNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != CreateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, CreateType)
+	if a.GetType() != CreateType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), CreateType)
 	}
 }
 
@@ -104,8 +104,8 @@ func TestDeleteNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != DeleteType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, DeleteType)
+	if a.GetType() != DeleteType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), DeleteType)
 	}
 }
 
@@ -117,8 +117,8 @@ func TestDislikeNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != DislikeType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, DislikeType)
+	if a.GetType() != DislikeType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), DislikeType)
 	}
 }
 
@@ -130,8 +130,8 @@ func TestFlagNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != FlagType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, FlagType)
+	if a.GetType() != FlagType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), FlagType)
 	}
 }
 
@@ -143,8 +143,8 @@ func TestFollowNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != FollowType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, FollowType)
+	if a.GetType() != FollowType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), FollowType)
 	}
 }
 
@@ -156,8 +156,8 @@ func TestIgnoreNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != IgnoreType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, IgnoreType)
+	if a.GetType() != IgnoreType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), IgnoreType)
 	}
 }
 
@@ -169,8 +169,8 @@ func TestInviteNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != InviteType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, InviteType)
+	if a.GetType() != InviteType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), InviteType)
 	}
 }
 
@@ -182,8 +182,8 @@ func TestJoinNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != JoinType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, JoinType)
+	if a.GetType() != JoinType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), JoinType)
 	}
 }
 
@@ -195,8 +195,8 @@ func TestLeaveNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != LeaveType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, LeaveType)
+	if a.GetType() != LeaveType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), LeaveType)
 	}
 }
 
@@ -208,8 +208,8 @@ func TestLikeNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != LikeType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, LikeType)
+	if a.GetType() != LikeType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), LikeType)
 	}
 }
 
@@ -221,8 +221,8 @@ func TestListenNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != ListenType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, ListenType)
+	if a.GetType() != ListenType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), ListenType)
 	}
 }
 
@@ -234,8 +234,8 @@ func TestMoveNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != MoveType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, MoveType)
+	if a.GetType() != MoveType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), MoveType)
 	}
 }
 
@@ -247,8 +247,8 @@ func TestOfferNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != OfferType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, OfferType)
+	if a.GetType() != OfferType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), OfferType)
 	}
 }
 
@@ -260,8 +260,8 @@ func TestRejectNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != RejectType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, RejectType)
+	if a.GetType() != RejectType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), RejectType)
 	}
 }
 
@@ -273,8 +273,8 @@ func TestReadNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != ReadType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, ReadType)
+	if a.GetType() != ReadType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), ReadType)
 	}
 }
 
@@ -286,8 +286,8 @@ func TestRemoveNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != RemoveType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, RemoveType)
+	if a.GetType() != RemoveType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), RemoveType)
 	}
 }
 
@@ -299,8 +299,8 @@ func TestTentativeRejectNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != TentativeRejectType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, TentativeRejectType)
+	if a.GetType() != TentativeRejectType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), TentativeRejectType)
 	}
 }
 
@@ -312,8 +312,8 @@ func TestTentativeAcceptNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != TentativeAcceptType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, TentativeAcceptType)
+	if a.GetType() != TentativeAcceptType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), TentativeAcceptType)
 	}
 }
 
@@ -325,8 +325,8 @@ func TestUndoNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != UndoType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, UndoType)
+	if a.GetType() != UndoType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), UndoType)
 	}
 }
 
@@ -338,8 +338,8 @@ func TestUpdateNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != UpdateType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, UpdateType)
+	if a.GetType() != UpdateType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), UpdateType)
 	}
 }
 
@@ -351,8 +351,8 @@ func TestViewNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != ViewType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, ViewType)
+	if a.GetType() != ViewType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), ViewType)
 	}
 }
 
@@ -756,8 +756,8 @@ func TestActivity_UnmarshalJSON(t *testing.T) {
 	if a.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", a, a.ID)
 	}
-	if a.Type != "" {
-		t.Errorf("Unmarshaled object %T should have empty Type, received %q", a, a.Type)
+	if a.GetType() != "" {
+		t.Errorf("Unmarshaled object %T should have empty Type, received %q", a, a.GetType())
 	}
 	if a.AttributedTo != nil {
 		t.Errorf("Unmarshaled object %T should have empty AttributedTo, received %q", a, a.AttributedTo)
@@ -793,8 +793,8 @@ func TestCreate_UnmarshalJSON(t *testing.T) {
 	if c.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", c, c.ID)
 	}
-	if c.Type != "" {
-		t.Errorf("Unmarshaled object %T should have empty Type, received %q", c, c.Type)
+	if c.GetType() != "" {
+		t.Errorf("Unmarshaled object %T should have empty Type, received %q", c, c.GetType())
 	}
 	if c.AttributedTo != nil {
 		t.Errorf("Unmarshaled object %T should have empty AttributedTo, received %q", c, c.AttributedTo)
@@ -830,8 +830,8 @@ func TestDislike_UnmarshalJSON(t *testing.T) {
 	if d.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", d, d.ID)
 	}
-	if d.Type != "" {
-		t.Errorf("Unmarshaled object %T should have empty Type, received %q", d, d.Type)
+	if d.GetType() != "" {
+		t.Errorf("Unmarshaled object %T should have empty Type, received %q", d, d.GetType())
 	}
 	if d.AttributedTo != nil {
 		t.Errorf("Unmarshaled object %T should have empty AttributedTo, received %q", d, d.AttributedTo)
@@ -867,8 +867,8 @@ func TestLike_UnmarshalJSON(t *testing.T) {
 	if l.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", l, l.ID)
 	}
-	if l.Type != "" {
-		t.Errorf("Unmarshaled object %T should have empty Type, received %q", l, l.Type)
+	if l.GetType() != "" {
+		t.Errorf("Unmarshaled object %T should have empty Type, received %q", l, l.GetType())
 	}
 	if l.AttributedTo != nil {
 		t.Errorf("Unmarshaled object %T should have empty AttributedTo, received %q", l, l.AttributedTo)
@@ -904,8 +904,8 @@ func TestUpdate_UnmarshalJSON(t *testing.T) {
 	if u.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", u, u.ID)
 	}
-	if u.Type != "" {
-		t.Errorf("Unmarshaled object %T should have empty Type, received %q", u, u.Type)
+	if u.GetType() != "" {
+		t.Errorf("Unmarshaled object %T should have empty Type, received %q", u, u.GetType())
 	}
 	if u.AttributedTo != nil {
 		t.Errorf("Unmarshaled object %T should have empty AttributedTo, received %q", u, u.AttributedTo)
@@ -945,13 +945,13 @@ func TestToActivity(t *testing.T) {
 		},
 		{
 			name: "Valid Activity",
-			it:   Activity{ID: "test", Type: UpdateType},
-			want: &Activity{ID: "test", Type: UpdateType},
+			it:   Activity{ID: "test", Type: UpdateType.ToTypes()},
+			want: &Activity{ID: "test", Type: UpdateType.ToTypes()},
 		},
 		{
 			name: "Valid *Activity",
-			it:   &Activity{ID: "test", Type: CreateType},
-			want: &Activity{ID: "test", Type: CreateType},
+			it:   &Activity{ID: "test", Type: CreateType.ToTypes()},
+			want: &Activity{ID: "test", Type: CreateType.ToTypes()},
 		},
 		{
 			name:    "IRI",
@@ -970,17 +970,17 @@ func TestToActivity(t *testing.T) {
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
 			wantErr: ErrorInvalidType[Activity](&IntransitiveActivity{}),
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType},
+			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
 			wantErr: ErrorInvalidType[Activity](&Object{}),
 		},
 		{
 			name:    "Actor",
-			it:      &Actor{ID: "test", Type: PersonType},
+			it:      &Actor{ID: "test", Type: PersonType.ToTypes()},
 			wantErr: ErrorInvalidType[Activity](&Person{}),
 		},
 	}
@@ -1175,7 +1175,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				Attachment: &Object{
 					ID:   "some example",
-					Type: VideoType,
+					Type: VideoType.ToTypes(),
 				},
 			},
 			want:    [][]byte{[]byte(`{"attachment":{"id":"some example","type":"Video"}}`)},
@@ -1186,7 +1186,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				AttributedTo: &Actor{
 					ID:   "http://example.com/ana",
-					Type: PersonType,
+					Type: PersonType.ToTypes(),
 				},
 			},
 			want:    [][]byte{[]byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`)},
@@ -1198,11 +1198,11 @@ func TestActivity_MarshalJSON(t *testing.T) {
 				AttributedTo: ItemCollection{
 					&Actor{
 						ID:   "http://example.com/ana",
-						Type: PersonType,
+						Type: PersonType.ToTypes(),
 					},
 					&Actor{
 						ID:   "http://example.com/GGG",
-						Type: GroupType,
+						Type: GroupType.ToTypes(),
 					},
 				},
 			},
@@ -1225,7 +1225,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a := Activity{
 				ID:           tt.fields.ID,
-				Type:         tt.fields.Type,
+				Type:         tt.fields.Type.ToTypes(),
 				Name:         tt.fields.Name,
 				Attachment:   tt.fields.Attachment,
 				AttributedTo: tt.fields.AttributedTo,
@@ -1429,7 +1429,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				Attachment: &Object{
 					ID:   "some example",
-					Type: VideoType,
+					Type: VideoType.ToTypes(),
 				},
 			},
 			want:    [][]byte{[]byte(`{"attachment":{"id":"some example","type":"Video"}}`)},
@@ -1440,7 +1440,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				AttributedTo: &Actor{
 					ID:   "http://example.com/ana",
-					Type: PersonType,
+					Type: PersonType.ToTypes(),
 				},
 			},
 			want:    [][]byte{[]byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`)},
@@ -1452,11 +1452,11 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 				AttributedTo: ItemCollection{
 					&Actor{
 						ID:   "http://example.com/ana",
-						Type: PersonType,
+						Type: PersonType.ToTypes(),
 					},
 					&Actor{
 						ID:   "http://example.com/GGG",
-						Type: GroupType,
+						Type: GroupType.ToTypes(),
 					},
 				},
 			},
@@ -1479,7 +1479,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			i := IntransitiveActivity{
 				ID:           tt.fields.ID,
-				Type:         tt.fields.Type,
+				Type:         tt.fields.Type.ToTypes(),
 				Name:         tt.fields.Name,
 				Attachment:   tt.fields.Attachment,
 				AttributedTo: tt.fields.AttributedTo,
@@ -1536,7 +1536,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 func TestActivity_Equals(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         ActivityVocabularyType
+		Type         ActivityVocabularyTypes
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item
@@ -1652,7 +1652,7 @@ func TestActivity_Equals(t *testing.T) {
 				Object:       tt.fields.Object,
 			}
 			if got := a.Equals(tt.arg); got != tt.want {
-				t.Errorf("Equal() = %v, want %v", got, tt.want)
+				t.Errorf("Equal() = %v, want %v, have: %v, target: %v", got, tt.want, a, tt.arg)
 			}
 		})
 	}

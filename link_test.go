@@ -14,30 +14,30 @@ func TestLinkNew(t *testing.T) {
 	if l.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", l.ID, testValue)
 	}
-	if l.Type != LinkType {
-		t.Errorf("APObject Type '%v' different than expected '%v'", l.Type, LinkType)
+	if l.GetType() != LinkType {
+		t.Errorf("APObject Type '%v' different than expected '%v'", l.GetType(), LinkType)
 	}
 }
 
 func TestLink_IsLink(t *testing.T) {
 	l := LinkNew("test", LinkType)
 	if !l.IsLink() {
-		t.Errorf("%#v should be a valid link", l.Type)
+		t.Errorf("%#v should be a valid link", l.GetType())
 	}
 	m := LinkNew("test", MentionType)
 	if !m.IsLink() {
-		t.Errorf("%#v should be a valid link", m.Type)
+		t.Errorf("%#v should be a valid link", m.GetType())
 	}
 }
 
 func TestLink_IsObject(t *testing.T) {
 	l := LinkNew("test", LinkType)
 	if l.IsObject() {
-		t.Errorf("%#v should not be a valid object", l.Type)
+		t.Errorf("%#v should not be a valid object", l.GetType())
 	}
 	m := LinkNew("test", MentionType)
 	if m.IsObject() {
-		t.Errorf("%#v should not be a valid object", m.Type)
+		t.Errorf("%#v should not be a valid object", m.GetType())
 	}
 }
 
@@ -68,7 +68,7 @@ func TestLink_IsCollection(t *testing.T) {
 func TestLink_GobEncode(t *testing.T) {
 	type fields struct {
 		ID        ID
-		Type      ActivityVocabularyType
+		Type      ActivityVocabularyTypes
 		Name      NaturalLanguageValues
 		Rel       IRI
 		MediaType MimeType
@@ -147,7 +147,7 @@ func TestLink_GobDecode(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			l := &Link{
 				ID:        tt.fields.ID,
-				Type:      tt.fields.Type,
+				Type:      tt.fields.Type.ToTypes(),
 				Name:      tt.fields.Name,
 				Rel:       tt.fields.Rel,
 				MediaType: tt.fields.MediaType,

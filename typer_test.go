@@ -453,7 +453,7 @@ func TestCollectionPath_Of(t *testing.T) {
 			name: "inbox",
 			t:    Inbox,
 			arg: &Actor{
-				Type:  PersonType,
+				Type:  PersonType.ToTypes(),
 				Inbox: IRI("https://example.com/inbox"),
 			},
 			want: IRI("https://example.com/inbox"),
@@ -462,7 +462,7 @@ func TestCollectionPath_Of(t *testing.T) {
 			name: "outbox",
 			t:    Outbox,
 			arg: &Actor{
-				Type:   PersonType,
+				Type:   PersonType.ToTypes(),
 				Outbox: IRI("https://example.com/outbox"),
 			},
 			want: IRI("https://example.com/outbox"),
@@ -471,7 +471,7 @@ func TestCollectionPath_Of(t *testing.T) {
 			name: "followers",
 			t:    Followers,
 			arg: &Actor{
-				Type:      GroupType,
+				Type:      GroupType.ToTypes(),
 				Followers: IRI("https://example.com/c132-333"),
 			},
 			want: IRI("https://example.com/c132-333"),
@@ -480,7 +480,7 @@ func TestCollectionPath_Of(t *testing.T) {
 			name: "following",
 			t:    Following,
 			arg: &Actor{
-				Type:      GroupType,
+				Type:      GroupType.ToTypes(),
 				Following: IRI("https://example.com/c666-333"),
 			},
 			want: IRI("https://example.com/c666-333"),
@@ -489,7 +489,7 @@ func TestCollectionPath_Of(t *testing.T) {
 			name: "liked",
 			t:    Liked,
 			arg: &Actor{
-				Type:  ApplicationType,
+				Type:  ApplicationType.ToTypes(),
 				Liked: IRI("https://example.com/l666"),
 			},
 			want: IRI("https://example.com/l666"),
@@ -498,7 +498,7 @@ func TestCollectionPath_Of(t *testing.T) {
 			name: "likes",
 			t:    Likes,
 			arg: &Object{
-				Type:  NoteType,
+				Type:  NoteType.ToTypes(),
 				Likes: IRI("https://example.com/l166"),
 			},
 			want: IRI("https://example.com/l166"),
@@ -507,7 +507,7 @@ func TestCollectionPath_Of(t *testing.T) {
 			name: "shares",
 			t:    Shares,
 			arg: &Object{
-				Type:   PageType,
+				Type:   PageType.ToTypes(),
 				Shares: IRI("https://example.com/s266"),
 			},
 			want: IRI("https://example.com/s266"),
@@ -516,7 +516,7 @@ func TestCollectionPath_Of(t *testing.T) {
 			name: "replies",
 			t:    Replies,
 			arg: &Object{
-				Type:    ArticleType,
+				Type:    ArticleType.ToTypes(),
 				Replies: IRI("https://example.com/r466"),
 			},
 			want: IRI("https://example.com/r466"),

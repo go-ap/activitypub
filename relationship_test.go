@@ -50,13 +50,13 @@ func TestToRelationship(t *testing.T) {
 		},
 		{
 			name: "Valid Relationship",
-			it:   Relationship{ID: "test", Type: RelationshipType},
-			want: &Relationship{ID: "test", Type: RelationshipType},
+			it:   Relationship{ID: "test", Type: RelationshipType.ToTypes()},
+			want: &Relationship{ID: "test", Type: RelationshipType.ToTypes()},
 		},
 		{
 			name: "Valid *Relationship",
-			it:   &Relationship{ID: "test", Type: RelationshipType},
-			want: &Relationship{ID: "test", Type: RelationshipType},
+			it:   &Relationship{ID: "test", Type: RelationshipType.ToTypes()},
+			want: &Relationship{ID: "test", Type: RelationshipType.ToTypes()},
 		},
 		{
 			name:    "IRI",
@@ -75,17 +75,17 @@ func TestToRelationship(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType},
+			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
 			wantErr: ErrorInvalidType[Relationship](&Object{}),
 		},
 		{
 			name:    "Activity",
-			it:      &Activity{ID: "test", Type: CreateType},
+			it:      &Activity{ID: "test", Type: CreateType.ToTypes()},
 			wantErr: ErrorInvalidType[Relationship](&Activity{}),
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
 			wantErr: ErrorInvalidType[Relationship](&IntransitiveActivity{}),
 		},
 	}

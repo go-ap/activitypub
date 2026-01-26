@@ -1,6 +1,8 @@
 package activitypub
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 
 	"github.com/valyala/fastjson"
@@ -71,6 +73,15 @@ var Types = ActivityVocabularyTypes{
 	QuestionType,
 }
 
+func (t ActivityVocabularyTypes) GetType() ActivityVocabularyType {
+	switch len(t) {
+	case 0:
+		return NilType
+	default:
+		return t[0]
+	}
+}
+
 // MarshalJSON encodes the receiver object to a JSON document.
 func (t ActivityVocabularyTypes) MarshalJSON() ([]byte, error) {
 	b := []byte{}
@@ -91,5 +102,65 @@ func (t *ActivityVocabularyTypes) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	*t = JSONGetTypes(val)
+	return nil
+}
+
+// GobEncode
+func (a ActivityVocabularyTypes) GobEncode() ([]byte, error) {
+	switch len(a) {
+	case 0:
+		return nil, nil
+	case 1:
+		return a[0].GobEncode()
+	default:
+		tt := make([][]byte, len(a))
+		for i, ty := range a {
+			b, err := ty.GobEncode()
+			if err != nil {
+				return nil, err
+			}
+			tt[i] = b
+		}
+		b := bytes.Buffer{}
+		err := gob.NewEncoder(&b).Encode(tt)
+		return b.Bytes(), err
+	}
+}
+
+// GobDecode
+func (a *ActivityVocabularyTypes) GobDecode(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
+
+	if data[0] == '[' {
+		tt := [][]byte{}
+		g := gob.NewDecoder(bytes.NewReader(data))
+		if err := g.Decode(&tt); err != nil {
+			return err
+		}
+		types := make(ActivityVocabularyTypes, len(tt))
+		for i, it := range tt {
+			if err := types[i].GobDecode(it); err != nil {
+				return err
+			}
+		}
+		if a == nil {
+			a = &types
+		} else {
+			*a = types
+		}
+	} else {
+		at := NilType
+		if err := at.GobDecode(data); err != nil {
+			return err
+		}
+		if a == nil {
+			a = &ActivityVocabularyTypes{at}
+		} else {
+			*a = ActivityVocabularyTypes{at}
+		}
+	}
+
 	return nil
 }

@@ -41,6 +41,7 @@ const (
 
 	// MentionType is a link type for @mentions
 	MentionType ActivityVocabularyType = "Mention"
+	NilType     ActivityVocabularyType = ""
 )
 
 var GenericTypes = ActivityVocabularyTypes{
@@ -136,11 +137,11 @@ func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
 
 type Objects interface {
 	Object | Tombstone | Place | Profile | Relationship |
-	Actors |
-	Activities |
-	IntransitiveActivities |
-	Collections |
-	IRI
+		Actors |
+		Activities |
+		IntransitiveActivities |
+		Collections |
+		IRI
 }
 
 // Object describes an ActivityPub object of any kind.
@@ -150,7 +151,7 @@ type Object struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyType `jsonld:"type,omitempty"`
+	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -246,7 +247,7 @@ func ObjectNew(typ ActivityVocabularyType) *Object {
 	if !(ObjectTypes.Contains(typ)) {
 		typ = ObjectType
 	}
-	o := Object{Type: typ}
+	o := Object{Type: typ.ToTypes()}
 	o.Name = NaturalLanguageValuesNew()
 	o.Content = NaturalLanguageValuesNew()
 	return &o
@@ -264,7 +265,7 @@ func (o Object) GetLink() IRI {
 
 // GetType returns the type of the current Object
 func (o Object) GetType() ActivityVocabularyType {
-	return o.Type
+	return o.Type.GetType()
 }
 
 // IsLink validates if currentActivity Pub Object is a Link
@@ -493,16 +494,16 @@ func fmtObjectProps(w io.Writer) func(*Object) error {
 func (o Object) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's':
-		if o.Type != "" && o.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", o, o.Type, o.ID)
+		if o.GetType() != "" && o.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", o, o.GetType(), o.ID)
 		} else if o.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T( %s )", o, o.ID)
 		} else {
 			_, _ = fmt.Fprintf(s, "%T[%p]", o, &o)
 		}
 	case 'v':
-		if o.Type != "" && o.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T[%s] {", o, o.Type)
+		if o.GetType() != "" && o.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T[%s] {", o, o.GetType())
 			_ = fmtObjectProps(s)(&o)
 			_, _ = io.WriteString(s, " }")
 		} else if o.ID != "" {
@@ -839,7 +840,7 @@ func (o *Object) Equals(with Item) bool {
 	if withID := with.GetID(); !o.ID.Equal(withID) {
 		return false
 	}
-	if withType := with.GetType(); !strings.EqualFold(string(o.Type), string(withType)) {
+	if withType := with.GetType(); len(o.Type) > 0 && !o.Type.Contains(withType) {
 		return false
 	}
 	if with.IsLink() && !with.GetLink().Equal(o.GetLink()) {

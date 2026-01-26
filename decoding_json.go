@@ -45,8 +45,13 @@ func JSONGetID(val *fastjson.Value) ID {
 }
 
 func JSONGetType(val *fastjson.Value) ActivityVocabularyType {
-	t := val.Get("type").GetStringBytes()
-	return ActivityVocabularyType(t)
+	ty := JSONGetTypes(val)
+	switch len(ty) {
+	case 0:
+		return ObjectType
+	default:
+		return ty[0]
+	}
 }
 
 func JSONGetTypes(val *fastjson.Value) (types ActivityVocabularyTypes) {
@@ -56,7 +61,7 @@ func JSONGetTypes(val *fastjson.Value) (types ActivityVocabularyTypes) {
 	}
 	switch value.Type() {
 	case fastjson.TypeString:
-			return ActivityVocabularyTypes{ActivityVocabularyType(value.GetStringBytes())}
+		return ActivityVocabularyTypes{ActivityVocabularyType(value.GetStringBytes())}
 	case fastjson.TypeArray:
 		valArr, err := value.Array()
 		if err != nil {
@@ -204,20 +209,20 @@ func looksLikeALink(val *fastjson.Value) bool {
 }
 
 func JSONLoadItem(val *fastjson.Value) (Item, error) {
-	typ := JSONGetType(val)
-	if typ == "" && val.Type() == fastjson.TypeString {
+	typ := JSONGetTypes(val)
+	if typ.GetType() == "" && val.Type() == fastjson.TypeString {
 		// try to see if it's an IRI
 		if i, ok := asIRI(val); ok {
 			return i, nil
 		}
 	}
-	i, err := ItemTyperFunc(typ)
+	i, err := ItemTyperFunc(typ.GetType())
 	if err != nil || IsNil(i) {
 		return nil, nil
 	}
 	var empty = func(i Item) bool { return !IsNotEmpty(i) }
 
-	switch typ {
+	switch typ.GetType() {
 	case "":
 		if looksLikeALink(val) {
 			// NOTE(marius): this handles Links without a type
@@ -291,7 +296,7 @@ func JSONLoadItem(val *fastjson.Value) (Item, error) {
 		if JSONItemUnmarshal == nil {
 			return nil, fmt.Errorf("unable to unmarshal custom type %s, you need to set a correct function for JSONItemUnmarshal", typ)
 		}
-		err = JSONItemUnmarshal(typ, val, i)
+		err = JSONItemUnmarshal(typ.GetType(), val, i)
 	}
 	if err != nil {
 		return nil, err
@@ -450,33 +455,33 @@ func GetItemByType(typ ActivityVocabularyType) (Item, error) {
 	case ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
 		return ObjectNew(typ), nil
 	case LinkType, MentionType:
-		return &Link{Type: typ}, nil
+		return &Link{Type: typ.ToTypes()}, nil
 	case ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
 		FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
 		RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType:
-		return &Activity{Type: typ}, nil
+		return &Activity{Type: typ.ToTypes()}, nil
 	case IntransitiveActivityType, ArriveType, TravelType:
-		return &IntransitiveActivity{Type: typ}, nil
+		return &IntransitiveActivity{Type: typ.ToTypes()}, nil
 	case ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType:
-		return &Actor{Type: typ}, nil
+		return &Actor{Type: typ.ToTypes()}, nil
 	case CollectionType:
-		return &Collection{Type: typ}, nil
+		return &Collection{Type: typ.ToTypes()}, nil
 	case OrderedCollectionType:
-		return &OrderedCollection{Type: typ}, nil
+		return &OrderedCollection{Type: typ.ToTypes()}, nil
 	case CollectionPageType:
-		return &CollectionPage{Type: typ}, nil
+		return &CollectionPage{Type: typ.ToTypes()}, nil
 	case OrderedCollectionPageType:
-		return &OrderedCollectionPage{Type: typ}, nil
+		return &OrderedCollectionPage{Type: typ.ToTypes()}, nil
 	case PlaceType:
-		return &Place{Type: typ}, nil
+		return &Place{Type: typ.ToTypes()}, nil
 	case ProfileType:
-		return &Profile{Type: typ}, nil
+		return &Profile{Type: typ.ToTypes()}, nil
 	case RelationshipType:
-		return &Relationship{Type: typ}, nil
+		return &Relationship{Type: typ.ToTypes()}, nil
 	case TombstoneType:
-		return &Tombstone{Type: typ}, nil
+		return &Tombstone{Type: typ.ToTypes()}, nil
 	case QuestionType:
-		return &Question{Type: typ}, nil
+		return &Question{Type: typ.ToTypes()}, nil
 	case "":
 		fallthrough
 	default:
@@ -506,7 +511,7 @@ func JSONGetActorEndpoints(val *fastjson.Value, prop string) *Endpoints {
 
 func JSONLoadObject(val *fastjson.Value, o *Object) error {
 	o.ID = JSONGetID(val)
-	o.Type = JSONGetType(val)
+	o.Type = JSONGetTypes(val)
 	o.Name = JSONGetNaturalLanguageField(val, "name")
 	o.Content = JSONGetNaturalLanguageField(val, "content")
 	o.Summary = JSONGetNaturalLanguageField(val, "summary")
@@ -660,7 +665,7 @@ func JSONLoadTombstone(val *fastjson.Value, t *Tombstone) error {
 
 func jsonLoadToLink(val *fastjson.Value, l *Link) error {
 	l.ID = JSONGetID(val)
-	l.Type = JSONGetType(val)
+	l.Type = JSONGetTypes(val)
 	l.MediaType = JSONGetMimeType(val, "mediaType")
 	l.Preview = JSONGetItem(val, "preview")
 	if h := JSONGetInt(val, "height"); h != 0 {

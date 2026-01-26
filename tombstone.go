@@ -16,7 +16,7 @@ type Tombstone struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyType `jsonld:"type,omitempty"`
+	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -133,7 +133,7 @@ func (t Tombstone) GetLink() IRI {
 
 // GetType returns the type of the current Tombstone
 func (t Tombstone) GetType() ActivityVocabularyType {
-	return t.Type
+	return t.Type.GetType()
 }
 
 // GetID returns the ID corresponding to the current Tombstone

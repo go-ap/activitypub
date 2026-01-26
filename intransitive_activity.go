@@ -21,7 +21,7 @@ type IntransitiveActivity struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyType `jsonld:"type,omitempty"`
+	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -158,7 +158,7 @@ func (i *IntransitiveActivity) Clean() {
 
 // GetType returns the ActivityVocabulary type of the current Intransitive Activity
 func (i IntransitiveActivity) GetType() ActivityVocabularyType {
-	return i.Type
+	return i.Type.GetType()
 }
 
 // IsLink returns false for Activity objects
@@ -251,7 +251,7 @@ func IntransitiveActivityNew(id ID, typ ActivityVocabularyType) *IntransitiveAct
 	if !IntransitiveActivityTypes.Contains(typ) {
 		typ = IntransitiveActivityType
 	}
-	i := IntransitiveActivity{ID: id, Type: typ}
+	i := IntransitiveActivity{ID: id, Type: typ.ToTypes()}
 	i.Name = NaturalLanguageValuesNew()
 	i.Content = NaturalLanguageValuesNew()
 
@@ -343,15 +343,15 @@ func (i IntransitiveActivity) equal(with IntransitiveActivity) bool {
 func (i IntransitiveActivity) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's':
-		if i.Type != "" && i.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", i, i.Type, i.ID)
+		if i.GetType() != "" && i.ID != "" {
+			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", i, i.GetType(), i.ID)
 		} else if i.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T( %s )", i, i.ID)
 		} else {
 			_, _ = fmt.Fprintf(s, "%T[%p]", i, &i)
 		}
 	case 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] {", i, i.Type)
+		_, _ = fmt.Fprintf(s, "%T[%s] {", i, i.GetType())
 		_ = fmtIntransitiveActivityProps(s)(&i)
 		_, _ = io.WriteString(s, " }")
 	}

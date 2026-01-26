@@ -109,13 +109,13 @@ func TestToTombstone(t *testing.T) {
 		},
 		{
 			name: "Valid Tombstone",
-			it:   Tombstone{ID: "test", Type: TombstoneType},
-			want: &Tombstone{ID: "test", Type: TombstoneType},
+			it:   Tombstone{ID: "test", Type: TombstoneType.ToTypes()},
+			want: &Tombstone{ID: "test", Type: TombstoneType.ToTypes()},
 		},
 		{
 			name: "Valid *Tombstone",
-			it:   &Tombstone{ID: "test", Type: TombstoneType},
-			want: &Tombstone{ID: "test", Type: TombstoneType},
+			it:   &Tombstone{ID: "test", Type: TombstoneType.ToTypes()},
+			want: &Tombstone{ID: "test", Type: TombstoneType.ToTypes()},
 		},
 		{
 			name:    "IRI",
@@ -134,17 +134,17 @@ func TestToTombstone(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType},
+			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
 			wantErr: ErrorInvalidType[Tombstone](&Object{}),
 		},
 		{
 			name:    "Activity",
-			it:      &Activity{ID: "test", Type: CreateType},
+			it:      &Activity{ID: "test", Type: CreateType.ToTypes()},
 			wantErr: ErrorInvalidType[Tombstone](&Activity{}),
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
 			wantErr: ErrorInvalidType[Tombstone](&IntransitiveActivity{}),
 		},
 	}

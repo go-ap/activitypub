@@ -18,16 +18,16 @@ func TestActorNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.Type != testType {
-		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, testType)
+	if o.GetType() != testType {
+		t.Errorf("APObject Type '%v' different than expected '%v'", o.GetType(), testType)
 	}
 
 	n := ActorNew(testValue, "")
 	if n.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", n.ID, testValue)
 	}
-	if n.Type != ActorType {
-		t.Errorf("APObject Type '%v' different than expected '%v'", n.Type, ActorType)
+	if n.GetType() != ActorType {
+		t.Errorf("APObject Type '%v' different than expected '%v'", n.GetType(), ActorType)
 	}
 }
 
@@ -38,7 +38,7 @@ func TestPersonNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.Type != PersonType {
+	if o.GetType() != PersonType {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, PersonType)
 	}
 }
@@ -50,7 +50,7 @@ func TestApplicationNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.Type != ApplicationType {
+	if o.GetType() != ApplicationType {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, ApplicationType)
 	}
 }
@@ -62,7 +62,7 @@ func TestGroupNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.Type != GroupType {
+	if o.GetType() != GroupType {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, GroupType)
 	}
 }
@@ -74,7 +74,7 @@ func TestOrganizationNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.Type != OrganizationType {
+	if o.GetType() != OrganizationType {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, OrganizationType)
 	}
 }
@@ -86,7 +86,7 @@ func TestServiceNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.Type != ServiceType {
+	if o.GetType() != ServiceType {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, ServiceType)
 	}
 }
@@ -245,8 +245,8 @@ func validateEmptyPerson(p Person, t *testing.T) {
 	if p.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", p, p.ID)
 	}
-	if p.Type != "" {
-		t.Errorf("Unmarshaled object %T should have empty Type, received %q", p, p.Type)
+	if p.GetType() != "" {
+		t.Errorf("Unmarshaled object %T should have empty Type, received %q", p, p.GetType())
 	}
 	if p.AttributedTo != nil {
 		t.Errorf("Unmarshaled object %T should have empty AttributedTo, received %q", p, p.AttributedTo)
@@ -362,13 +362,13 @@ func TestToActor(t *testing.T) {
 		},
 		{
 			name: "Valid Actor",
-			it:   Actor{ID: "test", Type: UpdateType},
-			want: &Actor{ID: "test", Type: UpdateType},
+			it:   Actor{ID: "test", Type: UpdateType.ToTypes()},
+			want: &Actor{ID: "test", Type: UpdateType.ToTypes()},
 		},
 		{
 			name: "Valid *Actor",
-			it:   &Actor{ID: "test", Type: CreateType},
-			want: &Actor{ID: "test", Type: CreateType},
+			it:   ActorNew("test", CreateType),
+			want: ActorNew("test", CreateType),
 		},
 		{
 			name:    "IRI",
@@ -387,17 +387,17 @@ func TestToActor(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType},
+			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
 			wantErr: ErrorInvalidType[Actor](&Object{}),
 		},
 		{
 			name:    "Activity",
-			it:      &Activity{ID: "test", Type: CreateType},
+			it:      &Activity{ID: "test", Type: CreateType.ToTypes()},
 			wantErr: ErrorInvalidType[Actor](&Activity{}),
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
 			wantErr: ErrorInvalidType[Actor](&IntransitiveActivity{}),
 		},
 	}
@@ -409,7 +409,7 @@ func TestToActor(t *testing.T) {
 				return
 			}
 			if !cmp.Equal(got, tt.want) {
-				t.Errorf("ToActor() got = %s", cmp.Diff(tt.want, got))
+				t.Errorf("ToActor(): %s got = %s", tt.name, cmp.Diff(tt.want, got))
 			}
 		})
 	}
@@ -586,7 +586,7 @@ func TestActor_Equals(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a := Actor{
 				ID:                tt.fields.ID,
-				Type:              tt.fields.Type,
+				Type:              tt.fields.Type.ToTypes(),
 				Name:              tt.fields.Name,
 				Attachment:        tt.fields.Attachment,
 				AttributedTo:      tt.fields.AttributedTo,

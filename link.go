@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"slices"
 
 	"github.com/valyala/fastjson"
 )
@@ -25,7 +26,9 @@ type Links interface {
 // actual pixel dimensions of the referenced image.
 // The target URI of the Link is expressed using the required href property. In addition, all Link instances share the
 // following common set of optional properties as normatively defined by the [Activity Vocabulary]:
-//   id | name | hreflang | mediaType | rel | height | width
+//
+//	id | name | hreflang | mediaType | rel | height | width
+//
 // For example, all Objects can contain an image property whose value describes a graphical representation of the
 // containing object. This property will typically be used to provide the URL to an image (e.g. JPEG, GIF or PNG)
 // resource that can be displayed to the user. Any given object might have multiple such visual representations --
@@ -37,7 +40,7 @@ type Link struct {
 	// Provides the globally unique identifier for an APObject or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Identifies the APObject or Link type. Multiple values may be specified.
-	Type ActivityVocabularyType `jsonld:"type,omitempty"`
+	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -69,22 +72,22 @@ func LinkNew(id ID, typ ActivityVocabularyType) *Link {
 	if !LinkTypes.Contains(typ) {
 		typ = LinkType
 	}
-	return &Link{ID: id, Type: typ}
+	return &Link{ID: id, Type: typ.ToTypes()}
 }
 
 // MentionNew initializes a new Mention
 func MentionNew(id ID) *Mention {
-	return &Mention{ID: id, Type: MentionType}
+	return &Mention{ID: id, Type: MentionType.ToTypes()}
 }
 
 // IsLink validates if current Link is a Link
 func (l Link) IsLink() bool {
-	return l.Type == LinkType || LinkTypes.Contains(l.Type)
+	return l.GetType() == LinkType || LinkTypes.Contains(l.GetType())
 }
 
 // IsObject validates if current Link is an GetID
 func (l Link) IsObject() bool {
-	return l.Type == ObjectType || ObjectTypes.Contains(l.Type)
+	return l.GetType() == ObjectType || ObjectTypes.Contains(l.GetType())
 }
 
 // IsCollection returns false for Link objects
@@ -104,7 +107,7 @@ func (l Link) GetLink() IRI {
 
 // GetType returns the Type corresponding to the Mention object
 func (l Link) GetType() ActivityVocabularyType {
-	return l.Type
+	return l.Type.GetType()
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
@@ -147,7 +150,7 @@ func (l Link) equal(with Link) bool {
 	if !l.ID.Equal(with.ID) {
 		return false
 	}
-	if l.Type != with.Type {
+	if slices.Equal(l.Type, with.Type) {
 		return false
 	}
 	if l.HrefLang != with.HrefLang {

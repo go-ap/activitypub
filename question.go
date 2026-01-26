@@ -18,7 +18,7 @@ type Question struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyType `jsonld:"type,omitempty"`
+	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -147,7 +147,7 @@ func (q Question) GetLink() IRI {
 
 // GetType returns the ActivityVocabulary type of the current Activity
 func (q Question) GetType() ActivityVocabularyType {
-	return q.Type
+	return q.Type.GetType()
 }
 
 // IsObject returns true for Question objects
@@ -236,7 +236,7 @@ func (q Question) Format(s fmt.State, verb rune) {
 
 // QuestionNew initializes a Question activity
 func QuestionNew(id ID) *Question {
-	q := Question{ID: id, Type: QuestionType}
+	q := Question{ID: id, Type: QuestionType.ToTypes()}
 	q.Name = NaturalLanguageValuesNew()
 	q.Content = NaturalLanguageValuesNew()
 	return &q

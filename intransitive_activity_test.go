@@ -16,8 +16,8 @@ func TestIntransitiveActivityNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("IntransitiveActivity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != testType {
-		t.Errorf("IntransitiveActivity Type '%v' different than expected '%v'", a.Type, testType)
+	if a.GetType() != testType {
+		t.Errorf("IntransitiveActivity Type '%v' different than expected '%v'", a.GetType(), testType)
 	}
 
 	g := IntransitiveActivityNew(testValue, "")
@@ -25,8 +25,8 @@ func TestIntransitiveActivityNew(t *testing.T) {
 	if g.ID != testValue {
 		t.Errorf("IntransitiveActivity Id '%v' different than expected '%v'", g.ID, testValue)
 	}
-	if g.Type != IntransitiveActivityType {
-		t.Errorf("IntransitiveActivity Type '%v' different than expected '%v'", g.Type, IntransitiveActivityType)
+	if g.GetType() != IntransitiveActivityType {
+		t.Errorf("IntransitiveActivity Type '%v' different than expected '%v'", g.GetType(), IntransitiveActivityType)
 	}
 }
 
@@ -218,23 +218,23 @@ func TestToIntransitiveActivity(t *testing.T) {
 		},
 		{
 			name: "Valid IntransitiveActivity",
-			it:   IntransitiveActivity{ID: "test", Type: TravelType},
-			want: &IntransitiveActivity{ID: "test", Type: TravelType},
+			it:   IntransitiveActivity{ID: "test", Type: TravelType.ToTypes()},
+			want: &IntransitiveActivity{ID: "test", Type: TravelType.ToTypes()},
 		},
 		{
 			name: "Valid *IntransitiveActivity",
-			it:   &IntransitiveActivity{ID: "test", Type: ArriveType},
-			want: &IntransitiveActivity{ID: "test", Type: ArriveType},
+			it:   &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
+			want: &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
 		},
 		{
 			name: "Valid Question",
-			it:   Question{ID: "test", Type: QuestionType},
-			want: &IntransitiveActivity{ID: "test", Type: QuestionType},
+			it:   Question{ID: "test", Type: QuestionType.ToTypes()},
+			want: &IntransitiveActivity{ID: "test", Type: QuestionType.ToTypes()},
 		},
 		{
 			name: "Valid *Question",
-			it:   &Question{ID: "test", Type: QuestionType},
-			want: &IntransitiveActivity{ID: "test", Type: QuestionType},
+			it:   &Question{ID: "test", Type: QuestionType.ToTypes()},
+			want: &IntransitiveActivity{ID: "test", Type: QuestionType.ToTypes()},
 		},
 		{
 			name:    "IRI",
@@ -243,8 +243,8 @@ func TestToIntransitiveActivity(t *testing.T) {
 		},
 		{
 			name: "Activity",
-			it:   &Activity{ID: "test", Type: UpdateType},
-			want: &IntransitiveActivity{ID: "test", Type: UpdateType},
+			it:   &Activity{ID: "test", Type: UpdateType.ToTypes()},
+			want: &IntransitiveActivity{ID: "test", Type: UpdateType.ToTypes()},
 		},
 		{
 			name:    "IRIs",
@@ -258,12 +258,12 @@ func TestToIntransitiveActivity(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType},
+			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
 			wantErr: ErrorInvalidType[IntransitiveActivity](&Object{}),
 		},
 		{
 			name:    "Actor",
-			it:      &Actor{ID: "test", Type: PersonType},
+			it:      &Actor{ID: "test", Type: PersonType.ToTypes()},
 			wantErr: ErrorInvalidType[IntransitiveActivity](&Person{}),
 		},
 	}
@@ -301,8 +301,8 @@ func TestArriveNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != ArriveType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, ArriveType)
+	if a.GetType() != ArriveType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), ArriveType)
 	}
 }
 
@@ -314,8 +314,8 @@ func TestTravelNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.Type != TravelType {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.Type, TravelType)
+	if a.GetType() != TravelType {
+		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), TravelType)
 	}
 }
 
@@ -399,7 +399,7 @@ func TestIntransitiveActivity_Equals(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a := IntransitiveActivity{
 				ID:           tt.fields.ID,
-				Type:         tt.fields.Type,
+				Type:         tt.fields.Type.ToTypes(),
 				Name:         tt.fields.Name,
 				Attachment:   tt.fields.Attachment,
 				AttributedTo: tt.fields.AttributedTo,

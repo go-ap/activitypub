@@ -16,7 +16,7 @@ type OrderedCollection struct {
 	// ID provides the globally unique identifier for an Activity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyType `jsonld:"type,omitempty"`
+	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -152,7 +152,7 @@ type (
 
 // GetType returns the OrderedCollection's type
 func (o OrderedCollection) GetType() ActivityVocabularyType {
-	return o.Type
+	return o.Type.GetType()
 }
 
 // IsLink returns false for an OrderedCollection object
@@ -315,7 +315,7 @@ func OrderedCollectionPageNew(parent CollectionInterface) *OrderedCollectionPage
 	if pc, ok := parent.(*OrderedCollection); ok {
 		copyOrderedCollectionToPage(pc, &p)
 	}
-	p.Type = OrderedCollectionPageType
+	p.Type = OrderedCollectionPageType.ToTypes()
 	return &p
 }
 
@@ -346,7 +346,7 @@ func ToOrderedCollection(it LinkOrIRI) (*OrderedCollection, error) {
 }
 
 func copyOrderedCollectionToPage(c *OrderedCollection, p *OrderedCollectionPage) error {
-	p.Type = OrderedCollectionPageType
+	p.Type = OrderedCollectionPageType.ToTypes()
 	p.Name = c.Name
 	p.Content = c.Content
 	p.Summary = c.Summary
@@ -447,7 +447,7 @@ func (o OrderedCollection) equal(with OrderedCollection) bool {
 func (o OrderedCollection) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's', 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] { totalItems: %d }", o, o.Type, o.TotalItems)
+		_, _ = fmt.Fprintf(s, "%T[%s] { totalItems: %d }", o, o.GetType(), o.TotalItems)
 	}
 }
 func (o *OrderedCollection) Recipients() ItemCollection {
