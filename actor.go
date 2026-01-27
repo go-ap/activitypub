@@ -197,6 +197,11 @@ func (a Actor) IsCollection() bool {
 	return false
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (a Actor) Matches(tt ...ActivityVocabularyType) bool {
+	return a.Type.Matches(tt...)
+}
+
 // PublicKey holds the ActivityPub compatible public key data
 // The document reference can be found at:
 // https://w3c-ccg.github.io/security-vocab/#publicKey

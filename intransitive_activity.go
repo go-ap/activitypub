@@ -191,6 +191,11 @@ func (i IntransitiveActivity) IsCollection() bool {
 	return false
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (i IntransitiveActivity) Matches(tt ...ActivityVocabularyType) bool {
+	return i.Type.Matches(tt...)
+}
+
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (i *IntransitiveActivity) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}

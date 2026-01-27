@@ -170,6 +170,11 @@ func (q Question) IsCollection() bool {
 	return false
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (q Question) Matches(tt ...ActivityVocabularyType) bool {
+	return q.Type.Matches(tt...)
+}
+
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (q *Question) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}

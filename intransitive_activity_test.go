@@ -16,7 +16,7 @@ func TestIntransitiveActivityNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("IntransitiveActivity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.GetType() != testType {
+	if !a.Matches(testType) {
 		t.Errorf("IntransitiveActivity Type '%v' different than expected '%v'", a.GetType(), testType)
 	}
 
@@ -25,7 +25,7 @@ func TestIntransitiveActivityNew(t *testing.T) {
 	if g.ID != testValue {
 		t.Errorf("IntransitiveActivity Id '%v' different than expected '%v'", g.ID, testValue)
 	}
-	if g.GetType() != IntransitiveActivityType {
+	if !g.Matches(IntransitiveActivityType) {
 		t.Errorf("IntransitiveActivity Type '%v' different than expected '%v'", g.GetType(), IntransitiveActivityType)
 	}
 }
@@ -122,7 +122,7 @@ func TestIntransitiveActivity_GetLink(t *testing.T) {
 func TestIntransitiveActivity_GetObject(t *testing.T) {
 	i := IntransitiveActivityNew("test", QuestionType)
 
-	if i.GetID() != "test" || i.GetType() != QuestionType {
+	if i.GetID() != "test" || !i.Matches(QuestionType) {
 		t.Errorf("%T should not return an empty %T object. Received %#v", i, i, i)
 	}
 }
@@ -188,19 +188,19 @@ func TestIntransitiveActivity_GetID(t *testing.T) {
 func TestIntransitiveActivity_GetType(t *testing.T) {
 	{
 		a := IntransitiveActivityNew("test", IntransitiveActivityType)
-		if a.GetType() != IntransitiveActivityType {
+		if !a.Matches(IntransitiveActivityType) {
 			t.Errorf("GetType should return %q for %T, received %q", IntransitiveActivityType, a, a.GetType())
 		}
 	}
 	{
 		a := IntransitiveActivityNew("test", ArriveType)
-		if a.GetType() != ArriveType {
+		if !a.Matches(ArriveType) {
 			t.Errorf("GetType should return %q for %T, received %q", ArriveType, a, a.GetType())
 		}
 	}
 	{
 		a := IntransitiveActivityNew("test", QuestionType)
-		if a.GetType() != QuestionType {
+		if !a.Matches(QuestionType) {
 			t.Errorf("GetType should return %q for %T, received %q", QuestionType, a, a.GetType())
 		}
 	}
@@ -301,7 +301,7 @@ func TestArriveNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.GetType() != ArriveType {
+	if !a.Matches(ArriveType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), ArriveType)
 	}
 }
@@ -314,7 +314,7 @@ func TestTravelNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.GetType() != TravelType {
+	if !a.Matches(TravelType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), TravelType)
 	}
 }

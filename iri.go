@@ -185,6 +185,11 @@ func (i IRI) GetTypes() ActivityVocabularyTypes {
 	return i.GetType().ToTypes()
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (i IRI) Matches(tt ...ActivityVocabularyType) bool {
+	return i.GetType().Matches(tt...)
+}
+
 // IsLink
 func (i IRI) IsLink() bool {
 	return true

@@ -158,6 +158,11 @@ func (p Place) GetID() ID {
 	return p.ID
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (p Place) Matches(tt ...ActivityVocabularyType) bool {
+	return p.Type.Matches(tt...)
+}
+
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (p *Place) UnmarshalJSON(data []byte) error {
 	par := fastjson.Parser{}

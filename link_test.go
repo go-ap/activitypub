@@ -14,7 +14,7 @@ func TestLinkNew(t *testing.T) {
 	if l.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", l.ID, testValue)
 	}
-	if l.GetType() != LinkType {
+	if !l.Matches(LinkType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", l.GetType(), LinkType)
 	}
 }

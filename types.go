@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"slices"
 
 	"github.com/valyala/fastjson"
 )
@@ -80,6 +81,32 @@ func (t ActivityVocabularyTypes) GetType() ActivityVocabularyType {
 	default:
 		return t[0]
 	}
+}
+
+func (t ActivityVocabularyTypes) GetTypes() ActivityVocabularyTypes {
+	return t
+}
+
+// EmptyTypes returns whether the collection of [ActivityVocabularyType]s is empty
+func EmptyTypes(tt ...ActivityVocabularyType) bool {
+	empty := len(tt) == 0
+	allEmpty := !empty
+	for _, ty := range tt {
+		allEmpty = allEmpty && ty == NilType
+	}
+	return empty || allEmpty
+}
+
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (t ActivityVocabularyTypes) Matches(tt ...ActivityVocabularyType) bool {
+	if EmptyTypes(t...) && EmptyTypes(tt...) {
+		return true
+	}
+	match := true
+	for _, search := range tt {
+		match = match && slices.Contains(t, search)
+	}
+	return match
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.

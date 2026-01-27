@@ -30,7 +30,7 @@ func TestOrderedCollectionNew(t *testing.T) {
 	if c.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", c.ID, testValue)
 	}
-	if c.GetType() != OrderedCollectionType {
+	if !c.Matches(OrderedCollectionType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", c.GetType(), OrderedCollectionType)
 	}
 }
@@ -121,7 +121,7 @@ func TestOrderedCollection_GetType(t *testing.T) {
 
 	c := OrderedCollectionNew(id)
 
-	if c.GetType() != OrderedCollectionType {
+	if !c.Matches(OrderedCollectionType) {
 		t.Errorf("OrderedCollection Type should be %q, received %q", OrderedCollectionType, c.GetType())
 	}
 }
@@ -154,7 +154,7 @@ func TestOrderedCollection_UnmarshalJSON(t *testing.T) {
 	if c.ID != "" {
 		t.Errorf("Unmarshaled object should have empty ID, received %q", c.ID)
 	}
-	if c.GetType() != "" {
+	if !c.Matches(NilType) || !c.Matches(nil...) {
 		t.Errorf("Unmarshaled object should have empty Type, received %q", c.GetType())
 	}
 	if c.AttributedTo != nil {

@@ -222,6 +222,11 @@ func (c Collection) GetLink() IRI {
 	return IRI(c.ID)
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (c Collection) Matches(tt ...ActivityVocabularyType) bool {
+	return c.Type.Matches(tt...)
+}
+
 // Collection returns the Collection's items
 func (c Collection) Collection() ItemCollection {
 	return c.Items

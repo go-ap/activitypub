@@ -115,6 +115,11 @@ func (l Link) GetTypes() ActivityVocabularyTypes {
 	return l.Type
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (l Link) Matches(tt ...ActivityVocabularyType) bool {
+	return l.Type.Matches(tt...)
+}
+
 // MarshalJSON encodes the receiver object to a JSON document.
 func (l Link) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)

@@ -102,6 +102,11 @@ type (
 		// FromActivityStreams maps an ActivityStreams object to another struct representation
 		FromActivityStreams(Item) error
 	}
+	// TypeMatcher interface allows matching against either a single or collection of ActivityVocabularyType.
+	TypeMatcher interface {
+		// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+		Matches(...ActivityVocabularyType) bool
+	}
 
 	// MimeType is the type for representing MIME types in certain ActivityStreams properties
 	MimeType string
@@ -135,6 +140,19 @@ func (a *ActivityVocabularyType) UnmarshalBinary(data []byte) error {
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
 	return a.GobEncode()
+}
+
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (a ActivityVocabularyType) Matches(tt ...ActivityVocabularyType) (match bool) {
+	if a == NilType && EmptyTypes(tt...) {
+		return true
+	}
+	for _, search := range tt {
+		if match = a == search; match {
+			break
+		}
+	}
+	return match
 }
 
 type Objects interface {
@@ -288,6 +306,11 @@ func (o Object) IsObject() bool {
 // IsCollection returns false for Object objects
 func (o Object) IsCollection() bool {
 	return false
+}
+
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (o Object) Matches(tt ...ActivityVocabularyType) bool {
+	return o.Type.Matches(tt...)
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
