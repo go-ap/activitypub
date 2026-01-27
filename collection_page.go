@@ -160,6 +160,11 @@ func (c CollectionPage) GetLink() IRI {
 	return IRI(c.ID)
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (c CollectionPage) Matches(tt ...ActivityVocabularyType) bool {
+	return c.Type.Matches(tt...)
+}
+
 // Collection returns the ColleCollectionPagection items
 func (c CollectionPage) Collection() ItemCollection {
 	return c.Items

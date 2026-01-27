@@ -168,6 +168,11 @@ func (o OrderedCollectionPage) Collection() ItemCollection {
 	return o.OrderedItems
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (o OrderedCollectionPage) Matches(tt ...ActivityVocabularyType) bool {
+	return o.Type.Matches(tt...)
+}
+
 // Count returns the maximum between the length of Items in the collection page and its TotalItems property
 func (o *OrderedCollectionPage) Count() uint {
 	if o == nil {

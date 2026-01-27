@@ -144,6 +144,11 @@ func (p Profile) GetID() ID {
 	return p.ID
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (p Profile) Matches(tt ...ActivityVocabularyType) bool {
+	return p.Type.Matches(tt...)
+}
+
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (p *Profile) UnmarshalJSON(data []byte) error {
 	par := fastjson.Parser{}

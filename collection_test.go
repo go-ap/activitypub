@@ -30,7 +30,7 @@ func TestCollectionNew(t *testing.T) {
 	if c.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", c.ID, testValue)
 	}
-	if c.GetType() != CollectionType {
+	if !c.Matches(CollectionType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", c.GetType(), CollectionType)
 	}
 }
@@ -121,7 +121,7 @@ func TestCollection_GetType(t *testing.T) {
 
 	c := CollectionNew(id)
 
-	if c.GetType() != CollectionType {
+	if !c.Matches(CollectionType) {
 		t.Errorf("Collection Type should be %q, received %q", CollectionType, c.GetType())
 	}
 }
@@ -154,7 +154,7 @@ func TestCollection_UnmarshalJSON(t *testing.T) {
 	if c.ID != "" {
 		t.Errorf("Unmarshaled object should have empty ID, received %q", c.ID)
 	}
-	if c.GetType() != "" {
+	if !c.Matches(NilType) || !c.Matches(nil...) {
 		t.Errorf("Unmarshaled object should have empty Type, received %q", c.GetType())
 	}
 	if c.AttributedTo != nil {

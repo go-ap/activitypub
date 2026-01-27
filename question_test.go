@@ -14,7 +14,7 @@ func TestQuestionNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if a.GetType() != QuestionType {
+	if !a.Matches(QuestionType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), QuestionType)
 	}
 }
@@ -54,8 +54,8 @@ func TestQuestion_GetLink(t *testing.T) {
 func TestQuestion_GetType(t *testing.T) {
 	a := QuestionNew("test")
 
-	if a.GetType() != QuestionType {
-		t.Errorf("GetType should return %q for %T, received %q", QuestionType, a, a.GetType())
+	if a.GetType() != QuestionType || !a.Matches(QuestionType) {
+		t.Errorf("GetType should return %q for %T, received %q", QuestionType, a, a.GetTypes())
 	}
 }
 

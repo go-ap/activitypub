@@ -33,7 +33,7 @@ func TestIRI_GetID(t *testing.T) {
 
 func TestIRI_GetType(t *testing.T) {
 	i := IRI("http://example.com")
-	if i.GetType() != IRIType {
+	if !i.Matches(IRIType) {
 		t.Errorf("Invalid type for %T object %s, expected %s", i, i.GetType(), IRIType)
 	}
 }

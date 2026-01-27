@@ -84,7 +84,7 @@ func TestCollectionPage_UnmarshalJSON(t *testing.T) {
 	if p.ID != "" {
 		t.Errorf("Unmarshaled object should have empty ID, received %q", p.ID)
 	}
-	if p.GetType() != "" {
+	if !p.Matches(NilType) || !p.Matches(nil...) {
 		t.Errorf("Unmarshaled object should have empty Type, received %q", p.GetType())
 	}
 	if p.AttributedTo != nil {

@@ -146,6 +146,11 @@ func (t Tombstone) GetID() ID {
 	return t.ID
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (t Tombstone) Matches(tt ...ActivityVocabularyType) bool {
+	return t.Type.Matches(tt...)
+}
+
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (t *Tombstone) UnmarshalJSON(data []byte) error {
 	par := fastjson.Parser{}

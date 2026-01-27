@@ -25,7 +25,12 @@ func (i ItemCollection) GetType() ActivityVocabularyType {
 
 // GetTypes returns the ItemCollection's types
 func (i ItemCollection) GetTypes() ActivityVocabularyTypes {
-	return ActivityVocabularyTypes{CollectionOfItems}
+	return i.GetType().ToTypes()
+}
+
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (i ItemCollection) Matches(tt ...ActivityVocabularyType) bool {
+	return i.GetType().Matches(tt...)
 }
 
 // IsLink returns false for an ItemCollection object

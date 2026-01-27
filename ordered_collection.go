@@ -175,6 +175,11 @@ func (o OrderedCollection) GetLink() IRI {
 	return IRI(o.ID)
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (o OrderedCollection) Matches(tt ...ActivityVocabularyType) bool {
+	return o.Type.Matches(tt...)
+}
+
 // IsObject returns true for am OrderedCollection object
 func (o OrderedCollection) IsObject() bool {
 	return true

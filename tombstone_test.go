@@ -158,6 +158,9 @@ func TestToTombstone(t *testing.T) {
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("ToTombstone() got = %s", cmp.Diff(tt.want, got))
 			}
+			if got != nil && !got.Matches(TombstoneType) {
+				t.Errorf("ToTombstone() expected to match Tombstone type, got = %v", got.GetTypes())
+			}
 		})
 	}
 }

@@ -413,6 +413,11 @@ func (a Activity) IsCollection() bool {
 	return false
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (a Activity) Matches(tt ...ActivityVocabularyType) bool {
+	return a.Type.Matches(tt...)
+}
+
 func removeFromCollection(col ItemCollection, items ...Item) ItemCollection {
 	result := make(ItemCollection, 0)
 	if len(items) == 0 {

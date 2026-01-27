@@ -155,6 +155,11 @@ func (r Relationship) GetID() ID {
 	return r.ID
 }
 
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (r Relationship) Matches(tt ...ActivityVocabularyType) bool {
+	return r.Type.Matches(tt...)
+}
+
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
 func (r *Relationship) UnmarshalJSON(data []byte) error {
 	par := fastjson.Parser{}

@@ -20,7 +20,7 @@ func TestObjectNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.GetType() != testType {
+	if !o.Matches(testType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.GetType(), testType)
 	}
 
@@ -29,7 +29,7 @@ func TestObjectNew(t *testing.T) {
 	if n.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", n.ID, testValue)
 	}
-	if n.GetType() != ObjectType {
+	if !n.Matches(ObjectType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", n.GetType(), ObjectType)
 	}
 }
@@ -191,6 +191,43 @@ func TestActivityVocabularyTypes_Contains(t *testing.T) {
 	}
 }
 
+func TestActivityVocabularyTypes_Matches(t *testing.T) {
+	emptyMatches := func(ty TypeMatcher) {
+		if !ty.Matches(NilType) {
+			t.Errorf("expected empty TypeMatcher %v to match NilType", ty)
+		}
+		if !ty.Matches(nil...) || !ty.Matches(ActivityVocabularyTypes{}...) {
+			t.Errorf("expected empty TypeMatcher %v to match empty ActivityVocabularyTypes slice", ty)
+		}
+		if !ty.Matches(ActivityVocabularyTypes{NilType, NilType}...) {
+			t.Errorf("expected empty TypeMatcher %v to match ActivityVocabularyTypes slice of all NilType", ty)
+		}
+	}
+
+	emptyMatches(NilType)
+	emptyMatches(ActivityVocabularyType(""))
+	emptyMatches(ActivityVocabularyTypes{})
+	emptyMatches(ActivityVocabularyTypes{NilType})
+}
+
+func TestActivityVocabularyTypes_EmptyTypes(t *testing.T) {
+	if !EmptyTypes(NilType) {
+		t.Errorf("expected NilType to be empty")
+	}
+	if !EmptyTypes(nil...) {
+		t.Errorf("expected nil ActivityVocabularyType collection to be empty")
+	}
+	if !EmptyTypes(ActivityVocabularyTypes{}...) {
+		t.Errorf("expected default ActivityVocabularyTypes slice to be empty")
+	}
+	if !EmptyTypes(ActivityVocabularyTypes{NilType, NilType}...) {
+		t.Errorf("expected ActivityVocabularyTypes slice of all NilType to be empty")
+	}
+	if EmptyTypes(ActivityVocabularyTypes{NilType, NilType, ObjectType}...) {
+		t.Errorf("expected ActivityVocabularyTypes slice with non-NilType to not be empty")
+	}
+}
+
 func TestObject_IsLink(t *testing.T) {
 	o := ObjectNew(ObjectType)
 	o.ID = "test"
@@ -281,7 +318,10 @@ func validateEmptyObject(o Object, t *testing.T) {
 	if o.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", o, o.ID)
 	}
-	if o.GetType() != "" {
+	if !o.Matches(NilType) || !o.Matches(nil...) {
+		t.Errorf("Unmarshaled object %T should have empty Type, received %q", o, o.GetType())
+	}
+	if o.Matches(ActivityVocabularyTypes{NilType, NilType, ObjectType}...) {
 		t.Errorf("Unmarshaled object %T should have empty Type, received %q", o, o.GetType())
 	}
 	if o.AttributedTo != nil {
@@ -459,7 +499,7 @@ func TestObject_GetLink(t *testing.T) {
 func TestObject_GetType(t *testing.T) {
 	a := Object{}
 	a.Type = ActorType.ToTypes()
-	if a.GetType() != ActorType {
+	if !a.Matches(ActorType) {
 		t.Errorf("%T should return %q, Received %q", a.GetType(), ActorType, a.GetType())
 	}
 }
