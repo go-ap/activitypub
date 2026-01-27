@@ -155,6 +155,11 @@ func (o OrderedCollection) GetType() ActivityVocabularyType {
 	return o.Type.GetType()
 }
 
+// GetTypes returns the OrderedCollection's types
+func (o OrderedCollection) GetTypes() ActivityVocabularyTypes {
+	return o.Type
+}
+
 // IsLink returns false for an OrderedCollection object
 func (o OrderedCollection) IsLink() bool {
 	return false

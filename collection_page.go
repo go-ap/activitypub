@@ -135,6 +135,11 @@ func (c CollectionPage) GetType() ActivityVocabularyType {
 	return c.Type.GetType()
 }
 
+// GetTypes returns the CollectionPage's types
+func (c CollectionPage) GetTypes() ActivityVocabularyTypes {
+	return c.Type
+}
+
 // IsLink returns false for a CollectionPage object
 func (c CollectionPage) IsLink() bool {
 	return false

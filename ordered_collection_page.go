@@ -138,6 +138,11 @@ func (o OrderedCollectionPage) GetType() ActivityVocabularyType {
 	return o.Type.GetType()
 }
 
+// GetTypes returns the OrderedCollectionPage's types
+func (o OrderedCollectionPage) GetTypes() ActivityVocabularyTypes {
+	return o.Type
+}
+
 // IsLink returns false for a OrderedCollectionPage object
 func (o OrderedCollectionPage) IsLink() bool {
 	return false

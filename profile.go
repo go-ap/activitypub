@@ -134,6 +134,11 @@ func (p Profile) GetType() ActivityVocabularyType {
 	return p.Type.GetType()
 }
 
+// GetTypes returns the types of the current Profile
+func (p Profile) GetTypes() ActivityVocabularyTypes {
+	return p.Type
+}
+
 // GetID returns the ID corresponding to the current Profile
 func (p Profile) GetID() ID {
 	return p.ID

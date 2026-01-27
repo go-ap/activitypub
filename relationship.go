@@ -145,6 +145,11 @@ func (r Relationship) GetType() ActivityVocabularyType {
 	return r.Type.GetType()
 }
 
+// GetTypes returns the types of the current Relationship
+func (r Relationship) GetTypes() ActivityVocabularyTypes {
+	return r.Type
+}
+
 // GetID returns the ID corresponding to the current Relationship
 func (r Relationship) GetID() ID {
 	return r.ID

@@ -194,12 +194,12 @@ func (c Collection) GetID() ID {
 
 // GetType returns the Collection's type
 func (c Collection) GetType() ActivityVocabularyType {
-	switch len(c.Type) {
-	case 0:
-		return NilType
-	default:
-		return c.Type[0]
-	}
+	return c.Type.GetType()
+}
+
+// GetTypes returns the Collection's types
+func (c Collection) GetTypes() ActivityVocabularyTypes {
+	return c.Type
 }
 
 // IsLink returns false for a Collection object

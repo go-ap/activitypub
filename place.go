@@ -148,6 +148,11 @@ func (p Place) GetType() ActivityVocabularyType {
 	return p.Type.GetType()
 }
 
+// GetTypes returns the types of the current Place
+func (p Place) GetTypes() ActivityVocabularyTypes {
+	return p.Type
+}
+
 // GetID returns the ID corresponding to the current Place
 func (p Place) GetID() ID {
 	return p.ID

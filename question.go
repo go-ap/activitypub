@@ -150,6 +150,11 @@ func (q Question) GetType() ActivityVocabularyType {
 	return q.Type.GetType()
 }
 
+// GetTypes returns the ActivityVocabulary types of the current Activity
+func (q Question) GetTypes() ActivityVocabularyTypes {
+	return q.Type
+}
+
 // IsObject returns true for Question objects
 func (q Question) IsObject() bool {
 	return true

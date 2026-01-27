@@ -161,6 +161,11 @@ func (i IntransitiveActivity) GetType() ActivityVocabularyType {
 	return i.Type.GetType()
 }
 
+// GetTypes returns the ActivityVocabulary types of the current Intransitive Activity
+func (i IntransitiveActivity) GetTypes() ActivityVocabularyTypes {
+	return i.Type
+}
+
 // IsLink returns false for Activity objects
 func (i IntransitiveActivity) IsLink() bool {
 	return false
