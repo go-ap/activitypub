@@ -23,6 +23,11 @@ func (i ItemCollection) GetType() ActivityVocabularyType {
 	return CollectionOfItems
 }
 
+// GetTypes returns the ItemCollection's types
+func (i ItemCollection) GetTypes() ActivityVocabularyTypes {
+	return ActivityVocabularyTypes{CollectionOfItems}
+}
+
 // IsLink returns false for an ItemCollection object
 func (i ItemCollection) IsLink() bool {
 	return false

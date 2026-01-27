@@ -76,6 +76,8 @@ type (
 		GetID() ID
 		// GetType returns the ActivityStreams type
 		GetType() ActivityVocabularyType
+		// GetTypes returns the ActivityStreams types
+		GetTypes() ActivityVocabularyTypes
 	}
 	// LinkOrIRI is an interface that Object and Link structs implement, and at the same time
 	// they are kept disjointed
@@ -266,6 +268,11 @@ func (o Object) GetLink() IRI {
 // GetType returns the type of the current Object
 func (o Object) GetType() ActivityVocabularyType {
 	return o.Type.GetType()
+}
+
+// GetTypes returns the types of the current Object
+func (o Object) GetTypes() ActivityVocabularyTypes {
+	return o.Type
 }
 
 // IsLink validates if currentActivity Pub Object is a Link

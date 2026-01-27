@@ -177,6 +177,11 @@ func (a Actor) GetType() ActivityVocabularyType {
 	return a.Type.GetType()
 }
 
+// GetTypes returns the types of the current Actor
+func (a Actor) GetTypes() ActivityVocabularyTypes {
+	return a.Type
+}
+
 // IsLink validates if currentActivity Pub Actor is a Link
 func (a Actor) IsLink() bool {
 	return false

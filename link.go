@@ -110,6 +110,11 @@ func (l Link) GetType() ActivityVocabularyType {
 	return l.Type.GetType()
 }
 
+// GetTypes returns the Types corresponding to the Mention object
+func (l Link) GetTypes() ActivityVocabularyTypes {
+	return l.Type
+}
+
 // MarshalJSON encodes the receiver object to a JSON document.
 func (l Link) MarshalJSON() ([]byte, error) {
 	b := make([]byte, 0)

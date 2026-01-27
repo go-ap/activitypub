@@ -136,6 +136,11 @@ func (t Tombstone) GetType() ActivityVocabularyType {
 	return t.Type.GetType()
 }
 
+// GetTypes returns the types of the current Tombstone
+func (t Tombstone) GetTypes() ActivityVocabularyTypes {
+	return t.Type
+}
+
 // GetID returns the ID corresponding to the current Tombstone
 func (t Tombstone) GetID() ID {
 	return t.ID

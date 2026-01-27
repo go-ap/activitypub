@@ -383,6 +383,11 @@ func (a Activity) GetType() ActivityVocabularyType {
 	return a.Type.GetType()
 }
 
+// GetTypes returns the ActivityVocabulary types of the current Activity
+func (a Activity) GetTypes() ActivityVocabularyTypes {
+	return a.Type
+}
+
 // IsLink returns false for Activity objects
 func (a Activity) IsLink() bool {
 	return false

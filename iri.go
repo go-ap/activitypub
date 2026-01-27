@@ -180,6 +180,11 @@ func (i IRI) GetType() ActivityVocabularyType {
 	return IRIType
 }
 
+// GetTypes
+func (i IRI) GetTypes() ActivityVocabularyTypes {
+	return i.GetType().ToTypes()
+}
+
 // IsLink
 func (i IRI) IsLink() bool {
 	return true
@@ -261,6 +266,11 @@ func (i IRIs) GetLink() IRI {
 // GetType returns the ItemCollection's type
 func (i IRIs) GetType() ActivityVocabularyType {
 	return CollectionOfIRIs
+}
+
+// GetTypes returns the ItemCollection's types
+func (i IRIs) GetTypes() ActivityVocabularyTypes {
+	return ActivityVocabularyTypes{CollectionOfIRIs}
 }
 
 // IsLink returns false for an ItemCollection object
