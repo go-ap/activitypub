@@ -28,8 +28,8 @@ func itemsNeedSwapping(i1, i2 Item) bool {
 	}
 	t1 := i1.GetType()
 	t2 := i2.GetType()
-	if ObjectTypes.Contains(t2) {
-		return !ObjectTypes.Contains(t1)
+	if ObjectTypes.MatchOther(t2) {
+		return !ObjectTypes.MatchOther(t1)
 	}
 	return false
 }
@@ -65,36 +65,36 @@ func ItemsEqual(it, with Item) bool {
 			result = i.Equals(with)
 			return nil
 		})
-		if ActivityTypes.Contains(with.GetType()) {
+		if ActivityTypes.MatchOther(with.GetType()) {
 			_ = OnActivity(it, func(i *Activity) error {
 				result = i.Equals(with)
 				return nil
 			})
-		} else if ActorTypes.Contains(with.GetType()) {
+		} else if ActorTypes.MatchOther(with.GetType()) {
 			_ = OnActor(it, func(i *Actor) error {
 				result = i.Equals(with)
 				return nil
 			})
 		} else if it.IsCollection() {
-			if it.GetType() == CollectionType {
+			if it.GetType().Matches(CollectionType) {
 				_ = OnCollection(it, func(c *Collection) error {
 					result = c.Equals(with)
 					return nil
 				})
 			}
-			if it.GetType() == OrderedCollectionType {
+			if it.GetType().Matches(OrderedCollectionType) {
 				_ = OnOrderedCollection(it, func(c *OrderedCollection) error {
 					result = c.Equals(with)
 					return nil
 				})
 			}
-			if it.GetType() == CollectionPageType {
+			if it.GetType().Matches(CollectionPageType) {
 				_ = OnCollectionPage(it, func(c *CollectionPage) error {
 					result = c.Equals(with)
 					return nil
 				})
 			}
-			if it.GetType() == OrderedCollectionPageType {
+			if it.GetType().Matches(OrderedCollectionPageType) {
 				_ = OnOrderedCollectionPage(it, func(c *OrderedCollectionPage) error {
 					result = c.Equals(with)
 					return nil
@@ -229,7 +229,13 @@ func IsNil(it LinkOrIRI) bool {
 	// This is the default if the argument can't be cast to Object, as is the case for an ItemCollection
 	isNil := false
 	if IsIRI(it) {
-		isNil = len(it.GetLink()) == 0 || strings.EqualFold(it.GetLink().String(), NilIRI.String())
+		var l IRI
+		if lp, ok := it.(*IRI); ok {
+			l = *lp
+		} else {
+			l, _ = it.(IRI)
+		}
+		isNil = len(l) == 0 || strings.EqualFold(l.String(), NilIRI.String())
 	} else if IsItemCollection(it) {
 		if v, ok := it.(ItemCollection); ok {
 			return v == nil

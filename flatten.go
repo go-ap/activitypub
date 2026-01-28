@@ -100,25 +100,25 @@ func FlattenProperties(it Item) Item {
 		return nil
 	}
 	typ := it.GetType()
-	if IntransitiveActivityTypes.Contains(typ) {
+	if IntransitiveActivityTypes.MatchOther(typ) {
 		_ = OnIntransitiveActivity(it, func(a *IntransitiveActivity) error {
 			FlattenIntransitiveActivityProperties(a)
 			return nil
 		})
-	} else if ActivityTypes.Contains(typ) {
+	} else if ActivityTypes.MatchOther(typ) {
 		_ = OnActivity(it, func(a *Activity) error {
 			FlattenActivityProperties(a)
 			return nil
 		})
 	}
-	if ActorTypes.Contains(typ) {
-		OnActor(it, func(a *Actor) error {
+	if ActorTypes.MatchOther(typ) {
+		_ = OnActor(it, func(a *Actor) error {
 			FlattenActorProperties(a)
 			return nil
 		})
 	}
-	if ObjectTypes.Contains(typ) {
-		OnObject(it, func(o *Object) error {
+	if ObjectTypes.MatchOther(typ) {
+		_ = OnObject(it, func(o *Object) error {
 			FlattenObjectProperties(o)
 			return nil
 		})
@@ -132,7 +132,7 @@ func Flatten(it Item) Item {
 		return nil
 	}
 	if it.IsCollection() {
-		OnCollectionIntf(it, func(c CollectionInterface) error {
+		_ = OnCollectionIntf(it, func(c CollectionInterface) error {
 			it = FlattenItemCollection(c.Collection()).Normalize()
 			return nil
 		})

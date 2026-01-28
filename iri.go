@@ -176,13 +176,8 @@ func (i IRI) GetID() ID {
 }
 
 // GetType
-func (i IRI) GetType() ActivityVocabularyType {
+func (i IRI) GetType() TypeMatcher {
 	return IRIType
-}
-
-// GetTypes
-func (i IRI) GetTypes() ActivityVocabularyTypes {
-	return i.GetType().ToTypes()
 }
 
 // Matches returns whether the receiver matches the ActivityVocabularyType arguments.
@@ -269,7 +264,7 @@ func (i IRIs) GetLink() IRI {
 }
 
 // GetType returns the ItemCollection's type
-func (i IRIs) GetType() ActivityVocabularyType {
+func (i IRIs) GetType() TypeMatcher {
 	return CollectionOfIRIs
 }
 

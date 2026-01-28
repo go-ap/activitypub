@@ -24,207 +24,13 @@ func TestObjectNew(t *testing.T) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.GetType(), testType)
 	}
 
-	n := ObjectNew("")
+	n := ObjectNew(NilType)
 	n.ID = testValue
 	if n.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", n.ID, testValue)
 	}
 	if !n.Matches(ObjectType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", n.GetType(), ObjectType)
-	}
-}
-
-func TestActivityVocabularyTypes_Contains(t *testing.T) {
-	{
-		var invalidType ActivityVocabularyType = "RandomType"
-
-		if ActivityTypes.Contains(ActivityType) {
-			t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
-		}
-		for _, inValidType := range ObjectTypes {
-			if ActivityTypes.Contains(inValidType) {
-				t.Errorf("APObject Type '%v' should be invalid", inValidType)
-			}
-		}
-		if ActivityTypes.Contains(invalidType) {
-			t.Errorf("Activity Type '%v' should not be valid", invalidType)
-		}
-		for _, validType := range ActivityTypes {
-			if !ActivityTypes.Contains(validType) {
-				t.Errorf("Activity Type '%v' should be valid", validType)
-			}
-		}
-	}
-	{
-		var invalidType ActivityVocabularyType = "RandomType"
-
-		if IntransitiveActivityTypes.Contains(ActivityType) {
-			t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
-		}
-		for _, inValidType := range ActivityTypes {
-			if IntransitiveActivityTypes.Contains(inValidType) {
-				t.Errorf("APObject Type '%v' should be invalid", inValidType)
-			}
-		}
-		if IntransitiveActivityTypes.Contains(invalidType) {
-			t.Errorf("Activity Type '%v' should not be valid", invalidType)
-		}
-		for _, validType := range IntransitiveActivityTypes {
-			if !IntransitiveActivityTypes.Contains(validType) {
-				t.Errorf("Activity Type '%v' should be valid", validType)
-			}
-		}
-	}
-	{
-		var invalidType ActivityVocabularyType = "RandomType"
-
-		if ActivityTypes.Contains(ActivityType) {
-			t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
-		}
-		for _, inValidType := range CollectionManagementActivityTypes {
-			if !CollectionManagementActivityTypes.Contains(inValidType) {
-				t.Errorf("APObject Type '%v' should be valid", inValidType)
-			}
-		}
-		if CollectionManagementActivityTypes.Contains(invalidType) {
-			t.Errorf("Activity Type '%v' should not be valid", invalidType)
-		}
-		for _, validType := range ContentManagementActivityTypes {
-			if CollectionManagementActivityTypes.Contains(validType) {
-				t.Errorf("Activity Type '%v' should not be valid", validType)
-			}
-		}
-		for _, validType := range ReactionsActivityTypes {
-			if CollectionManagementActivityTypes.Contains(validType) {
-				t.Errorf("Activity Type '%v' should not be valid", validType)
-			}
-		}
-	}
-
-	{
-		var invalidType ActivityVocabularyType = "RandomType"
-
-		if ActivityTypes.Contains(ActivityType) {
-			t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
-		}
-		for _, inValidType := range ContentManagementActivityTypes {
-			if !ContentManagementActivityTypes.Contains(inValidType) {
-				t.Errorf("APObject Type '%v' should be valid", inValidType)
-			}
-		}
-		if ContentManagementActivityTypes.Contains(invalidType) {
-			t.Errorf("Activity Type '%v' should not be valid", invalidType)
-		}
-		for _, validType := range CollectionManagementActivityTypes {
-			if ContentManagementActivityTypes.Contains(validType) {
-				t.Errorf("Activity Type '%v' should not be valid", validType)
-			}
-		}
-		for _, validType := range ReactionsActivityTypes {
-			if ContentManagementActivityTypes.Contains(validType) {
-				t.Errorf("Activity Type '%v' should not be valid", validType)
-			}
-		}
-	}
-	{
-		var invalidType ActivityVocabularyType = "RandomType"
-
-		if ReactionsActivityTypes.Contains(ActivityType) {
-			t.Errorf("Generic Activity Type '%v' should not be valid", ActivityType)
-		}
-		for _, inValidType := range ReactionsActivityTypes {
-			if !ReactionsActivityTypes.Contains(inValidType) {
-				t.Errorf("APObject Type '%v' should be valid", inValidType)
-			}
-		}
-		if ReactionsActivityTypes.Contains(invalidType) {
-			t.Errorf("Activity Type '%v' should not be valid", invalidType)
-		}
-		for _, validType := range CollectionManagementActivityTypes {
-			if ReactionsActivityTypes.Contains(validType) {
-				t.Errorf("Activity Type '%v' should not be valid", validType)
-			}
-		}
-		for _, validType := range ContentManagementActivityTypes {
-			if ReactionsActivityTypes.Contains(validType) {
-				t.Errorf("Activity Type '%v' should not be valid", validType)
-			}
-		}
-	}
-	{
-		for _, validType := range CollectionTypes {
-			if !CollectionTypes.Contains(validType) {
-				t.Errorf("Generic Type '%#v' should be valid", validType)
-			}
-		}
-	}
-	{
-		var invalidType ActivityVocabularyType = "RandomType"
-
-		if ActorTypes.Contains(invalidType) {
-			t.Errorf("APObject Type '%v' should not be valid", invalidType)
-		}
-		for _, validType := range ActorTypes {
-			if !ActorTypes.Contains(validType) {
-				t.Errorf("APObject Type '%v' should be valid", validType)
-			}
-		}
-	}
-	{
-		for _, validType := range GenericTypes {
-			if !GenericTypes.Contains(validType) {
-				t.Errorf("Generic Type '%v' should be valid", validType)
-			}
-		}
-	}
-	{
-		var invalidType ActivityVocabularyType = "RandomType"
-
-		if ObjectTypes.Contains(invalidType) {
-			t.Errorf("APObject Type '%v' should not be valid", invalidType)
-		}
-		for _, validType := range ObjectTypes {
-			if !ObjectTypes.Contains(validType) {
-				t.Errorf("APObject Type '%v' should be valid", validType)
-			}
-		}
-	}
-}
-
-func TestActivityVocabularyTypes_Matches(t *testing.T) {
-	emptyMatches := func(ty TypeMatcher) {
-		if !ty.Matches(NilType) {
-			t.Errorf("expected empty TypeMatcher %v to match NilType", ty)
-		}
-		if !ty.Matches(nil...) || !ty.Matches(ActivityVocabularyTypes{}...) {
-			t.Errorf("expected empty TypeMatcher %v to match empty ActivityVocabularyTypes slice", ty)
-		}
-		if !ty.Matches(ActivityVocabularyTypes{NilType, NilType}...) {
-			t.Errorf("expected empty TypeMatcher %v to match ActivityVocabularyTypes slice of all NilType", ty)
-		}
-	}
-
-	emptyMatches(NilType)
-	emptyMatches(ActivityVocabularyType(""))
-	emptyMatches(ActivityVocabularyTypes{})
-	emptyMatches(ActivityVocabularyTypes{NilType})
-}
-
-func TestActivityVocabularyTypes_EmptyTypes(t *testing.T) {
-	if !EmptyTypes(NilType) {
-		t.Errorf("expected NilType to be empty")
-	}
-	if !EmptyTypes(nil...) {
-		t.Errorf("expected nil ActivityVocabularyType collection to be empty")
-	}
-	if !EmptyTypes(ActivityVocabularyTypes{}...) {
-		t.Errorf("expected default ActivityVocabularyTypes slice to be empty")
-	}
-	if !EmptyTypes(ActivityVocabularyTypes{NilType, NilType}...) {
-		t.Errorf("expected ActivityVocabularyTypes slice of all NilType to be empty")
-	}
-	if EmptyTypes(ActivityVocabularyTypes{NilType, NilType, ObjectType}...) {
-		t.Errorf("expected ActivityVocabularyTypes slice with non-NilType to not be empty")
 	}
 }
 
@@ -318,7 +124,7 @@ func validateEmptyObject(o Object, t *testing.T) {
 	if o.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", o, o.ID)
 	}
-	if !o.Matches(NilType) || !o.Matches(nil...) {
+	if HasTypes(o) {
 		t.Errorf("Unmarshaled object %T should have empty Type, received %q", o, o.GetType())
 	}
 	if o.Matches(ActivityVocabularyTypes{NilType, NilType, ObjectType}...) {
@@ -498,7 +304,7 @@ func TestObject_GetLink(t *testing.T) {
 
 func TestObject_GetType(t *testing.T) {
 	a := Object{}
-	a.Type = ActorType.ToTypes()
+	a.Type = ActorType
 	if !a.Matches(ActorType) {
 		t.Errorf("%T should return %q, Received %q", a.GetType(), ActorType, a.GetType())
 	}
@@ -516,108 +322,108 @@ func TestToObject(t *testing.T) {
 		},
 		{
 			name: "Valid Object",
-			it:   Object{ID: "test", Type: UpdateType.ToTypes()},
-			want: &Object{ID: "test", Type: UpdateType.ToTypes()},
+			it:   Object{ID: "test", Type: UpdateType},
+			want: &Object{ID: "test", Type: UpdateType},
 		},
 		{
 			name: "Valid *Object",
-			it:   &Object{ID: "test", Type: CreateType.ToTypes()},
-			want: &Object{ID: "test", Type: CreateType.ToTypes()},
+			it:   &Object{ID: "test", Type: CreateType},
+			want: &Object{ID: "test", Type: CreateType},
 		},
 		{
 			name: "Valid Place",
-			it:   Place{ID: "test", Type: PlaceType.ToTypes()},
-			want: &Object{ID: "test", Type: PlaceType.ToTypes()},
+			it:   Place{ID: "test", Type: PlaceType},
+			want: &Object{ID: "test", Type: PlaceType},
 		},
 		{
 			name: "Valid *Place",
-			it:   &Place{ID: "test", Type: PlaceType.ToTypes()},
-			want: &Object{ID: "test", Type: PlaceType.ToTypes()},
+			it:   &Place{ID: "test", Type: PlaceType},
+			want: &Object{ID: "test", Type: PlaceType},
 		},
 		{
 			name: "Valid Profile",
-			it:   Profile{ID: "test", Type: ProfileType.ToTypes()},
-			want: &Object{ID: "test", Type: ProfileType.ToTypes()},
+			it:   Profile{ID: "test", Type: ProfileType},
+			want: &Object{ID: "test", Type: ProfileType},
 		},
 		{
 			name: "Valid *Profile",
-			it:   &Profile{ID: "test", Type: ProfileType.ToTypes()},
-			want: &Object{ID: "test", Type: ProfileType.ToTypes()},
+			it:   &Profile{ID: "test", Type: ProfileType},
+			want: &Object{ID: "test", Type: ProfileType},
 		},
 		{
 			name: "Valid Relationship",
-			it:   Relationship{ID: "test", Type: RelationshipType.ToTypes()},
-			want: &Object{ID: "test", Type: RelationshipType.ToTypes()},
+			it:   Relationship{ID: "test", Type: RelationshipType},
+			want: &Object{ID: "test", Type: RelationshipType},
 		},
 		{
 			name: "Valid *Relationship",
-			it:   &Relationship{ID: "test", Type: RelationshipType.ToTypes()},
-			want: &Object{ID: "test", Type: RelationshipType.ToTypes()},
+			it:   &Relationship{ID: "test", Type: RelationshipType},
+			want: &Object{ID: "test", Type: RelationshipType},
 		},
 		{
 			name: "Valid Tombstone",
-			it:   Tombstone{ID: "test", Type: TombstoneType.ToTypes()},
-			want: &Object{ID: "test", Type: TombstoneType.ToTypes()},
+			it:   Tombstone{ID: "test", Type: TombstoneType},
+			want: &Object{ID: "test", Type: TombstoneType},
 		},
 		{
 			name: "Valid *Tombstone",
-			it:   &Tombstone{ID: "test", Type: TombstoneType.ToTypes()},
-			want: &Object{ID: "test", Type: TombstoneType.ToTypes()},
+			it:   &Tombstone{ID: "test", Type: TombstoneType},
+			want: &Object{ID: "test", Type: TombstoneType},
 		},
 		{
 			name: "Valid Activity",
-			it:   &Activity{ID: "test", Type: CreateType.ToTypes()},
-			want: &Object{ID: "test", Type: CreateType.ToTypes()},
+			it:   &Activity{ID: "test", Type: CreateType},
+			want: &Object{ID: "test", Type: CreateType},
 		},
 		{
 			name: "Valid IntransitiveActivity",
-			it:   &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
-			want: &Object{ID: "test", Type: ArriveType.ToTypes()},
+			it:   &IntransitiveActivity{ID: "test", Type: ArriveType},
+			want: &Object{ID: "test", Type: ArriveType},
 		},
 		{
 			name: "Valid Question",
-			it:   &Question{ID: "test", Type: QuestionType.ToTypes()},
-			want: &Object{ID: "test", Type: QuestionType.ToTypes()},
+			it:   &Question{ID: "test", Type: QuestionType},
+			want: &Object{ID: "test", Type: QuestionType},
 		},
 		{
 			name: "Valid OrderedCollection",
-			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType.ToTypes()},
-			want: &Object{ID: "test", Type: OrderedCollectionType.ToTypes()},
+			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &Object{ID: "test", Type: OrderedCollectionType},
 		},
 		{
 			name: "Valid *OrderedCollection",
-			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType.ToTypes()},
-			want: &Object{ID: "test", Type: OrderedCollectionType.ToTypes()},
+			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &Object{ID: "test", Type: OrderedCollectionType},
 		},
 		{
 			name: "Valid OrderedCollectionPage",
-			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
-			want: &Object{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
+			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &Object{ID: "test", Type: OrderedCollectionPageType},
 		},
 		{
 			name: "Valid *OrderedCollectionPage",
-			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
-			want: &Object{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
+			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &Object{ID: "test", Type: OrderedCollectionPageType},
 		},
 		{
 			name: "Valid OrderedCollection",
-			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType.ToTypes()},
-			want: &Object{ID: "test", Type: OrderedCollectionType.ToTypes()},
+			it:   OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &Object{ID: "test", Type: OrderedCollectionType},
 		},
 		{
 			name: "Valid *OrderedCollection",
-			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType.ToTypes()},
-			want: &Object{ID: "test", Type: OrderedCollectionType.ToTypes()},
+			it:   &OrderedCollection{ID: "test", Type: OrderedCollectionType},
+			want: &Object{ID: "test", Type: OrderedCollectionType},
 		},
 		{
 			name: "Valid OrderedCollectionPage",
-			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
-			want: &Object{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
+			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &Object{ID: "test", Type: OrderedCollectionPageType},
 		},
 		{
 			name: "Valid *OrderedCollectionPage",
-			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
-			want: &Object{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
+			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &Object{ID: "test", Type: OrderedCollectionPageType},
 		},
 		{
 			name:    "IRI",
@@ -658,65 +464,65 @@ func TestToObject1(t *testing.T) {
 	}{
 		{
 			name: "Actor with ID, type, w/o extra properties",
-			arg:  &Actor{ID: "https://example.com", Type: PersonType.ToTypes()},
-			want: &Object{ID: "https://example.com", Type: PersonType.ToTypes()},
+			arg:  &Actor{ID: "https://example.com", Type: PersonType},
+			want: &Object{ID: "https://example.com", Type: PersonType},
 		},
 		{
 			name: "Actor with ID, type, w/ extra properties",
-			arg: &Actor{ID: "https://example.com", Type: PersonType.ToTypes(), Endpoints: &Endpoints{
+			arg: &Actor{ID: "https://example.com", Type: PersonType, Endpoints: &Endpoints{
 				OauthAuthorizationEndpoint: IRI("https://example.com/oauth"),
 			}},
-			want: &Object{ID: "https://example.com", Type: PersonType.ToTypes()},
+			want: &Object{ID: "https://example.com", Type: PersonType},
 		},
 		{
 			name: "Place w/o extra properties",
-			arg:  &Place{ID: "https://example.com", Type: PlaceType.ToTypes()},
-			want: &Object{ID: "https://example.com", Type: PlaceType.ToTypes()},
+			arg:  &Place{ID: "https://example.com", Type: PlaceType},
+			want: &Object{ID: "https://example.com", Type: PlaceType},
 		},
 		{
 			name: "Place w/ extra properties",
-			arg:  &Place{ID: "https://example.com", Type: PlaceType.ToTypes(), Accuracy: 0.22, Altitude: 66.6},
-			want: &Object{ID: "https://example.com", Type: PlaceType.ToTypes()},
+			arg:  &Place{ID: "https://example.com", Type: PlaceType, Accuracy: 0.22, Altitude: 66.6},
+			want: &Object{ID: "https://example.com", Type: PlaceType},
 		},
 		{
 			name: "Profile w/o extra properties",
-			arg:  &Profile{ID: "https://example.com", Type: ProfileType.ToTypes()},
-			want: &Object{ID: "https://example.com", Type: ProfileType.ToTypes()},
+			arg:  &Profile{ID: "https://example.com", Type: ProfileType},
+			want: &Object{ID: "https://example.com", Type: ProfileType},
 		},
 		{
 			name: "Profile w/ extra properties",
-			arg:  &Profile{ID: "https://example.com", Type: ProfileType.ToTypes(), Describes: IRI("https://alt.example.com/")},
-			want: &Object{ID: "https://example.com", Type: ProfileType.ToTypes()},
+			arg:  &Profile{ID: "https://example.com", Type: ProfileType, Describes: IRI("https://alt.example.com/")},
+			want: &Object{ID: "https://example.com", Type: ProfileType},
 		},
 		{
 			name: "Tombstone w/o extra properties",
-			arg:  &Tombstone{ID: "https://example.com", Type: TombstoneType.ToTypes()},
-			want: &Object{ID: "https://example.com", Type: TombstoneType.ToTypes()},
+			arg:  &Tombstone{ID: "https://example.com", Type: TombstoneType},
+			want: &Object{ID: "https://example.com", Type: TombstoneType},
 		},
 		{
 			name: "Tombstone w/ extra properties",
-			arg:  &Tombstone{ID: "https://example.com", Type: TombstoneType.ToTypes(), FormerType: GroupType, Deleted: time.Now()},
-			want: &Object{ID: "https://example.com", Type: TombstoneType.ToTypes()},
+			arg:  &Tombstone{ID: "https://example.com", Type: TombstoneType, FormerType: GroupType, Deleted: time.Now()},
+			want: &Object{ID: "https://example.com", Type: TombstoneType},
 		},
 		{
 			name: "Create w/o extra properties",
-			arg:  &Create{ID: "https://example.com", Type: CreateType.ToTypes()},
-			want: &Object{ID: "https://example.com", Type: CreateType.ToTypes()},
+			arg:  &Create{ID: "https://example.com", Type: CreateType},
+			want: &Object{ID: "https://example.com", Type: CreateType},
 		},
 		{
 			name: "Create w/ extra properties",
-			arg:  &Create{ID: "https://example.com", Type: CreateType.ToTypes(), Actor: IRI("https://example.com/1")},
-			want: &Object{ID: "https://example.com", Type: CreateType.ToTypes()},
+			arg:  &Create{ID: "https://example.com", Type: CreateType, Actor: IRI("https://example.com/1")},
+			want: &Object{ID: "https://example.com", Type: CreateType},
 		},
 		{
 			name: "Question w/o extra properties",
-			arg:  &Question{ID: "https://example.com", Type: QuestionType.ToTypes()},
-			want: &Object{ID: "https://example.com", Type: QuestionType.ToTypes()},
+			arg:  &Question{ID: "https://example.com", Type: QuestionType},
+			want: &Object{ID: "https://example.com", Type: QuestionType},
 		},
 		{
 			name: "Question w/ extra properties",
-			arg:  &Question{ID: "https://example.com", Type: QuestionType.ToTypes(), AnyOf: ItemCollection{IRI("https://example.com")}},
-			want: &Object{ID: "https://example.com", Type: QuestionType.ToTypes()},
+			arg:  &Question{ID: "https://example.com", Type: QuestionType, AnyOf: ItemCollection{IRI("https://example.com")}},
+			want: &Object{ID: "https://example.com", Type: QuestionType},
 		},
 	}
 	for _, tt := range tests {
@@ -851,7 +657,7 @@ func TestActivityVocabularyType_GobEncode(t *testing.T) {
 func TestObject_MarshalJSON(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         ActivityVocabularyType
+		Type         TypeMatcher
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item
@@ -995,7 +801,7 @@ func TestObject_MarshalJSON(t *testing.T) {
 			fields: fields{
 				Attachment: &Object{
 					ID:   "some example",
-					Type: VideoType.ToTypes(),
+					Type: VideoType,
 				},
 			},
 			want:    [][]byte{[]byte(`{"attachment":{"id":"some example","type":"Video"}}`)},
@@ -1006,7 +812,7 @@ func TestObject_MarshalJSON(t *testing.T) {
 			fields: fields{
 				AttributedTo: &Actor{
 					ID:   "http://example.com/ana",
-					Type: PersonType.ToTypes(),
+					Type: PersonType,
 				},
 			},
 			want:    [][]byte{[]byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`)},
@@ -1018,11 +824,11 @@ func TestObject_MarshalJSON(t *testing.T) {
 				AttributedTo: ItemCollection{
 					&Actor{
 						ID:   "http://example.com/ana",
-						Type: PersonType.ToTypes(),
+						Type: PersonType,
 					},
 					&Actor{
 						ID:   "http://example.com/GGG",
-						Type: GroupType.ToTypes(),
+						Type: GroupType,
 					},
 				},
 			},
@@ -1045,7 +851,7 @@ func TestObject_MarshalJSON(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			o := Object{
 				ID:           tt.fields.ID,
-				Type:         tt.fields.Type.ToTypes(),
+				Type:         tt.fields.Type,
 				Name:         tt.fields.Name,
 				Attachment:   tt.fields.Attachment,
 				AttributedTo: tt.fields.AttributedTo,
@@ -1171,7 +977,7 @@ func TestSource_MarshalJSON(t *testing.T) {
 func TestObject_Equals(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         ActivityVocabularyType
+		Type         TypeMatcher
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item
@@ -1243,7 +1049,7 @@ func TestObject_Equals(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			o := Object{
 				ID:           tt.fields.ID,
-				Type:         tt.fields.Type.ToTypes(),
+				Type:         tt.fields.Type,
 				Name:         tt.fields.Name,
 				Attachment:   tt.fields.Attachment,
 				AttributedTo: tt.fields.AttributedTo,
@@ -1284,7 +1090,7 @@ func TestObject_Equals(t *testing.T) {
 func TestObject_GobEncode(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         ActivityVocabularyTypes
+		Type         TypeMatcher
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item
@@ -1332,12 +1138,12 @@ func TestObject_GobEncode(t *testing.T) {
 		},
 		{
 			name:    "with ID, type",
-			fields:  fields{ID: ID("https://example.com"), Type: ObjectType.ToTypes()},
+			fields:  fields{ID: ID("https://example.com"), Type: ObjectType},
 			wantErr: false,
 		},
 		{
 			name:    "with ID, type, name",
-			fields:  fields{ID: ID("https://example.com"), Type: ObjectType.ToTypes(), Name: NaturalLanguageValues{English: Content("ana")}},
+			fields:  fields{ID: ID("https://example.com"), Type: ObjectType, Name: NaturalLanguageValues{English: Content("ana")}},
 			wantErr: false,
 		},
 		{
@@ -1407,7 +1213,7 @@ func TestObject_GobEncode(t *testing.T) {
 				return
 			}
 			if !ItemsEqual(ob, o) {
-				t.Errorf("GobEncode() got/want =\n%#v\n%#v\n", ob, o)
+				t.Errorf("GobEncode() got = %s", cmp.Diff(ob, o))
 			}
 		})
 	}
@@ -1434,8 +1240,8 @@ func Test_reflectedItemByType_Object(t *testing.T) {
 		},
 		{
 			name: "object with ID, type",
-			arg:  &Object{ID: "https://example.com", Type: ArticleType.ToTypes()},
-			want: &Object{ID: "https://example.com", Type: ArticleType.ToTypes()},
+			arg:  &Object{ID: "https://example.com", Type: ArticleType},
+			want: &Object{ID: "https://example.com", Type: ArticleType},
 		},
 	}
 	for _, tt := range tests {

@@ -23,13 +23,13 @@ func TestToPlace(t *testing.T) {
 		},
 		{
 			name: "Valid Place",
-			it:   Place{ID: "test", Type: PlaceType.ToTypes()},
-			want: &Place{ID: "test", Type: PlaceType.ToTypes()},
+			it:   Place{ID: "test", Type: PlaceType},
+			want: &Place{ID: "test", Type: PlaceType},
 		},
 		{
 			name: "Valid *Place",
-			it:   &Place{ID: "test", Type: PlaceType.ToTypes()},
-			want: &Place{ID: "test", Type: PlaceType.ToTypes()},
+			it:   &Place{ID: "test", Type: PlaceType},
+			want: &Place{ID: "test", Type: PlaceType},
 		},
 		{
 			name:    "IRI",
@@ -48,17 +48,17 @@ func TestToPlace(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
+			it:      &Object{ID: "test", Type: ArticleType},
 			wantErr: ErrorInvalidType[Place](&Object{}),
 		},
 		{
 			name:    "Activity",
-			it:      &Activity{ID: "test", Type: CreateType.ToTypes()},
+			it:      &Activity{ID: "test", Type: CreateType},
 			wantErr: ErrorInvalidType[Place](&Activity{}),
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
 			wantErr: ErrorInvalidType[Place](&IntransitiveActivity{}),
 		},
 	}
@@ -73,7 +73,7 @@ func TestToPlace(t *testing.T) {
 				t.Errorf("ToPlace() got = %s", cmp.Diff(tt.want, got))
 			}
 			if got != nil && !got.Matches(PlaceType) {
-				t.Errorf("ToPlace() expected to match Place type, got = %v", got.GetTypes())
+				t.Errorf("ToPlace() expected to match Place type, got = %v", got.GetType())
 			}
 		})
 	}

@@ -54,8 +54,8 @@ func TestQuestion_GetLink(t *testing.T) {
 func TestQuestion_GetType(t *testing.T) {
 	a := QuestionNew("test")
 
-	if a.GetType() != QuestionType || !a.Matches(QuestionType) {
-		t.Errorf("GetType should return %q for %T, received %q", QuestionType, a, a.GetTypes())
+	if !a.GetType().Matches(QuestionType) {
+		t.Errorf("GetType should return %q for %T, received %q", QuestionType, a, a.GetType())
 	}
 }
 
@@ -71,23 +71,23 @@ func TestToQuestion(t *testing.T) {
 		},
 		{
 			name: "Valid Question",
-			it:   Question{ID: "test", Type: TravelType.ToTypes()},
-			want: &Question{ID: "test", Type: TravelType.ToTypes()},
+			it:   Question{ID: "test", Type: TravelType},
+			want: &Question{ID: "test", Type: TravelType},
 		},
 		{
 			name: "Valid *Question",
-			it:   &Question{ID: "test", Type: ArriveType.ToTypes()},
-			want: &Question{ID: "test", Type: ArriveType.ToTypes()},
+			it:   &Question{ID: "test", Type: ArriveType},
+			want: &Question{ID: "test", Type: ArriveType},
 		},
 		{
 			name: "Valid Question",
-			it:   Question{ID: "test", Type: QuestionType.ToTypes()},
-			want: &Question{ID: "test", Type: QuestionType.ToTypes()},
+			it:   Question{ID: "test", Type: QuestionType},
+			want: &Question{ID: "test", Type: QuestionType},
 		},
 		{
 			name: "Valid *Question",
-			it:   &Question{ID: "test", Type: QuestionType.ToTypes()},
-			want: &Question{ID: "test", Type: QuestionType.ToTypes()},
+			it:   &Question{ID: "test", Type: QuestionType},
+			want: &Question{ID: "test", Type: QuestionType},
 		},
 		{
 			name:    "IRI",
@@ -96,12 +96,12 @@ func TestToQuestion(t *testing.T) {
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
 			wantErr: ErrorInvalidType[Question](new(IntransitiveActivity)),
 		},
 		{
 			name:    "Activity",
-			it:      &Activity{ID: "test", Type: UpdateType.ToTypes()},
+			it:      &Activity{ID: "test", Type: UpdateType},
 			wantErr: ErrorInvalidType[Question](new(Activity)),
 		},
 		{
@@ -116,12 +116,12 @@ func TestToQuestion(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
+			it:      &Object{ID: "test", Type: ArticleType},
 			wantErr: ErrorInvalidType[Question](&Object{}),
 		},
 		{
 			name:    "Actor",
-			it:      &Actor{ID: "test", Type: PersonType.ToTypes()},
+			it:      &Actor{ID: "test", Type: PersonType},
 			wantErr: ErrorInvalidType[Question](&Person{}),
 		},
 	}

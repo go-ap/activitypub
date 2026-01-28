@@ -756,7 +756,7 @@ func TestActivity_UnmarshalJSON(t *testing.T) {
 	if a.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", a, a.ID)
 	}
-	if !a.Matches(NilType) || !a.Matches(nil...) {
+	if HasTypes(a) {
 		t.Errorf("Unmarshaled object %T should have empty Type, received %q", a, a.GetType())
 	}
 	if a.AttributedTo != nil {
@@ -793,7 +793,7 @@ func TestCreate_UnmarshalJSON(t *testing.T) {
 	if c.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", c, c.ID)
 	}
-	if !c.Matches(NilType) || !c.Matches(nil...) {
+	if HasTypes(c) {
 		t.Errorf("Unmarshaled object %T should have empty Type, received %q", c, c.GetType())
 	}
 	if c.AttributedTo != nil {
@@ -830,7 +830,7 @@ func TestDislike_UnmarshalJSON(t *testing.T) {
 	if d.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", d, d.ID)
 	}
-	if !d.Matches(NilType) || !d.Matches(nil...) {
+	if HasTypes(d) {
 		t.Errorf("Unmarshaled object %T should have empty Type, received %q", d, d.GetType())
 	}
 	if d.AttributedTo != nil {
@@ -867,7 +867,7 @@ func TestLike_UnmarshalJSON(t *testing.T) {
 	if l.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", l, l.ID)
 	}
-	if !l.Matches(NilType) || !l.Matches(nil...) {
+	if HasTypes(l) {
 		t.Errorf("Unmarshaled object %T should have empty Type, received %q", l, l.GetType())
 	}
 	if l.AttributedTo != nil {
@@ -904,7 +904,7 @@ func TestUpdate_UnmarshalJSON(t *testing.T) {
 	if u.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", u, u.ID)
 	}
-	if !u.Matches(NilType) || !u.Matches(nil...) {
+	if HasTypes(u) {
 		t.Errorf("Unmarshaled object %T should have empty Type, received %q", u, u.GetType())
 	}
 	if u.AttributedTo != nil {
@@ -945,13 +945,13 @@ func TestToActivity(t *testing.T) {
 		},
 		{
 			name: "Valid Activity",
-			it:   Activity{ID: "test", Type: UpdateType.ToTypes()},
-			want: &Activity{ID: "test", Type: UpdateType.ToTypes()},
+			it:   Activity{ID: "test", Type: UpdateType},
+			want: &Activity{ID: "test", Type: UpdateType},
 		},
 		{
 			name: "Valid *Activity",
-			it:   &Activity{ID: "test", Type: CreateType.ToTypes()},
-			want: &Activity{ID: "test", Type: CreateType.ToTypes()},
+			it:   &Activity{ID: "test", Type: CreateType},
+			want: &Activity{ID: "test", Type: CreateType},
 		},
 		{
 			name:    "IRI",
@@ -970,17 +970,17 @@ func TestToActivity(t *testing.T) {
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
 			wantErr: ErrorInvalidType[Activity](&IntransitiveActivity{}),
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
+			it:      &Object{ID: "test", Type: ArticleType},
 			wantErr: ErrorInvalidType[Activity](&Object{}),
 		},
 		{
 			name:    "Actor",
-			it:      &Actor{ID: "test", Type: PersonType.ToTypes()},
+			it:      &Actor{ID: "test", Type: PersonType},
 			wantErr: ErrorInvalidType[Activity](&Person{}),
 		},
 	}
@@ -1025,7 +1025,7 @@ func TestActivity_GetType(t *testing.T) {
 func TestActivity_MarshalJSON(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         ActivityVocabularyType
+		Type         TypeMatcher
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item
@@ -1175,7 +1175,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				Attachment: &Object{
 					ID:   "some example",
-					Type: VideoType.ToTypes(),
+					Type: VideoType,
 				},
 			},
 			want:    [][]byte{[]byte(`{"attachment":{"id":"some example","type":"Video"}}`)},
@@ -1186,7 +1186,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				AttributedTo: &Actor{
 					ID:   "http://example.com/ana",
-					Type: PersonType.ToTypes(),
+					Type: PersonType,
 				},
 			},
 			want:    [][]byte{[]byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`)},
@@ -1198,11 +1198,11 @@ func TestActivity_MarshalJSON(t *testing.T) {
 				AttributedTo: ItemCollection{
 					&Actor{
 						ID:   "http://example.com/ana",
-						Type: PersonType.ToTypes(),
+						Type: PersonType,
 					},
 					&Actor{
 						ID:   "http://example.com/GGG",
-						Type: GroupType.ToTypes(),
+						Type: GroupType,
 					},
 				},
 			},
@@ -1225,7 +1225,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a := Activity{
 				ID:           tt.fields.ID,
-				Type:         tt.fields.Type.ToTypes(),
+				Type:         tt.fields.Type,
 				Name:         tt.fields.Name,
 				Attachment:   tt.fields.Attachment,
 				AttributedTo: tt.fields.AttributedTo,
@@ -1283,7 +1283,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         ActivityVocabularyType
+		Type         TypeMatcher
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item
@@ -1429,7 +1429,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				Attachment: &Object{
 					ID:   "some example",
-					Type: VideoType.ToTypes(),
+					Type: VideoType,
 				},
 			},
 			want:    [][]byte{[]byte(`{"attachment":{"id":"some example","type":"Video"}}`)},
@@ -1440,7 +1440,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 			fields: fields{
 				AttributedTo: &Actor{
 					ID:   "http://example.com/ana",
-					Type: PersonType.ToTypes(),
+					Type: PersonType,
 				},
 			},
 			want:    [][]byte{[]byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`)},
@@ -1452,11 +1452,11 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 				AttributedTo: ItemCollection{
 					&Actor{
 						ID:   "http://example.com/ana",
-						Type: PersonType.ToTypes(),
+						Type: PersonType,
 					},
 					&Actor{
 						ID:   "http://example.com/GGG",
-						Type: GroupType.ToTypes(),
+						Type: GroupType,
 					},
 				},
 			},
@@ -1479,7 +1479,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			i := IntransitiveActivity{
 				ID:           tt.fields.ID,
-				Type:         tt.fields.Type.ToTypes(),
+				Type:         tt.fields.Type,
 				Name:         tt.fields.Name,
 				Attachment:   tt.fields.Attachment,
 				AttributedTo: tt.fields.AttributedTo,
@@ -1536,7 +1536,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 func TestActivity_Equals(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         ActivityVocabularyTypes
+		Type         TypeMatcher
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item

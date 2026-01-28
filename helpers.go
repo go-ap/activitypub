@@ -75,27 +75,31 @@ func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 	if it == nil {
 		return nil
 	}
-	switch it.GetType() {
-	case CollectionOfItems:
+	typ := it.GetType()
+	if typ == nil {
+		typ = NilType
+	}
+	switch {
+	case typ.Matches(CollectionOfItems):
 		col, err := ToItemCollection(it)
 		if err != nil {
 			return err
 		}
 		return fn(col)
-	case CollectionOfIRIs:
+	case typ.Matches(CollectionOfIRIs):
 		col, err := ToIRIs(it)
 		if err != nil {
 			return err
 		}
 		itCol := col.Collection()
 		return fn(&itCol)
-	case CollectionType:
+	case typ.Matches(CollectionType):
 		col, err := ToCollection(it)
 		if err != nil {
 			return err
 		}
 		return fn(col)
-	case CollectionPageType:
+	case typ.Matches(CollectionPageType):
 		return OnCollectionPage(it, func(p *CollectionPage) error {
 			col, err := ToCollectionPage(p)
 			if err != nil {
@@ -103,13 +107,13 @@ func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 			}
 			return fn(col)
 		})
-	case OrderedCollectionType:
+	case typ.Matches(OrderedCollectionType):
 		col, err := ToOrderedCollection(it)
 		if err != nil {
 			return err
 		}
 		return fn(col)
-	case OrderedCollectionPageType:
+	case typ.Matches(OrderedCollectionPageType):
 		return OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
 			col, err := ToOrderedCollectionPage(p)
 			if err != nil {
@@ -158,7 +162,7 @@ func ItemOrderTimestamp(i1, i2 LinkOrIRI) bool {
 
 func notEmptyLink(l *Link) bool {
 	return len(l.ID) > 0 ||
-		LinkTypes.Contains(l.GetType()) ||
+		LinkTypes.MatchOther(l.GetType()) ||
 		len(l.MediaType) > 0 ||
 		l.Preview != nil ||
 		l.Name != nil ||
@@ -174,8 +178,8 @@ func notEmptyObject(o *Object) bool {
 		return false
 	}
 	return len(o.ID) > 0 ||
-		len(o.Type) > 0 ||
-		ActivityTypes.Contains(o.GetType()) ||
+		HasTypes(o) ||
+		ActivityTypes.MatchOther(o.GetType()) ||
 		o.Attachment != nil ||
 		o.AttributedTo != nil ||
 		o.Audience != nil ||
@@ -267,12 +271,12 @@ func NotEmpty(i Item) bool {
 			return nil
 		})
 	}
-	if ActivityTypes.Contains(i.GetType()) {
+	if ActivityTypes.MatchOther(i.GetType()) {
 		_ = OnActivity(i, func(a *Activity) error {
 			notEmpty = notEmptyActivity(a)
 			return nil
 		})
-	} else if ActorTypes.Contains(i.GetType()) {
+	} else if ActorTypes.MatchOther(i.GetType()) {
 		_ = OnActor(i, func(a *Actor) error {
 			notEmpty = notEmptyActor(a)
 			return nil

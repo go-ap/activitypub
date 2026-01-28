@@ -68,7 +68,7 @@ func TestLink_IsCollection(t *testing.T) {
 func TestLink_GobEncode(t *testing.T) {
 	type fields struct {
 		ID        ID
-		Type      ActivityVocabularyTypes
+		Type      TypeMatcher
 		Name      NaturalLanguageValues
 		Rel       IRI
 		MediaType MimeType
@@ -120,7 +120,7 @@ func TestLink_GobEncode(t *testing.T) {
 func TestLink_GobDecode(t *testing.T) {
 	type fields struct {
 		ID        ID
-		Type      ActivityVocabularyType
+		Type      TypeMatcher
 		Name      NaturalLanguageValues
 		Rel       IRI
 		MediaType MimeType
@@ -147,7 +147,7 @@ func TestLink_GobDecode(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			l := &Link{
 				ID:        tt.fields.ID,
-				Type:      tt.fields.Type.ToTypes(),
+				Type:      tt.fields.Type,
 				Name:      tt.fields.Name,
 				Rel:       tt.fields.Rel,
 				MediaType: tt.fields.MediaType,

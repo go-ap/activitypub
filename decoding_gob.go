@@ -143,7 +143,8 @@ func unmapLinkProperties(mm map[string][]byte, l *Link) error {
 		}
 	}
 	if raw, ok := mm["type"]; ok {
-		if err := l.Type.GobDecode(raw); err != nil {
+		var err error
+		if l.Type, err = gobDecodeTypes(raw); err != nil {
 			return err
 		}
 	}
@@ -185,6 +186,20 @@ func unmapLinkProperties(mm map[string][]byte, l *Link) error {
 	return nil
 }
 
+func gobDecodeTypes(data []byte) (TypeMatcher, error) {
+	items := make(ActivityVocabularyTypes, 0)
+	if err := items.GobDecode(data); err != nil {
+		return nil, err
+	}
+	if len(items) == 0 {
+		return nil, nil
+	}
+	if len(items) == 1 {
+		return items[0], nil
+	}
+	return items, nil
+}
+
 func unmapObjectProperties(mm map[string][]byte, o *Object) error {
 	var err error
 	if raw, ok := mm["id"]; ok {
@@ -193,7 +208,7 @@ func unmapObjectProperties(mm map[string][]byte, o *Object) error {
 		}
 	}
 	if raw, ok := mm["type"]; ok {
-		if err = o.Type.GobDecode(raw); err != nil {
+		if o.Type, err = gobDecodeTypes(raw); err != nil {
 			return err
 		}
 	}
@@ -405,7 +420,7 @@ func gobDecodeItem(data []byte) (Item, error) {
 		return iris, nil
 	}
 	isObject := false
-	typ := ActivityVocabularyType("")
+	typ := NilType
 	mm, err := gobDecodeObjectAsMap(data)
 	if err == nil {
 		var sTyp []byte
@@ -421,65 +436,29 @@ func gobDecodeItem(data []byte) (Item, error) {
 		if err != nil {
 			return nil, err
 		}
-		switch it.GetType() {
-		case IRIType:
-		case "", ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
+		switch {
+		//case typ.Matches(IRIType):
+		case typ.Matches(NilType, ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType):
 			err = OnObject(it, func(ob *Object) error {
 				return unmapObjectProperties(mm, ob)
 			})
-		case LinkType, MentionType:
+		case typ.Matches(LinkType, MentionType):
 			err = OnLink(it, func(l *Link) error {
 				return unmapLinkProperties(mm, l)
 			})
-		case ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
+		case typ.Matches(ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
 			FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
-			RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType:
+			RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType):
 			err = OnActivity(it, func(act *Activity) error {
 				return unmapActivityProperties(mm, act)
 			})
-		case IntransitiveActivityType, ArriveType, TravelType:
+		case typ.Matches(IntransitiveActivityType, ArriveType, TravelType):
 			err = OnIntransitiveActivity(it, func(act *IntransitiveActivity) error {
 				return unmapIntransitiveActivityProperties(mm, act)
 			})
-		case ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType:
+		case typ.Matches(ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType):
 			err = OnActor(it, func(a *Actor) error {
 				return unmapActorProperties(mm, a)
-			})
-		case CollectionType:
-			err = OnCollection(it, func(c *Collection) error {
-				return unmapCollectionProperties(mm, c)
-			})
-		case OrderedCollectionType:
-			err = OnOrderedCollection(it, func(c *OrderedCollection) error {
-				return unmapOrderedCollectionProperties(mm, c)
-			})
-		case CollectionPageType:
-			err = OnCollectionPage(it, func(p *CollectionPage) error {
-				return unmapCollectionPageProperties(mm, p)
-			})
-		case OrderedCollectionPageType:
-			err = OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
-				return unmapOrderedCollectionPageProperties(mm, p)
-			})
-		case PlaceType:
-			err = OnPlace(it, func(p *Place) error {
-				return unmapPlaceProperties(mm, p)
-			})
-		case ProfileType:
-			err = OnProfile(it, func(p *Profile) error {
-				return unmapProfileProperties(mm, p)
-			})
-		case RelationshipType:
-			err = OnRelationship(it, func(r *Relationship) error {
-				return unmapRelationshipProperties(mm, r)
-			})
-		case TombstoneType:
-			err = OnTombstone(it, func(t *Tombstone) error {
-				return unmapTombstoneProperties(mm, t)
-			})
-		case QuestionType:
-			err = OnQuestion(it, func(q *Question) error {
-				return unmapQuestionProperties(mm, q)
 			})
 		}
 		return it, err

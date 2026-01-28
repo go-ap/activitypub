@@ -18,7 +18,7 @@ type OrderedCollectionPage struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
+	Type TypeMatcher `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -134,12 +134,7 @@ func (o OrderedCollectionPage) GetID() ID {
 }
 
 // GetType returns the OrderedCollectionPage's type
-func (o OrderedCollectionPage) GetType() ActivityVocabularyType {
-	return o.Type.GetType()
-}
-
-// GetTypes returns the OrderedCollectionPage's types
-func (o OrderedCollectionPage) GetTypes() ActivityVocabularyTypes {
+func (o OrderedCollectionPage) GetType() TypeMatcher {
 	return o.Type
 }
 
@@ -170,7 +165,7 @@ func (o OrderedCollectionPage) Collection() ItemCollection {
 
 // Matches returns whether the receiver matches the ActivityVocabularyType arguments.
 func (o OrderedCollectionPage) Matches(tt ...ActivityVocabularyType) bool {
-	return o.Type.Matches(tt...)
+	return o.Type != nil && o.Type.Matches(tt...)
 }
 
 // Count returns the maximum between the length of Items in the collection page and its TotalItems property

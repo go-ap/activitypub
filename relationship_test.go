@@ -50,13 +50,13 @@ func TestToRelationship(t *testing.T) {
 		},
 		{
 			name: "Valid Relationship",
-			it:   Relationship{ID: "test", Type: RelationshipType.ToTypes()},
-			want: &Relationship{ID: "test", Type: RelationshipType.ToTypes()},
+			it:   Relationship{ID: "test", Type: RelationshipType},
+			want: &Relationship{ID: "test", Type: RelationshipType},
 		},
 		{
 			name: "Valid *Relationship",
-			it:   &Relationship{ID: "test", Type: RelationshipType.ToTypes()},
-			want: &Relationship{ID: "test", Type: RelationshipType.ToTypes()},
+			it:   &Relationship{ID: "test", Type: RelationshipType},
+			want: &Relationship{ID: "test", Type: RelationshipType},
 		},
 		{
 			name:    "IRI",
@@ -75,17 +75,17 @@ func TestToRelationship(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
+			it:      &Object{ID: "test", Type: ArticleType},
 			wantErr: ErrorInvalidType[Relationship](&Object{}),
 		},
 		{
 			name:    "Activity",
-			it:      &Activity{ID: "test", Type: CreateType.ToTypes()},
+			it:      &Activity{ID: "test", Type: CreateType},
 			wantErr: ErrorInvalidType[Relationship](&Activity{}),
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
 			wantErr: ErrorInvalidType[Relationship](&IntransitiveActivity{}),
 		},
 	}
@@ -100,7 +100,7 @@ func TestToRelationship(t *testing.T) {
 				t.Errorf("ToRelationship() got = %s", cmp.Diff(tt.want, got))
 			}
 			if got != nil && !got.Matches(RelationshipType) {
-				t.Errorf("ToRelationship() expected to match Relationship type, got = %v", got.GetTypes())
+				t.Errorf("ToRelationship() expected to match Relationship type, got = %v", got.GetType())
 			}
 		})
 	}

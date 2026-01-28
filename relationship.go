@@ -21,7 +21,7 @@ type Relationship struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
+	Type TypeMatcher `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -141,12 +141,7 @@ func (r Relationship) GetLink() IRI {
 }
 
 // GetType returns the type of the current Relationship
-func (r Relationship) GetType() ActivityVocabularyType {
-	return r.Type.GetType()
-}
-
-// GetTypes returns the types of the current Relationship
-func (r Relationship) GetTypes() ActivityVocabularyTypes {
+func (r Relationship) GetType() TypeMatcher {
 	return r.Type
 }
 
@@ -157,7 +152,7 @@ func (r Relationship) GetID() ID {
 
 // Matches returns whether the receiver matches the ActivityVocabularyType arguments.
 func (r Relationship) Matches(tt ...ActivityVocabularyType) bool {
-	return r.Type.Matches(tt...)
+	return r.Type != nil && r.Type.Matches(tt...)
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.

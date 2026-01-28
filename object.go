@@ -67,17 +67,12 @@ var ObjectTypes = ActivityVocabularyTypes{
 }
 
 type (
-	// ActivityVocabularyType is the data type for an Activity type object
-	ActivityVocabularyType string
 	// ActivityObject is a subtype of Object that describes some form of action that may happen,
 	// is currently happening, or has already happened
 	ActivityObject interface {
 		// GetID returns the dereferenceable ActivityStreams object id
 		GetID() ID
-		// GetType returns the ActivityStreams type
-		GetType() ActivityVocabularyType
-		// GetTypes returns the ActivityStreams types
-		GetTypes() ActivityVocabularyTypes
+		GetType() TypeMatcher
 	}
 	// LinkOrIRI is an interface that Object and Link structs implement, and at the same time
 	// they are kept disjointed
@@ -112,56 +107,13 @@ type (
 	MimeType string
 )
 
-func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
-	if len(a) == 0 {
-		return nil, nil
-	}
-	b := make([]byte, 0)
-	JSONWriteStringValue(&b, string(a))
-	return b, nil
-}
-
-// GobEncode
-func (a ActivityVocabularyType) GobEncode() ([]byte, error) {
-	return []byte(a), nil
-}
-
-// GobDecode
-func (a *ActivityVocabularyType) GobDecode(data []byte) error {
-	*a = ActivityVocabularyType(data)
-	return nil
-}
-
-// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
-func (a *ActivityVocabularyType) UnmarshalBinary(data []byte) error {
-	return a.GobDecode(data)
-}
-
-// MarshalBinary implements the encoding.BinaryMarshaler interface.
-func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
-	return a.GobEncode()
-}
-
-// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
-func (a ActivityVocabularyType) Matches(tt ...ActivityVocabularyType) (match bool) {
-	if a == NilType && EmptyTypes(tt...) {
-		return true
-	}
-	for _, search := range tt {
-		if match = a == search; match {
-			break
-		}
-	}
-	return match
-}
-
 type Objects interface {
 	Object | Tombstone | Place | Profile | Relationship |
-		Actors |
-		Activities |
-		IntransitiveActivities |
-		Collections |
-		IRI
+	Actors |
+	Activities |
+	IntransitiveActivities |
+	Collections |
+	IRI
 }
 
 // Object describes an ActivityPub object of any kind.
@@ -171,7 +123,7 @@ type Object struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
+	Type TypeMatcher `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -263,11 +215,11 @@ type Object struct {
 }
 
 // ObjectNew initializes a new Object
-func ObjectNew(typ ActivityVocabularyType) *Object {
-	if !(ObjectTypes.Contains(typ)) {
+func ObjectNew(typ TypeMatcher) *Object {
+	if !typ.Matches(ObjectTypes...) {
 		typ = ObjectType
 	}
-	o := Object{Type: typ.ToTypes()}
+	o := Object{Type: typ}
 	o.Name = NaturalLanguageValuesNew()
 	o.Content = NaturalLanguageValuesNew()
 	return &o
@@ -284,12 +236,7 @@ func (o Object) GetLink() IRI {
 }
 
 // GetType returns the type of the current Object
-func (o Object) GetType() ActivityVocabularyType {
-	return o.Type.GetType()
-}
-
-// GetTypes returns the types of the current Object
-func (o Object) GetTypes() ActivityVocabularyTypes {
+func (o Object) GetType() TypeMatcher {
 	return o.Type
 }
 
@@ -310,7 +257,7 @@ func (o Object) IsCollection() bool {
 
 // Matches returns whether the receiver matches the ActivityVocabularyType arguments.
 func (o Object) Matches(tt ...ActivityVocabularyType) bool {
-	return o.Type.Matches(tt...)
+	return o.Type != nil && o.Type.Matches(tt...)
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
@@ -524,7 +471,7 @@ func fmtObjectProps(w io.Writer) func(*Object) error {
 func (o Object) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's':
-		if o.GetType() != "" && o.ID != "" {
+		if HasTypes(o) && o.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", o, o.GetType(), o.ID)
 		} else if o.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T( %s )", o, o.ID)
@@ -532,7 +479,7 @@ func (o Object) Format(s fmt.State, verb rune) {
 			_, _ = fmt.Fprintf(s, "%T[%p]", o, &o)
 		}
 	case 'v':
-		if o.GetType() != "" && o.ID != "" {
+		if HasTypes(o) && o.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T[%s] {", o, o.GetType())
 			_ = fmtObjectProps(s)(&o)
 			_, _ = io.WriteString(s, " }")
@@ -870,7 +817,7 @@ func (o *Object) Equals(with Item) bool {
 	if withID := with.GetID(); !o.ID.Equal(withID) {
 		return false
 	}
-	if withType := with.GetType(); len(o.Type) > 0 && !o.Type.Contains(withType) {
+	if withType := with.GetType(); !TypesMatch(o.Type, withType) {
 		return false
 	}
 	if with.IsLink() && !with.GetLink().Equal(o.GetLink()) {

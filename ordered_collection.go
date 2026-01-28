@@ -16,7 +16,7 @@ type OrderedCollection struct {
 	// ID provides the globally unique identifier for an Activity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
+	Type TypeMatcher `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -151,12 +151,7 @@ type (
 )
 
 // GetType returns the OrderedCollection's type
-func (o OrderedCollection) GetType() ActivityVocabularyType {
-	return o.Type.GetType()
-}
-
-// GetTypes returns the OrderedCollection's types
-func (o OrderedCollection) GetTypes() ActivityVocabularyTypes {
+func (o OrderedCollection) GetType() TypeMatcher {
 	return o.Type
 }
 
@@ -177,7 +172,7 @@ func (o OrderedCollection) GetLink() IRI {
 
 // Matches returns whether the receiver matches the ActivityVocabularyType arguments.
 func (o OrderedCollection) Matches(tt ...ActivityVocabularyType) bool {
-	return o.Type.Matches(tt...)
+	return o.Type != nil && o.Type.Matches(tt...)
 }
 
 // IsObject returns true for am OrderedCollection object
@@ -325,7 +320,7 @@ func OrderedCollectionPageNew(parent CollectionInterface) *OrderedCollectionPage
 	if pc, ok := parent.(*OrderedCollection); ok {
 		copyOrderedCollectionToPage(pc, &p)
 	}
-	p.Type = OrderedCollectionPageType.ToTypes()
+	p.Type = OrderedCollectionPageType
 	return &p
 }
 
@@ -356,7 +351,7 @@ func ToOrderedCollection(it LinkOrIRI) (*OrderedCollection, error) {
 }
 
 func copyOrderedCollectionToPage(c *OrderedCollection, p *OrderedCollectionPage) error {
-	p.Type = OrderedCollectionPageType.ToTypes()
+	p.Type = OrderedCollectionPageType
 	p.Name = c.Name
 	p.Content = c.Content
 	p.Summary = c.Summary

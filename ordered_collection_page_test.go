@@ -11,7 +11,7 @@ import (
 func mockOrderedCollectionPage(items ...Item) OrderedCollectionPage {
 	cc := OrderedCollectionPage{
 		ID:   IRIf("https://example.com", Inbox),
-		Type: OrderedCollectionPageType.ToTypes(),
+		Type: OrderedCollectionPageType,
 	}
 	if len(items) == 0 {
 		cc.OrderedItems = make(ItemCollection, 0)
@@ -43,7 +43,7 @@ func TestOrderedCollectionPage_UnmarshalJSON(t *testing.T) {
 	if p.ID != "" {
 		t.Errorf("Unmarshaled object should have empty ID, received %q", p.ID)
 	}
-	if !p.Matches(NilType) || !p.Matches(nil...) {
+	if HasTypes(p) {
 		t.Errorf("Unmarshaled object should have empty Type, received %q", p.GetType())
 	}
 	if p.AttributedTo != nil {
@@ -198,42 +198,42 @@ func TestToOrderedCollectionPage(t *testing.T) {
 		},
 		{
 			name: "Valid OrderedCollectionPage",
-			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
-			want: &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
+			it:   OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
 		},
 		{
 			name: "Valid *OrderedCollectionPage",
-			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
-			want: &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType.ToTypes()},
+			it:   &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
+			want: &OrderedCollectionPage{ID: "test", Type: OrderedCollectionPageType},
 		},
 		{
 			name: "Valid CollectionPage",
-			it:   CollectionPage{ID: "test", Type: CollectionPageType.ToTypes()},
-			want: &OrderedCollectionPage{ID: "test", Type: CollectionPageType.ToTypes()},
+			it:   CollectionPage{ID: "test", Type: CollectionPageType},
+			want: &OrderedCollectionPage{ID: "test", Type: CollectionPageType},
 		},
 		{
 			name: "Valid *CollectionPage",
-			it:   &CollectionPage{ID: "test", Type: CollectionPageType.ToTypes()},
-			want: &OrderedCollectionPage{ID: "test", Type: CollectionPageType.ToTypes()},
+			it:   &CollectionPage{ID: "test", Type: CollectionPageType},
+			want: &OrderedCollectionPage{ID: "test", Type: CollectionPageType},
 		},
 		{
 			name:    "Valid Collection",
-			it:      Collection{ID: "test", Type: CollectionType.ToTypes()},
+			it:      Collection{ID: "test", Type: CollectionType},
 			wantErr: ErrorInvalidType[OrderedCollectionPage](Collection{}),
 		},
 		{
 			name:    "Valid *Collection",
-			it:      &Collection{ID: "test", Type: CollectionType.ToTypes()},
+			it:      &Collection{ID: "test", Type: CollectionType},
 			wantErr: ErrorInvalidType[OrderedCollectionPage](new(Collection)),
 		},
 		{
 			name:    "Valid OrderedCollection",
-			it:      OrderedCollection{ID: "test", Type: OrderedCollectionType.ToTypes()},
+			it:      OrderedCollection{ID: "test", Type: OrderedCollectionType},
 			wantErr: ErrorInvalidType[OrderedCollectionPage](OrderedCollection{}),
 		},
 		{
 			name:    "Valid *OrderedCollection",
-			it:      &OrderedCollection{ID: "test", Type: OrderedCollectionType.ToTypes()},
+			it:      &OrderedCollection{ID: "test", Type: OrderedCollectionType},
 			wantErr: ErrorInvalidType[OrderedCollectionPage](new(OrderedCollection)),
 		},
 		{
@@ -253,17 +253,17 @@ func TestToOrderedCollectionPage(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
+			it:      &Object{ID: "test", Type: ArticleType},
 			wantErr: ErrorInvalidType[OrderedCollectionPage](&Object{}),
 		},
 		{
 			name:    "Activity",
-			it:      &Activity{ID: "test", Type: CreateType.ToTypes()},
+			it:      &Activity{ID: "test", Type: CreateType},
 			wantErr: ErrorInvalidType[OrderedCollectionPage](&Activity{}),
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
 			wantErr: ErrorInvalidType[OrderedCollectionPage](&IntransitiveActivity{}),
 		},
 	}
