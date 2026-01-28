@@ -106,7 +106,7 @@ type Tombstone struct {
 	// In general, clients do the conversion from source to content, not the other way around.
 	Source Source `jsonld:"source,omitempty"`
 	// FormerType On a Tombstone object, the formerType property identifies the type of the object that was deleted.
-	FormerType ActivityVocabularyType `jsonld:"formerType,omitempty"`
+	FormerType TypeMatcher `jsonld:"formerType,omitempty"`
 	// Deleted On a Tombstone object, the deleted property is a timestamp for when the object was deleted.
 	Deleted time.Time `jsonld:"deleted,omitempty"`
 }
@@ -166,10 +166,8 @@ func (t Tombstone) MarshalJSON() ([]byte, error) {
 		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
-	if len(t.FormerType) > 0 {
-		if v, err := t.FormerType.MarshalJSON(); err == nil && len(v) > 0 {
-			notEmpty = JSONWriteProp(&b, "formerType", v) || notEmpty
-		}
+	if t.FormerType != nil {
+		notEmpty = JSONWriteTypes(&b, "formerType", t.FormerType) || notEmpty
 	}
 	if !t.Deleted.IsZero() {
 		notEmpty = JSONWriteTimeProp(&b, "deleted", t.Deleted) || notEmpty

@@ -763,8 +763,8 @@ func mapTombstoneProperties(mm map[string][]byte, t Tombstone) (hasData bool, er
 		hasData, err = mapObjectProperties(mm, o)
 		return err
 	})
-	if len(t.FormerType) > 0 {
-		if mm["formerType"], err = t.FormerType.GobEncode(); err != nil {
+	if t.FormerType != nil {
+		if mm["formerType"], err = gobEncodeTypes(t.FormerType); err != nil {
 			return hasData, err
 		}
 		hasData = true

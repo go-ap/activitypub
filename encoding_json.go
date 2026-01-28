@@ -212,13 +212,9 @@ func JSONWriteObjectValue(b *[]byte, o Object) (notEmpty bool) {
 	if v, err := o.ID.MarshalJSON(); err == nil && len(v) > 0 {
 		notEmpty = JSONWriteProp(b, "id", v)
 	}
-	_ = OnType(o.Type, func(typ ...ActivityVocabularyType) error {
-		v, err := ActivityVocabularyTypes(typ).MarshalJSON()
-		if err == nil && len(v) > 0 {
-			notEmpty = JSONWriteProp(b, "type", v) || notEmpty
-		}
-		return nil
-	})
+	if HasTypes(o) {
+		notEmpty = JSONWriteTypes(b, "type", o.Type) || notEmpty
+	}
 	if v, err := o.MediaType.MarshalJSON(); err == nil && len(v) > 0 {
 		notEmpty = JSONWriteProp(b, "mediaType", v) || notEmpty
 	}
@@ -369,17 +365,27 @@ func JSONWriteQuestionValue(b *[]byte, q Question) (notEmpty bool) {
 	return notEmpty
 }
 
+func JSONWriteTypes(b *[]byte, n string, ty TypeMatcher) (notEmpty bool) {
+	var typ ActivityVocabularyTypes
+	if tt, ok := ty.(ActivityVocabularyType); ok {
+		typ = ActivityVocabularyTypes{tt}
+	}
+	if tt, ok := ty.(ActivityVocabularyTypes); ok {
+		typ = tt
+	}
+	if v, err := typ.MarshalJSON(); err == nil && len(v) > 0 {
+		notEmpty = JSONWriteProp(b, n, v)
+	}
+	return true
+}
+
 func JSONWriteLinkValue(b *[]byte, l Link) (notEmpty bool) {
 	if v, err := l.ID.MarshalJSON(); err == nil && len(v) > 0 {
 		notEmpty = JSONWriteProp(b, "id", v)
 	}
-	_ = OnType(l.Type, func(typ ...ActivityVocabularyType) error {
-		v, err := ActivityVocabularyTypes(typ).MarshalJSON()
-		if err == nil && len(v) > 0 {
-			notEmpty = JSONWriteProp(b, "type", v) || notEmpty
-		}
-		return nil
-	})
+	if HasTypes(l) {
+		notEmpty = JSONWriteTypes(b, "type", l.Type) || notEmpty
+	}
 	if v, err := l.MediaType.MarshalJSON(); err == nil && len(v) > 0 {
 		notEmpty = JSONWriteProp(b, "mediaType", v) || notEmpty
 	}

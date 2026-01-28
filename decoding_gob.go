@@ -669,7 +669,7 @@ func unmapTombstoneProperties(mm map[string][]byte, t *Tombstone) error {
 		return err
 	}
 	if raw, ok := mm["formerType"]; ok {
-		if err = t.FormerType.GobDecode(raw); err != nil {
+		if t.FormerType, err = gobDecodeTypes(raw); err != nil {
 			return err
 		}
 	}
