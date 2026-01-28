@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"slices"
 
 	"github.com/valyala/fastjson"
 )
@@ -40,7 +39,7 @@ type Link struct {
 	// Provides the globally unique identifier for an APObject or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Identifies the APObject or Link type. Multiple values may be specified.
-	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
+	Type TypeMatcher `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -72,22 +71,22 @@ func LinkNew(id ID, typ ActivityVocabularyType) *Link {
 	if !LinkTypes.Contains(typ) {
 		typ = LinkType
 	}
-	return &Link{ID: id, Type: typ.ToTypes()}
+	return &Link{ID: id, Type: typ}
 }
 
 // MentionNew initializes a new Mention
 func MentionNew(id ID) *Mention {
-	return &Mention{ID: id, Type: MentionType.ToTypes()}
+	return &Mention{ID: id, Type: MentionType}
 }
 
 // IsLink validates if current Link is a Link
 func (l Link) IsLink() bool {
-	return l.GetType() == LinkType || LinkTypes.Contains(l.GetType())
+	return l.GetType().Matches(append(LinkTypes, LinkType)...)
 }
 
 // IsObject validates if current Link is an GetID
 func (l Link) IsObject() bool {
-	return l.GetType() == ObjectType || ObjectTypes.Contains(l.GetType())
+	return l.GetType().Matches(append(ObjectTypes, ObjectType)...)
 }
 
 // IsCollection returns false for Link objects
@@ -106,18 +105,13 @@ func (l Link) GetLink() IRI {
 }
 
 // GetType returns the Type corresponding to the Mention object
-func (l Link) GetType() ActivityVocabularyType {
-	return l.Type.GetType()
-}
-
-// GetTypes returns the Types corresponding to the Mention object
-func (l Link) GetTypes() ActivityVocabularyTypes {
+func (l Link) GetType() TypeMatcher {
 	return l.Type
 }
 
 // Matches returns whether the receiver matches the ActivityVocabularyType arguments.
 func (l Link) Matches(tt ...ActivityVocabularyType) bool {
-	return l.Type.Matches(tt...)
+	return l.Type != nil && l.Type.Matches(tt...)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
@@ -160,7 +154,7 @@ func (l Link) equal(with Link) bool {
 	if !l.ID.Equal(with.ID) {
 		return false
 	}
-	if slices.Equal(l.Type, with.Type) {
+	if TypesMatch(l.Type, with.Type) {
 		return false
 	}
 	if l.HrefLang != with.HrefLang {

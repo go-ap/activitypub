@@ -21,7 +21,7 @@ type IntransitiveActivity struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
+	Type TypeMatcher `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -157,12 +157,7 @@ func (i *IntransitiveActivity) Clean() {
 }
 
 // GetType returns the ActivityVocabulary type of the current Intransitive Activity
-func (i IntransitiveActivity) GetType() ActivityVocabularyType {
-	return i.Type.GetType()
-}
-
-// GetTypes returns the ActivityVocabulary types of the current Intransitive Activity
-func (i IntransitiveActivity) GetTypes() ActivityVocabularyTypes {
+func (i IntransitiveActivity) GetType() TypeMatcher {
 	return i.Type
 }
 
@@ -193,7 +188,7 @@ func (i IntransitiveActivity) IsCollection() bool {
 
 // Matches returns whether the receiver matches the ActivityVocabularyType arguments.
 func (i IntransitiveActivity) Matches(tt ...ActivityVocabularyType) bool {
-	return i.Type.Matches(tt...)
+	return i.Type != nil && i.Type.Matches(tt...)
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
@@ -261,7 +256,7 @@ func IntransitiveActivityNew(id ID, typ ActivityVocabularyType) *IntransitiveAct
 	if !IntransitiveActivityTypes.Contains(typ) {
 		typ = IntransitiveActivityType
 	}
-	i := IntransitiveActivity{ID: id, Type: typ.ToTypes()}
+	i := IntransitiveActivity{ID: id, Type: typ}
 	i.Name = NaturalLanguageValuesNew()
 	i.Content = NaturalLanguageValuesNew()
 
@@ -353,7 +348,7 @@ func (i IntransitiveActivity) equal(with IntransitiveActivity) bool {
 func (i IntransitiveActivity) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's':
-		if i.GetType() != "" && i.ID != "" {
+		if HasTypes(i) && i.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", i, i.GetType(), i.ID)
 		} else if i.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T( %s )", i, i.ID)

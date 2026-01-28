@@ -262,7 +262,7 @@ func (t CollectionPath) ofItem(i Item) Item {
 			return nil
 		})
 	}
-	if OfActor.Contains(t) && ActorTypes.Contains(i.GetType()) {
+	if OfActor.Contains(t) && ActorTypes.MatchOther(i.GetType()) {
 		_ = OnActor(i, func(a *Actor) error {
 			it = t.ofActor(a)
 			return nil

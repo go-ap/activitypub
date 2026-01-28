@@ -3,6 +3,8 @@ package activitypub
 import (
 	"bytes"
 	"encoding/gob"
+
+	"github.com/go-ap/errors"
 )
 
 func GobEncode(it Item) ([]byte, error) {
@@ -111,101 +113,112 @@ func gobEncodeItem(it Item) ([]byte, error) {
 		})
 	}
 	if IsObject(it) {
-		switch it.GetType() {
-		case IRIType:
+		typ := it.GetType()
+		if typ == nil {
+			typ = NilType
+		}
+		switch {
+		case typ.Matches(IRIType):
 			var bytes []byte
 			bytes, err = it.(IRI).GobEncode()
 			b.Write(bytes)
-		case "", ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType:
+		case typ.Matches(CollectionType):
+			err = OnCollection(it, func(c *Collection) error {
+				bytes, err := c.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case typ.Matches(OrderedCollectionType):
+			err = OnOrderedCollection(it, func(c *OrderedCollection) error {
+				bytes, err := c.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case typ.Matches(CollectionPageType):
+			err = OnCollectionPage(it, func(p *CollectionPage) error {
+				bytes, err := p.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case typ.Matches(OrderedCollectionPageType):
+			err = OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
+				bytes, err := p.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case typ.Matches(PlaceType):
+			err = OnPlace(it, func(p *Place) error {
+				bytes, err := p.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case typ.Matches(ProfileType):
+			err = OnProfile(it, func(p *Profile) error {
+				bytes, err := p.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case typ.Matches(RelationshipType):
+			err = OnRelationship(it, func(r *Relationship) error {
+				bytes, err := r.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case typ.Matches(TombstoneType):
+			err = OnTombstone(it, func(t *Tombstone) error {
+				bytes, err := t.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case typ.Matches(QuestionType):
+			err = OnQuestion(it, func(q *Question) error {
+				bytes, err := q.GobEncode()
+				b.Write(bytes)
+				return err
+			})
+		case typ.Matches(NilType, ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType):
 			err = OnObject(it, func(ob *Object) error {
 				bytes, err := ob.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case LinkType, MentionType:
+		case typ.Matches(LinkType, MentionType):
 			// TODO(marius): this shouldn't work, as Link does not implement Item? (or rather, should not)
 			err = OnLink(it, func(l *Link) error {
 				bytes, err := l.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
+		case typ.Matches(ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
 			FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
-			RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType:
+			RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType):
 			err = OnActivity(it, func(act *Activity) error {
 				bytes, err := act.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case IntransitiveActivityType, ArriveType, TravelType:
+		case typ.Matches(IntransitiveActivityType, ArriveType, TravelType):
 			err = OnIntransitiveActivity(it, func(act *IntransitiveActivity) error {
 				bytes, err := act.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType:
+		case typ.Matches(ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType):
 			err = OnActor(it, func(a *Actor) error {
 				bytes, err := a.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case CollectionType:
-			err = OnCollection(it, func(c *Collection) error {
-				bytes, err := c.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case OrderedCollectionType:
-			err = OnOrderedCollection(it, func(c *OrderedCollection) error {
-				bytes, err := c.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case CollectionPageType:
-			err = OnCollectionPage(it, func(p *CollectionPage) error {
-				bytes, err := p.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case OrderedCollectionPageType:
-			err = OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
-				bytes, err := p.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case PlaceType:
-			err = OnPlace(it, func(p *Place) error {
-				bytes, err := p.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case ProfileType:
-			err = OnProfile(it, func(p *Profile) error {
-				bytes, err := p.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case RelationshipType:
-			err = OnRelationship(it, func(r *Relationship) error {
-				bytes, err := r.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case TombstoneType:
-			err = OnTombstone(it, func(t *Tombstone) error {
-				bytes, err := t.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case QuestionType:
-			err = OnQuestion(it, func(q *Question) error {
-				bytes, err := q.GobEncode()
 				b.Write(bytes)
 				return err
 			})
 		}
 	}
 	return b.Bytes(), err
+}
+
+func gobEncodeTypes(typ TypeMatcher) ([]byte, error) {
+	if tt, ok := typ.(gob.GobEncoder); ok {
+		return tt.GobEncode()
+	}
+	return nil, errors.Newf("type matcher %T must be a gob encoder", typ)
 }
 
 func mapObjectProperties(mm map[string][]byte, o *Object) (hasData bool, err error) {
@@ -215,8 +228,9 @@ func mapObjectProperties(mm map[string][]byte, o *Object) (hasData bool, err err
 		}
 		hasData = true
 	}
-	if len(o.Type) > 0 {
-		if mm["type"], err = o.Type.GobEncode(); err != nil {
+	if HasTypes(o) {
+		mm["type"], err = gobEncodeTypes(o.Type)
+		if err != nil {
 			return hasData, err
 		}
 		hasData = true
@@ -610,8 +624,9 @@ func mapLinkProperties(mm map[string][]byte, l Link) (hasData bool, err error) {
 		}
 		hasData = true
 	}
-	if len(l.Type) > 0 {
-		if mm["type"], err = l.Type.GobEncode(); err != nil {
+	if HasTypes(l) {
+		mm["type"], err = gobEncodeTypes(l.Type)
+		if err != nil {
 			return
 		}
 		hasData = true

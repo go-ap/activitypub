@@ -46,7 +46,7 @@ type Actor struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
+	Type TypeMatcher `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -173,12 +173,7 @@ func (a Actor) GetLink() IRI {
 }
 
 // GetType returns the type of the current Actor
-func (a Actor) GetType() ActivityVocabularyType {
-	return a.Type.GetType()
-}
-
-// GetTypes returns the types of the current Actor
-func (a Actor) GetTypes() ActivityVocabularyTypes {
+func (a Actor) GetType() TypeMatcher {
 	return a.Type
 }
 
@@ -199,7 +194,7 @@ func (a Actor) IsCollection() bool {
 
 // Matches returns whether the receiver matches the ActivityVocabularyType arguments.
 func (a Actor) Matches(tt ...ActivityVocabularyType) bool {
-	return a.Type.Matches(tt...)
+	return a.Type != nil && a.Type.Matches(tt...)
 }
 
 // PublicKey holds the ActivityPub compatible public key data
@@ -305,7 +300,7 @@ func ActorNew(id ID, typ ActivityVocabularyType) *Actor {
 		typ = ActorType
 	}
 
-	a := Actor{ID: id, Type: typ.ToTypes()}
+	a := Actor{ID: id, Type: typ}
 	a.Name = NaturalLanguageValuesNew()
 	a.Content = NaturalLanguageValuesNew()
 	a.Summary = NaturalLanguageValuesNew()
@@ -421,7 +416,7 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 func (a Actor) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's':
-		if a.GetType() != "" && a.ID != "" {
+		if !a.GetType().Matches() && a.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", a, a.GetType(), a.ID)
 		} else if a.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T( %s )", a, a.ID)
@@ -483,7 +478,7 @@ func (e Endpoints) MarshalJSON() ([]byte, error) {
 
 	JSONWrite(&b, '{')
 	if e.OauthAuthorizationEndpoint != nil {
-		notEmpty = JSONWriteItemProp(&b, "oauthAuthorizationEndpoint", e.OauthAuthorizationEndpoint) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "oauthAuthorizationEndpoint", e.OauthAuthorizationEndpoint)
 	}
 	if e.OauthTokenEndpoint != nil {
 		notEmpty = JSONWriteItemProp(&b, "oauthTokenEndpoint", e.OauthTokenEndpoint) || notEmpty

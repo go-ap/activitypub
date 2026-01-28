@@ -16,7 +16,7 @@ type Profile struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
+	Type TypeMatcher `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -130,12 +130,7 @@ func (p Profile) GetLink() IRI {
 }
 
 // GetType returns the type of the current Profile
-func (p Profile) GetType() ActivityVocabularyType {
-	return p.Type.GetType()
-}
-
-// GetTypes returns the types of the current Profile
-func (p Profile) GetTypes() ActivityVocabularyTypes {
+func (p Profile) GetType() TypeMatcher {
 	return p.Type
 }
 
@@ -146,7 +141,7 @@ func (p Profile) GetID() ID {
 
 // Matches returns whether the receiver matches the ActivityVocabularyType arguments.
 func (p Profile) Matches(tt ...ActivityVocabularyType) bool {
-	return p.Type.Matches(tt...)
+	return p.Type != nil && p.Type.Matches(tt...)
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.

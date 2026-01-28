@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"io"
-	"slices"
 	"time"
 
 	"github.com/valyala/fastjson"
@@ -42,14 +41,6 @@ const (
 	UpdateType          ActivityVocabularyType = "Update"
 	ViewType            ActivityVocabularyType = "View"
 )
-
-func (a ActivityVocabularyTypes) Contains(typ ActivityVocabularyType) bool {
-	return slices.Contains(a, typ)
-}
-
-func (a ActivityVocabularyType) ToTypes() ActivityVocabularyTypes {
-	return ActivityVocabularyTypes{a}
-}
 
 // ContentManagementActivityTypes use case primarily deals with activities that involve the creation, modification or
 // deletion of content.
@@ -264,7 +255,7 @@ type Activity struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
+	Type TypeMatcher `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -379,12 +370,7 @@ type Activity struct {
 }
 
 // GetType returns the ActivityVocabulary type of the current Activity
-func (a Activity) GetType() ActivityVocabularyType {
-	return a.Type.GetType()
-}
-
-// GetTypes returns the ActivityVocabulary types of the current Activity
-func (a Activity) GetTypes() ActivityVocabularyTypes {
+func (a Activity) GetType() TypeMatcher {
 	return a.Type
 }
 
@@ -415,7 +401,7 @@ func (a Activity) IsCollection() bool {
 
 // Matches returns whether the receiver matches the ActivityVocabularyType arguments.
 func (a Activity) Matches(tt ...ActivityVocabularyType) bool {
-	return a.Type.Matches(tt...)
+	return a.Type != nil && a.Type.Matches(tt...)
 }
 
 func removeFromCollection(col ItemCollection, items ...Item) ItemCollection {
@@ -460,7 +446,7 @@ func removeFromAudience(a *Activity, items ...Item) error {
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (a *Activity) Recipients() ItemCollection {
 	alwaysRemove := make(ItemCollection, 0)
-	if a.GetType() == BlockType && !IsNil(a.Object) {
+	if a.GetType().Matches(BlockType) && !IsNil(a.Object) {
 		_ = OnItem(a.Object, func(object Item) error {
 			_ = alwaysRemove.Append(object)
 			return nil
@@ -774,7 +760,7 @@ func ActivityNew(id ID, typ ActivityVocabularyType, ob Item) *Activity {
 	if !ActivityTypes.Contains(typ) {
 		typ = ActivityType
 	}
-	a := Activity{ID: id, Type: typ.ToTypes()}
+	a := Activity{ID: id, Type: typ}
 	a.Name = NaturalLanguageValuesNew()
 	a.Content = NaturalLanguageValuesNew()
 
@@ -805,7 +791,7 @@ func fmtActivityProps(w io.Writer) func(*Activity) error {
 func (a Activity) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's':
-		if a.GetType() != "" && a.ID != "" {
+		if !a.GetType().Matches() && a.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", a, a.GetType(), a.ID)
 		} else if a.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T( %s )", a, a.ID)
@@ -814,7 +800,7 @@ func (a Activity) Format(s fmt.State, verb rune) {
 		}
 	case 'v':
 		_, _ = fmt.Fprintf(s, "%T[%s] {", a, a.GetType())
-		fmtActivityProps(s)(&a)
+		_ = fmtActivityProps(s)(&a)
 		_, _ = io.WriteString(s, " }")
 	}
 }

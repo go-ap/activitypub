@@ -18,7 +18,7 @@ func TestActorNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.GetType() != testType {
+	if !o.GetType().Matches(testType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.GetType(), testType)
 	}
 
@@ -26,7 +26,7 @@ func TestActorNew(t *testing.T) {
 	if n.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", n.ID, testValue)
 	}
-	if n.GetType() != ActorType {
+	if !cmp.Equal(n.GetType(), ActorType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", n.GetType(), ActorType)
 	}
 }
@@ -38,7 +38,7 @@ func TestPersonNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.GetType() != PersonType {
+	if !cmp.Equal(o.GetType(), PersonType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, PersonType)
 	}
 }
@@ -50,7 +50,7 @@ func TestApplicationNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.GetType() != ApplicationType {
+	if !cmp.Equal(o.GetType(), ApplicationType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, ApplicationType)
 	}
 }
@@ -62,7 +62,7 @@ func TestGroupNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.GetType() != GroupType {
+	if !cmp.Equal(o.GetType(), GroupType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, GroupType)
 	}
 }
@@ -74,7 +74,7 @@ func TestOrganizationNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.GetType() != OrganizationType {
+	if !cmp.Equal(o.GetType(), OrganizationType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, OrganizationType)
 	}
 }
@@ -86,7 +86,7 @@ func TestServiceNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if o.GetType() != ServiceType {
+	if !cmp.Equal(o.GetType(), ServiceType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, ServiceType)
 	}
 }
@@ -114,7 +114,7 @@ func TestActor_Object(t *testing.T) {
 
 func TestActor_Type(t *testing.T) {
 	m := ActorNew("test", ActorType)
-	if m.GetType() != ActorType {
+	if !cmp.Equal(m.GetType(), ActorType) {
 		t.Errorf("%#v should be an empty Link object", m.GetType())
 	}
 }
@@ -245,7 +245,7 @@ func validateEmptyPerson(p Person, t *testing.T) {
 	if p.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", p, p.ID)
 	}
-	if p.GetType() != "" {
+	if typ := p.GetType(); typ != nil && !typ.Matches(NilType) {
 		t.Errorf("Unmarshaled object %T should have empty Type, received %q", p, p.GetType())
 	}
 	if p.AttributedTo != nil {
@@ -362,8 +362,8 @@ func TestToActor(t *testing.T) {
 		},
 		{
 			name: "Valid Actor",
-			it:   Actor{ID: "test", Type: UpdateType.ToTypes()},
-			want: &Actor{ID: "test", Type: UpdateType.ToTypes()},
+			it:   Actor{ID: "test", Type: UpdateType},
+			want: &Actor{ID: "test", Type: UpdateType},
 		},
 		{
 			name: "Valid *Actor",
@@ -387,17 +387,17 @@ func TestToActor(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
+			it:      &Object{ID: "test", Type: ArticleType},
 			wantErr: ErrorInvalidType[Actor](&Object{}),
 		},
 		{
 			name:    "Activity",
-			it:      &Activity{ID: "test", Type: CreateType.ToTypes()},
+			it:      &Activity{ID: "test", Type: CreateType},
 			wantErr: ErrorInvalidType[Actor](&Activity{}),
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
 			wantErr: ErrorInvalidType[Actor](&IntransitiveActivity{}),
 		},
 	}
@@ -505,7 +505,7 @@ func TestOnActor(t *testing.T) {
 func TestActor_Equals(t *testing.T) {
 	type fields struct {
 		ID                ID
-		Type              ActivityVocabularyType
+		Type              TypeMatcher
 		Name              NaturalLanguageValues
 		Attachment        Item
 		AttributedTo      Item
@@ -586,7 +586,7 @@ func TestActor_Equals(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a := Actor{
 				ID:                tt.fields.ID,
-				Type:              tt.fields.Type.ToTypes(),
+				Type:              tt.fields.Type,
 				Name:              tt.fields.Name,
 				Attachment:        tt.fields.Attachment,
 				AttributedTo:      tt.fields.AttributedTo,

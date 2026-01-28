@@ -6,8 +6,12 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
+
+// ActivityVocabularyType is the data type for an Activity type object
+type ActivityVocabularyType string
 
 // ActivityVocabularyTypes is a type alias for a slice of ActivityVocabularyType elements
 type ActivityVocabularyTypes []ActivityVocabularyType
@@ -74,17 +78,11 @@ var Types = ActivityVocabularyTypes{
 	QuestionType,
 }
 
-func (t ActivityVocabularyTypes) GetType() ActivityVocabularyType {
-	switch len(t) {
-	case 0:
-		return NilType
-	default:
-		return t[0]
+func (t ActivityVocabularyTypes) MatchOther(typ TypeMatcher) bool {
+	if typ == nil {
+		return len(t) == 0 || len(t) == 1 && t[0] == NilType
 	}
-}
-
-func (t ActivityVocabularyTypes) GetTypes() ActivityVocabularyTypes {
-	return t
+	return typ.Matches(t...)
 }
 
 // EmptyTypes returns whether the collection of [ActivityVocabularyType]s is empty
@@ -99,8 +97,10 @@ func EmptyTypes(tt ...ActivityVocabularyType) bool {
 
 // Matches returns whether the receiver matches the ActivityVocabularyType arguments.
 func (t ActivityVocabularyTypes) Matches(tt ...ActivityVocabularyType) bool {
-	if EmptyTypes(t...) && EmptyTypes(tt...) {
-		return true
+	e1 := EmptyTypes(t...)
+	e2 := EmptyTypes(tt...)
+	if e1 || e2 {
+		return e1 == e2
 	}
 	match := true
 	for _, search := range tt {
@@ -128,7 +128,14 @@ func (t *ActivityVocabularyTypes) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	*t = JSONGetTypes(val)
+	if types := JSONGetTypes(val); types != nil {
+		if typ, ok := types.(ActivityVocabularyType); ok {
+			*t = ActivityVocabularyTypes{typ}
+		}
+		if typ, ok := types.(ActivityVocabularyTypes); ok {
+			*t = typ
+		}
+	}
 	return nil
 }
 
@@ -190,4 +197,106 @@ func (a *ActivityVocabularyTypes) GobDecode(data []byte) error {
 	}
 
 	return nil
+}
+
+func (a ActivityVocabularyTypes) Contains(typ ActivityVocabularyType) bool {
+	return slices.Contains(a, typ)
+}
+
+func OnType(t TypeMatcher, fn func(typ ...ActivityVocabularyType) error) error {
+	if fn == nil {
+		return errors.Newf("nil TypeFn")
+	}
+	var onRun ActivityVocabularyTypes
+	if tt, ok := t.(ActivityVocabularyType); ok {
+		onRun = ActivityVocabularyTypes{tt}
+	}
+	if tt, ok := t.(ActivityVocabularyTypes); ok {
+		onRun = tt
+	}
+	return fn(onRun...)
+}
+
+func HasTypes(it ActivityObject) bool {
+	if it == nil {
+		return false
+	}
+	result := false
+	_ = OnType(it.GetType(), func(typ ...ActivityVocabularyType) error {
+		result = !EmptyTypes(typ...)
+		return nil
+	})
+	return result
+}
+
+func TypesMatch(m1, m2 TypeMatcher) bool {
+	matcherIsNilOrZero := func(m TypeMatcher) bool {
+		if typ, ok := m.(ActivityVocabularyType); ok {
+			return EmptyTypes(typ)
+		}
+		if types, ok := m.(ActivityVocabularyTypes); ok {
+			return EmptyTypes(types...)
+		}
+		return m == nil
+	}
+	if m1 == nil || m2 == nil {
+		return matcherIsNilOrZero(m1) && matcherIsNilOrZero(m2)
+	}
+
+	result := false
+	_ = OnType(m1, func(typ ...ActivityVocabularyType) error {
+		result = m2.Matches(typ...)
+		return nil
+	})
+	return result
+}
+
+func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
+	if len(a) == 0 {
+		return nil, nil
+	}
+	b := make([]byte, 0)
+	JSONWriteStringValue(&b, string(a))
+	return b, nil
+}
+
+// GobEncode
+func (a ActivityVocabularyType) GobEncode() ([]byte, error) {
+	return []byte(a), nil
+}
+
+// GobDecode
+func (a *ActivityVocabularyType) GobDecode(data []byte) error {
+	*a = ActivityVocabularyType(data)
+	return nil
+}
+
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (a *ActivityVocabularyType) UnmarshalBinary(data []byte) error {
+	return a.GobDecode(data)
+}
+
+// MarshalBinary implements the encoding.BinaryMarshaler interface.
+func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
+	return a.GobEncode()
+}
+
+// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
+func (a ActivityVocabularyType) Matches(tt ...ActivityVocabularyType) (match bool) {
+	if a == NilType && EmptyTypes(tt...) {
+		return true
+	}
+	for _, search := range tt {
+		if match = a == search; match {
+			break
+		}
+	}
+	return match
+}
+
+func (a ActivityVocabularyType) MatchOther(m TypeMatcher) bool {
+	if m == nil {
+		return a == NilType
+	}
+	return m.Matches(a)
 }

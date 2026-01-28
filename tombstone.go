@@ -16,7 +16,7 @@ type Tombstone struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type ActivityVocabularyTypes `jsonld:"type,omitempty"`
+	Type TypeMatcher `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -132,12 +132,7 @@ func (t Tombstone) GetLink() IRI {
 }
 
 // GetType returns the type of the current Tombstone
-func (t Tombstone) GetType() ActivityVocabularyType {
-	return t.Type.GetType()
-}
-
-// GetTypes returns the types of the current Tombstone
-func (t Tombstone) GetTypes() ActivityVocabularyTypes {
+func (t Tombstone) GetType() TypeMatcher {
 	return t.Type
 }
 
@@ -148,7 +143,7 @@ func (t Tombstone) GetID() ID {
 
 // Matches returns whether the receiver matches the ActivityVocabularyType arguments.
 func (t Tombstone) Matches(tt ...ActivityVocabularyType) bool {
-	return t.Type.Matches(tt...)
+	return t.Type != nil && t.Type.Matches(tt...)
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.

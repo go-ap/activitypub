@@ -35,7 +35,8 @@ func TestAcceptSerialization(t *testing.T) {
 	if !strings.Contains(string(data), string(obj.Name.Get(pub.French))) {
 		t.Errorf("Could not find name %#v in output %s", string(obj.Name.Get(pub.French)), data)
 	}
-	if !strings.Contains(string(data), string(obj.Type)) {
+	rawType, _ := j.Marshal(obj.Type)
+	if !strings.Contains(string(data), string(rawType)) {
 		t.Errorf("Could not find activity type %#v in output %s", obj.Type, data)
 	}
 }
@@ -61,7 +62,8 @@ func TestCreateActivityHTTPSerialization(t *testing.T) {
 	if !strings.Contains(string(data), obj.Name.Get(pub.English).String()) {
 		t.Errorf("Could not find name %s in output %s", obj.Name.Get(pub.English), data)
 	}
-	if !strings.Contains(string(data), string(obj.Type)) {
+	rawType, _ := j.Marshal(obj.Type)
+	if !strings.Contains(string(data), string(rawType)) {
 		t.Errorf("Could not find activity type %#v in output %s", obj.Type, data)
 	}
 }

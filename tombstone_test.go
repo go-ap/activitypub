@@ -109,13 +109,13 @@ func TestToTombstone(t *testing.T) {
 		},
 		{
 			name: "Valid Tombstone",
-			it:   Tombstone{ID: "test", Type: TombstoneType.ToTypes()},
-			want: &Tombstone{ID: "test", Type: TombstoneType.ToTypes()},
+			it:   Tombstone{ID: "test", Type: TombstoneType},
+			want: &Tombstone{ID: "test", Type: TombstoneType},
 		},
 		{
 			name: "Valid *Tombstone",
-			it:   &Tombstone{ID: "test", Type: TombstoneType.ToTypes()},
-			want: &Tombstone{ID: "test", Type: TombstoneType.ToTypes()},
+			it:   &Tombstone{ID: "test", Type: TombstoneType},
+			want: &Tombstone{ID: "test", Type: TombstoneType},
 		},
 		{
 			name:    "IRI",
@@ -134,17 +134,17 @@ func TestToTombstone(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
+			it:      &Object{ID: "test", Type: ArticleType},
 			wantErr: ErrorInvalidType[Tombstone](&Object{}),
 		},
 		{
 			name:    "Activity",
-			it:      &Activity{ID: "test", Type: CreateType.ToTypes()},
+			it:      &Activity{ID: "test", Type: CreateType},
 			wantErr: ErrorInvalidType[Tombstone](&Activity{}),
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
 			wantErr: ErrorInvalidType[Tombstone](&IntransitiveActivity{}),
 		},
 	}
@@ -159,7 +159,7 @@ func TestToTombstone(t *testing.T) {
 				t.Errorf("ToTombstone() got = %s", cmp.Diff(tt.want, got))
 			}
 			if got != nil && !got.Matches(TombstoneType) {
-				t.Errorf("ToTombstone() expected to match Tombstone type, got = %v", got.GetTypes())
+				t.Errorf("ToTombstone() expected to match Tombstone type, got = %v", got.GetType())
 			}
 		})
 	}

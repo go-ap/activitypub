@@ -101,7 +101,7 @@ func CopyObjectProperties(to, from *Object) (*Object, error) {
 }
 
 func copyAllItemProperties(to, from Item) (Item, error) {
-	if CollectionType == to.GetType() {
+	if CollectionType.MatchOther(to.GetType()) {
 		o, err := ToCollection(to)
 		if err != nil {
 			return o, err
@@ -112,7 +112,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 		}
 		return CopyCollectionProperties(o, n)
 	}
-	if CollectionPageType == to.GetType() {
+	if CollectionPageType.MatchOther(to.GetType()) {
 		o, err := ToCollectionPage(to)
 		if err != nil {
 			return o, err
@@ -123,7 +123,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 		}
 		return CopyCollectionPageProperties(o, n)
 	}
-	if OrderedCollectionType == to.GetType() {
+	if OrderedCollectionType.MatchOther(to.GetType()) {
 		o, err := ToOrderedCollection(to)
 		if err != nil {
 			return o, err
@@ -134,7 +134,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 		}
 		return CopyOrderedCollectionProperties(o, n)
 	}
-	if OrderedCollectionPageType == to.GetType() {
+	if OrderedCollectionPageType.MatchOther(to.GetType()) {
 		o, err := ToOrderedCollectionPage(to)
 		if err != nil {
 			return o, err
@@ -145,7 +145,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 		}
 		return CopyOrderedCollectionPageProperties(o, n)
 	}
-	if ActorTypes.Contains(to.GetType()) {
+	if ActorTypes.MatchOther(to.GetType()) {
 		o, err := ToActor(to)
 		if err != nil {
 			return o, err
@@ -156,7 +156,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 		}
 		return UpdatePersonProperties(o, n)
 	}
-	if ObjectTypes.Contains(to.GetType()) || to.GetType() == "" {
+	if !HasTypes(to) || ObjectTypes.MatchOther(to.GetType()) {
 		o, err := ToObject(to)
 		if err != nil {
 			return o, err

@@ -23,13 +23,13 @@ func TestToProfile(t *testing.T) {
 		},
 		{
 			name: "Valid Profile",
-			it:   Profile{ID: "test", Type: ProfileType.ToTypes()},
-			want: &Profile{ID: "test", Type: ProfileType.ToTypes()},
+			it:   Profile{ID: "test", Type: ProfileType},
+			want: &Profile{ID: "test", Type: ProfileType},
 		},
 		{
 			name: "Valid *Profile",
-			it:   &Profile{ID: "test", Type: ProfileType.ToTypes()},
-			want: &Profile{ID: "test", Type: ProfileType.ToTypes()},
+			it:   &Profile{ID: "test", Type: ProfileType},
+			want: &Profile{ID: "test", Type: ProfileType},
 		},
 		{
 			name:    "IRI",
@@ -48,17 +48,17 @@ func TestToProfile(t *testing.T) {
 		},
 		{
 			name:    "Object",
-			it:      &Object{ID: "test", Type: ArticleType.ToTypes()},
+			it:      &Object{ID: "test", Type: ArticleType},
 			wantErr: ErrorInvalidType[Profile](&Object{}),
 		},
 		{
 			name:    "Activity",
-			it:      &Activity{ID: "test", Type: CreateType.ToTypes()},
+			it:      &Activity{ID: "test", Type: CreateType},
 			wantErr: ErrorInvalidType[Profile](&Activity{}),
 		},
 		{
 			name:    "IntransitiveActivity",
-			it:      &IntransitiveActivity{ID: "test", Type: ArriveType.ToTypes()},
+			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
 			wantErr: ErrorInvalidType[Profile](&IntransitiveActivity{}),
 		},
 	}
@@ -73,7 +73,7 @@ func TestToProfile(t *testing.T) {
 				t.Errorf("ToProfile() got = %s", cmp.Diff(tt.want, got))
 			}
 			if got != nil && !got.Matches(ProfileType) {
-				t.Errorf("ToProfile() expected to match Profile type, got = %v", got.GetTypes())
+				t.Errorf("ToProfile() expected to match Profile type, got = %v", got.GetType())
 			}
 		})
 	}
