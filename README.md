@@ -2,7 +2,7 @@
 
 [![MIT Licensed](https://img.shields.io/github/license/go-ap/activitypub.svg)](https://raw.githubusercontent.com/go-ap/activitypub/master/LICENSE)
 [![Build Status](https://builds.sr.ht/~mariusor/activitypub.svg)](https://builds.sr.ht/~mariusor/activitypub)
-[![Test Coverage](https://img.shields.io/codecov/c/github/go-ap/activitypub.svg)](https://codecov.io/gh/go-ap/activitypub)
+[![Test coverage](https://img.shields.io/coverallsCoverage/github/go-ap/activitypub)](https://coveralls.io/github/go-ap/activitypub)
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-ap/activitypub)](https://goreportcard.com/report/github.com/go-ap/activitypub)
 
 This project is part of the [GoActivityPub](https://github.com/go-ap) library which helps with creating ActivityPub applications using the Go programming language.

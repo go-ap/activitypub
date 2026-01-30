@@ -14,16 +14,22 @@ PROJECT_NAME := $(shell basename $(PWD))
 
 .PHONY: test coverage clean download
 
-download:
+download: go.sum
+
+go.sum:
 	$(GO) mod download all
 	$(GO) mod tidy
 
-test: download
+test: go.sum
+	$(TEST) $(TEST_FLAGS) ./tests
 	$(TEST) $(TEST_FLAGS) $(TEST_TARGET)
 
-coverage: TEST_TARGET := .
-coverage: TEST_FLAGS += -covermode=count -coverprofile $(PROJECT_NAME).coverprofile
-coverage: test
+coverage: go.sum clean
+	@mkdir ./_coverage
+	$(TEST) $(TEST_FLAGS) -covermode=count -args -test.gocoverdir="$(PWD)/_coverage" ./tests > /dev/null
+	$(TEST) $(TEST_FLAGS) -covermode=count -args -test.gocoverdir="$(PWD)/_coverage" $(TEST_TARGET) > /dev/null
+	$(GO) tool covdata percent -i=./_coverage/ -o $(PROJECT_NAME).coverprofile
 
 clean:
-	$(RM) -v *.coverprofile
+	@$(RM) -v *.coverprofile
+	@$(RM) -r ./_coverage
