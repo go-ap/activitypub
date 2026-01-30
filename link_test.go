@@ -14,7 +14,7 @@ func TestLinkNew(t *testing.T) {
 	if l.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", l.ID, testValue)
 	}
-	if !l.Matches(LinkType) {
+	if !l.Match(LinkType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", l.GetType(), LinkType)
 	}
 }
@@ -68,7 +68,7 @@ func TestLink_IsCollection(t *testing.T) {
 func TestLink_GobEncode(t *testing.T) {
 	type fields struct {
 		ID        ID
-		Type      TypeMatcher
+		Type      Typer
 		Name      NaturalLanguageValues
 		Rel       IRI
 		MediaType MimeType
@@ -120,7 +120,7 @@ func TestLink_GobEncode(t *testing.T) {
 func TestLink_GobDecode(t *testing.T) {
 	type fields struct {
 		ID        ID
-		Type      TypeMatcher
+		Type      Typer
 		Name      NaturalLanguageValues
 		Rel       IRI
 		MediaType MimeType

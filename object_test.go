@@ -20,7 +20,7 @@ func TestObjectNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if !o.Matches(testType) {
+	if !o.Match(testType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.GetType(), testType)
 	}
 
@@ -29,7 +29,7 @@ func TestObjectNew(t *testing.T) {
 	if n.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", n.ID, testValue)
 	}
-	if !n.Matches(ObjectType) {
+	if !n.Match(ObjectType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", n.GetType(), ObjectType)
 	}
 }
@@ -125,10 +125,7 @@ func validateEmptyObject(o Object, t *testing.T) {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", o, o.ID)
 	}
 	if HasTypes(o) {
-		t.Errorf("Unmarshaled object %T should have empty Type, received %q", o, o.GetType())
-	}
-	if o.Matches(ActivityVocabularyTypes{NilType, NilType, ObjectType}...) {
-		t.Errorf("Unmarshaled object %T should have empty Type, received %q", o, o.GetType())
+		t.Errorf("Unmarshaled object %T should have empty Type, received %v", o, o.GetType())
 	}
 	if o.AttributedTo != nil {
 		t.Errorf("Unmarshaled object %T should have empty AttributedTo, received %q", o, o.AttributedTo)
@@ -305,7 +302,7 @@ func TestObject_GetLink(t *testing.T) {
 func TestObject_GetType(t *testing.T) {
 	a := Object{}
 	a.Type = ActorType
-	if !a.Matches(ActorType) {
+	if !a.Match(ActorType) {
 		t.Errorf("%T should return %q, Received %q", a.GetType(), ActorType, a.GetType())
 	}
 }
@@ -657,7 +654,7 @@ func TestActivityVocabularyType_GobEncode(t *testing.T) {
 func TestObject_MarshalJSON(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         TypeMatcher
+		Type         Typer
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item
@@ -977,7 +974,7 @@ func TestSource_MarshalJSON(t *testing.T) {
 func TestObject_Equals(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         TypeMatcher
+		Type         Typer
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item
@@ -1090,7 +1087,7 @@ func TestObject_Equals(t *testing.T) {
 func TestObject_GobEncode(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         TypeMatcher
+		Type         Typer
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item

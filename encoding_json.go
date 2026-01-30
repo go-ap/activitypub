@@ -365,7 +365,7 @@ func JSONWriteQuestionValue(b *[]byte, q Question) (notEmpty bool) {
 	return notEmpty
 }
 
-func JSONWriteTypes(b *[]byte, n string, ty TypeMatcher) (notEmpty bool) {
+func JSONWriteTypes(b *[]byte, n string, ty Typer) (notEmpty bool) {
 	var typ ActivityVocabularyTypes
 	if tt, ok := ty.(ActivityVocabularyType); ok {
 		typ = ActivityVocabularyTypes{tt}

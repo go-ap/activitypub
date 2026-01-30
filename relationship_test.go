@@ -99,7 +99,7 @@ func TestToRelationship(t *testing.T) {
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("ToRelationship() got = %s", cmp.Diff(tt.want, got))
 			}
-			if got != nil && !got.Matches(RelationshipType) {
+			if got != nil && !got.Match(RelationshipType) {
 				t.Errorf("ToRelationship() expected to match Relationship type, got = %v", got.GetType())
 			}
 		})

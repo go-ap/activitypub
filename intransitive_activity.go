@@ -21,7 +21,7 @@ type IntransitiveActivity struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type TypeMatcher `jsonld:"type,omitempty"`
+	Type Typer `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -157,7 +157,7 @@ func (i *IntransitiveActivity) Clean() {
 }
 
 // GetType returns the ActivityVocabulary type of the current Intransitive Activity
-func (i IntransitiveActivity) GetType() TypeMatcher {
+func (i IntransitiveActivity) GetType() Typer {
 	return i.Type
 }
 
@@ -186,9 +186,9 @@ func (i IntransitiveActivity) IsCollection() bool {
 	return false
 }
 
-// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
-func (i IntransitiveActivity) Matches(tt ...ActivityVocabularyType) bool {
-	return i.Type != nil && i.Type.Matches(tt...)
+// Match returns whether the receiver matches the ActivityVocabularyType arguments.
+func (i IntransitiveActivity) Match(tt ...ActivityVocabularyType) bool {
+	return ActivityVocabularyTypes(tt).Match(i.Type)
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
@@ -253,7 +253,7 @@ func (i *IntransitiveActivity) GobDecode(data []byte) error {
 
 // IntransitiveActivityNew initializes a intransitive activity
 func IntransitiveActivityNew(id ID, typ ActivityVocabularyType) *IntransitiveActivity {
-	if !IntransitiveActivityTypes.Contains(typ) {
+	if !IntransitiveActivityTypes.Match(typ) {
 		typ = IntransitiveActivityType
 	}
 	i := IntransitiveActivity{ID: id, Type: typ}

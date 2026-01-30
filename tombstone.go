@@ -16,7 +16,7 @@ type Tombstone struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type TypeMatcher `jsonld:"type,omitempty"`
+	Type Typer `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -106,7 +106,7 @@ type Tombstone struct {
 	// In general, clients do the conversion from source to content, not the other way around.
 	Source Source `jsonld:"source,omitempty"`
 	// FormerType On a Tombstone object, the formerType property identifies the type of the object that was deleted.
-	FormerType TypeMatcher `jsonld:"formerType,omitempty"`
+	FormerType Typer `jsonld:"formerType,omitempty"`
 	// Deleted On a Tombstone object, the deleted property is a timestamp for when the object was deleted.
 	Deleted time.Time `jsonld:"deleted,omitempty"`
 }
@@ -132,7 +132,7 @@ func (t Tombstone) GetLink() IRI {
 }
 
 // GetType returns the type of the current Tombstone
-func (t Tombstone) GetType() TypeMatcher {
+func (t Tombstone) GetType() Typer {
 	return t.Type
 }
 
@@ -142,8 +142,8 @@ func (t Tombstone) GetID() ID {
 }
 
 // Matches returns whether the receiver matches the ActivityVocabularyType arguments.
-func (t Tombstone) Matches(tt ...ActivityVocabularyType) bool {
-	return t.Type != nil && t.Type.Matches(tt...)
+func (t Tombstone) Match(tt ...ActivityVocabularyType) bool {
+	return ActivityVocabularyTypes(tt).Match(t.Type) || ActivityVocabularyTypes(tt).Match(t.FormerType)
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.

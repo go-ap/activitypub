@@ -101,7 +101,7 @@ func CopyObjectProperties(to, from *Object) (*Object, error) {
 }
 
 func copyAllItemProperties(to, from Item) (Item, error) {
-	if CollectionType.MatchOther(to.GetType()) {
+	if CollectionType.Match(to.GetType()) {
 		o, err := ToCollection(to)
 		if err != nil {
 			return o, err
@@ -112,7 +112,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 		}
 		return CopyCollectionProperties(o, n)
 	}
-	if CollectionPageType.MatchOther(to.GetType()) {
+	if CollectionPageType.Match(to.GetType()) {
 		o, err := ToCollectionPage(to)
 		if err != nil {
 			return o, err
@@ -123,7 +123,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 		}
 		return CopyCollectionPageProperties(o, n)
 	}
-	if OrderedCollectionType.MatchOther(to.GetType()) {
+	if OrderedCollectionType.Match(to.GetType()) {
 		o, err := ToOrderedCollection(to)
 		if err != nil {
 			return o, err
@@ -134,7 +134,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 		}
 		return CopyOrderedCollectionProperties(o, n)
 	}
-	if OrderedCollectionPageType.MatchOther(to.GetType()) {
+	if OrderedCollectionPageType.Match(to.GetType()) {
 		o, err := ToOrderedCollectionPage(to)
 		if err != nil {
 			return o, err
@@ -145,7 +145,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 		}
 		return CopyOrderedCollectionPageProperties(o, n)
 	}
-	if ActorTypes.MatchOther(to.GetType()) {
+	if ActorTypes.Match(to.GetType()) {
 		o, err := ToActor(to)
 		if err != nil {
 			return o, err
@@ -156,7 +156,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 		}
 		return UpdatePersonProperties(o, n)
 	}
-	if !HasTypes(to) || ObjectTypes.MatchOther(to.GetType()) {
+	if !HasTypes(to) || ObjectTypes.Match(to.GetType()) {
 		o, err := ToObject(to)
 		if err != nil {
 			return o, err

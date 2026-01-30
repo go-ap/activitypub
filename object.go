@@ -72,8 +72,9 @@ type (
 	ActivityObject interface {
 		// GetID returns the dereferenceable ActivityStreams object id
 		GetID() ID
-		GetType() TypeMatcher
+		GetType() Typer
 	}
+
 	// LinkOrIRI is an interface that Object and Link structs implement, and at the same time
 	// they are kept disjointed
 	LinkOrIRI interface {
@@ -97,10 +98,11 @@ type (
 		// FromActivityStreams maps an ActivityStreams object to another struct representation
 		FromActivityStreams(Item) error
 	}
-	// TypeMatcher interface allows matching against either a single or collection of ActivityVocabularyType.
-	TypeMatcher interface {
-		// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
-		Matches(...ActivityVocabularyType) bool
+	// Typer interface for ActivityPub items returns one or more ActivityVocabularyTypes
+	// that the Item represent.
+	Typer interface {
+		// AsTypes returns the ActivityVocabularyTypes of the Item
+		AsTypes() ActivityVocabularyTypes
 	}
 
 	// MimeType is the type for representing MIME types in certain ActivityStreams properties
@@ -123,7 +125,7 @@ type Object struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type TypeMatcher `jsonld:"type,omitempty"`
+	Type Typer `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -214,9 +216,20 @@ type Object struct {
 	Source Source `jsonld:"source,omitempty"`
 }
 
+func types(m Typer) ActivityVocabularyTypes {
+	result := ActivityVocabularyTypes{}
+	if tt, ok := m.(ActivityVocabularyType); ok {
+		result = ActivityVocabularyTypes{tt}
+	}
+	if tt, ok := m.(ActivityVocabularyTypes); ok {
+		result = tt
+	}
+	return result
+}
+
 // ObjectNew initializes a new Object
-func ObjectNew(typ TypeMatcher) *Object {
-	if !typ.Matches(ObjectTypes...) {
+func ObjectNew(typ Typer) *Object {
+	if !ObjectTypes.Match(typ) {
 		typ = ObjectType
 	}
 	o := Object{Type: typ}
@@ -236,7 +249,7 @@ func (o Object) GetLink() IRI {
 }
 
 // GetType returns the type of the current Object
-func (o Object) GetType() TypeMatcher {
+func (o Object) GetType() Typer {
 	return o.Type
 }
 
@@ -255,9 +268,9 @@ func (o Object) IsCollection() bool {
 	return false
 }
 
-// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
-func (o Object) Matches(tt ...ActivityVocabularyType) bool {
-	return o.Type != nil && o.Type.Matches(tt...)
+// Match returns whether the receiver matches the ActivityVocabularyType arguments.
+func (o Object) Match(tt ...ActivityVocabularyType) bool {
+	return ActivityVocabularyTypes(tt).Match(o.Type)
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
@@ -817,7 +830,7 @@ func (o *Object) Equals(with Item) bool {
 	if withID := with.GetID(); !o.ID.Equal(withID) {
 		return false
 	}
-	if withType := with.GetType(); !TypesMatch(o.Type, withType) {
+	if withType := with.GetType(); !TypesEqual(o.Type, withType) {
 		return false
 	}
 	if with.IsLink() && !with.GetLink().Equal(o.GetLink()) {

@@ -30,11 +30,11 @@ var IsNotEmpty NotEmptyCheckerFn = NotEmpty
 
 // TyperFn is the type of the function which returns an Item struct instance
 // for a specific ActivityVocabularyType
-type TyperFn func(TypeMatcher) (Item, error)
+type TyperFn func(Typer) (Item, error)
 
 // JSONUnmarshalerFn is the type of the function that will load the data from a fastjson.Value into an Item
 // that the current package doesn't know about.
-type JSONUnmarshalerFn func(TypeMatcher, *fastjson.Value, Item) error
+type JSONUnmarshalerFn func(Typer, *fastjson.Value, Item) error
 
 // NotEmptyCheckerFn is the type of the function that checks if an object is empty
 type NotEmptyCheckerFn func(Item) bool
@@ -44,7 +44,7 @@ func JSONGetID(val *fastjson.Value) ID {
 	return ID(i)
 }
 
-func JSONGetTypes(val *fastjson.Value) TypeMatcher {
+func JSONGetTypes(val *fastjson.Value) Typer {
 	value := val.Get("type")
 	if value == nil {
 		return nil
@@ -203,7 +203,8 @@ func JSONLoadItem(val *fastjson.Value) (Item, error) {
 	if typ == nil {
 		typ = NilType
 	}
-	if typ.Matches(NilType) && val.Type() == fastjson.TypeString {
+
+	if EmptyTypes(typ.AsTypes()...) && val.Type() == fastjson.TypeString {
 		// try to see if it's an IRI
 		if i, ok := asIRI(val); ok {
 			return i, nil
@@ -217,43 +218,43 @@ func JSONLoadItem(val *fastjson.Value) (Item, error) {
 
 	// NOTE(marius): see note for the [GetItemByType] switch, the same applies here.
 	switch {
-	case typ.Matches(CollectionType):
+	case CollectionType.Match(typ):
 		err = OnCollection(i, func(c *Collection) error {
 			return JSONLoadCollection(val, c)
 		})
-	case typ.Matches(OrderedCollectionType):
+	case OrderedCollectionType.Match(typ):
 		err = OnOrderedCollection(i, func(c *OrderedCollection) error {
 			return JSONLoadOrderedCollection(val, c)
 		})
-	case typ.Matches(CollectionPageType):
+	case CollectionPageType.Match(typ):
 		err = OnCollectionPage(i, func(p *CollectionPage) error {
 			return JSONLoadCollectionPage(val, p)
 		})
-	case typ.Matches(OrderedCollectionPageType):
+	case OrderedCollectionPageType.Match(typ):
 		err = OnOrderedCollectionPage(i, func(p *OrderedCollectionPage) error {
 			return JSONLoadOrderedCollectionPage(val, p)
 		})
-	case typ.Matches(PlaceType):
+	case PlaceType.Match(typ):
 		err = OnPlace(i, func(p *Place) error {
 			return JSONLoadPlace(val, p)
 		})
-	case typ.Matches(ProfileType):
+	case ProfileType.Match(typ):
 		err = OnProfile(i, func(p *Profile) error {
 			return JSONLoadProfile(val, p)
 		})
-	case typ.Matches(RelationshipType):
+	case RelationshipType.Match(typ):
 		err = OnRelationship(i, func(r *Relationship) error {
 			return JSONLoadRelationship(val, r)
 		})
-	case typ.Matches(TombstoneType):
+	case TombstoneType.Match(typ):
 		err = OnTombstone(i, func(t *Tombstone) error {
 			return JSONLoadTombstone(val, t)
 		})
-	case typ.Matches(QuestionType):
+	case QuestionType.Match(typ):
 		err = OnQuestion(i, func(q *Question) error {
 			return JSONLoadQuestion(val, q)
 		})
-	case typ.Matches(NilType):
+	case NilType.Match(typ):
 		if looksLikeALink(val) {
 			// NOTE(marius): this handles Links without a type
 			return JSONLoadLink(val)
@@ -262,27 +263,27 @@ func JSONLoadItem(val *fastjson.Value) (Item, error) {
 			// NOTE(marius): this handles Tags which usually don't have types
 			return JSONLoadObject(val, ob)
 		})
-	case typ.Matches(ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType):
+	case ActivityVocabularyTypes{ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType}.Match(typ):
 		err = OnObject(i, func(ob *Object) error {
 			return JSONLoadObject(val, ob)
 		})
-	case typ.Matches(LinkType, MentionType):
+	case ActivityVocabularyTypes{LinkType, MentionType}.Match(typ):
 		// NOTE(marius): if we have a clear link type, we override
 		i = new(Link)
 		err = OnLink(i, func(l *Link) error {
 			return jsonLoadToLink(val, l)
 		})
-	case typ.Matches(ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
+	case ActivityVocabularyTypes{ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
 		FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
-		RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType):
+		RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType}.Match(typ):
 		err = OnActivity(i, func(act *Activity) error {
 			return JSONLoadActivity(val, act)
 		})
-	case typ.Matches(IntransitiveActivityType, ArriveType, TravelType):
+	case ActivityVocabularyTypes{IntransitiveActivityType, ArriveType, TravelType}.Match(typ):
 		err = OnIntransitiveActivity(i, func(act *IntransitiveActivity) error {
 			return JSONLoadIntransitiveActivity(val, act)
 		})
-	case typ.Matches(ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType):
+	case ActivityVocabularyTypes{ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType}.Match(typ):
 		err = OnActor(i, func(a *Actor) error {
 			return JSONLoadActor(val, a)
 		})
@@ -444,42 +445,42 @@ func UnmarshalJSON(data []byte) (Item, error) {
 	return JSONUnmarshalToItem(val), nil
 }
 
-func GetItemByType(typ TypeMatcher) (Item, error) {
+func GetItemByType(typ Typer) (Item, error) {
 	if typ == nil {
 		typ = NilType
 	}
 	switch {
-	case typ.Matches(CollectionType):
+	case ActivityVocabularyTypes{CollectionType}.Match(typ):
 		return &Collection{Type: typ}, nil
-	case typ.Matches(OrderedCollectionType):
+	case ActivityVocabularyTypes{OrderedCollectionType}.Match(typ):
 		return &OrderedCollection{Type: typ}, nil
-	case typ.Matches(CollectionPageType):
+	case ActivityVocabularyTypes{CollectionPageType}.Match(typ):
 		return &CollectionPage{Type: typ}, nil
-	case typ.Matches(OrderedCollectionPageType):
+	case ActivityVocabularyTypes{OrderedCollectionPageType}.Match(typ):
 		return &OrderedCollectionPage{Type: typ}, nil
-	case typ.Matches(PlaceType):
+	case ActivityVocabularyTypes{PlaceType}.Match(typ):
 		return &Place{Type: typ}, nil
-	case typ.Matches(ProfileType):
+	case ActivityVocabularyTypes{ProfileType}.Match(typ):
 		return &Profile{Type: typ}, nil
-	case typ.Matches(RelationshipType):
+	case ActivityVocabularyTypes{RelationshipType}.Match(typ):
 		return &Relationship{Type: typ}, nil
-	case typ.Matches(TombstoneType):
+	case ActivityVocabularyTypes{TombstoneType}.Match(typ):
 		return &Tombstone{Type: typ}, nil
-	case typ.Matches(QuestionType):
+	case ActivityVocabularyTypes{QuestionType}.Match(typ):
 		return &Question{Type: typ}, nil
-	case typ.Matches(ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType):
+	case ActivityVocabularyTypes{ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType}.Match(typ):
 		return ObjectNew(typ), nil
-	case typ.Matches(LinkType, MentionType):
+	case ActivityVocabularyTypes{LinkType, MentionType}.Match(typ):
 		return &Link{Type: typ}, nil
-	case typ.Matches(ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
+	case ActivityVocabularyTypes{ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
 		FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
-		RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType):
+		RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType}.Match(typ):
 		return &Activity{Type: typ}, nil
-	case typ.Matches(IntransitiveActivityType, ArriveType, TravelType):
+	case ActivityVocabularyTypes{IntransitiveActivityType, ArriveType, TravelType}.Match(typ):
 		return &IntransitiveActivity{Type: typ}, nil
-	case typ.Matches(ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType):
+	case ActivityVocabularyTypes{ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType}.Match(typ):
 		return &Actor{Type: typ}, nil
-	case typ.Matches(NilType):
+	case ActivityVocabularyTypes{NilType}.Match(typ):
 		fallthrough
 	default:
 		// when no type is available use a plain Object

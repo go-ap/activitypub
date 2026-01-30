@@ -57,7 +57,7 @@ type Collection struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type TypeMatcher `jsonld:"type,omitempty"`
+	Type Typer `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -193,7 +193,7 @@ func (c Collection) GetID() ID {
 }
 
 // GetType returns the Collection's type
-func (c Collection) GetType() TypeMatcher {
+func (c Collection) GetType() Typer {
 	return c.Type
 }
 
@@ -217,9 +217,9 @@ func (c Collection) GetLink() IRI {
 	return IRI(c.ID)
 }
 
-// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
-func (c Collection) Matches(tt ...ActivityVocabularyType) bool {
-	return c.Type != nil && c.Type.Matches(tt...)
+// Match returns whether the receiver matches the ActivityVocabularyType arguments.
+func (c Collection) Match(tt ...ActivityVocabularyType) bool {
+	return ActivityVocabularyTypes(tt).Match(c.Type)
 }
 
 // Collection returns the Collection's items

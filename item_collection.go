@@ -19,13 +19,13 @@ func (i ItemCollection) GetLink() IRI {
 }
 
 // GetType returns the ItemCollection's type
-func (i ItemCollection) GetType() TypeMatcher {
+func (i ItemCollection) GetType() Typer {
 	return CollectionOfItems
 }
 
-// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
-func (i ItemCollection) Matches(tt ...ActivityVocabularyType) bool {
-	return i.GetType().Matches(tt...)
+// Match returns whether the receiver matches the ActivityVocabularyType arguments.
+func (i ItemCollection) Match(tt ...ActivityVocabularyType) bool {
+	return ActivityVocabularyTypes(tt).Match(i.GetType())
 }
 
 // IsLink returns false for an ItemCollection object
@@ -205,9 +205,8 @@ func ToItemCollection(it LinkOrIRI) (*ItemCollection, error) {
 		}
 		return &iris, nil
 	default:
-		return reflectItemToType[ItemCollection](it)
 	}
-	return nil, ErrorInvalidType[ItemCollection](it)
+	return reflectItemToType[ItemCollection](it)
 }
 
 // ToIRIs
@@ -250,7 +249,7 @@ func (i *ItemCollection) Equals(with Item) bool {
 	if !with.IsCollection() {
 		return false
 	}
-	if !with.GetType().Matches(CollectionOfItems) {
+	if !CollectionOfItems.Match(with.GetType()) {
 		return false
 	}
 	itemCollection, err := ToItemCollection(with)

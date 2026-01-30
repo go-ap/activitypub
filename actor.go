@@ -46,7 +46,7 @@ type Actor struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type TypeMatcher `jsonld:"type,omitempty"`
+	Type Typer `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -173,7 +173,7 @@ func (a Actor) GetLink() IRI {
 }
 
 // GetType returns the type of the current Actor
-func (a Actor) GetType() TypeMatcher {
+func (a Actor) GetType() Typer {
 	return a.Type
 }
 
@@ -192,9 +192,9 @@ func (a Actor) IsCollection() bool {
 	return false
 }
 
-// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
-func (a Actor) Matches(tt ...ActivityVocabularyType) bool {
-	return a.Type != nil && a.Type.Matches(tt...)
+// Match returns whether the receiver matches the ActivityVocabularyType arguments.
+func (a Actor) Match(tt ...ActivityVocabularyType) bool {
+	return ActivityVocabularyTypes(tt).Match(a.Type)
 }
 
 // PublicKey holds the ActivityPub compatible public key data
@@ -296,7 +296,7 @@ type (
 
 // ActorNew initializes an CanReceiveActivities type actor
 func ActorNew(id ID, typ ActivityVocabularyType) *Actor {
-	if !ActorTypes.Contains(typ) {
+	if !ActorTypes.Match(typ) {
 		typ = ActorType
 	}
 
@@ -416,7 +416,7 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 func (a Actor) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's':
-		if !a.GetType().Matches() && a.ID != "" {
+		if HasTypes(a) && a.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", a, a.GetType(), a.ID)
 		} else if a.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T( %s )", a, a.ID)

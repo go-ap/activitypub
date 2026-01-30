@@ -30,7 +30,7 @@ func TestCollectionNew(t *testing.T) {
 	if c.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", c.ID, testValue)
 	}
-	if !c.Matches(CollectionType) {
+	if !c.Match(CollectionType) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", c.GetType(), CollectionType)
 	}
 }
@@ -121,7 +121,7 @@ func TestCollection_GetType(t *testing.T) {
 
 	c := CollectionNew(id)
 
-	if !c.Matches(CollectionType) {
+	if !c.Match(CollectionType) {
 		t.Errorf("Collection Type should be %q, received %q", CollectionType, c.GetType())
 	}
 }

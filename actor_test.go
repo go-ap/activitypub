@@ -18,7 +18,7 @@ func TestActorNew(t *testing.T) {
 	if o.ID != testValue {
 		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
 	}
-	if !o.GetType().Matches(testType) {
+	if !testType.Match(o.GetType()) {
 		t.Errorf("APObject Type '%v' different than expected '%v'", o.GetType(), testType)
 	}
 
@@ -245,8 +245,9 @@ func validateEmptyPerson(p Person, t *testing.T) {
 	if p.ID != "" {
 		t.Errorf("Unmarshaled object %T should have empty ID, received %q", p, p.ID)
 	}
-	if typ := p.GetType(); typ != nil && !typ.Matches(NilType) {
-		t.Errorf("Unmarshaled object %T should have empty Type, received %q", p, p.GetType())
+	if HasTypes(p) {
+		t.Errorf("Unmarshaled object "+
+			"%T should have empty Type, received %s", p, p.GetType())
 	}
 	if p.AttributedTo != nil {
 		t.Errorf("Unmarshaled object %T should have empty AttributedTo, received %q", p, p.AttributedTo)
@@ -278,7 +279,7 @@ func TestPerson_UnmarshalJSON(t *testing.T) {
 	p := Person{}
 
 	dataEmpty := []byte("{}")
-	p.UnmarshalJSON(dataEmpty)
+	_ = p.UnmarshalJSON(dataEmpty)
 	validateEmptyPerson(p, t)
 }
 
@@ -505,7 +506,7 @@ func TestOnActor(t *testing.T) {
 func TestActor_Equals(t *testing.T) {
 	type fields struct {
 		ID                ID
-		Type              TypeMatcher
+		Type              Typer
 		Name              NaturalLanguageValues
 		Attachment        Item
 		AttributedTo      Item

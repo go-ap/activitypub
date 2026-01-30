@@ -255,7 +255,7 @@ type Activity struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type TypeMatcher `jsonld:"type,omitempty"`
+	Type Typer `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -370,7 +370,7 @@ type Activity struct {
 }
 
 // GetType returns the ActivityVocabulary type of the current Activity
-func (a Activity) GetType() TypeMatcher {
+func (a Activity) GetType() Typer {
 	return a.Type
 }
 
@@ -399,9 +399,9 @@ func (a Activity) IsCollection() bool {
 	return false
 }
 
-// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
-func (a Activity) Matches(tt ...ActivityVocabularyType) bool {
-	return a.Type != nil && a.Type.Matches(tt...)
+// Match returns whether the receiver matches the ActivityVocabularyType arguments.
+func (a Activity) Match(tt ...ActivityVocabularyType) bool {
+	return ActivityVocabularyTypes(tt).Match(a.Type)
 }
 
 func removeFromCollection(col ItemCollection, items ...Item) ItemCollection {
@@ -446,7 +446,7 @@ func removeFromAudience(a *Activity, items ...Item) error {
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (a *Activity) Recipients() ItemCollection {
 	alwaysRemove := make(ItemCollection, 0)
-	if a.GetType().Matches(BlockType) && !IsNil(a.Object) {
+	if BlockType.Match(a.GetType()) && !IsNil(a.Object) {
 		_ = OnItem(a.Object, func(object Item) error {
 			_ = alwaysRemove.Append(object)
 			return nil
@@ -757,7 +757,7 @@ func ViewNew(id ID, ob Item) *View {
 
 // ActivityNew initializes a basic activity
 func ActivityNew(id ID, typ ActivityVocabularyType, ob Item) *Activity {
-	if !ActivityTypes.Contains(typ) {
+	if !ActivityTypes.Match(typ) {
 		typ = ActivityType
 	}
 	a := Activity{ID: id, Type: typ}
@@ -791,7 +791,7 @@ func fmtActivityProps(w io.Writer) func(*Activity) error {
 func (a Activity) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's':
-		if !a.GetType().Matches() && a.ID != "" {
+		if HasTypes(a) && a.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", a, a.GetType(), a.ID)
 		} else if a.ID != "" {
 			_, _ = fmt.Fprintf(s, "%T( %s )", a, a.ID)

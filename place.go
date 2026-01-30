@@ -14,7 +14,7 @@ type Place struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type TypeMatcher `jsonld:"type,omitempty"`
+	Type Typer `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -144,7 +144,7 @@ func (p Place) GetLink() IRI {
 }
 
 // GetType returns the type of the current Place
-func (p Place) GetType() TypeMatcher {
+func (p Place) GetType() Typer {
 	return p.Type
 }
 
@@ -153,9 +153,9 @@ func (p Place) GetID() ID {
 	return p.ID
 }
 
-// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
-func (p Place) Matches(tt ...ActivityVocabularyType) bool {
-	return p.Type != nil && p.Type.Matches(tt...)
+// Match returns whether the receiver matches the ActivityVocabularyType arguments.
+func (p Place) Match(tt ...ActivityVocabularyType) bool {
+	return ActivityVocabularyTypes(tt).Match(p.Type)
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.

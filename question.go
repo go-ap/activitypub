@@ -18,7 +18,7 @@ type Question struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type TypeMatcher `jsonld:"type,omitempty"`
+	Type Typer `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -146,7 +146,7 @@ func (q Question) GetLink() IRI {
 }
 
 // GetType returns the ActivityVocabulary type of the current Activity
-func (q Question) GetType() TypeMatcher {
+func (q Question) GetType() Typer {
 	return q.Type
 }
 
@@ -165,9 +165,9 @@ func (q Question) IsCollection() bool {
 	return false
 }
 
-// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
-func (q Question) Matches(tt ...ActivityVocabularyType) bool {
-	return q.Type != nil && q.Type.Matches(tt...)
+// Match returns whether the receiver matches the ActivityVocabularyType arguments.
+func (q Question) Match(tt ...ActivityVocabularyType) bool {
+	return ActivityVocabularyTypes(tt).Match(q.Type)
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.

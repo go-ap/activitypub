@@ -480,7 +480,7 @@ func TestJSONGetTypes(t *testing.T) {
 	tests := []struct {
 		name string
 		data []byte
-		want TypeMatcher
+		want Typer
 		err  error
 	}{
 		{

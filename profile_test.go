@@ -72,7 +72,7 @@ func TestToProfile(t *testing.T) {
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("ToProfile() got = %s", cmp.Diff(tt.want, got))
 			}
-			if got != nil && !got.Matches(ProfileType) {
+			if got != nil && !got.Match(ProfileType) {
 				t.Errorf("ToProfile() expected to match Profile type, got = %v", got.GetType())
 			}
 		})

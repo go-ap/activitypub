@@ -28,8 +28,8 @@ func itemsNeedSwapping(i1, i2 Item) bool {
 	}
 	t1 := i1.GetType()
 	t2 := i2.GetType()
-	if ObjectTypes.MatchOther(t2) {
-		return !ObjectTypes.MatchOther(t1)
+	if ObjectTypes.Match(t2) {
+		return !ObjectTypes.Match(t1)
 	}
 	return false
 }
@@ -65,36 +65,36 @@ func ItemsEqual(it, with Item) bool {
 			result = i.Equals(with)
 			return nil
 		})
-		if ActivityTypes.MatchOther(with.GetType()) {
+		if ActivityTypes.Match(with.GetType()) {
 			_ = OnActivity(it, func(i *Activity) error {
 				result = i.Equals(with)
 				return nil
 			})
-		} else if ActorTypes.MatchOther(with.GetType()) {
+		} else if ActorTypes.Match(with.GetType()) {
 			_ = OnActor(it, func(i *Actor) error {
 				result = i.Equals(with)
 				return nil
 			})
 		} else if it.IsCollection() {
-			if it.GetType().Matches(CollectionType) {
+			if CollectionType.Match(it.GetType()) {
 				_ = OnCollection(it, func(c *Collection) error {
 					result = c.Equals(with)
 					return nil
 				})
 			}
-			if it.GetType().Matches(OrderedCollectionType) {
+			if OrderedCollectionType.Match(it.GetType()) {
 				_ = OnOrderedCollection(it, func(c *OrderedCollection) error {
 					result = c.Equals(with)
 					return nil
 				})
 			}
-			if it.GetType().Matches(CollectionPageType) {
+			if CollectionPageType.Match(it.GetType()) {
 				_ = OnCollectionPage(it, func(c *CollectionPage) error {
 					result = c.Equals(with)
 					return nil
 				})
 			}
-			if it.GetType().Matches(OrderedCollectionPageType) {
+			if OrderedCollectionPageType.Match(it.GetType()) {
 				_ = OnOrderedCollectionPage(it, func(c *OrderedCollectionPage) error {
 					result = c.Equals(with)
 					return nil

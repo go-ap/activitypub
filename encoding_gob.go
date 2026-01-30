@@ -118,92 +118,92 @@ func gobEncodeItem(it Item) ([]byte, error) {
 			typ = NilType
 		}
 		switch {
-		case typ.Matches(IRIType):
+		case IRIType.Match(it.GetType()):
 			var bytes []byte
 			bytes, err = it.(IRI).GobEncode()
 			b.Write(bytes)
-		case typ.Matches(CollectionType):
+		case CollectionType.Match(it.GetType()):
 			err = OnCollection(it, func(c *Collection) error {
 				bytes, err := c.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case typ.Matches(OrderedCollectionType):
+		case OrderedCollectionType.Match(typ):
 			err = OnOrderedCollection(it, func(c *OrderedCollection) error {
 				bytes, err := c.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case typ.Matches(CollectionPageType):
+		case CollectionPageType.Match(typ):
 			err = OnCollectionPage(it, func(p *CollectionPage) error {
 				bytes, err := p.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case typ.Matches(OrderedCollectionPageType):
+		case OrderedCollectionPageType.Match(typ):
 			err = OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
 				bytes, err := p.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case typ.Matches(PlaceType):
+		case PlaceType.Match(typ):
 			err = OnPlace(it, func(p *Place) error {
 				bytes, err := p.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case typ.Matches(ProfileType):
+		case ProfileType.Match(typ):
 			err = OnProfile(it, func(p *Profile) error {
 				bytes, err := p.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case typ.Matches(RelationshipType):
+		case RelationshipType.Match(typ):
 			err = OnRelationship(it, func(r *Relationship) error {
 				bytes, err := r.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case typ.Matches(TombstoneType):
+		case TombstoneType.Match(typ):
 			err = OnTombstone(it, func(t *Tombstone) error {
 				bytes, err := t.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case typ.Matches(QuestionType):
+		case QuestionType.Match(typ):
 			err = OnQuestion(it, func(q *Question) error {
 				bytes, err := q.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case typ.Matches(NilType, ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType):
+		case ActivityVocabularyTypes{NilType, ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType}.Match(typ):
 			err = OnObject(it, func(ob *Object) error {
 				bytes, err := ob.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case typ.Matches(LinkType, MentionType):
+		case ActivityVocabularyTypes{LinkType, MentionType}.Match(typ):
 			// TODO(marius): this shouldn't work, as Link does not implement Item? (or rather, should not)
 			err = OnLink(it, func(l *Link) error {
 				bytes, err := l.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case typ.Matches(ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
+		case ActivityVocabularyTypes{ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
 			FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
-			RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType):
+			RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType}.Match(typ):
 			err = OnActivity(it, func(act *Activity) error {
 				bytes, err := act.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case typ.Matches(IntransitiveActivityType, ArriveType, TravelType):
+		case ActivityVocabularyTypes{IntransitiveActivityType, ArriveType, TravelType}.Match(typ):
 			err = OnIntransitiveActivity(it, func(act *IntransitiveActivity) error {
 				bytes, err := act.GobEncode()
 				b.Write(bytes)
 				return err
 			})
-		case typ.Matches(ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType):
+		case ActivityVocabularyTypes{ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType}.Match(typ):
 			err = OnActor(it, func(a *Actor) error {
 				bytes, err := a.GobEncode()
 				b.Write(bytes)
@@ -214,7 +214,7 @@ func gobEncodeItem(it Item) ([]byte, error) {
 	return b.Bytes(), err
 }
 
-func gobEncodeTypes(typ TypeMatcher) ([]byte, error) {
+func gobEncodeTypes(typ Typer) ([]byte, error) {
 	if tt, ok := typ.(gob.GobEncoder); ok {
 		return tt.GobEncode()
 	}

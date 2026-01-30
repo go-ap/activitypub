@@ -39,7 +39,7 @@ type Link struct {
 	// Provides the globally unique identifier for an APObject or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Identifies the APObject or Link type. Multiple values may be specified.
-	Type TypeMatcher `jsonld:"type,omitempty"`
+	Type Typer `jsonld:"type,omitempty"`
 	// A simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -68,7 +68,7 @@ type Mention = Link
 
 // LinkNew initializes a new Link
 func LinkNew(id ID, typ ActivityVocabularyType) *Link {
-	if !LinkTypes.Contains(typ) {
+	if !LinkTypes.Match(typ) {
 		typ = LinkType
 	}
 	return &Link{ID: id, Type: typ}
@@ -81,12 +81,12 @@ func MentionNew(id ID) *Mention {
 
 // IsLink validates if current Link is a Link
 func (l Link) IsLink() bool {
-	return l.GetType().Matches(append(LinkTypes, LinkType)...)
+	return LinkTypes.Match(l.GetType())
 }
 
 // IsObject validates if current Link is an GetID
 func (l Link) IsObject() bool {
-	return l.GetType().Matches(append(ObjectTypes, ObjectType)...)
+	return append(ObjectTypes, ObjectType).Match(l.GetType())
 }
 
 // IsCollection returns false for Link objects
@@ -105,13 +105,13 @@ func (l Link) GetLink() IRI {
 }
 
 // GetType returns the Type corresponding to the Mention object
-func (l Link) GetType() TypeMatcher {
+func (l Link) GetType() Typer {
 	return l.Type
 }
 
-// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
-func (l Link) Matches(tt ...ActivityVocabularyType) bool {
-	return l.Type != nil && l.Type.Matches(tt...)
+// Match returns whether the receiver matches the ActivityVocabularyType arguments.
+func (l Link) Match(tt ...ActivityVocabularyType) bool {
+	return ActivityVocabularyTypes(tt).Match(l.Type)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
@@ -154,7 +154,7 @@ func (l Link) equal(with Link) bool {
 	if !l.ID.Equal(with.ID) {
 		return false
 	}
-	if TypesMatch(l.Type, with.Type) {
+	if TypesEqual(l.Type, with.Type) {
 		return false
 	}
 	if l.HrefLang != with.HrefLang {

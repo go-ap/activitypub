@@ -100,24 +100,24 @@ func FlattenProperties(it Item) Item {
 		return nil
 	}
 	typ := it.GetType()
-	if IntransitiveActivityTypes.MatchOther(typ) {
+	if IntransitiveActivityTypes.Match(typ) {
 		_ = OnIntransitiveActivity(it, func(a *IntransitiveActivity) error {
 			FlattenIntransitiveActivityProperties(a)
 			return nil
 		})
-	} else if ActivityTypes.MatchOther(typ) {
+	} else if ActivityTypes.Match(typ) {
 		_ = OnActivity(it, func(a *Activity) error {
 			FlattenActivityProperties(a)
 			return nil
 		})
 	}
-	if ActorTypes.MatchOther(typ) {
+	if ActorTypes.Match(typ) {
 		_ = OnActor(it, func(a *Actor) error {
 			FlattenActorProperties(a)
 			return nil
 		})
 	}
-	if ObjectTypes.MatchOther(typ) {
+	if ObjectTypes.Match(typ) {
 		_ = OnObject(it, func(o *Object) error {
 			FlattenObjectProperties(o)
 			return nil

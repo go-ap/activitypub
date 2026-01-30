@@ -72,7 +72,7 @@ func TestToPlace(t *testing.T) {
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("ToPlace() got = %s", cmp.Diff(tt.want, got))
 			}
-			if got != nil && !got.Matches(PlaceType) {
+			if got != nil && !got.Match(PlaceType) {
 				t.Errorf("ToPlace() expected to match Place type, got = %v", got.GetType())
 			}
 		})

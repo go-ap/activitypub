@@ -186,7 +186,7 @@ func unmapLinkProperties(mm map[string][]byte, l *Link) error {
 	return nil
 }
 
-func gobDecodeTypes(data []byte) (TypeMatcher, error) {
+func gobDecodeTypes(data []byte) (Typer, error) {
 	items := make(ActivityVocabularyTypes, 0)
 	if err := items.GobDecode(data); err != nil {
 		return nil, err
@@ -437,26 +437,27 @@ func gobDecodeItem(data []byte) (Item, error) {
 			return nil, err
 		}
 		switch {
-		//case typ.Matches(IRIType):
-		case typ.Matches(NilType, ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType):
+		//case typ.Match(IRIType):
+		case ActivityVocabularyTypes{NilType, ObjectType, ArticleType, AudioType, DocumentType, EventType,
+			ImageType, NoteType, PageType, VideoType}.Match(typ):
 			err = OnObject(it, func(ob *Object) error {
 				return unmapObjectProperties(mm, ob)
 			})
-		case typ.Matches(LinkType, MentionType):
+		case ActivityVocabularyTypes{LinkType, MentionType}.Match(typ):
 			err = OnLink(it, func(l *Link) error {
 				return unmapLinkProperties(mm, l)
 			})
-		case typ.Matches(ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
+		case ActivityVocabularyTypes{ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
 			FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
-			RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType):
+			RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType}.Match(typ):
 			err = OnActivity(it, func(act *Activity) error {
 				return unmapActivityProperties(mm, act)
 			})
-		case typ.Matches(IntransitiveActivityType, ArriveType, TravelType):
+		case ActivityVocabularyTypes{IntransitiveActivityType, ArriveType, TravelType}.Match(typ):
 			err = OnIntransitiveActivity(it, func(act *IntransitiveActivity) error {
 				return unmapIntransitiveActivityProperties(mm, act)
 			})
-		case typ.Matches(ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType):
+		case ActivityVocabularyTypes{ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType}.Match(typ):
 			err = OnActor(it, func(a *Actor) error {
 				return unmapActorProperties(mm, a)
 			})

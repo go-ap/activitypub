@@ -17,7 +17,7 @@ func TestActivityNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(testType) {
+	if !a.Match(testType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), testType)
 	}
 
@@ -26,7 +26,7 @@ func TestActivityNew(t *testing.T) {
 	if g.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", g.ID, testValue)
 	}
-	if !g.Matches(ActivityType) {
+	if !g.Match(ActivityType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", g.GetType(), ActivityType)
 	}
 }
@@ -39,7 +39,7 @@ func TestAcceptNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(AcceptType) {
+	if !a.Match(AcceptType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), AcceptType)
 	}
 }
@@ -52,7 +52,7 @@ func TestAddNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(AddType) {
+	if !a.Match(AddType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), AddType)
 	}
 }
@@ -65,7 +65,7 @@ func TestAnnounceNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(AnnounceType) {
+	if !a.Match(AnnounceType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), AnnounceType)
 	}
 }
@@ -78,7 +78,7 @@ func TestBlockNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(BlockType) {
+	if !a.Match(BlockType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), BlockType)
 	}
 }
@@ -91,7 +91,7 @@ func TestCreateNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(CreateType) {
+	if !a.Match(CreateType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), CreateType)
 	}
 }
@@ -104,7 +104,7 @@ func TestDeleteNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(DeleteType) {
+	if !a.Match(DeleteType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), DeleteType)
 	}
 }
@@ -117,7 +117,7 @@ func TestDislikeNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(DislikeType) {
+	if !a.Match(DislikeType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), DislikeType)
 	}
 }
@@ -130,7 +130,7 @@ func TestFlagNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(FlagType) {
+	if !a.Match(FlagType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), FlagType)
 	}
 }
@@ -143,7 +143,7 @@ func TestFollowNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(FollowType) {
+	if !a.Match(FollowType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), FollowType)
 	}
 }
@@ -156,7 +156,7 @@ func TestIgnoreNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(IgnoreType) {
+	if !a.Match(IgnoreType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), IgnoreType)
 	}
 }
@@ -169,7 +169,7 @@ func TestInviteNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(InviteType) {
+	if !a.Match(InviteType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), InviteType)
 	}
 }
@@ -182,7 +182,7 @@ func TestJoinNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(JoinType) {
+	if !a.Match(JoinType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), JoinType)
 	}
 }
@@ -195,7 +195,7 @@ func TestLeaveNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(LeaveType) {
+	if !a.Match(LeaveType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), LeaveType)
 	}
 }
@@ -208,7 +208,7 @@ func TestLikeNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(LikeType) {
+	if !a.Match(LikeType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), LikeType)
 	}
 }
@@ -221,7 +221,7 @@ func TestListenNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(ListenType) {
+	if !a.Match(ListenType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), ListenType)
 	}
 }
@@ -234,7 +234,7 @@ func TestMoveNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(MoveType) {
+	if !a.Match(MoveType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), MoveType)
 	}
 }
@@ -247,7 +247,7 @@ func TestOfferNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(OfferType) {
+	if !a.Match(OfferType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), OfferType)
 	}
 }
@@ -260,7 +260,7 @@ func TestRejectNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(RejectType) {
+	if !a.Match(RejectType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), RejectType)
 	}
 }
@@ -273,7 +273,7 @@ func TestReadNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(ReadType) {
+	if !a.Match(ReadType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), ReadType)
 	}
 }
@@ -286,7 +286,7 @@ func TestRemoveNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(RemoveType) {
+	if !a.Match(RemoveType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), RemoveType)
 	}
 }
@@ -299,7 +299,7 @@ func TestTentativeRejectNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(TentativeRejectType) {
+	if !a.Match(TentativeRejectType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), TentativeRejectType)
 	}
 }
@@ -312,7 +312,7 @@ func TestTentativeAcceptNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(TentativeAcceptType) {
+	if !a.Match(TentativeAcceptType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), TentativeAcceptType)
 	}
 }
@@ -325,7 +325,7 @@ func TestUndoNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(UndoType) {
+	if !a.Match(UndoType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), UndoType)
 	}
 }
@@ -338,7 +338,7 @@ func TestUpdateNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(UpdateType) {
+	if !a.Match(UpdateType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), UpdateType)
 	}
 }
@@ -351,7 +351,7 @@ func TestViewNew(t *testing.T) {
 	if a.ID != testValue {
 		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
 	}
-	if !a.Matches(ViewType) {
+	if !a.Match(ViewType) {
 		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), ViewType)
 	}
 }
@@ -647,7 +647,7 @@ func TestActivity_GetID(t *testing.T) {
 func TestActivity_GetIDGetType(t *testing.T) {
 	a := ActivityNew("test", ActivityType, Person{})
 
-	if a.GetID() != "test" || !a.Matches(ActivityType) {
+	if a.GetID() != "test" || !a.Match(ActivityType) {
 		t.Errorf("%T should not return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
 	}
 }
@@ -1025,7 +1025,7 @@ func TestActivity_GetType(t *testing.T) {
 func TestActivity_MarshalJSON(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         TypeMatcher
+		Type         Typer
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item
@@ -1283,7 +1283,7 @@ func TestActivity_MarshalJSON(t *testing.T) {
 func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         TypeMatcher
+		Type         Typer
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item
@@ -1536,7 +1536,7 @@ func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
 func TestActivity_Equals(t *testing.T) {
 	type fields struct {
 		ID           ID
-		Type         TypeMatcher
+		Type         Typer
 		Name         NaturalLanguageValues
 		Attachment   Item
 		AttributedTo Item

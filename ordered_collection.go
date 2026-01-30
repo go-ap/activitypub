@@ -16,7 +16,7 @@ type OrderedCollection struct {
 	// ID provides the globally unique identifier for an Activity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
 	// Type identifies the Activity Pub Object or Link type. Multiple values may be specified.
-	Type TypeMatcher `jsonld:"type,omitempty"`
+	Type Typer `jsonld:"type,omitempty"`
 	// Name a simple, human-readable, plain-text name for the object.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
@@ -151,7 +151,7 @@ type (
 )
 
 // GetType returns the OrderedCollection's type
-func (o OrderedCollection) GetType() TypeMatcher {
+func (o OrderedCollection) GetType() Typer {
 	return o.Type
 }
 
@@ -170,9 +170,9 @@ func (o OrderedCollection) GetLink() IRI {
 	return IRI(o.ID)
 }
 
-// Matches returns whether the receiver matches the ActivityVocabularyType arguments.
-func (o OrderedCollection) Matches(tt ...ActivityVocabularyType) bool {
-	return o.Type != nil && o.Type.Matches(tt...)
+// Match returns whether the receiver matches the ActivityVocabularyType arguments.
+func (o OrderedCollection) Match(tt ...ActivityVocabularyType) bool {
+	return ActivityVocabularyTypes(tt).Match(o.Type)
 }
 
 // IsObject returns true for am OrderedCollection object
