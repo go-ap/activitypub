@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"slices"
+	"strings"
 
 	"github.com/valyala/fastjson"
 )
@@ -225,6 +226,10 @@ func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
+func (t ActivityVocabularyType) String() string {
+	return string(t)
+}
+
 // GobEncode
 func (a ActivityVocabularyType) GobEncode() ([]byte, error) {
 	return []byte(a), nil
@@ -248,6 +253,17 @@ func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
 
 func (a ActivityVocabularyType) AsTypes() ActivityVocabularyTypes {
 	return ActivityVocabularyTypes{a}
+}
+
+func (a ActivityVocabularyTypes) String() string {
+	if len(a) == 0 {
+		return ""
+	}
+	s := make([]string, 0, len(a))
+	for _, tt := range a {
+		s = append(s, string(tt))
+	}
+	return strings.Join(s, ", ")
 }
 
 type TypesMatcher interface {
