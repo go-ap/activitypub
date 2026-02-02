@@ -17,7 +17,6 @@ PROJECT_NAME := $(shell basename $(PWD))
 download: go.sum
 
 go.sum:
-	$(GO) mod download all
 	$(GO) mod tidy
 
 test: go.sum
