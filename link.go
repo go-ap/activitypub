@@ -154,7 +154,7 @@ func (l Link) equal(with Link) bool {
 	if !l.ID.Equal(with.ID) {
 		return false
 	}
-	if TypesEqual(l.Type, with.Type) {
+	if !TypesEqual(l.Type, with.Type) {
 		return false
 	}
 	if l.HrefLang != with.HrefLang {

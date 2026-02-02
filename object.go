@@ -827,10 +827,10 @@ func (o *Object) Equals(with Item) bool {
 	if err != nil {
 		return false
 	}
-	if withID := with.GetID(); !o.ID.Equal(withID) {
+	if !o.ID.Equal(withObject.ID) {
 		return false
 	}
-	if withType := with.GetType(); !TypesEqual(o.Type, withType) {
+	if !TypesEqual(o.Type, withObject.Type) {
 		return false
 	}
 	if with.IsLink() && !with.GetLink().Equal(o.GetLink()) {

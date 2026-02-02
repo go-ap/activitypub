@@ -71,6 +71,21 @@ func TestItemsEqual(t *testing.T) {
 			args: args{&Object{ID: "test", Type: NoteType}, &Object{ID: "test", Type: ArticleType}},
 			want: false,
 		},
+		{
+			name: "Link different than Object",
+			args: args{&Object{ID: "test", Type: NoteType}, &Link{ID: "test", Type: MentionType}},
+			want: false,
+		},
+		{
+			name: "matching Link",
+			args: args{&Link{ID: "test", Type: MentionType}, &Link{ID: "test", Type: MentionType}},
+			want: true,
+		},
+		{
+			name: "different id Links",
+			args: args{&Link{ID: "test1", Type: MentionType}, &Link{ID: "test", Type: MentionType}},
+			want: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
