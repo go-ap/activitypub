@@ -453,6 +453,11 @@ type Endpoints struct {
 	// SharedInbox endpoints SHOULD also be publicly readable OrderedCollection objects containing objects addressed to the
 	// Public special collection. Reading from the sharedInbox endpoint MUST NOT present objects which are not addressed to the Public endpoint.
 	SharedInbox Item `jsonld:"sharedInbox,omitempty"`
+	// ProxyURL
+	// Endpoint URI so this actor's clients may access remote ActivityStreams objects which require authentication to
+	// access. To use this endpoint, the client posts an x-www-form-urlencoded id parameter with the value being the id
+	// of the requested ActivityStreams object.
+	ProxyURL IRI `jsonld:"proxyUrl,omitempty"`
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
@@ -468,6 +473,7 @@ func (e *Endpoints) UnmarshalJSON(data []byte) error {
 	e.ProvideClientKey = JSONGetItem(val, "provideClientKey")
 	e.SignClientKey = JSONGetItem(val, "signClientKey")
 	e.SharedInbox = JSONGetItem(val, "sharedInbox")
+	e.ProxyURL = JSONGetIRI(val, "proxyUrl")
 	return nil
 }
 
@@ -494,6 +500,9 @@ func (e Endpoints) MarshalJSON() ([]byte, error) {
 	}
 	if e.UploadMedia != nil {
 		notEmpty = JSONWriteItemProp(&b, "uploadMedia", e.UploadMedia) || notEmpty
+	}
+	if e.ProxyURL != NilID {
+		notEmpty = JSONWriteItemProp(&b, "proxyUrl", e.ProxyURL) || notEmpty
 	}
 	if notEmpty {
 		JSONWrite(&b, '}')

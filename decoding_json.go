@@ -503,6 +503,7 @@ func JSONGetActorEndpoints(val *fastjson.Value, prop string) *Endpoints {
 	e.SharedInbox = JSONGetURIItem(val, "sharedInbox")
 	e.ProvideClientKey = JSONGetURIItem(val, "provideClientKey")
 	e.SignClientKey = JSONGetURIItem(val, "signClientKey")
+	e.ProxyURL = JSONGetIRI(val, "proxyUrl")
 
 	return &e
 }
