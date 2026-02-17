@@ -33,15 +33,15 @@ func FlattenIntransitiveActivityProperties(act *IntransitiveActivity) *Intransit
 
 // FlattenItemCollection flattens an Item Collection to their respective IRIs
 func FlattenItemCollection(col ItemCollection) ItemCollection {
-	if col == nil {
-		return col
+	if len(col) == 0 {
+		return nil
 	}
-	for k, it := range ItemCollectionDeduplication(&col) {
-		if iri := it.GetLink(); iri != "" {
-			col[k] = iri
-		}
+	iris := col.IRIs()
+	if len(iris) == 0 {
+		return nil
 	}
-	return col
+	result := iris.Collection()
+	return ItemCollectionDeduplication(&result)
 }
 
 // FlattenCollection flattens a Collection's objects to their respective IRIs
@@ -69,7 +69,12 @@ func FlattenActorProperties(a *Actor) *Actor {
 	if a == nil {
 		return nil
 	}
-	OnObject(a, func(o *Object) error {
+	a.Inbox = Flatten(a.Inbox)
+	a.Outbox = Flatten(a.Outbox)
+	a.Followers = Flatten(a.Followers)
+	a.Following = Flatten(a.Following)
+	a.Liked = Flatten(a.Liked)
+	_ = OnObject(a, func(o *Object) error {
 		FlattenObjectProperties(o)
 		return nil
 	})
@@ -100,24 +105,24 @@ func FlattenProperties(it Item) Item {
 		return nil
 	}
 	typ := it.GetType()
-	if IntransitiveActivityTypes.Match(typ) {
+	switch {
+
+	case IntransitiveActivityTypes.Match(typ):
 		_ = OnIntransitiveActivity(it, func(a *IntransitiveActivity) error {
 			FlattenIntransitiveActivityProperties(a)
 			return nil
 		})
-	} else if ActivityTypes.Match(typ) {
+	case ActivityTypes.Match(typ):
 		_ = OnActivity(it, func(a *Activity) error {
 			FlattenActivityProperties(a)
 			return nil
 		})
-	}
-	if ActorTypes.Match(typ) {
+	case ActorTypes.Match(typ):
 		_ = OnActor(it, func(a *Actor) error {
 			FlattenActorProperties(a)
 			return nil
 		})
-	}
-	if ObjectTypes.Match(typ) {
+	case ObjectTypes.Match(typ):
 		_ = OnObject(it, func(o *Object) error {
 			FlattenObjectProperties(o)
 			return nil
@@ -131,9 +136,9 @@ func Flatten(it Item) Item {
 	if IsNil(it) {
 		return nil
 	}
-	if it.IsCollection() {
-		_ = OnCollectionIntf(it, func(c CollectionInterface) error {
-			it = FlattenItemCollection(c.Collection()).Normalize()
+	if IsItemCollection(it) {
+		_ = OnItemCollection(it, func(c *ItemCollection) error {
+			it = FlattenItemCollection(*c).Normalize()
 			return nil
 		})
 		return it

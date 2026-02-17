@@ -2,10 +2,6 @@ package activitypub
 
 import "testing"
 
-func TestFlatten(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestItemsEqual(t *testing.T) {
 	type args struct {
 		it   Item
