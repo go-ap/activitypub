@@ -763,10 +763,7 @@ func (n NaturalLanguageValues) Equal(with NaturalLanguageValues) bool {
 
 	for l, wv := range with {
 		nv, ok := n[l]
-		if !ok {
-			return false
-		}
-		if nv.Equal(wv) {
+		if ok && nv.Equal(wv) {
 			continue
 		}
 		return false
