@@ -97,11 +97,11 @@ func (at ActivityVocabularyTypes) Match(other Typer) bool {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (at ActivityVocabularyTypes) MarshalJSON() ([]byte, error) {
-	b := []byte{}
+	b := bytes.Buffer{}
 	if !JSONWriteActivityVocabularyTypes(&b, at) {
 		return nil, fmt.Errorf("error JSON encoding ActivityVocabularyTypes")
 	}
-	return b, nil
+	return b.Bytes(), nil
 }
 
 // UnmarshalJSON decodes the receiver type from the JSON document.
@@ -165,15 +165,17 @@ func (at *ActivityVocabularyTypes) GobDecode(data []byte) error {
 				return err
 			}
 		}
-		if at != nil {
+		if at == nil {
+			at = &types
+		} else {
 			*at = types
 		}
 	} else {
-		typ := NilType
-		if err := typ.GobDecode(data); err != nil {
+		t := NilType
+		if err := t.GobDecode(data); err != nil {
 			return err
 		}
-		*at = ActivityVocabularyTypes{typ}
+		*at = ActivityVocabularyTypes{t}
 	}
 
 	return nil
@@ -215,9 +217,9 @@ func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
 	if len(a) == 0 {
 		return nil, nil
 	}
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	JSONWriteStringValue(&b, string(a))
-	return b, nil
+	return b.Bytes(), nil
 }
 
 func (t ActivityVocabularyType) String() string {

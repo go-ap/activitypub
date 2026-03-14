@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func assertObjectWithTesting(fn canErrorFunc, expected Item) WithObjectFn {
+func assertObjectWithTesting(fn logFn, expected Item) WithObjectFn {
 	return func(p *Object) error {
 		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
@@ -22,7 +22,7 @@ func TestOnObject(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(canErrorFunc, Item) WithObjectFn
+		fn func(logFn, Item) WithObjectFn
 	}
 	tests := []struct {
 		name     string
@@ -56,7 +56,7 @@ func TestOnObject(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		var logFn canErrorFunc
+		var logFn logFn
 		if tt.wantErr {
 			logFn = t.Logf
 		} else {
@@ -70,7 +70,7 @@ func TestOnObject(t *testing.T) {
 	}
 }
 
-func assertActivityWithTesting(fn canErrorFunc, expected Item) WithActivityFn {
+func assertActivityWithTesting(fn logFn, expected Item) WithActivityFn {
 	return func(p *Activity) error {
 		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
@@ -85,7 +85,7 @@ func TestOnActivity(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(canErrorFunc, Item) WithActivityFn
+		fn func(logFn, Item) WithActivityFn
 	}
 	tests := []struct {
 		name     string
@@ -93,6 +93,20 @@ func TestOnActivity(t *testing.T) {
 		expected Item
 		wantErr  bool
 	}{
+		{
+			name: "empty",
+			args: args{
+				it: nil,
+				fn: func(fn logFn, item Item) WithActivityFn {
+					return func(activity *Activity) error {
+						fn("fail due to being called")
+						return nil
+					}
+				},
+			},
+			expected: nil,
+			wantErr:  false,
+		},
 		{
 			name:     "single",
 			args:     args{testActivity, assertActivityWithTesting},
@@ -119,7 +133,7 @@ func TestOnActivity(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		var logFn canErrorFunc
+		var logFn logFn
 		if tt.wantErr {
 			logFn = t.Logf
 		} else {
@@ -133,7 +147,7 @@ func TestOnActivity(t *testing.T) {
 	}
 }
 
-func assertIntransitiveActivityWithTesting(fn canErrorFunc, expected Item) WithIntransitiveActivityFn {
+func assertIntransitiveActivityWithTesting(fn logFn, expected Item) WithIntransitiveActivityFn {
 	return func(p *IntransitiveActivity) error {
 		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
@@ -148,7 +162,7 @@ func TestOnIntransitiveActivity(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(canErrorFunc, Item) WithIntransitiveActivityFn
+		fn func(logFn, Item) WithIntransitiveActivityFn
 	}
 	tests := []struct {
 		name     string
@@ -182,7 +196,7 @@ func TestOnIntransitiveActivity(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		var logFn canErrorFunc
+		var logFn logFn
 		if tt.wantErr {
 			logFn = t.Logf
 		} else {
@@ -196,7 +210,7 @@ func TestOnIntransitiveActivity(t *testing.T) {
 	}
 }
 
-func assertQuestionWithTesting(fn canErrorFunc, expected Item) WithQuestionFn {
+func assertQuestionWithTesting(fn logFn, expected Item) WithQuestionFn {
 	return func(p *Question) error {
 		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
@@ -211,7 +225,7 @@ func TestOnQuestion(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(canErrorFunc, Item) WithQuestionFn
+		fn func(logFn, Item) WithQuestionFn
 	}
 	tests := []struct {
 		name     string
@@ -245,7 +259,7 @@ func TestOnQuestion(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		var logFn canErrorFunc
+		var logFn logFn
 		if tt.wantErr {
 			logFn = t.Logf
 		} else {
@@ -273,7 +287,7 @@ func TestOnOrderedCollectionPage(t *testing.T) {
 
 type args[T Objects] struct {
 	it T
-	fn func(fn canErrorFunc, expected T) func(*T) error
+	fn func(fn logFn, expected T) func(*T) error
 }
 
 type testPair[T Objects] struct {
@@ -283,7 +297,7 @@ type testPair[T Objects] struct {
 	wantErr  bool
 }
 
-func assert[T Objects](fn canErrorFunc, expected T) func(*T) error {
+func assert[T Objects](fn logFn, expected T) func(*T) error {
 	return func(p *T) error {
 		if !assertDeepEquals(fn, *p, expected) {
 			return fmt.Errorf("not equal")
@@ -308,7 +322,7 @@ func TestOn(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		var logFn canErrorFunc
+		var logFn logFn
 		if tt.wantErr {
 			logFn = t.Logf
 		} else {

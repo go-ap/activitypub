@@ -170,37 +170,37 @@ func (p *Place) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (p Place) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	notEmpty := false
 	JSONWrite(&b, '{')
 
-	OnObject(p, func(o *Object) error {
+	_ = OnObject(p, func(o *Object) error {
 		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 	if p.Accuracy > 0 {
-		notEmpty = JSONWriteFloatProp(&b, "accuracy", p.Accuracy) || notEmpty
+		notEmpty = JSONWriteFloatProp(&b, "accuracy", p.Accuracy, notEmpty) || notEmpty
 	}
 	if p.Altitude > 0 {
-		notEmpty = JSONWriteFloatProp(&b, "altitude", p.Altitude) || notEmpty
+		notEmpty = JSONWriteFloatProp(&b, "altitude", p.Altitude, notEmpty) || notEmpty
 	}
 	if p.Latitude > 0 {
-		notEmpty = JSONWriteFloatProp(&b, "latitude", p.Latitude) || notEmpty
+		notEmpty = JSONWriteFloatProp(&b, "latitude", p.Latitude, notEmpty) || notEmpty
 	}
 	if p.Longitude > 0 {
-		notEmpty = JSONWriteFloatProp(&b, "longitude", p.Longitude) || notEmpty
+		notEmpty = JSONWriteFloatProp(&b, "longitude", p.Longitude, notEmpty) || notEmpty
 	}
 	if p.Radius > 0 {
-		notEmpty = JSONWriteIntProp(&b, "radius", p.Radius) || notEmpty
+		notEmpty = JSONWriteIntProp(&b, "radius", p.Radius, notEmpty) || notEmpty
 	}
 	if len(p.Units) > 0 {
-		notEmpty = JSONWriteStringProp(&b, "radius", p.Units) || notEmpty
+		notEmpty = JSONWriteStringProp(&b, "radius", p.Units, notEmpty) || notEmpty
 	}
-	if notEmpty {
-		JSONWrite(&b, '}')
-		return b, nil
+	if !notEmpty {
+		return nil, nil
 	}
-	return nil, nil
+	JSONWrite(&b, '}')
+	return b.Bytes(), nil
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.

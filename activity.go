@@ -819,14 +819,14 @@ func ToActivity(it LinkOrIRI) (*Activity, error) {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (a Activity) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	JSONWrite(&b, '{')
 
 	if !JSONWriteActivityValue(&b, a) {
 		return nil, nil
 	}
 	JSONWrite(&b, '}')
-	return b, nil
+	return b.Bytes(), nil
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.

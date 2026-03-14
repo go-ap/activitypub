@@ -167,30 +167,30 @@ func (r *Relationship) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (r Relationship) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	notEmpty := false
 	JSONWrite(&b, '{')
 
-	OnObject(r, func(o *Object) error {
+	_ = OnObject(r, func(o *Object) error {
 		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 
 	if r.Subject != nil {
-		notEmpty = JSONWriteItemProp(&b, "subject", r.Subject) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "subject", r.Subject, notEmpty) || notEmpty
 	}
 	if r.Object != nil {
-		notEmpty = JSONWriteItemProp(&b, "object", r.Object) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "object", r.Object, notEmpty) || notEmpty
 	}
 	if r.Relationship != nil {
-		notEmpty = JSONWriteItemProp(&b, "relationship", r.Relationship) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "relationship", r.Relationship, notEmpty) || notEmpty
 	}
 
-	if notEmpty {
-		JSONWrite(&b, '}')
-		return b, nil
+	if !notEmpty {
+		return nil, nil
 	}
-	return nil, nil
+	JSONWrite(&b, '}')
+	return b.Bytes(), nil
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.

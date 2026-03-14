@@ -203,14 +203,14 @@ func (i *IntransitiveActivity) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (i IntransitiveActivity) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	JSONWrite(&b, '{')
 
 	if !JSONWriteIntransitiveActivityValue(&b, i) {
 		return nil, nil
 	}
 	JSONWrite(&b, '}')
-	return b, nil
+	return b.Bytes(), nil
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.

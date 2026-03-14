@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -9,33 +10,33 @@ import (
 	"github.com/go-ap/jsonld"
 )
 
-func JSONWriteComma(b *[]byte) {
-	if len(*b) > 1 && (*b)[len(*b)-1] != ',' {
-		*b = append(*b, ',')
-	}
+func JSONWriteComma(b *bytes.Buffer) {
+	b.WriteRune(',')
 }
 
-func JSONWriteProp(b *[]byte, name string, val []byte) (notEmpty bool) {
+func JSONWriteProp(b *bytes.Buffer, name string, val []byte, needsComma bool) (notEmpty bool) {
 	if len(val) == 0 {
 		return false
 	}
-	JSONWriteComma(b)
-	success := JSONWritePropName(b, name) && JSONWriteValue(b, val)
-	if !success {
-		*b = (*b)[:len(*b)-1]
+	if needsComma {
+		JSONWriteComma(b)
 	}
+	success := JSONWritePropName(b, name) && JSONWriteValue(b, val)
+	//if !success {
+	//	_ = b.UnreadByte()
+	//}
 	return success
 }
 
-func JSONWrite(b *[]byte, c ...byte) {
-	*b = append(*b, c...)
+func JSONWrite(b *bytes.Buffer, c ...byte) {
+	b.Write(c)
 }
 
-func JSONWriteS(b *[]byte, s string) {
-	*b = append(*b, s...)
+func JSONWriteS(b *bytes.Buffer, s string) {
+	b.WriteString(s)
 }
 
-func JSONWritePropName(b *[]byte, s string) (notEmpty bool) {
+func JSONWritePropName(b *bytes.Buffer, s string) (notEmpty bool) {
 	if len(s) == 0 {
 		return false
 	}
@@ -45,7 +46,7 @@ func JSONWritePropName(b *[]byte, s string) (notEmpty bool) {
 	return true
 }
 
-func JSONWriteValue(b *[]byte, s []byte) (notEmpty bool) {
+func JSONWriteValue(b *bytes.Buffer, s []byte) (notEmpty bool) {
 	if len(s) == 0 {
 		return false
 	}
@@ -53,61 +54,61 @@ func JSONWriteValue(b *[]byte, s []byte) (notEmpty bool) {
 	return true
 }
 
-func JSONWriteNaturalLanguageProp(b *[]byte, n string, nl NaturalLanguageValues) (notEmpty bool) {
+func JSONWriteNaturalLanguageProp(b *bytes.Buffer, n string, nl NaturalLanguageValues, needsComma bool) (notEmpty bool) {
 	l := nl.Count()
 	if l > 1 {
 		n += "Map"
 	}
 	if v, err := nl.MarshalJSON(); err == nil && len(v) > 0 {
-		return JSONWriteProp(b, n, v)
+		return JSONWriteProp(b, n, v, needsComma)
 	}
 	return false
 }
 
-func JSONWriteStringProp(b *[]byte, n string, s string) (notEmpty bool) {
-	return JSONWriteProp(b, n, []byte(fmt.Sprintf(`"%s"`, s)))
+func JSONWriteStringProp(b *bytes.Buffer, n string, s string, needsComma bool) (notEmpty bool) {
+	return JSONWriteProp(b, n, []byte(fmt.Sprintf(`"%s"`, s)), needsComma)
 }
 
-func JSONWriteBoolProp(b *[]byte, n string, t bool) (notEmpty bool) {
-	return JSONWriteProp(b, n, []byte(fmt.Sprintf(`"%t"`, t)))
+func JSONWriteBoolProp(b *bytes.Buffer, n string, t bool, needsComma bool) (notEmpty bool) {
+	return JSONWriteProp(b, n, []byte(fmt.Sprintf(`"%t"`, t)), needsComma)
 }
 
-func JSONWriteIntProp(b *[]byte, n string, d int64) (notEmpty bool) {
-	return JSONWriteProp(b, n, []byte(fmt.Sprintf("%d", d)))
+func JSONWriteIntProp(b *bytes.Buffer, n string, d int64, needsComma bool) (notEmpty bool) {
+	return JSONWriteProp(b, n, []byte(fmt.Sprintf("%d", d)), needsComma)
 }
 
-func JSONWriteFloatProp(b *[]byte, n string, f float64) (notEmpty bool) {
-	return JSONWriteProp(b, n, []byte(fmt.Sprintf("%f", f)))
+func JSONWriteFloatProp(b *bytes.Buffer, n string, f float64, needsComma bool) (notEmpty bool) {
+	return JSONWriteProp(b, n, []byte(fmt.Sprintf("%f", f)), needsComma)
 }
 
-func JSONWriteTimeProp(b *[]byte, n string, t time.Time) (notEmpty bool) {
-	var tb []byte
+func JSONWriteTimeProp(b *bytes.Buffer, n string, t time.Time, needsComma bool) (notEmpty bool) {
+	tb := bytes.Buffer{}
 	JSONWrite(&tb, '"')
 	JSONWriteS(&tb, t.UTC().Format(time.RFC3339))
 	JSONWrite(&tb, '"')
-	return JSONWriteProp(b, n, tb)
+	return JSONWriteProp(b, n, tb.Bytes(), needsComma)
 }
 
-func JSONWriteDurationProp(b *[]byte, n string, d time.Duration) (notEmpty bool) {
-	var tb []byte
+func JSONWriteDurationProp(b *bytes.Buffer, n string, d time.Duration, needsComma bool) (notEmpty bool) {
+	tb := bytes.Buffer{}
 	if v, err := xsd.Marshal(d); err == nil {
 		JSONWrite(&tb, '"')
 		JSONWrite(&tb, v...)
 		JSONWrite(&tb, '"')
 	}
-	return JSONWriteProp(b, n, tb)
+	return JSONWriteProp(b, n, tb.Bytes(), needsComma)
 }
 
-func JSONWriteIRIProp(b *[]byte, n string, i LinkOrIRI) (notEmpty bool) {
+func JSONWriteIRIProp(b *bytes.Buffer, n string, i LinkOrIRI, needsComma bool) (notEmpty bool) {
 	url := i.GetLink().String()
 	if len(url) == 0 {
 		return false
 	}
-	JSONWriteStringProp(b, n, url)
+	JSONWriteStringProp(b, n, url, needsComma)
 	return true
 }
 
-func JSONWriteItemProp(b *[]byte, n string, i Item) (notEmpty bool) {
+func JSONWriteItemProp(b *bytes.Buffer, n string, i Item, needsComma bool) (notEmpty bool) {
 	if i == nil {
 		return notEmpty
 	}
@@ -116,7 +117,7 @@ func JSONWriteItemProp(b *[]byte, n string, i Item) (notEmpty bool) {
 		if err != nil {
 			return false
 		}
-		return JSONWriteProp(b, n, v)
+		return JSONWriteProp(b, n, v, needsComma)
 	}
 	return notEmpty
 }
@@ -139,7 +140,7 @@ func escapeQuote(s string) string {
 	return string(raw)
 }
 
-func JSONWriteStringValue(b *[]byte, s string) (notEmpty bool) {
+func JSONWriteStringValue(b *bytes.Buffer, s string) (notEmpty bool) {
 	if len(s) == 0 {
 		return false
 	}
@@ -149,7 +150,7 @@ func JSONWriteStringValue(b *[]byte, s string) (notEmpty bool) {
 	return true
 }
 
-func JSONWriteItemCollectionValue(b *[]byte, col ItemCollection, compact bool) (notEmpty bool) {
+func JSONWriteItemCollectionValue(b *bytes.Buffer, col ItemCollection, compact bool) (notEmpty bool) {
 	if len(col) == 0 {
 		return notEmpty
 	}
@@ -196,118 +197,120 @@ func JSONWriteItemCollectionValue(b *[]byte, col ItemCollection, compact bool) (
 	return true
 }
 
-func JSONWriteItemCollectionProp(b *[]byte, n string, col ItemCollection, compact bool) (notEmpty bool) {
+func JSONWriteItemCollectionProp(b *bytes.Buffer, n string, col ItemCollection, compact, needsComma bool) (notEmpty bool) {
 	if len(col) == 0 {
 		return notEmpty
 	}
-	JSONWriteComma(b)
+	if needsComma {
+		JSONWriteComma(b)
+	}
 	success := JSONWritePropName(b, n) && JSONWriteItemCollectionValue(b, col, compact)
 	if !success {
-		*b = (*b)[:len(*b)-1]
+		_ = b.UnreadByte()
 	}
 	return success
 }
 
-func JSONWriteObjectValue(b *[]byte, o Object) (notEmpty bool) {
+func JSONWriteObjectValue(b *bytes.Buffer, o Object) (notEmpty bool) {
 	if v, err := o.ID.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = JSONWriteProp(b, "id", v)
+		notEmpty = JSONWriteProp(b, "id", v, false)
 	}
 	if HasTypes(o) {
-		notEmpty = JSONWriteTypes(b, "type", o.Type) || notEmpty
+		notEmpty = JSONWriteTypes(b, "type", o.Type, notEmpty) || notEmpty
 	}
 	if v, err := o.MediaType.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = JSONWriteProp(b, "mediaType", v) || notEmpty
+		notEmpty = JSONWriteProp(b, "mediaType", v, notEmpty) || notEmpty
 	}
 	if len(o.Name) > 0 {
-		notEmpty = JSONWriteNaturalLanguageProp(b, "name", o.Name) || notEmpty
+		notEmpty = JSONWriteNaturalLanguageProp(b, "name", o.Name, notEmpty) || notEmpty
 	}
 	if len(o.Summary) > 0 {
-		notEmpty = JSONWriteNaturalLanguageProp(b, "summary", o.Summary) || notEmpty
+		notEmpty = JSONWriteNaturalLanguageProp(b, "summary", o.Summary, notEmpty) || notEmpty
 	}
 	if len(o.Content) > 0 {
-		notEmpty = JSONWriteNaturalLanguageProp(b, "content", o.Content) || notEmpty
+		notEmpty = JSONWriteNaturalLanguageProp(b, "content", o.Content, notEmpty) || notEmpty
 	}
 	if o.Attachment != nil {
-		notEmpty = JSONWriteItemProp(b, "attachment", o.Attachment) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "attachment", o.Attachment, notEmpty) || notEmpty
 	}
 	if o.AttributedTo != nil {
-		notEmpty = JSONWriteItemProp(b, "attributedTo", o.AttributedTo) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "attributedTo", o.AttributedTo, notEmpty) || notEmpty
 	}
 	if o.Audience != nil {
-		notEmpty = JSONWriteItemProp(b, "audience", o.Audience) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "audience", o.Audience, notEmpty) || notEmpty
 	}
 	if o.Context != nil {
-		notEmpty = JSONWriteItemProp(b, "context", o.Context) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "context", o.Context, notEmpty) || notEmpty
 	}
 	if o.Generator != nil {
-		notEmpty = JSONWriteItemProp(b, "generator", o.Generator) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "generator", o.Generator, notEmpty) || notEmpty
 	}
 	if o.Icon != nil {
-		notEmpty = JSONWriteItemProp(b, "icon", o.Icon) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "icon", o.Icon, notEmpty) || notEmpty
 	}
 	if o.Image != nil {
-		notEmpty = JSONWriteItemProp(b, "image", o.Image) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "image", o.Image, notEmpty) || notEmpty
 	}
 	if o.InReplyTo != nil {
-		notEmpty = JSONWriteItemProp(b, "inReplyTo", o.InReplyTo) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "inReplyTo", o.InReplyTo, notEmpty) || notEmpty
 	}
 	if o.Location != nil {
-		notEmpty = JSONWriteItemProp(b, "location", o.Location) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "location", o.Location, notEmpty) || notEmpty
 	}
 	if o.Preview != nil {
-		notEmpty = JSONWriteItemProp(b, "preview", o.Preview) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "preview", o.Preview, notEmpty) || notEmpty
 	}
 	if o.Replies != nil {
-		notEmpty = JSONWriteItemProp(b, "replies", o.Replies) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "replies", o.Replies, notEmpty) || notEmpty
 	}
 	if o.Tag != nil {
-		notEmpty = JSONWriteItemCollectionProp(b, "tag", o.Tag, false) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(b, "tag", o.Tag, false, notEmpty) || notEmpty
 	}
 	if o.URL != nil {
-		notEmpty = JSONWriteItemProp(b, "url", o.URL) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "url", o.URL, notEmpty) || notEmpty
 	}
 	if o.To != nil {
-		notEmpty = JSONWriteItemCollectionProp(b, "to", o.To, false) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(b, "to", o.To, false, notEmpty) || notEmpty
 	}
 	if o.Bto != nil {
-		notEmpty = JSONWriteItemCollectionProp(b, "bto", o.Bto, false) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(b, "bto", o.Bto, false, notEmpty) || notEmpty
 	}
 	if o.CC != nil {
-		notEmpty = JSONWriteItemCollectionProp(b, "cc", o.CC, false) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(b, "cc", o.CC, false, notEmpty) || notEmpty
 	}
 	if o.BCC != nil {
-		notEmpty = JSONWriteItemCollectionProp(b, "bcc", o.BCC, false) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(b, "bcc", o.BCC, false, notEmpty) || notEmpty
 	}
 	if !o.Published.IsZero() {
-		notEmpty = JSONWriteTimeProp(b, "published", o.Published) || notEmpty
+		notEmpty = JSONWriteTimeProp(b, "published", o.Published, notEmpty) || notEmpty
 	}
 	if !o.Updated.IsZero() {
-		notEmpty = JSONWriteTimeProp(b, "updated", o.Updated) || notEmpty
+		notEmpty = JSONWriteTimeProp(b, "updated", o.Updated, notEmpty) || notEmpty
 	}
 	if !o.StartTime.IsZero() {
-		notEmpty = JSONWriteTimeProp(b, "startTime", o.StartTime) || notEmpty
+		notEmpty = JSONWriteTimeProp(b, "startTime", o.StartTime, notEmpty) || notEmpty
 	}
 	if !o.EndTime.IsZero() {
-		notEmpty = JSONWriteTimeProp(b, "endTime", o.EndTime) || notEmpty
+		notEmpty = JSONWriteTimeProp(b, "endTime", o.EndTime, notEmpty) || notEmpty
 	}
 	if o.Duration != 0 {
 		// TODO(marius): maybe don't use 0 as a nil value for Object types
 		//  which can have a valid duration of 0 - (Video, Audio, etc)
-		notEmpty = JSONWriteDurationProp(b, "duration", o.Duration) || notEmpty
+		notEmpty = JSONWriteDurationProp(b, "duration", o.Duration, notEmpty) || notEmpty
 	}
 	if o.Likes != nil {
-		notEmpty = JSONWriteItemProp(b, "likes", o.Likes) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "likes", o.Likes, notEmpty) || notEmpty
 	}
 	if o.Shares != nil {
-		notEmpty = JSONWriteItemProp(b, "shares", o.Shares) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "shares", o.Shares, notEmpty) || notEmpty
 	}
 	if v, err := o.Source.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = JSONWriteProp(b, "source", v) || notEmpty
+		notEmpty = JSONWriteProp(b, "source", v, notEmpty) || notEmpty
 	}
 	return notEmpty
 }
 
-func JSONWriteActivityValue(b *[]byte, a Activity) (notEmpty bool) {
+func JSONWriteActivityValue(b *bytes.Buffer, a Activity) (notEmpty bool) {
 	_ = OnIntransitiveActivity(a, func(i *IntransitiveActivity) error {
 		if i == nil {
 			return nil
@@ -316,12 +319,12 @@ func JSONWriteActivityValue(b *[]byte, a Activity) (notEmpty bool) {
 		return nil
 	})
 	if a.Object != nil {
-		notEmpty = JSONWriteItemProp(b, "object", a.Object) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "object", a.Object, notEmpty) || notEmpty
 	}
 	return notEmpty
 }
 
-func JSONWriteIntransitiveActivityValue(b *[]byte, i IntransitiveActivity) (notEmpty bool) {
+func JSONWriteIntransitiveActivityValue(b *bytes.Buffer, i IntransitiveActivity) (notEmpty bool) {
 	_ = OnObject(i, func(o *Object) error {
 		if o == nil {
 			return nil
@@ -330,24 +333,24 @@ func JSONWriteIntransitiveActivityValue(b *[]byte, i IntransitiveActivity) (notE
 		return nil
 	})
 	if i.Actor != nil {
-		notEmpty = JSONWriteItemProp(b, "actor", i.Actor) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "actor", i.Actor, notEmpty) || notEmpty
 	}
 	if i.Target != nil {
-		notEmpty = JSONWriteItemProp(b, "target", i.Target) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "target", i.Target, notEmpty) || notEmpty
 	}
 	if i.Result != nil {
-		notEmpty = JSONWriteItemProp(b, "result", i.Result) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "result", i.Result, notEmpty) || notEmpty
 	}
 	if i.Origin != nil {
-		notEmpty = JSONWriteItemProp(b, "origin", i.Origin) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "origin", i.Origin, notEmpty) || notEmpty
 	}
 	if i.Instrument != nil {
-		notEmpty = JSONWriteItemProp(b, "instrument", i.Instrument) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "instrument", i.Instrument, notEmpty) || notEmpty
 	}
 	return notEmpty
 }
 
-func JSONWriteQuestionValue(b *[]byte, q Question) (notEmpty bool) {
+func JSONWriteQuestionValue(b *bytes.Buffer, q Question) (notEmpty bool) {
 	_ = OnIntransitiveActivity(q, func(i *IntransitiveActivity) error {
 		if i == nil {
 			return nil
@@ -356,64 +359,58 @@ func JSONWriteQuestionValue(b *[]byte, q Question) (notEmpty bool) {
 		return nil
 	})
 	if q.OneOf != nil {
-		notEmpty = JSONWriteItemProp(b, "oneOf", q.OneOf) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "oneOf", q.OneOf, notEmpty) || notEmpty
 	}
 	if q.AnyOf != nil {
-		notEmpty = JSONWriteItemProp(b, "anyOf", q.AnyOf) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "anyOf", q.AnyOf, notEmpty) || notEmpty
 	}
-	notEmpty = JSONWriteBoolProp(b, "closed", q.Closed) || notEmpty
+	notEmpty = JSONWriteBoolProp(b, "closed", q.Closed, notEmpty) || notEmpty
 	return notEmpty
 }
 
-func JSONWriteTypes(b *[]byte, n string, ty Typer) (notEmpty bool) {
-	var typ ActivityVocabularyTypes
-	if tt, ok := ty.(ActivityVocabularyType); ok {
-		typ = ActivityVocabularyTypes{tt}
-	}
-	if tt, ok := ty.(ActivityVocabularyTypes); ok {
-		typ = tt
-	}
+func JSONWriteTypes(b *bytes.Buffer, n string, ty Typer, needsComma bool) (notEmpty bool) {
+	typ := ty.AsTypes()
 	if v, err := typ.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = JSONWriteProp(b, n, v)
+		notEmpty = JSONWriteProp(b, n, v, needsComma)
 	}
 	return true
 }
 
-func JSONWriteLinkValue(b *[]byte, l Link) (notEmpty bool) {
+func JSONWriteLinkValue(b *bytes.Buffer, l Link) (notEmpty bool) {
 	if v, err := l.ID.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = JSONWriteProp(b, "id", v)
+		notEmpty = JSONWriteProp(b, "id", v, false)
 	}
 	if HasTypes(l) {
-		notEmpty = JSONWriteTypes(b, "type", l.Type) || notEmpty
+		notEmpty = JSONWriteTypes(b, "type", l.Type, notEmpty) || notEmpty
 	}
 	if v, err := l.MediaType.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = JSONWriteProp(b, "mediaType", v) || notEmpty
+		notEmpty = JSONWriteProp(b, "mediaType", v, notEmpty) || notEmpty
 	}
 	if len(l.Name) > 0 {
-		notEmpty = JSONWriteNaturalLanguageProp(b, "name", l.Name) || notEmpty
+		notEmpty = JSONWriteNaturalLanguageProp(b, "name", l.Name, notEmpty) || notEmpty
 	}
 	if v, err := l.Rel.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = JSONWriteProp(b, "rel", v) || notEmpty
+		notEmpty = JSONWriteProp(b, "rel", v, notEmpty) || notEmpty
 	}
 	if l.Height > 0 {
-		notEmpty = JSONWriteIntProp(b, "height", int64(l.Height))
+		notEmpty = JSONWriteIntProp(b, "height", int64(l.Height), notEmpty) || notEmpty
 	}
 	if l.Width > 0 {
-		notEmpty = JSONWriteIntProp(b, "width", int64(l.Width))
+		notEmpty = JSONWriteIntProp(b, "width", int64(l.Width), notEmpty) || notEmpty
 	}
 	if l.Preview != nil {
-		notEmpty = JSONWriteItemProp(b, "rel", l.Preview) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "rel", l.Preview, notEmpty) || notEmpty
 	}
 	if v, err := l.Href.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = JSONWriteProp(b, "href", v) || notEmpty
+		notEmpty = JSONWriteProp(b, "href", v, notEmpty) || notEmpty
 	}
 	if l.HrefLang.Valid() {
-		notEmpty = JSONWriteStringProp(b, "hrefLang", l.HrefLang.String()) || notEmpty
+		notEmpty = JSONWriteStringProp(b, "hrefLang", l.HrefLang.String(), notEmpty) || notEmpty
 	}
 	return notEmpty
 }
 
-func JSONWriteActivityVocabularyTypes(b *[]byte, t ActivityVocabularyTypes) (notEmpty bool) {
+func JSONWriteActivityVocabularyTypes(b *bytes.Buffer, t ActivityVocabularyTypes) (notEmpty bool) {
 	if b == nil {
 		return notEmpty
 	}

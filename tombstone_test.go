@@ -39,7 +39,7 @@ func TestTombstone_Clean(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func assertTombstoneWithTesting(fn canErrorFunc, expected *Tombstone) withTombstoneFn {
+func assertTombstoneWithTesting(fn logFn, expected *Tombstone) withTombstoneFn {
 	return func(p *Tombstone) error {
 		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
@@ -54,7 +54,7 @@ func TestOnTombstone(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(canErrorFunc, *Tombstone) withTombstoneFn
+		fn func(logFn, *Tombstone) withTombstoneFn
 	}
 	tests := []struct {
 		name    string
@@ -84,7 +84,7 @@ func TestOnTombstone(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var logFn canErrorFunc
+			var logFn logFn
 			if tt.wantErr {
 				logFn = t.Logf
 			} else {

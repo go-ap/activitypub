@@ -219,41 +219,41 @@ func (c *CollectionPage) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (c CollectionPage) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	notEmpty := false
 	JSONWrite(&b, '{')
 
-	OnObject(c, func(o *Object) error {
+	_ = OnObject(c, func(o *Object) error {
 		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 	if c.PartOf != nil {
-		notEmpty = JSONWriteItemProp(&b, "partOf", c.PartOf) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "partOf", c.PartOf, notEmpty) || notEmpty
 	}
 	if c.Current != nil {
-		notEmpty = JSONWriteItemProp(&b, "current", c.Current) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "current", c.Current, notEmpty) || notEmpty
 	}
 	if c.First != nil {
-		notEmpty = JSONWriteItemProp(&b, "first", c.First) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "first", c.First, notEmpty) || notEmpty
 	}
 	if c.Last != nil {
-		notEmpty = JSONWriteItemProp(&b, "last", c.Last) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "last", c.Last, notEmpty) || notEmpty
 	}
 	if c.Next != nil {
-		notEmpty = JSONWriteItemProp(&b, "next", c.Next) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "next", c.Next, notEmpty) || notEmpty
 	}
 	if c.Prev != nil {
-		notEmpty = JSONWriteItemProp(&b, "prev", c.Prev) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "prev", c.Prev, notEmpty) || notEmpty
 	}
-	notEmpty = JSONWriteIntProp(&b, "totalItems", int64(c.TotalItems)) || notEmpty
+	notEmpty = JSONWriteIntProp(&b, "totalItems", int64(c.TotalItems), notEmpty) || notEmpty
 	if c.Items != nil {
-		notEmpty = JSONWriteItemCollectionProp(&b, "items", c.Items, false) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(&b, "items", c.Items, false, notEmpty) || notEmpty
 	}
-	if notEmpty {
-		JSONWrite(&b, '}')
-		return b, nil
+	if !notEmpty {
+		return nil, nil
 	}
-	return nil, nil
+	JSONWrite(&b, '}')
+	return b.Bytes(), nil
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
@@ -300,7 +300,7 @@ func CollectionPageNew(parent CollectionInterface) *CollectionPage {
 		PartOf: parent.GetLink(),
 	}
 	if pc, ok := parent.(*Collection); ok {
-		copyCollectionToPage(pc, &p)
+		_ = copyCollectionToPage(pc, &p)
 	}
 	p.Type = CollectionPageType
 	return &p

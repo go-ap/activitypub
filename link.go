@@ -116,12 +116,12 @@ func (l Link) Match(tt ...ActivityVocabularyType) bool {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (l Link) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	JSONWrite(&b, '{')
 
 	if JSONWriteLinkValue(&b, l) {
 		JSONWrite(&b, '}')
-		return b, nil
+		return b.Bytes(), nil
 	}
 	return nil, nil
 }

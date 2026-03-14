@@ -111,7 +111,7 @@ func TestPlace_Clean(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func assertPlaceWithTesting(fn canErrorFunc, expected *Place) withPlaceFn {
+func assertPlaceWithTesting(fn logFn, expected *Place) withPlaceFn {
 	return func(p *Place) error {
 		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
@@ -126,7 +126,7 @@ func TestOnPlace(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(canErrorFunc, *Place) withPlaceFn
+		fn func(logFn, *Place) withPlaceFn
 	}
 	tests := []struct {
 		name    string
@@ -155,7 +155,7 @@ func TestOnPlace(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		var logFn canErrorFunc
+		var logFn logFn
 		if tt.wantErr {
 			logFn = t.Logf
 		} else {

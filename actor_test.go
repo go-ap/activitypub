@@ -1,12 +1,13 @@
 package activitypub
 
 import (
-	"fmt"
+	"bytes"
 	"reflect"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestActorNew(t *testing.T) {
@@ -437,13 +438,105 @@ func TestEndpoints_MarshalJSON(t *testing.T) {
 }
 
 func TestPublicKey_MarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
+	type fields struct {
+		ID           ID
+		Owner        IRI
+		PublicKeyPem string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		want    []byte
+		wantErr error
+	}{
+		{
+			name:   "empty",
+			fields: fields{},
+			want:   nil,
+		},
+		{
+			name: "just id",
+			fields: fields{
+				ID: "https://example.com",
+			},
+			want:    []byte(`{"id":"https://example.com"}`),
+			wantErr: nil,
+		},
+		{
+			name: "just owner",
+			fields: fields{
+				Owner: "https://example.com/~jdoe",
+			},
+			want:    []byte(`{"owner":"https://example.com/~jdoe"}`),
+			wantErr: nil,
+		},
+		{
+			name: "just PEM",
+			fields: fields{
+				PublicKeyPem: "-----BEGIN PUBLIC KEY-----\ntest\n-----END PUBLIC KEY-----",
+			},
+			want:    []byte(`{"publicKeyPem":"-----BEGIN PUBLIC KEY-----\ntest\n-----END PUBLIC KEY-----"}`),
+			wantErr: nil,
+		},
+		{
+			name: "id and pem",
+			fields: fields{
+				ID:           "https://example.com",
+				PublicKeyPem: "-----BEGIN PUBLIC KEY-----\nid_and_pem\n-----END PUBLIC KEY-----",
+			},
+			want:    []byte(`{"id":"https://example.com","publicKeyPem":"-----BEGIN PUBLIC KEY-----\nid_and_pem\n-----END PUBLIC KEY-----"}`),
+			wantErr: nil,
+		},
+		{
+			name: "owner and pem",
+			fields: fields{
+				Owner:        "https://example.com/~jdoe",
+				PublicKeyPem: "-----BEGIN PUBLIC KEY-----\nowner_and_pem\n-----END PUBLIC KEY-----",
+			},
+			want:    []byte(`{"owner":"https://example.com/~jdoe","publicKeyPem":"-----BEGIN PUBLIC KEY-----\nowner_and_pem\n-----END PUBLIC KEY-----"}`),
+			wantErr: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := PublicKey{
+				ID:           tt.fields.ID,
+				Owner:        tt.fields.Owner,
+				PublicKeyPem: tt.fields.PublicKeyPem,
+			}
+			got, err := p.MarshalJSON()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				if err != nil {
+					return
+				}
+			}
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
+			}
+		})
+	}
 }
 
-func assertPersonWithTesting(fn canErrorFunc, expected Item) WithActorFn {
+func personNilFn(t *testing.T, expected Item) WithActorFn {
+	return func(_ *Actor) error {
+		return nil
+	}
+}
+
+func personIsNotEqual(t *testing.T, expected Item) WithActorFn {
 	return func(p *Person) error {
-		if !assertDeepEquals(fn, p, expected) {
-			return fmt.Errorf("not equal")
+		if cmp.Equal(p, expected) {
+			t.Errorf("Person equal assert failed %s", cmp.Diff(expected, p))
+		}
+		return nil
+	}
+}
+
+func personIsEqual(t *testing.T, expected Item) WithActorFn {
+	return func(p *Person) error {
+		if !cmp.Equal(p, expected) {
+			t.Errorf("Person equal assert failed %s", cmp.Diff(expected, p))
 		}
 		return nil
 	}
@@ -455,49 +548,44 @@ func TestOnActor(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(canErrorFunc, Item) WithActorFn
+		fn func(*testing.T, Item) WithActorFn
 	}
 	tests := []struct {
 		name     string
 		args     args
 		expected Item
-		wantErr  bool
+		wantErr  error
 	}{
 		{
+			name: "empty",
+			args: args{nil, personNilFn},
+		},
+		{
 			name:     "single",
-			args:     args{testPerson, assertPersonWithTesting},
+			args:     args{testPerson, personNilFn},
 			expected: &testPerson,
-			wantErr:  false,
 		},
 		{
 			name:     "single fails",
-			args:     args{Person{ID: "https://not-equals"}, assertPersonWithTesting},
+			args:     args{Person{ID: "https://not-equals"}, personIsNotEqual},
 			expected: &testPerson,
-			wantErr:  true,
 		},
 		{
 			name:     "collectionOfPersons",
-			args:     args{ItemCollection{testPerson, testPerson}, assertPersonWithTesting},
+			args:     args{ItemCollection{testPerson, testPerson}, personIsEqual},
 			expected: &testPerson,
-			wantErr:  false,
 		},
 		{
 			name:     "collectionOfPersons fails",
-			args:     args{ItemCollection{testPerson, Person{ID: "https://not-equals"}}, assertPersonWithTesting},
+			args:     args{ItemCollection{Person{}, Person{ID: "https://not-equals"}}, personIsNotEqual},
 			expected: &testPerson,
-			wantErr:  true,
 		},
 	}
 	for _, tt := range tests {
-		var logFn canErrorFunc
-		if tt.wantErr {
-			logFn = t.Logf
-		} else {
-			logFn = t.Errorf
-		}
 		t.Run(tt.name, func(t *testing.T) {
-			if err := OnActor(tt.args.it, tt.args.fn(logFn, tt.expected)); (err != nil) != tt.wantErr {
-				t.Errorf("OnPerson() error = %v, wantErr %v", err, tt.wantErr)
+			err := OnActor(tt.args.it, tt.args.fn(t, tt.expected))
+			if !cmp.Equal(err, tt.wantErr, cmpopts.EquateErrors()) {
+				t.Errorf("OnPerson() error = %s", cmp.Diff(tt.wantErr, err, cmpopts.EquateErrors()))
 			}
 		})
 	}

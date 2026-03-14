@@ -1,28 +1,30 @@
 package activitypub
 
 func PreferredNameOf(it Item) string {
-	var cont string
-	if IsObject(it) {
-		_ = OnActor(it, func(act *Actor) error {
-			if act.PreferredUsername != nil {
-				cont = act.PreferredUsername.First().String()
-			}
-			return nil
-		})
+	if !IsObject(it) {
+		return ""
 	}
+	var cont string
+	_ = OnActor(it, func(act *Actor) error {
+		if act.PreferredUsername != nil {
+			cont = act.PreferredUsername.First().String()
+		}
+		return nil
+	})
 	return cont
 }
 
 func ContentOf(it Item) string {
-	var cont string
-	if IsObject(it) {
-		_ = OnObject(it, func(ob *Object) error {
-			if ob.Content != nil {
-				cont = ob.Content.First().String()
-			}
-			return nil
-		})
+	if !IsObject(it) {
+		return ""
 	}
+	var cont string
+	_ = OnObject(it, func(ob *Object) error {
+		if ob.Content != nil {
+			cont = ob.Content.First().String()
+		}
+		return nil
+	})
 	return cont
 }
 

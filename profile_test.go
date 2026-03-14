@@ -111,7 +111,7 @@ func TestProfile_Clean(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func assertProfileWithTesting(fn canErrorFunc, expected *Profile) withProfileFn {
+func assertProfileWithTesting(fn logFn, expected *Profile) withProfileFn {
 	return func(p *Profile) error {
 		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
@@ -126,7 +126,7 @@ func TestOnProfile(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(canErrorFunc, *Profile) withProfileFn
+		fn func(logFn, *Profile) withProfileFn
 	}
 	tests := []struct {
 		name    string
@@ -156,7 +156,7 @@ func TestOnProfile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var logFn canErrorFunc
+			var logFn logFn
 			if tt.wantErr {
 				logFn = t.Logf
 			} else {

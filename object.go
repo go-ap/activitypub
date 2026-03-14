@@ -285,12 +285,12 @@ func (o *Object) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (o Object) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	JSONWrite(&b, '{')
 
 	if JSONWriteObjectValue(&b, o) {
 		JSONWrite(&b, '}')
-		return b, nil
+		return b.Bytes(), nil
 	}
 	return nil, nil
 }
@@ -555,9 +555,9 @@ func (m MimeType) MarshalJSON() ([]byte, error) {
 	if len(m) == 0 {
 		return nil, nil
 	}
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	JSONWriteStringValue(&b, string(m))
-	return b, nil
+	return b.Bytes(), nil
 }
 
 // GobEncode
@@ -732,22 +732,22 @@ func (s *Source) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (s Source) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
-	empty := true
+	b := bytes.Buffer{}
+	notEmpty := false
 	JSONWrite(&b, '{')
 	if len(s.MediaType) > 0 {
 		if v, err := s.MediaType.MarshalJSON(); err == nil && len(v) > 0 {
-			empty = !JSONWriteProp(&b, "mediaType", v)
+			notEmpty = JSONWriteProp(&b, "mediaType", v, false)
 		}
 	}
 	if len(s.Content) > 0 {
-		empty = !JSONWriteNaturalLanguageProp(&b, "content", s.Content)
+		notEmpty = JSONWriteNaturalLanguageProp(&b, "content", s.Content, notEmpty)
 	}
-	if !empty {
-		JSONWrite(&b, '}')
-		return b, nil
+	if !notEmpty {
+		return nil, nil
 	}
-	return nil, nil
+	JSONWrite(&b, '}')
+	return b.Bytes(), nil
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.

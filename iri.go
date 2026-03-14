@@ -99,11 +99,11 @@ func (i IRI) MarshalJSON() ([]byte, error) {
 	if i == "" {
 		return nil, nil
 	}
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	JSONWrite(&b, '"')
 	JSONWriteS(&b, i.String())
 	JSONWrite(&b, '"')
-	return b, nil
+	return b.Bytes(), nil
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
@@ -212,7 +212,7 @@ func (i IRIs) MarshalJSON() ([]byte, error) {
 	if len(i) == 0 {
 		return []byte{'[', ']'}, nil
 	}
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	writeCommaIfNotEmpty := func(notEmpty bool) {
 		if notEmpty {
 			JSONWriteS(&b, ",")
@@ -226,7 +226,7 @@ func (i IRIs) MarshalJSON() ([]byte, error) {
 		JSONWrite(&b, '"')
 	}
 	JSONWrite(&b, ']')
-	return b, nil
+	return b.Bytes(), nil
 }
 
 func (i *IRIs) UnmarshalJSON(data []byte) error {

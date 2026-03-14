@@ -182,14 +182,14 @@ func (q *Question) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (q Question) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	JSONWrite(&b, '{')
 
 	if !JSONWriteQuestionValue(&b, q) {
 		return nil, nil
 	}
 	JSONWrite(&b, '}')
-	return b, nil
+	return b.Bytes(), nil
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.

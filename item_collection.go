@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"slices"
 	"sort"
 )
@@ -58,9 +59,9 @@ func (i ItemCollection) MarshalJSON() ([]byte, error) {
 	if i == nil {
 		return nil, nil
 	}
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	JSONWriteItemCollectionValue(&b, i, true)
-	return b, nil
+	return b.Bytes(), nil
 }
 
 // Append facilitates adding elements to Item arrays

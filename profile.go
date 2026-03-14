@@ -156,23 +156,24 @@ func (p *Profile) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (p Profile) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	notEmpty := false
 	JSONWrite(&b, '{')
 
-	OnObject(p, func(o *Object) error {
+	_ = OnObject(p, func(o *Object) error {
+		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 
 	if p.Describes != nil {
-		notEmpty = JSONWriteItemProp(&b, "describes", p.Describes) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "describes", p.Describes, notEmpty) || notEmpty
 	}
 
-	if notEmpty {
-		JSONWrite(&b, '}')
-		return b, nil
+	if !notEmpty {
+		return nil, nil
 	}
-	return nil, nil
+	JSONWrite(&b, '}')
+	return b.Bytes(), nil
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.

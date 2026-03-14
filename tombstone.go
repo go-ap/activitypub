@@ -158,7 +158,7 @@ func (t *Tombstone) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (t Tombstone) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	notEmpty := false
 	JSONWrite(&b, '{')
 
@@ -167,16 +167,16 @@ func (t Tombstone) MarshalJSON() ([]byte, error) {
 		return nil
 	})
 	if t.FormerType != nil {
-		notEmpty = JSONWriteTypes(&b, "formerType", t.FormerType) || notEmpty
+		notEmpty = JSONWriteTypes(&b, "formerType", t.FormerType, notEmpty) || notEmpty
 	}
 	if !t.Deleted.IsZero() {
-		notEmpty = JSONWriteTimeProp(&b, "deleted", t.Deleted) || notEmpty
+		notEmpty = JSONWriteTimeProp(&b, "deleted", t.Deleted, notEmpty) || notEmpty
 	}
-	if notEmpty {
-		JSONWrite(&b, '}')
-		return b, nil
+	if !notEmpty {
+		return nil, nil
 	}
-	return nil, nil
+	JSONWrite(&b, '}')
+	return b.Bytes(), nil
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.

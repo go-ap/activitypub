@@ -222,41 +222,41 @@ func (o *OrderedCollectionPage) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (o OrderedCollectionPage) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	notEmpty := false
 	JSONWrite(&b, '{')
 
-	OnObject(o, func(o *Object) error {
+	_ = OnObject(o, func(o *Object) error {
 		notEmpty = JSONWriteObjectValue(&b, *o)
 		return nil
 	})
 	if o.PartOf != nil {
-		notEmpty = JSONWriteItemProp(&b, "partOf", o.PartOf) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "partOf", o.PartOf, notEmpty) || notEmpty
 	}
 	if o.Current != nil {
-		notEmpty = JSONWriteItemProp(&b, "current", o.Current) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "current", o.Current, notEmpty) || notEmpty
 	}
 	if o.First != nil {
-		notEmpty = JSONWriteItemProp(&b, "first", o.First) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "first", o.First, notEmpty) || notEmpty
 	}
 	if o.Last != nil {
-		notEmpty = JSONWriteItemProp(&b, "last", o.Last) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "last", o.Last, notEmpty) || notEmpty
 	}
 	if o.Next != nil {
-		notEmpty = JSONWriteItemProp(&b, "next", o.Next) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "next", o.Next, notEmpty) || notEmpty
 	}
 	if o.Prev != nil {
-		notEmpty = JSONWriteItemProp(&b, "prev", o.Prev) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "prev", o.Prev, notEmpty) || notEmpty
 	}
-	notEmpty = JSONWriteIntProp(&b, "totalItems", int64(o.TotalItems)) || notEmpty
+	notEmpty = JSONWriteIntProp(&b, "totalItems", int64(o.TotalItems), notEmpty) || notEmpty
 	if o.OrderedItems != nil {
-		notEmpty = JSONWriteItemCollectionProp(&b, "orderedItems", o.OrderedItems, false) || notEmpty
+		notEmpty = JSONWriteItemCollectionProp(&b, "orderedItems", o.OrderedItems, false, notEmpty) || notEmpty
 	}
-	if notEmpty {
-		JSONWrite(&b, '}')
-		return b, nil
+	if !notEmpty {
+		return nil, nil
 	}
-	return nil, nil
+	JSONWrite(&b, '}')
+	return b.Bytes(), nil
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.

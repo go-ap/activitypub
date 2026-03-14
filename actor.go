@@ -217,26 +217,26 @@ func (p *PublicKey) UnmarshalJSON(data []byte) error {
 }
 
 func (p PublicKey) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
-	notEmpty := true
+	b := bytes.Buffer{}
+	notEmpty := false
 	JSONWrite(&b, '{')
 	if v, err := p.ID.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = !JSONWriteProp(&b, "id", v)
+		notEmpty = JSONWriteProp(&b, "id", v, false)
 	}
 	if len(p.Owner) > 0 {
-		notEmpty = JSONWriteIRIProp(&b, "owner", p.Owner) || notEmpty
+		notEmpty = JSONWriteIRIProp(&b, "owner", p.Owner, notEmpty) || notEmpty
 	}
 	if len(p.PublicKeyPem) > 0 {
 		if pem, err := json.Marshal(p.PublicKeyPem); err == nil {
-			notEmpty = JSONWriteProp(&b, "publicKeyPem", pem) || notEmpty
+			notEmpty = JSONWriteProp(&b, "publicKeyPem", pem, notEmpty) || notEmpty
 		}
 	}
 
-	if notEmpty {
-		JSONWrite(&b, '}')
-		return b, nil
+	if !notEmpty {
+		return nil, nil
 	}
-	return nil, nil
+	JSONWrite(&b, '}')
+	return b.Bytes(), nil
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
@@ -366,7 +366,7 @@ func (a *Actor) UnmarshalJSON(data []byte) error {
 }
 
 func (a Actor) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	notEmpty := false
 	JSONWrite(&b, '{')
 
@@ -375,42 +375,42 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 		return nil
 	})
 	if a.Inbox != nil {
-		notEmpty = JSONWriteItemProp(&b, "inbox", a.Inbox) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "inbox", a.Inbox, notEmpty) || notEmpty
 	}
 	if a.Outbox != nil {
-		notEmpty = JSONWriteItemProp(&b, "outbox", a.Outbox) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "outbox", a.Outbox, notEmpty) || notEmpty
 	}
 	if a.Following != nil {
-		notEmpty = JSONWriteItemProp(&b, "following", a.Following) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "following", a.Following, notEmpty) || notEmpty
 	}
 	if a.Followers != nil {
-		notEmpty = JSONWriteItemProp(&b, "followers", a.Followers) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "followers", a.Followers, notEmpty) || notEmpty
 	}
 	if a.Liked != nil {
-		notEmpty = JSONWriteItemProp(&b, "liked", a.Liked) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "liked", a.Liked, notEmpty) || notEmpty
 	}
 	if a.PreferredUsername != nil {
-		notEmpty = JSONWriteNaturalLanguageProp(&b, "preferredUsername", a.PreferredUsername) || notEmpty
+		notEmpty = JSONWriteNaturalLanguageProp(&b, "preferredUsername", a.PreferredUsername, notEmpty) || notEmpty
 	}
 	if a.Endpoints != nil {
 		if v, err := a.Endpoints.MarshalJSON(); err == nil && len(v) > 0 {
-			notEmpty = JSONWriteProp(&b, "endpoints", v) || notEmpty
+			notEmpty = JSONWriteProp(&b, "endpoints", v, notEmpty) || notEmpty
 		}
 	}
 	if len(a.Streams) > 0 {
-		notEmpty = JSONWriteItemCollectionProp(&b, "streams", a.Streams, false)
+		notEmpty = JSONWriteItemCollectionProp(&b, "streams", a.Streams, false, notEmpty)
 	}
 	if len(a.PublicKey.PublicKeyPem)+len(a.PublicKey.ID) > 0 {
 		if v, err := a.PublicKey.MarshalJSON(); err == nil && len(v) > 0 {
-			notEmpty = JSONWriteProp(&b, "publicKey", v) || notEmpty
+			notEmpty = JSONWriteProp(&b, "publicKey", v, notEmpty) || notEmpty
 		}
 	}
 
-	if notEmpty {
-		JSONWrite(&b, '}')
-		return b, nil
+	if !notEmpty {
+		return nil, nil
 	}
-	return nil, nil
+	JSONWrite(&b, '}')
+	return b.Bytes(), nil
 }
 
 func (a Actor) Format(s fmt.State, verb rune) {
@@ -479,36 +479,36 @@ func (e *Endpoints) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (e Endpoints) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0)
+	b := bytes.Buffer{}
 	notEmpty := false
 
 	JSONWrite(&b, '{')
 	if e.OauthAuthorizationEndpoint != nil {
-		notEmpty = JSONWriteItemProp(&b, "oauthAuthorizationEndpoint", e.OauthAuthorizationEndpoint)
+		notEmpty = JSONWriteItemProp(&b, "oauthAuthorizationEndpoint", e.OauthAuthorizationEndpoint, notEmpty)
 	}
 	if e.OauthTokenEndpoint != nil {
-		notEmpty = JSONWriteItemProp(&b, "oauthTokenEndpoint", e.OauthTokenEndpoint) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "oauthTokenEndpoint", e.OauthTokenEndpoint, notEmpty) || notEmpty
 	}
 	if e.ProvideClientKey != nil {
-		notEmpty = JSONWriteItemProp(&b, "provideClientKey", e.ProvideClientKey) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "provideClientKey", e.ProvideClientKey, notEmpty) || notEmpty
 	}
 	if e.SignClientKey != nil {
-		notEmpty = JSONWriteItemProp(&b, "signClientKey", e.SignClientKey) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "signClientKey", e.SignClientKey, notEmpty) || notEmpty
 	}
 	if e.SharedInbox != nil {
-		notEmpty = JSONWriteItemProp(&b, "sharedInbox", e.SharedInbox) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "sharedInbox", e.SharedInbox, notEmpty) || notEmpty
 	}
 	if e.UploadMedia != nil {
-		notEmpty = JSONWriteItemProp(&b, "uploadMedia", e.UploadMedia) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "uploadMedia", e.UploadMedia, notEmpty) || notEmpty
 	}
 	if e.ProxyURL != NilID {
-		notEmpty = JSONWriteItemProp(&b, "proxyUrl", e.ProxyURL) || notEmpty
+		notEmpty = JSONWriteItemProp(&b, "proxyUrl", e.ProxyURL, notEmpty) || notEmpty
 	}
-	if notEmpty {
-		JSONWrite(&b, '}')
-		return b, nil
+	if !notEmpty {
+		return nil, nil
 	}
-	return nil, nil
+	JSONWrite(&b, '}')
+	return b.Bytes(), nil
 }
 
 // ToActor

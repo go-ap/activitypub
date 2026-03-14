@@ -17,10 +17,10 @@ type visit struct {
 	typ reflect.Type
 }
 
-type canErrorFunc func(format string, args ...interface{})
+type logFn func(format string, args ...interface{})
 
 // See reflect.DeepEqual
-func assertDeepEquals(t canErrorFunc, x, y interface{}) bool {
+func assertDeepEquals(t logFn, x, y interface{}) bool {
 	if x == nil || y == nil {
 		return x == y
 	}
@@ -34,7 +34,7 @@ func assertDeepEquals(t canErrorFunc, x, y interface{}) bool {
 }
 
 // See reflect.deepValueEqual
-func deepValueEqual(t canErrorFunc, v1, v2 reflect.Value, visited map[visit]bool, depth int) bool {
+func deepValueEqual(t logFn, v1, v2 reflect.Value, visited map[visit]bool, depth int) bool {
 	if !v1.IsValid() || !v2.IsValid() {
 		return v1.IsValid() == v2.IsValid()
 	}
