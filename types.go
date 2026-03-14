@@ -86,27 +86,27 @@ func EmptyTypes(tt ...ActivityVocabularyType) bool {
 	return len(flattenTypes(tt...)) == 0
 }
 
-func (t ActivityVocabularyTypes) AsTypes() ActivityVocabularyTypes {
-	return t
+func (at ActivityVocabularyTypes) AsTypes() ActivityVocabularyTypes {
+	return at
 }
 
 // Match returns whether the receiver matches the ActivityVocabularyType arguments.
-func (t ActivityVocabularyTypes) Match(other Typer) bool {
-	return AnyTypes(t...).Match(types(other)...)
+func (at ActivityVocabularyTypes) Match(other Typer) bool {
+	return AnyTypes(at...).Match(types(other)...)
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
-func (t ActivityVocabularyTypes) MarshalJSON() ([]byte, error) {
+func (at ActivityVocabularyTypes) MarshalJSON() ([]byte, error) {
 	b := []byte{}
-	if !JSONWriteActivityVocabularyTypes(&b, t) {
+	if !JSONWriteActivityVocabularyTypes(&b, at) {
 		return nil, fmt.Errorf("error JSON encoding ActivityVocabularyTypes")
 	}
 	return b, nil
 }
 
 // UnmarshalJSON decodes the receiver type from the JSON document.
-func (t *ActivityVocabularyTypes) UnmarshalJSON(b []byte) error {
-	if t == nil {
+func (at *ActivityVocabularyTypes) UnmarshalJSON(b []byte) error {
+	if at == nil {
 		return fmt.Errorf("nil ActivityVocabularyTypes receiver")
 	}
 	p := fastjson.Parser{}
@@ -116,25 +116,25 @@ func (t *ActivityVocabularyTypes) UnmarshalJSON(b []byte) error {
 	}
 	if types := JSONGetTypes(val); types != nil {
 		if typ, ok := types.(ActivityVocabularyType); ok {
-			*t = ActivityVocabularyTypes{typ}
+			*at = ActivityVocabularyTypes{typ}
 		}
 		if typ, ok := types.(ActivityVocabularyTypes); ok {
-			*t = typ
+			*at = typ
 		}
 	}
 	return nil
 }
 
 // GobEncode
-func (a ActivityVocabularyTypes) GobEncode() ([]byte, error) {
-	switch len(a) {
+func (at ActivityVocabularyTypes) GobEncode() ([]byte, error) {
+	switch len(at) {
 	case 0:
 		return nil, nil
 	case 1:
-		return a[0].GobEncode()
+		return at[0].GobEncode()
 	default:
-		tt := make([][]byte, len(a))
-		for i, ty := range a {
+		tt := make([][]byte, len(at))
+		for i, ty := range at {
 			b, err := ty.GobEncode()
 			if err != nil {
 				return nil, err
@@ -148,7 +148,7 @@ func (a ActivityVocabularyTypes) GobEncode() ([]byte, error) {
 }
 
 // GobDecode
-func (a *ActivityVocabularyTypes) GobDecode(data []byte) error {
+func (at *ActivityVocabularyTypes) GobDecode(data []byte) error {
 	if len(data) == 0 {
 		return nil
 	}
@@ -165,21 +165,15 @@ func (a *ActivityVocabularyTypes) GobDecode(data []byte) error {
 				return err
 			}
 		}
-		if a == nil {
-			a = &types
-		} else {
-			*a = types
+		if at != nil {
+			*at = types
 		}
 	} else {
-		at := NilType
-		if err := at.GobDecode(data); err != nil {
+		typ := NilType
+		if err := typ.GobDecode(data); err != nil {
 			return err
 		}
-		if a == nil {
-			a = &ActivityVocabularyTypes{at}
-		} else {
-			*a = ActivityVocabularyTypes{at}
-		}
+		*at = ActivityVocabularyTypes{typ}
 	}
 
 	return nil
@@ -252,15 +246,18 @@ func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
 }
 
 func (a ActivityVocabularyType) AsTypes() ActivityVocabularyTypes {
+	if a == NilType {
+		return ActivityVocabularyTypes{}
+	}
 	return ActivityVocabularyTypes{a}
 }
 
-func (a ActivityVocabularyTypes) String() string {
-	if len(a) == 0 {
+func (at ActivityVocabularyTypes) String() string {
+	if len(at) == 0 {
 		return ""
 	}
-	s := make([]string, 0, len(a))
-	for _, tt := range a {
+	s := make([]string, 0, len(at))
+	for _, tt := range at {
 		s = append(s, string(tt))
 	}
 	return strings.Join(s, ", ")
