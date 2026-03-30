@@ -16,12 +16,14 @@ PROJECT_NAME := $(shell basename $(PWD))
 
 download: go.sum
 
-go.sum:
+go.sum: go.mod
 	$(GO) mod tidy
 
 test: go.sum
-	$(TEST) $(TEST_FLAGS) ./tests
-	$(TEST) $(TEST_FLAGS) $(TEST_TARGET)
+	@touch tests.json
+	$(TEST) $(TEST_FLAGS) -cover $(TEST_TARGET) -json > tests.json
+	go tool tparse -file tests.json
+	@$(RM) ./tests.json
 
 coverage: go.sum clean
 	@mkdir ./_coverage
