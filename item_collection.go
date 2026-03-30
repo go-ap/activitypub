@@ -115,7 +115,7 @@ func (i ItemCollection) IsCollection() bool {
 	return true
 }
 
-// Contains verifies if IRIs array contains the received one
+// Contains verifies if ItemCollection contains the received one
 func (i ItemCollection) Contains(r Item) bool {
 	if len(i) == 0 {
 		return false
@@ -130,7 +130,10 @@ func (i ItemCollection) Contains(r Item) bool {
 
 // Remove removes the items from the ItemCollection
 func (i *ItemCollection) Remove(it ...Item) {
-	*i = slices.DeleteFunc(*i, ItemCollection(it).Contains)
+	// NOTE(marius): since we improved item equality function, we need to fallback to
+	// checking only the existence of the IRI for each item in the it collection.
+	checkContainsFn := ItemCollection(it).IRIs().Contains
+	*i = slices.DeleteFunc(*i, checkContainsFn)
 }
 
 // ItemCollectionDeduplication normalizes the received arguments lists into a single unified one
@@ -260,6 +263,10 @@ func (i *ItemCollection) Equals(with Item) bool {
 	return i.equal(*itemCollection)
 }
 
+func (i ItemCollection) Equal(with ItemCollection) bool {
+	return i.equal(with)
+}
+
 // equal verifies if our receiver ItemCollection is equals with the "with" ItemCollection
 func (i ItemCollection) equal(with ItemCollection) bool {
 	if len(i) != len(with) {
@@ -267,9 +274,13 @@ func (i ItemCollection) equal(with ItemCollection) bool {
 	}
 	result := true
 	for _, it := range i {
-		if !with.Contains(it.GetLink()) {
-			result = false
+		itres := false
+		for _, cit := range with {
+			if it.GetLink().Equal(cit.GetLink()) {
+				itres = itres || ItemsEqual(it, cit)
+			}
 		}
+		result = result && itres
 	}
 	return result
 }

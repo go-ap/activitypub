@@ -44,9 +44,9 @@ func ItemsEqual(it, with Item) bool {
 	}
 	result := false
 	if IsIRI(with) || IsIRI(it) {
-		// NOTE(marius): I'm not sure this logic is sound:
-		// if only one item is an IRI it should not be equal to the other even if it has the same ID
-		result = it.GetLink().Equals(with.GetLink(), false)
+		ii, ok := it.(IRI)
+		iw, wok := with.(IRI)
+		result = ok && wok && ii.Equal(iw)
 	} else if IsItemCollection(it) {
 		if !IsItemCollection(with) {
 			return false

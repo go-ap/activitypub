@@ -3,6 +3,8 @@ package activitypub
 import (
 	"reflect"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestItemCollection_Append(t *testing.T) {
@@ -429,3 +431,104 @@ func TestItemCollection_IRIs(t *testing.T) {
 		})
 	}
 }
+
+func TestItemCollection_Equal(t *testing.T) {
+	tests := []struct {
+		name string
+		i    ItemCollection
+		with ItemCollection
+		want bool
+	}{
+		{
+			name: "empty",
+			want: true,
+		},
+		{
+			name: "empty collections",
+			i:    ItemCollection{},
+			with: ItemCollection{},
+			want: true,
+		},
+		{
+			name: "nil collection equal to empty collection",
+			i:    nil,
+			with: ItemCollection{},
+			want: true,
+		},
+		{
+			name: "empty collection equal to nil collection",
+			i:    nil,
+			with: ItemCollection{},
+			want: true,
+		},
+		{
+			name: "IRIs collections",
+			i:    (&IRIs{"http://example.com", "http://social.example.com"}).Collection(),
+			with: (&IRIs{"http://example.com", "http://social.example.com"}).Collection(),
+			want: true,
+		},
+		{
+			name: "Item Collection with same IRIs",
+			i:    ItemCollection{IRI("http://example.com"), IRI("http://social.example.com")},
+			with: ItemCollection{IRI("http://example.com"), IRI("http://social.example.com")},
+			want: true,
+		},
+		{
+			name: "Item Collection with same IRIs in different order",
+			i:    ItemCollection{IRI("http://social.example.com"), IRI("http://example.com")},
+			with: ItemCollection{IRI("http://example.com"), IRI("http://social.example.com")},
+			want: true,
+		},
+		{
+			name: "Item Collection with Object and IRI with same IRI",
+			i:    ItemCollection{Object{ID: "http://example.com"}, IRI("http://example.com")},
+			with: ItemCollection{IRI("http://example.com"), Object{ID: "http://example.com"}},
+			want: true,
+		},
+		{
+			name: "Item Collection with Link and IRI with same IRI",
+			i:    ItemCollection{Link{ID: "http://example.com"}, IRI("http://example.com")},
+			with: ItemCollection{IRI("http://example.com"), Link{ID: "http://example.com"}},
+			want: true,
+		},
+		{
+			name: "Item Collection with Link and IRI with same IRI",
+			i:    ItemCollection{Object{ID: "http://example.com"}, IRI("http://example.com")},
+			with: ItemCollection{IRI("http://example.com"), Link{ID: "http://example.com"}},
+			want: false,
+		},
+		{
+			name: "different sizes",
+			i:    ItemCollection{IRI("http://example.com")},
+			with: ItemCollection{IRI("http://example.com"), IRI("http://social.example.com")},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Equal(tt.with); got != tt.want {
+				t.Errorf("Equal() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func areItems(a, b any) bool {
+	_, ok1 := a.(Item)
+	_, ok2 := b.(Item)
+	return ok1 && ok2
+}
+
+func compareItems(x, y interface{}) bool {
+	var i1 Item
+	var i2 Item
+	if ic1, ok := x.(Item); ok {
+		i1 = ic1
+	}
+	if ic2, ok := y.(Item); ok {
+		i2 = ic2
+	}
+	return ItemsEqual(i1, i2)
+}
+
+var EquateItems = cmp.FilterValues(areItems, cmp.Comparer(compareItems))

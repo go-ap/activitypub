@@ -299,7 +299,7 @@ func (i *IRIs) Append(items ...Item) error {
 
 // Remove removes the items from the IRIs slice
 func (i *IRIs) Remove(it ...Item) {
-	items := ItemCollection(it)
+	items := ItemCollection(it).IRIs()
 	*i = slices.DeleteFunc(*i, func(iri IRI) bool {
 		return items.Contains(iri)
 	})
