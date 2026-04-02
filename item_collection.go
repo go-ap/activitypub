@@ -59,6 +59,9 @@ func (i ItemCollection) MarshalJSON() ([]byte, error) {
 	if i == nil {
 		return nil, nil
 	}
+	if len(i) == 0 {
+		return []byte{'[', ']'}, nil
+	}
 	b := bytes.Buffer{}
 	JSONWriteItemCollectionValue(&b, i, true)
 	return b.Bytes(), nil
