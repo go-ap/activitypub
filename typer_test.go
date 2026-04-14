@@ -104,7 +104,7 @@ func TestCollectionType_IRI(t *testing.T) {
 				o: nil,
 				t: "likes",
 			},
-			want: IRI("/likes"),
+			want: IRI(""),
 		},
 		{
 			name: "emptyIRI from invalid CollectionPath type",
@@ -114,7 +114,7 @@ func TestCollectionType_IRI(t *testing.T) {
 				},
 				t: "like",
 			},
-			want: "/like",
+			want: "",
 		},
 		{
 			name: "just path from object without ID",
@@ -122,7 +122,7 @@ func TestCollectionType_IRI(t *testing.T) {
 				o: Object{},
 				t: "likes",
 			},
-			want: IRI("/likes"),
+			want: IRI(""),
 		},
 		{
 			name: "likes iri on object",
@@ -140,7 +140,7 @@ func TestCollectionType_IRI(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			if ob := test.args.t.IRI(test.args.o); ob != test.want {
-				t.Errorf("IRI received %q is different, expected %q", ob, test.want)
+				t.Errorf("IRI received '%s' is different, expected '%s'", ob, test.want)
 			}
 		})
 	}
@@ -170,7 +170,7 @@ func TestIRIf(t *testing.T) {
 				i: Object{}.ID,
 				t: "inbox",
 			},
-			want: "/inbox",
+			want: "",
 		},
 		{
 			name: "empty iri",
@@ -178,7 +178,7 @@ func TestIRIf(t *testing.T) {
 				i: "",
 				t: "inbox",
 			},
-			want: "/inbox",
+			want: "",
 		},
 		{
 			name: "plain concat",

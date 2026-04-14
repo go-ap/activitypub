@@ -179,6 +179,9 @@ func (t CollectionPaths) Split(i IRI) (IRI, CollectionPath) {
 
 // IRIf formats an IRI from an existing IRI and the CollectionPath type
 func IRIf(i IRI, t CollectionPath) IRI {
+	if i == "" {
+		return i
+	}
 	si := i.String()
 	s := strings.Builder{}
 	_, _ = s.WriteString(si)
