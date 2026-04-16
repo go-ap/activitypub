@@ -390,7 +390,7 @@ func fmtIntransitiveActivityProps(w io.Writer) func(*IntransitiveActivity) error
 // specific properties like "actor", for the other properties OnObject
 // should be used instead.
 func OnIntransitiveActivity(it LinkOrIRI, fn func(*IntransitiveActivity) error) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	if IsItemCollection(it) {

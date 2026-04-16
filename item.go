@@ -3,6 +3,7 @@ package activitypub
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 )
 
@@ -47,6 +48,13 @@ func ItemsEqual(it, with Item) bool {
 		ii, ok := it.(IRI)
 		iw, wok := with.(IRI)
 		result = ok && wok && ii.Equal(iw)
+	} else if IsIRIs(it) {
+		if !IsIRIs(with) {
+			return false
+		}
+		iIRIs, _ := ToIRIs(it)
+		wIRIs, _ := ToIRIs(with)
+		return slices.Equal(*iIRIs, *wIRIs)
 	} else if IsItemCollection(it) {
 		if !IsItemCollection(with) {
 			return false
@@ -113,14 +121,11 @@ func IsItemCollection(it LinkOrIRI) bool {
 	if _, ok := it.(*ItemCollection); ok {
 		return ok
 	}
-	return IsIRIs(it)
+	return !IsNil(it) && IsIRIs(it)
 }
 
 // IsIRI returns if the current Item interface holds an IRI
 func IsIRI(it LinkOrIRI) bool {
-	if it == nil {
-		return false
-	}
 	if _, ok := it.(IRI); ok {
 		return true
 	}
@@ -132,21 +137,14 @@ func IsIRI(it LinkOrIRI) bool {
 
 // IsIRIs returns if the current Item interface holds an IRI slice
 func IsIRIs(it LinkOrIRI) bool {
-	if it == nil {
-		return false
-	}
-	if iris, ok := it.(IRIs); ok {
-		return iris != nil
-	}
-	if iris, ok := it.(*IRIs); ok {
-		return iris != nil
-	}
-	return false
+	_, ok := it.(IRIs)
+	_, okp := it.(*IRIs)
+	return ok || okp
 }
 
 // IsLink returns if the current Item interface holds a Link
 func IsLink(it LinkOrIRI) bool {
-	if it == nil {
+	if IsNil(it) {
 		return false
 	}
 	if _, ok := it.(Link); ok {
@@ -160,7 +158,7 @@ func IsLink(it LinkOrIRI) bool {
 
 // IsObject returns if the current Item interface holds an Object
 func IsObject(it LinkOrIRI) bool {
-	if it == nil {
+	if IsNil(it) {
 		return false
 	}
 	switch ob := it.(type) {
@@ -226,48 +224,26 @@ func IsNil(it LinkOrIRI) bool {
 	if it == nil {
 		return true
 	}
+
 	// This is the default if the argument can't be cast to Object, as is the case for an ItemCollection
-	isNil := false
-	if IsIRI(it) {
-		var l IRI
-		if lp, ok := it.(*IRI); ok {
-			l = *lp
-		} else {
-			l, _ = it.(IRI)
-		}
-		isNil = len(l) == 0 || strings.EqualFold(l.String(), NilIRI.String())
-	} else if IsItemCollection(it) {
-		if v, ok := it.(ItemCollection); ok {
-			return v == nil
-		}
-		if v, ok := it.(*ItemCollection); ok {
-			return v == nil
-		}
-		if v, ok := it.(IRIs); ok {
-			return v == nil
-		}
-		if v, ok := it.(*IRIs); ok {
-			return v == nil
-		}
-	} else if IsObject(it) {
-		if ob, ok := it.(Item); ok {
-			_ = OnObject(ob, func(o *Object) error {
-				isNil = o == nil
-				return nil
-			})
-		}
-	} else if IsLink(it) {
-		_ = OnLink(it, func(l *Link) error {
-			isNil = l == nil
-			return nil
-		})
-	} else {
-		// NOTE(marius): we're not dealing with a type that we know about, so we use slow reflection
-		// as we still care about the result
-		v := reflect.ValueOf(it)
-		isNil = v.Kind() == reflect.Pointer && v.IsNil()
+	switch maybeNil := it.(type) {
+	case IRI:
+		return len(maybeNil) == 0 || strings.EqualFold(maybeNil.String(), NilIRI.String())
+	case *IRI:
+		return maybeNil == nil || len(*maybeNil) == 0 || strings.EqualFold(maybeNil.String(), NilIRI.String())
+	case IRIs:
+		return maybeNil == nil
+	case *IRIs:
+		return maybeNil == nil
+	case ItemCollection:
+		return maybeNil == nil
+	case *ItemCollection:
+		return maybeNil == nil
 	}
-	return isNil
+	// NOTE(marius): we're not dealing with a type that we know about, so we use slow reflection
+	// as we still care about the result
+	v := reflect.ValueOf(it)
+	return v.Kind() == reflect.Pointer && v.IsNil()
 }
 
 func ErrorInvalidType[T Objects | Links](received LinkOrIRI) error {
@@ -280,7 +256,7 @@ func ErrorInvalidType[T Objects | Links](received LinkOrIRI) error {
 // It is expected that the caller handles the logic of dealing with different Item implementations
 // internally in "fn".
 func OnItem(it Item, fn func(Item) error) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	if !IsItemCollection(it) {
@@ -301,7 +277,7 @@ func OnItem(it Item, fn func(Item) error) error {
 // It should be used when Item represents an Item collection and it's usually used as a way
 // to wrap functionality for other functions that will be called on each item in the collection.
 func OnItemCollection(it LinkOrIRI, fn WithItemCollectionFn) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	col, err := ToItemCollection(it)

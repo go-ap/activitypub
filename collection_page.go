@@ -455,7 +455,7 @@ func (c *CollectionPage) Clean() {
 // properties like "partOf", "next", "perv". For the other properties
 // OnObject or OnCollection should be used instead.
 func OnCollectionPage(it Item, fn WithCollectionPageFn) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	col, err := ToCollectionPage(it)

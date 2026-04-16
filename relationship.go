@@ -274,7 +274,7 @@ type withRelationshipFn func(*Relationship) error
 // like "subject", "object", or "relationship".
 // For the other properties OnObject should be used instead.
 func OnRelationship(it LinkOrIRI, fn func(*Relationship) error) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	if IsItemCollection(it) {

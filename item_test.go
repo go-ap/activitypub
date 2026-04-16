@@ -624,7 +624,7 @@ func TestIsIRIs(t *testing.T) {
 		{
 			name: "nil iris",
 			it:   IRIs(nil),
-			want: false,
+			want: true,
 		},
 		{
 			name: "iris with no items",

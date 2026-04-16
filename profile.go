@@ -257,7 +257,7 @@ type withProfileFn func(*Profile) error
 // like "describes".
 // For the other properties OnObject should be used instead.
 func OnProfile(it LinkOrIRI, fn func(*Profile) error) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	if IsItemCollection(it) {

@@ -282,7 +282,7 @@ type WithQuestionFn func(*Question) error
 // properties like "anyOf", "oneOf", "closed", etc. For the other properties
 // OnObject or OnIntransitiveActivity should be used instead.
 func OnQuestion(it LinkOrIRI, fn func(question *Question) error) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	if IsItemCollection(it) {

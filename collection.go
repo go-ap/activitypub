@@ -461,7 +461,7 @@ func (c *Collection) Clean() {
 // properties like "totalItems", "items", etc. For the other properties
 // OnObject should be used instead.
 func OnCollection(it Item, fn WithCollectionFn) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	col, err := ToCollection(it)

@@ -989,7 +989,7 @@ func (o *Object) equal(with *Object) bool {
 // This function should be safe to be called for all types with a structure compatible
 // to the Object type.
 func OnObject(it LinkOrIRI, fn func(*Object) error) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	if IsItemCollection(it) {

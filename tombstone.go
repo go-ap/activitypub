@@ -260,7 +260,7 @@ type withTombstoneFn func(*Tombstone) error
 // like "formerType" or "deleted".
 // For the other properties OnObject should be used instead.
 func OnTombstone(it LinkOrIRI, fn func(*Tombstone) error) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	if IsItemCollection(it) {

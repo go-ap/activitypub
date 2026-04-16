@@ -72,7 +72,7 @@ func On[T Item](it Item, fn func(*T) error) error {
 // objects. It basically wraps functionality for the different collection types
 // supported by the package.
 func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	typ := it.GetType()

@@ -474,7 +474,7 @@ func (o *OrderedCollection) Clean() {
 // properties like "totalItems", "orderedItems", etc. For the other properties
 // OnObject should be used instead.
 func OnOrderedCollection(it Item, fn WithOrderedCollectionFn) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	col, err := ToOrderedCollection(it)

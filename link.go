@@ -231,7 +231,7 @@ func (l Link) Format(s fmt.State, verb rune) {
 // This function should be safe to use for all types with a structure compatible
 // with the Link type
 func OnLink(it LinkOrIRI, fn func(*Link) error) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	if IsItemCollection(it) {

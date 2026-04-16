@@ -640,7 +640,7 @@ type WithActorFn func(*Actor) error
 // properties like "preferredName", "publicKey", etc. For the other properties
 // OnObject should be used instead.
 func OnActor(it LinkOrIRI, fn func(*Actor) error) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	if IsItemCollection(it) {

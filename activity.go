@@ -948,7 +948,7 @@ func (a Activity) equal(with Activity) bool {
 // like "object", for the other properties OnObject, or OnIntransitiveActivity
 // should be used instead.
 func OnActivity(it LinkOrIRI, fn func(*Activity) error) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	if IsItemCollection(it) {

@@ -411,7 +411,7 @@ func (o *OrderedCollectionPage) Clean() {
 // properties like "partOf", "next", "perv". For the other properties
 // OnObject or OnOrderedCollection should be used instead.
 func OnOrderedCollectionPage(it Item, fn WithOrderedCollectionPageFn) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	col, err := ToOrderedCollectionPage(it)

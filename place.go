@@ -284,7 +284,7 @@ type withPlaceFn func(*Place) error
 // like "accuracy", "altitude", "latitude", "longitude", "radius", or "units".
 // For the other properties OnObject should be used instead.
 func OnPlace(it LinkOrIRI, fn func(*Place) error) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	if IsItemCollection(it) {

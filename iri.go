@@ -485,7 +485,7 @@ func (i IRI) ItemsMatch(col ...Item) bool {
 //
 // It should be used when Item represents an IRI slice.
 func OnIRIs(it Item, fn WithIRIsFn) error {
-	if it == nil {
+	if IsNil(it) {
 		return nil
 	}
 	col, err := ToIRIs(it)
