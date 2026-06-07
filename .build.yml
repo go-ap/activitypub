@@ -1,6 +1,7 @@
 image: archlinux
 packages:
   - go
+  - golangci-lint
 sources:
   - https://github.com/go-ap/activitypub
 secrets:
@@ -8,11 +9,18 @@ secrets:
 environment:
   GO111MODULE: 'on'
 tasks:
+  - fmt: |
+      cd activitypub
+      test -z $(gofmt -l .)
   - tests: |
-      cd activitypub && make test
+      cd activitypub
+      make test
   - coverage: |
       set -a +x
       cd activitypub
       git switch -C master origin/master
       make coverage
       go run github.com/mattn/goveralls@latest -flagname unit-tests -service=${CI_NAME} -coverprofile activitypub.coverprofile -repotokenfile ~/.coveralls.tok
+  - lint: |
+      cd activitypub
+      golangci-lint run || true
