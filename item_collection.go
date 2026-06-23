@@ -219,6 +219,10 @@ func ToItemCollection(it LinkOrIRI) (*ItemCollection, error) {
 // ToIRIs
 func ToIRIs(it Item) (*IRIs, error) {
 	switch i := it.(type) {
+	case *IRI:
+		return &IRIs{*i}, nil
+	case IRI:
+		return &IRIs{i}, nil
 	case *IRIs:
 		return i, nil
 	case IRIs:
