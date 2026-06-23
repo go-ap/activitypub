@@ -182,9 +182,14 @@ func ItemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
 	return rec
 }
 
-// ToItemCollection returns the item collection contained as part of OrderedCollection, OrderedCollectionPage,
+// ToItemCollection checks if the received LinkOrIRI can be represented as an ItemCollection
 // Collection and CollectionPage.
-// It also converts an IRI slice into an equivalent ItemCollection.
+// The logic for this representation is as follows:
+// * the Item is an ItemCollection return itself.
+// * the Item is an instance of OrderedCollection, or OrderedCollectionPage, return its col.OrderedItems property.
+// * the Item is an instance of Collection, or CollectionPage, return its col.Items property.
+// * the Item is an instance of IRI, return an ItemCollection with it as a single element.
+// * the Item is an instance of an IRI slice, return an ItemCollection with all IRIs as elements.
 func ToItemCollection(it LinkOrIRI) (*ItemCollection, error) {
 	switch i := it.(type) {
 	case *ItemCollection:
@@ -199,6 +204,10 @@ func ToItemCollection(it LinkOrIRI) (*ItemCollection, error) {
 		return &i.Items, nil
 	case *CollectionPage:
 		return &i.Items, nil
+	case IRI:
+		return &ItemCollection{i}, nil
+	case *IRI:
+		return &ItemCollection{*i}, nil
 	case IRIs:
 		iris := make(ItemCollection, len(i))
 		for j, ob := range i {
@@ -216,8 +225,12 @@ func ToItemCollection(it LinkOrIRI) (*ItemCollection, error) {
 	return reflectItemToType[ItemCollection](it)
 }
 
-// ToIRIs
-func ToIRIs(it Item) (*IRIs, error) {
+// ToIRIs checks if the received LinkOrIRI can be represented as an IRI slice
+// The logic for this representation is as follows:
+// * the Item is an IRI, return an IRI slice with it as a single element.
+// * the Item is an IRI slice, return the slice itself.
+// * the Item is an ItemCollection, return a slice composed of all elements that are instances of IRI.
+func ToIRIs(it LinkOrIRI) (*IRIs, error) {
 	switch i := it.(type) {
 	case *IRI:
 		return &IRIs{*i}, nil
@@ -228,11 +241,20 @@ func ToIRIs(it Item) (*IRIs, error) {
 	case IRIs:
 		return &i, nil
 	case ItemCollection:
-		iris := i.IRIs()
+		iris := make(IRIs, 0, len(i))
+		for j, ob := range i {
+			if !IsIRI(ob) {
+				continue
+			}
+			iris[j] = ob.GetLink()
+		}
 		return &iris, nil
 	case *ItemCollection:
-		iris := make(IRIs, len(*i))
+		iris := make(IRIs, 0, len(*i))
 		for j, ob := range *i {
+			if !IsIRI(ob) {
+				continue
+			}
 			iris[j] = ob.GetLink()
 		}
 		return &iris, nil
