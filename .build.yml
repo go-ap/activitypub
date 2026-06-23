@@ -16,11 +16,10 @@ tasks:
       cd activitypub
       make test
   - coverage: |
-      set -a +x
       cd activitypub
       git switch -C master origin/master
       make coverage
-      go run github.com/mattn/goveralls@latest -flagname unit-tests -service=${CI_NAME} -coverprofile activitypub.coverprofile -repotokenfile ~/.coveralls.tok
+      go tool goveralls -flagname unit-tests -service=${CI_NAME} -coverprofile activitypub.coverprofile -repotokenfile ~/.coveralls.tok
   - lint: |
       cd activitypub
       golangci-lint run || true
