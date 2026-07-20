@@ -149,11 +149,24 @@ func (i *IntransitiveActivity) Recipients() ItemCollection {
 }
 
 // Clean removes Bto and BCC properties
-func (i *IntransitiveActivity) Clean() {
-	_ = OnObject(i, func(o *Object) error {
-		o.Clean()
-		return nil
-	})
+func (i *IntransitiveActivity) Clean() Item {
+	aa := *i
+	aa.BCC = nil
+	aa.Bto = nil
+	CleanRecipients(aa.Audience)
+	CleanRecipients(aa.Attachment)
+	CleanRecipients(aa.Icon)
+	CleanRecipients(aa.Image)
+	CleanRecipients(aa.Context)
+	CleanRecipients(aa.Generator)
+	CleanRecipients(aa.AttributedTo)
+	CleanRecipients(aa.Preview)
+	CleanRecipients(aa.Tag)
+	CleanRecipients(aa.Actor)
+	CleanRecipients(aa.Target)
+	CleanRecipients(aa.Instrument)
+	CleanRecipients(aa.Origin)
+	return &aa
 }
 
 // GetType returns the ActivityVocabulary type of the current Intransitive Activity
@@ -298,10 +311,7 @@ func TravelNew(id ID) *Travel {
 }
 
 // Equal verifies if our receiver IntransitiveActivity is equals with the "with" Item
-func (i *IntransitiveActivity) Equals(with Item) bool {
-	if IsNil(with) {
-		return i == nil
-	}
+func (i IntransitiveActivity) Equals(with Item) bool {
 	withActivity, err := ToIntransitiveActivity(with)
 	if err != nil {
 		return false
@@ -317,32 +327,25 @@ func (i IntransitiveActivity) equal(with IntransitiveActivity) bool {
 		result = oa.Equals(with)
 		return nil
 	})
-	if with.Actor != nil {
-		if !ItemsEqual(i.Actor, with.Actor) {
-			result = false
-		}
+	if !result {
+		return false
 	}
-	if with.Target != nil {
-		if !ItemsEqual(i.Target, with.Target) {
-			result = false
-		}
+	if !ItemsEqual(i.Actor, with.Actor) {
+		return false
 	}
-	if with.Result != nil {
-		if !ItemsEqual(i.Result, with.Result) {
-			result = false
-		}
+	if !ItemsEqual(i.Target, with.Target) {
+		return false
 	}
-	if with.Origin != nil {
-		if !ItemsEqual(i.Origin, with.Origin) {
-			result = false
-		}
+	if !ItemsEqual(i.Result, with.Result) {
+		return false
 	}
-	if with.Instrument != nil {
-		if !ItemsEqual(i.Instrument, with.Instrument) {
-			result = false
-		}
+	if !ItemsEqual(i.Origin, with.Origin) {
+		return false
 	}
-	return result
+	if !ItemsEqual(i.Instrument, with.Instrument) {
+		return false
+	}
+	return true
 }
 
 func (i IntransitiveActivity) Format(s fmt.State, verb rune) {

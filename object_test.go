@@ -1027,7 +1027,7 @@ func TestObject_Equals(t *testing.T) {
 			name:   "equal-object-id",
 			fields: fields{ID: "test", URL: IRI("example.com")},
 			arg:    Object{ID: "test"},
-			want:   true,
+			want:   false,
 		},
 		{
 			name:   "equal-false-with-id-and-url",

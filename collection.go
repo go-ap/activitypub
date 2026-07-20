@@ -391,10 +391,7 @@ func (c Collection) ItemsMatch(col ...Item) bool {
 }
 
 // Equals verifies if our receiver Collection is equals with the "with" Item
-func (c *Collection) Equals(with Item) bool {
-	if IsNil(with) {
-		return c == nil
-	}
+func (c Collection) Equals(with Item) bool {
 	if !with.IsCollection() {
 		return false
 	}
@@ -409,38 +406,28 @@ func (c *Collection) Equals(with Item) bool {
 func (c Collection) equal(with Collection) bool {
 	result := true
 	_ = OnObject(with, func(wo *Object) error {
-		if !wo.Equals(c) {
-			result = false
-			return nil
-		}
+		result = wo.Equals(c)
 		return nil
 	})
-	if with.TotalItems > 0 {
-		if with.TotalItems != c.TotalItems {
-			result = false
-		}
+	if !result {
+		return false
 	}
-	if with.Current != nil {
-		if !ItemsEqual(c.Current, with.Current) {
-			result = false
-		}
+	if with.TotalItems != c.TotalItems {
+		return false
 	}
-	if with.First != nil {
-		if !ItemsEqual(c.First, with.First) {
-			result = false
-		}
+	if !ItemsEqual(c.Current, with.Current) {
+		return false
 	}
-	if with.Last != nil {
-		if !ItemsEqual(c.Last, with.Last) {
-			result = false
-		}
+	if !ItemsEqual(c.First, with.First) {
+		return false
 	}
-	if with.Items != nil {
-		if !ItemsEqual(c.Items, with.Items) {
-			result = false
-		}
+	if !ItemsEqual(c.Last, with.Last) {
+		return false
 	}
-	return result
+	if !ItemsEqual(c.Items, with.Items) {
+		return false
+	}
+	return true
 }
 
 func (c *Collection) Recipients() ItemCollection {
@@ -448,11 +435,21 @@ func (c *Collection) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&c.To, &c.CC, &c.Bto, &c.BCC, &aud)
 }
 
-func (c *Collection) Clean() {
-	_ = OnObject(c, func(o *Object) error {
-		o.Clean()
-		return nil
-	})
+func (c *Collection) Clean() Item {
+	aa := *c
+	aa.BCC = nil
+	aa.Bto = nil
+	CleanRecipients(aa.Audience)
+	CleanRecipients(aa.Attachment)
+	CleanRecipients(aa.Icon)
+	CleanRecipients(aa.Image)
+	CleanRecipients(aa.Context)
+	CleanRecipients(aa.Generator)
+	CleanRecipients(aa.AttributedTo)
+	CleanRecipients(aa.Preview)
+	CleanRecipients(aa.Tag)
+	CleanRecipients(aa.Items)
+	return &aa
 }
 
 // OnCollection calls function fn on it Item if it can be asserted to type *Collection

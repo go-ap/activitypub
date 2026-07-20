@@ -519,7 +519,7 @@ func areItems(a, b any) bool {
 	return ok1 && ok2
 }
 
-func compareItems(x, y interface{}) bool {
+func compareItems(x, y any) bool {
 	var i1 Item
 	var i2 Item
 	if ic1, ok := x.(Item); ok {

@@ -240,11 +240,20 @@ func (r *Relationship) Recipients() ItemCollection {
 }
 
 // Clean removes Bto and BCC properties
-func (r *Relationship) Clean() {
-	_ = OnObject(r, func(o *Object) error {
-		o.Clean()
-		return nil
-	})
+func (r *Relationship) Clean() Item {
+	oo := *r
+	oo.BCC = nil
+	oo.Bto = nil
+	CleanRecipients(oo.Audience)
+	CleanRecipients(oo.Attachment)
+	CleanRecipients(oo.Icon)
+	CleanRecipients(oo.Image)
+	CleanRecipients(oo.Context)
+	CleanRecipients(oo.Generator)
+	CleanRecipients(oo.AttributedTo)
+	CleanRecipients(oo.Preview)
+	CleanRecipients(oo.Tag)
+	return &oo
 }
 
 func (r Relationship) Format(s fmt.State, verb rune) {

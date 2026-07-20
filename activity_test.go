@@ -1584,7 +1584,7 @@ func TestActivity_Equals(t *testing.T) {
 			name:   "equal-activity-id",
 			fields: fields{ID: "test", URL: IRI("example.com")},
 			arg:    Activity{ID: "test"},
-			want:   true,
+			want:   false,
 		},
 		{
 			name:   "equal-false-with-id-and-url",
@@ -1651,6 +1651,7 @@ func TestCleanRecipients(t *testing.T) {
 	tests := []struct {
 		name string
 		it   Item
+		want Item
 	}{
 		{
 			name: "nil",
@@ -1659,14 +1660,17 @@ func TestCleanRecipients(t *testing.T) {
 		{
 			name: "empty Object",
 			it:   &Object{},
+			want: &Object{},
 		},
 		{
 			name: "Object with Bto",
 			it:   &Object{Bto: ItemCollection{IRI("https://example.com")}},
+			want: &Object{},
 		},
 		{
 			name: "Object with BCC",
 			it:   &Object{BCC: ItemCollection{IRI("https://example.com")}},
+			want: &Object{},
 		},
 		{
 			name: "Object with Bto/BCC",
@@ -1674,18 +1678,22 @@ func TestCleanRecipients(t *testing.T) {
 				Bto: ItemCollection{IRI("https://example.com/1")},
 				BCC: ItemCollection{IRI("https://example.com/2")},
 			},
+			want: &Object{},
 		},
 		{
 			name: "empty Actor",
 			it:   &Actor{},
+			want: &Actor{},
 		},
 		{
 			name: "Actor with Bto",
 			it:   &Actor{Bto: ItemCollection{IRI("https://example.com")}},
+			want: &Actor{},
 		},
 		{
 			name: "Actor with BCC",
 			it:   &Actor{BCC: ItemCollection{IRI("https://example.com")}},
+			want: &Actor{},
 		},
 		{
 			name: "Actor with Bto/BCC",
@@ -1693,18 +1701,22 @@ func TestCleanRecipients(t *testing.T) {
 				Bto: ItemCollection{IRI("https://example.com/1")},
 				BCC: ItemCollection{IRI("https://example.com/2")},
 			},
+			want: &Actor{},
 		},
 		{
 			name: "empty Activity",
 			it:   &Activity{},
+			want: &Activity{},
 		},
 		{
 			name: "Activity with Bto",
 			it:   &Activity{Bto: ItemCollection{IRI("https://example.com")}},
+			want: &Activity{},
 		},
 		{
 			name: "Activity with BCC",
 			it:   &Activity{BCC: ItemCollection{IRI("https://example.com")}},
+			want: &Activity{},
 		},
 		{
 			name: "Activity with Bto/BCC",
@@ -1712,18 +1724,22 @@ func TestCleanRecipients(t *testing.T) {
 				Bto: ItemCollection{IRI("https://example.com/1")},
 				BCC: ItemCollection{IRI("https://example.com/2")},
 			},
+			want: &Activity{},
 		},
 		{
 			name: "empty IntransitiveActivity",
 			it:   &IntransitiveActivity{},
+			want: &IntransitiveActivity{},
 		},
 		{
 			name: "IntransitiveActivity with Bto",
 			it:   &IntransitiveActivity{Bto: ItemCollection{IRI("https://example.com")}},
+			want: &IntransitiveActivity{},
 		},
 		{
 			name: "IntransitiveActivity with BCC",
 			it:   &IntransitiveActivity{BCC: ItemCollection{IRI("https://example.com")}},
+			want: &IntransitiveActivity{},
 		},
 		{
 			name: "IntransitiveActivity with Bto/BCC",
@@ -1731,18 +1747,22 @@ func TestCleanRecipients(t *testing.T) {
 				Bto: ItemCollection{IRI("https://example.com/1")},
 				BCC: ItemCollection{IRI("https://example.com/2")},
 			},
+			want: &IntransitiveActivity{},
 		},
 		{
 			name: "empty Collection",
 			it:   &Collection{},
+			want: &Collection{},
 		},
 		{
 			name: "Collection with Bto",
 			it:   &Collection{Bto: ItemCollection{IRI("https://example.com")}},
+			want: &Collection{},
 		},
 		{
 			name: "Collection with BCC",
 			it:   &Collection{BCC: ItemCollection{IRI("https://example.com")}},
+			want: &Collection{},
 		},
 		{
 			name: "Collection with Bto/BCC",
@@ -1750,17 +1770,21 @@ func TestCleanRecipients(t *testing.T) {
 				Bto: ItemCollection{IRI("https://example.com/1")},
 				BCC: ItemCollection{IRI("https://example.com/2")},
 			},
+			want: &Collection{},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			it := CleanRecipients(tt.it)
-			_ = OnObject(it, func(o *Object) error {
+			got := CleanRecipients(tt.it)
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("CleanRecipients() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+			_ = OnObject(got, func(o *Object) error {
 				if len(o.Bto) > 0 {
-					t.Errorf("Bto failed to be cleaned: %v", o.Bto)
+					t.Errorf("CleanRecipients(): Bto failed to be cleaned: %v", o.Bto)
 				}
 				if len(o.BCC) > 0 {
-					t.Errorf("BCC failed to be cleaned: %v", o.BCC)
+					t.Errorf("CleanRecipients(): BCC failed to be cleaned: %v", o.BCC)
 				}
 				return nil
 			})

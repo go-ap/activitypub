@@ -380,7 +380,7 @@ func TestIntransitiveActivity_Equals(t *testing.T) {
 			name:   "equal-intransitive-activity-id",
 			fields: fields{ID: "test", URL: IRI("example.com")},
 			arg:    IntransitiveActivity{ID: "test"},
-			want:   true,
+			want:   false,
 		},
 		{
 			name:   "equal-false-with-id-and-url",

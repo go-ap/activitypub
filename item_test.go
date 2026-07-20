@@ -35,12 +35,12 @@ func TestItemsEqual(t *testing.T) {
 		{
 			name: "empty_objects_different_alias_type",
 			args: args{&Activity{}, &Object{}},
-			want: true,
+			want: false,
 		},
 		{
 			name: "empty_objects_different_alias_type#1",
 			args: args{&Actor{}, &Object{}},
-			want: true,
+			want: false,
 		},
 		{
 			name: "same_id_object",
@@ -50,12 +50,12 @@ func TestItemsEqual(t *testing.T) {
 		{
 			name: "same_id_object_different_alias",
 			args: args{&Activity{ID: "test"}, &Object{ID: "test"}},
-			want: true,
+			want: false,
 		},
 		{
 			name: "same_id_object_different_alias#1",
 			args: args{&Activity{ID: "test"}, &Actor{ID: "test"}},
-			want: true,
+			want: false,
 		},
 		{
 			name: "different_id_objects",

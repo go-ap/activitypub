@@ -371,10 +371,7 @@ func (c CollectionPage) ItemsMatch(col ...Item) bool {
 }
 
 // Equals verifies if our receiver CollectionPage is equals with the "with" Item
-func (c *CollectionPage) Equals(with Item) bool {
-	if IsNil(with) {
-		return c == nil
-	}
+func (c CollectionPage) Equals(with Item) bool {
 	if !with.IsCollection() {
 		return false
 	}
@@ -441,11 +438,21 @@ func (c *CollectionPage) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&c.To, &c.CC, &c.Bto, &c.BCC, &aud)
 }
 
-func (c *CollectionPage) Clean() {
-	_ = OnObject(c, func(o *Object) error {
-		o.Clean()
-		return nil
-	})
+func (c *CollectionPage) Clean() Item {
+	aa := *c
+	aa.BCC = nil
+	aa.Bto = nil
+	CleanRecipients(aa.Audience)
+	CleanRecipients(aa.Attachment)
+	CleanRecipients(aa.Icon)
+	CleanRecipients(aa.Image)
+	CleanRecipients(aa.Context)
+	CleanRecipients(aa.Generator)
+	CleanRecipients(aa.AttributedTo)
+	CleanRecipients(aa.Preview)
+	CleanRecipients(aa.Tag)
+	CleanRecipients(aa.Items)
+	return &aa
 }
 
 // OnCollectionPage calls function fn on it Item if it can be asserted to

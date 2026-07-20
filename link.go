@@ -138,10 +138,7 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 }
 
 // Equals verifies if our receiver Link is equals with the "with" Item
-func (l *Link) Equals(other Item) bool {
-	if l == nil {
-		return IsNil(other)
-	}
+func (l Link) Equals(other Item) bool {
 	otherLink, err := ToLink(other)
 	if err != nil {
 		return false

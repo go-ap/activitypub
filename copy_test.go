@@ -119,8 +119,8 @@ func TestClone(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := Clone(tt.it)
-			if !cmp.Equal(got, tt.want) {
-				t.Errorf("Clone() got = %s", cmp.Diff(tt.want, got))
+			if !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("Clone() got = %s", cmp.Diff(tt.want, got, EquateItems))
 			}
 		})
 	}

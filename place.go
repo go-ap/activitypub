@@ -250,11 +250,20 @@ func (p *Place) Recipients() ItemCollection {
 }
 
 // Clean removes Bto and BCC properties
-func (p *Place) Clean() {
-	_ = OnObject(p, func(o *Object) error {
-		o.Clean()
-		return nil
-	})
+func (p *Place) Clean() Item {
+	oo := *p
+	oo.BCC = nil
+	oo.Bto = nil
+	CleanRecipients(oo.Audience)
+	CleanRecipients(oo.Attachment)
+	CleanRecipients(oo.Icon)
+	CleanRecipients(oo.Image)
+	CleanRecipients(oo.Context)
+	CleanRecipients(oo.Generator)
+	CleanRecipients(oo.AttributedTo)
+	CleanRecipients(oo.Preview)
+	CleanRecipients(oo.Tag)
+	return &oo
 }
 
 func (p Place) Format(s fmt.State, verb rune) {
@@ -262,6 +271,25 @@ func (p Place) Format(s fmt.State, verb rune) {
 	case 's', 'v':
 		_, _ = fmt.Fprintf(s, "%T[%s] { }", p, p.Type)
 	}
+}
+
+// Equals verifies if our receiver Place is equals with the "with" Item
+func (p Place) Equals(with Item) bool {
+	withPlace, err := ToPlace(with)
+	if err != nil {
+		return false
+	}
+	return p.equal(*withPlace)
+}
+
+// equal verifies if our receiver Place is equals with the "with" Place
+func (p Place) equal(with Place) bool {
+	result := true
+	_ = OnObject(p, func(pi *Object) error {
+		result = pi.Equals(with)
+		return nil
+	})
+	return result
 }
 
 // ToPlace

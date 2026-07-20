@@ -111,11 +111,11 @@ type (
 
 type Objects interface {
 	Object | Tombstone | Place | Profile | Relationship |
-		Actors |
-		Activities |
-		IntransitiveActivities |
-		Collections |
-		IRI
+	Actors |
+	Activities |
+	IntransitiveActivities |
+	Collections |
+	IRI
 }
 
 // Object describes an ActivityPub object of any kind.
@@ -511,18 +511,20 @@ func (o *Object) Recipients() ItemCollection {
 }
 
 // Clean removes Bto and BCC properties
-func (o *Object) Clean() {
-	o.BCC = o.BCC[:0]
-	o.Bto = o.Bto[:0]
-	CleanRecipients(o.Audience)
-	CleanRecipients(o.Attachment)
-	CleanRecipients(o.Icon)
-	CleanRecipients(o.Image)
-	CleanRecipients(o.Context)
-	CleanRecipients(o.Generator)
-	CleanRecipients(o.AttributedTo)
-	CleanRecipients(o.Preview)
-	CleanRecipients(o.Tag)
+func (o *Object) Clean() Item {
+	oo := *o
+	oo.BCC = nil
+	oo.Bto = nil
+	CleanRecipients(oo.Audience)
+	CleanRecipients(oo.Attachment)
+	CleanRecipients(oo.Icon)
+	CleanRecipients(oo.Image)
+	CleanRecipients(oo.Context)
+	CleanRecipients(oo.Generator)
+	CleanRecipients(oo.AttributedTo)
+	CleanRecipients(oo.Preview)
+	CleanRecipients(oo.Tag)
+	return &oo
 }
 
 type (
@@ -816,10 +818,7 @@ func (s Source) GobEncode() ([]byte, error) {
 }
 
 // Equals verifies if our receiver Object is equals with the "with" Item
-func (o *Object) Equals(with Item) bool {
-	if IsNil(with) {
-		return o == nil
-	}
+func (o Object) Equals(with Item) bool {
 	if IsItemCollection(with) {
 		return false
 	}
@@ -836,150 +835,92 @@ func (o *Object) Equals(with Item) bool {
 	if with.IsLink() && !with.GetLink().Equal(o.GetLink()) {
 		return false
 	}
-	return o.equal(withObject)
+	return o.equal(*withObject)
 }
 
 // equal verifies if our receiver Object is equals with the "with" Object
-func (o *Object) equal(with *Object) bool {
-	if with == nil {
-		return o == nil
-	}
+func (o Object) equal(with Object) bool {
 	result := true
-
-	if len(with.Name) > 0 {
-		if !with.Name.Equal(o.Name) {
-			result = false
-		}
+	if !with.Name.Equal(o.Name) {
+		return false
 	}
-	if len(with.Summary) > 0 {
-		if !with.Summary.Equal(o.Summary) {
-			result = false
-		}
+	if !with.Summary.Equal(o.Summary) {
+		return false
 	}
-	if len(with.Content) > 0 {
-		if !with.Content.Equal(o.Content) {
-			result = false
-		}
+	if !with.Content.Equal(o.Content) {
+		return false
 	}
-	if with.Attachment != nil {
-		if !ItemsEqual(o.Attachment, with.Attachment) {
-			result = false
-		}
+	if !ItemsEqual(o.Attachment, with.Attachment) {
+		return false
 	}
-	if with.AttributedTo != nil {
-		if !ItemsEqual(o.AttributedTo, with.AttributedTo) {
-			result = false
-		}
+	if !ItemsEqual(o.AttributedTo, with.AttributedTo) {
+		return false
 	}
-	if with.Audience != nil {
-		if !ItemsEqual(o.Audience, with.Audience) {
-			result = false
-		}
+	if !ItemsEqual(o.Audience, with.Audience) {
+		return false
 	}
-	if with.Context != nil {
-		if !ItemsEqual(o.Context, with.Context) {
-			result = false
-		}
+	if !ItemsEqual(o.Context, with.Context) {
+		return false
 	}
-	if with.Generator != nil {
-		if !ItemsEqual(o.Generator, with.Generator) {
-			result = false
-		}
+	if !ItemsEqual(o.Generator, with.Generator) {
+		return false
 	}
-	if with.Icon != nil {
-		if !ItemsEqual(o.Icon, with.Icon) {
-			result = false
-		}
+	if !ItemsEqual(o.Icon, with.Icon) {
+		return false
 	}
-	if with.Image != nil {
-		if !ItemsEqual(o.Image, with.Image) {
-			result = false
-		}
+	if !ItemsEqual(o.Image, with.Image) {
+		return false
 	}
-	if with.InReplyTo != nil {
-		if !ItemsEqual(o.InReplyTo, with.InReplyTo) {
-			result = false
-		}
+	if !ItemsEqual(o.InReplyTo, with.InReplyTo) {
+		return false
 	}
-	if with.Location != nil {
-		if !ItemsEqual(o.Location, with.Location) {
-			result = false
-		}
+	if !ItemsEqual(o.Location, with.Location) {
+		return false
 	}
-	if with.Preview != nil {
-		if !ItemsEqual(o.Preview, with.Preview) {
-			result = false
-		}
+	if !ItemsEqual(o.Preview, with.Preview) {
+		return false
 	}
-	if with.Replies != nil {
-		if !ItemsEqual(o.Replies, with.Replies) {
-			result = false
-		}
+	if !ItemsEqual(o.Replies, with.Replies) {
+		return false
 	}
-	if with.Tag != nil {
-		if !ItemsEqual(o.Tag, with.Tag) {
-			result = false
-		}
+	if !ItemsEqual(o.Tag, with.Tag) {
+		return false
 	}
-	if with.URL != nil {
-		if !ItemsEqual(o.URL, with.URL) {
-			result = false
-		}
+	if !ItemsEqual(o.URL, with.URL) {
+		return false
 	}
-	if with.To != nil {
-		if !ItemsEqual(o.To, with.To) {
-			result = false
-		}
+	if !ItemsEqual(o.To, with.To) {
+		return false
 	}
-	if with.Bto != nil {
-		if !ItemsEqual(o.Bto, with.Bto) {
-			result = false
-		}
+	if !ItemsEqual(o.Bto, with.Bto) {
+		return false
 	}
-	if with.CC != nil {
-		if !ItemsEqual(o.CC, with.CC) {
-			result = false
-		}
+	if !ItemsEqual(o.CC, with.CC) {
+		return false
 	}
-	if with.BCC != nil {
-		if !ItemsEqual(o.BCC, with.BCC) {
-			result = false
-		}
+	if !ItemsEqual(o.BCC, with.BCC) {
+		return false
 	}
-	if !with.Published.IsZero() {
-		if !with.Published.Equal(o.Published) {
-			result = false
-		}
+	if !with.Published.Equal(o.Published) {
+		return false
 	}
-	if !with.Updated.IsZero() {
-		if !with.Updated.Equal(o.Updated) {
-			result = false
-		}
+	if !with.Updated.Equal(o.Updated) {
+		return false
 	}
-	if !with.StartTime.IsZero() {
-		if !with.StartTime.Equal(o.StartTime) {
-			result = false
-		}
+	if !with.StartTime.Equal(o.StartTime) {
+		return false
 	}
-	if !with.EndTime.IsZero() {
-		if !with.EndTime.Equal(o.EndTime) {
-			result = false
-		}
+	if !with.EndTime.Equal(o.EndTime) {
+		return false
 	}
-	if with.Duration != 0 {
-		if with.Duration != o.Duration {
-			result = false
-		}
+	if with.Duration != o.Duration {
+		return false
 	}
-	if with.Likes != nil {
-		if !ItemsEqual(o.Likes, with.Likes) {
-			result = false
-		}
+	if !ItemsEqual(o.Likes, with.Likes) {
+		return false
 	}
-	if with.Shares != nil {
-		if !ItemsEqual(o.Shares, with.Shares) {
-			result = false
-		}
+	if !ItemsEqual(o.Shares, with.Shares) {
+		return false
 	}
 	return result
 }

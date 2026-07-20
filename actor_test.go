@@ -656,7 +656,7 @@ func TestActor_Equals(t *testing.T) {
 			name:   "equal-actor-id",
 			fields: fields{ID: "test", URL: IRI("example.com")},
 			arg:    Actor{ID: "test"},
-			want:   true,
+			want:   false,
 		},
 		{
 			name:   "equal-false-with-id-and-url",

@@ -223,11 +223,21 @@ func (p *Profile) Recipients() ItemCollection {
 }
 
 // Clean removes Bto and BCC properties
-func (p *Profile) Clean() {
-	_ = OnObject(p, func(o *Object) error {
-		o.Clean()
-		return nil
-	})
+func (p *Profile) Clean() Item {
+	oo := *p
+	oo.BCC = nil
+	oo.Bto = nil
+	CleanRecipients(oo.Audience)
+	CleanRecipients(oo.Attachment)
+	CleanRecipients(oo.Icon)
+	CleanRecipients(oo.Image)
+	CleanRecipients(oo.Context)
+	CleanRecipients(oo.Generator)
+	CleanRecipients(oo.AttributedTo)
+	CleanRecipients(oo.Preview)
+	CleanRecipients(oo.Tag)
+	CleanRecipients(oo.Describes)
+	return &oo
 }
 
 func (p Profile) Format(s fmt.State, verb rune) {
@@ -235,6 +245,31 @@ func (p Profile) Format(s fmt.State, verb rune) {
 	case 's', 'v':
 		_, _ = fmt.Fprintf(s, "%T[%s] { }", p, p.GetType())
 	}
+}
+
+// Equals verifies if our receiver Profile is equals with the "with" Item
+func (p Profile) Equals(with Item) bool {
+	withProfile, err := ToProfile(with)
+	if err != nil {
+		return false
+	}
+	return p.equal(*withProfile)
+}
+
+// equal verifies if our receiver Profile is equals with the "with" Profile
+func (p Profile) equal(with Profile) bool {
+	result := true
+	_ = OnObject(p, func(pi *Object) error {
+		result = pi.Equals(with)
+		return nil
+	})
+	if !result {
+		return false
+	}
+	if !ItemsEqual(p.Describes, with.Describes) {
+		return false
+	}
+	return true
 }
 
 // ToProfile tries to convert the "it" Item to a Profile object

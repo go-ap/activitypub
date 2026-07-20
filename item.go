@@ -35,14 +35,66 @@ func itemsNeedSwapping(i1, i2 Item) bool {
 	return false
 }
 
+func compareByType(typ Typer, it, with Item) bool {
+	result := false
+	if ActivityTypes.Match(typ) {
+		_ = OnActivity(it, func(i *Activity) error {
+			result = i.Equals(with)
+			return nil
+		})
+	} else if ActorTypes.Match(with.GetType()) {
+		_ = OnActor(it, func(i *Actor) error {
+			result = i.Equals(with)
+			return nil
+		})
+	} else if it.IsCollection() {
+		if CollectionType.Match(it.GetType()) {
+			_ = OnCollection(it, func(c *Collection) error {
+				result = c.Equals(with)
+				return nil
+			})
+		}
+		if OrderedCollectionType.Match(it.GetType()) {
+			_ = OnOrderedCollection(it, func(c *OrderedCollection) error {
+				result = c.Equals(with)
+				return nil
+			})
+		}
+		if CollectionPageType.Match(it.GetType()) {
+			_ = OnCollectionPage(it, func(c *CollectionPage) error {
+				result = c.Equals(with)
+				return nil
+			})
+		}
+		if OrderedCollectionPageType.Match(it.GetType()) {
+			_ = OnOrderedCollectionPage(it, func(c *OrderedCollectionPage) error {
+				result = c.Equals(with)
+				return nil
+			})
+		}
+	} else {
+		_ = OnObject(it, func(i *Object) error {
+			result = i.Equals(with)
+			return nil
+		})
+	}
+	return result
+}
+
 // ItemsEqual checks if it and with Items are equal
 func ItemsEqual(it, with Item) bool {
 	if IsNil(it) || IsNil(with) {
 		return IsNil(with) && IsNil(it)
 	}
+
+	if ita, ok := it.(interface{ Equals(Item) bool }); ok {
+		return ita.Equals(with)
+	}
+
 	if itemsNeedSwapping(it, with) {
 		return ItemsEqual(with, it)
 	}
+
 	result := false
 	if IsIRI(with) || IsIRI(it) {
 		ii, ok := it.(IRI)
@@ -68,47 +120,8 @@ func ItemsEqual(it, with Item) bool {
 			result = l.Equals(with)
 			return nil
 		})
-	} else if IsObject(it) {
-		_ = OnObject(it, func(i *Object) error {
-			result = i.Equals(with)
-			return nil
-		})
-		if ActivityTypes.Match(with.GetType()) {
-			_ = OnActivity(it, func(i *Activity) error {
-				result = i.Equals(with)
-				return nil
-			})
-		} else if ActorTypes.Match(with.GetType()) {
-			_ = OnActor(it, func(i *Actor) error {
-				result = i.Equals(with)
-				return nil
-			})
-		} else if it.IsCollection() {
-			if CollectionType.Match(it.GetType()) {
-				_ = OnCollection(it, func(c *Collection) error {
-					result = c.Equals(with)
-					return nil
-				})
-			}
-			if OrderedCollectionType.Match(it.GetType()) {
-				_ = OnOrderedCollection(it, func(c *OrderedCollection) error {
-					result = c.Equals(with)
-					return nil
-				})
-			}
-			if CollectionPageType.Match(it.GetType()) {
-				_ = OnCollectionPage(it, func(c *CollectionPage) error {
-					result = c.Equals(with)
-					return nil
-				})
-			}
-			if OrderedCollectionPageType.Match(it.GetType()) {
-				_ = OnOrderedCollectionPage(it, func(c *OrderedCollectionPage) error {
-					result = c.Equals(with)
-					return nil
-				})
-			}
-		}
+	} else if typ := with.GetType(); typ != nil {
+		result = compareByType(typ, it, with)
 	}
 	return result
 }

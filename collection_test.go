@@ -355,8 +355,8 @@ func TestCollection_Equals(t *testing.T) {
 				Type:  CollectionType,
 				First: IRI("https://example.com/1?first"),
 				Items: ItemCollection{
-					Object{ID: "https://example.com/1/1", Type: NoteType},
 					Object{ID: "https://example.com/1/3", Type: ImageType},
+					Object{ID: "https://example.com/1/1", Type: NoteType},
 				},
 			},
 			want: true,

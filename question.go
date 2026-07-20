@@ -266,11 +266,26 @@ func (q *Question) Recipients() ItemCollection {
 }
 
 // Clean removes Bto and BCC properties
-func (q *Question) Clean() {
-	_ = OnObject(q, func(o *Object) error {
-		o.Clean()
-		return nil
-	})
+func (q *Question) Clean() Item {
+	aa := *q
+	aa.BCC = nil
+	aa.Bto = nil
+	CleanRecipients(aa.Audience)
+	CleanRecipients(aa.Attachment)
+	CleanRecipients(aa.Icon)
+	CleanRecipients(aa.Image)
+	CleanRecipients(aa.Context)
+	CleanRecipients(aa.Generator)
+	CleanRecipients(aa.AttributedTo)
+	CleanRecipients(aa.Preview)
+	CleanRecipients(aa.Tag)
+	CleanRecipients(aa.Actor)
+	CleanRecipients(aa.Target)
+	CleanRecipients(aa.Instrument)
+	CleanRecipients(aa.Origin)
+	CleanRecipients(aa.AnyOf)
+	CleanRecipients(aa.OneOf)
+	return &aa
 }
 
 // WithQuestionFn represents a function type that can be used as a parameter for OnQuestion helper function

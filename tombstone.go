@@ -226,11 +226,20 @@ func (t *Tombstone) Recipients() ItemCollection {
 }
 
 // Clean removes Bto and BCC properties
-func (t *Tombstone) Clean() {
-	_ = OnObject(t, func(o *Object) error {
-		o.Clean()
-		return nil
-	})
+func (t *Tombstone) Clean() Item {
+	oo := *t
+	oo.BCC = nil
+	oo.Bto = nil
+	CleanRecipients(oo.Audience)
+	CleanRecipients(oo.Attachment)
+	CleanRecipients(oo.Icon)
+	CleanRecipients(oo.Image)
+	CleanRecipients(oo.Context)
+	CleanRecipients(oo.Generator)
+	CleanRecipients(oo.AttributedTo)
+	CleanRecipients(oo.Preview)
+	CleanRecipients(oo.Tag)
+	return &oo
 }
 
 func (t Tombstone) Format(s fmt.State, verb rune) {
@@ -238,6 +247,31 @@ func (t Tombstone) Format(s fmt.State, verb rune) {
 	case 's', 'v':
 		_, _ = fmt.Fprintf(s, "%T[%s] { formerType: %q }", t, t.Type, t.FormerType)
 	}
+}
+
+// Equals verifies if our receiver Tombstone is equals with the "with" Item
+func (t Tombstone) Equals(with Item) bool {
+	withTombstone, err := ToTombstone(with)
+	if err != nil {
+		return false
+	}
+	return t.equal(*withTombstone)
+}
+
+// equal verifies if our receiver Tombstone is equals with the "with" Tombstone
+func (t Tombstone) equal(with Tombstone) bool {
+	result := true
+	_ = OnObject(t, func(pi *Object) error {
+		result = pi.Equals(with)
+		return nil
+	})
+	if !result {
+		return false
+	}
+	if t.FormerType != with.FormerType {
+		return false
+	}
+	return true
 }
 
 // ToTombstone

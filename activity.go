@@ -239,7 +239,7 @@ type HasRecipients interface {
 	Recipients() ItemCollection
 	// Clean is a method that removes BCC/Bto recipients in preparation for public consumption of
 	// the Object.
-	Clean()
+	Clean() Item
 }
 
 type Activities interface {
@@ -461,24 +461,35 @@ func (a *Activity) Recipients() ItemCollection {
 
 // CleanRecipients checks if the "it" Item has recipients and cleans them if it does
 func CleanRecipients(it Item) Item {
-	if IsNil(it) {
+	if IsNil(it) || IsIRI(it) {
 		return nil
 	}
 	if s, ok := it.(HasRecipients); ok {
-		s.Clean()
+		it = s.Clean()
 	}
 	return it
 }
 
 // Clean removes Bto and BCC properties
-func (a *Activity) Clean() {
-	_ = OnObject(a, func(o *Object) error {
-		o.Clean()
-		return nil
-	})
-	CleanRecipients(a.Object)
-	CleanRecipients(a.Actor)
-	CleanRecipients(a.Target)
+func (a *Activity) Clean() Item {
+	aa := *a
+	aa.BCC = nil
+	aa.Bto = nil
+	CleanRecipients(aa.Audience)
+	CleanRecipients(aa.Attachment)
+	CleanRecipients(aa.Icon)
+	CleanRecipients(aa.Image)
+	CleanRecipients(aa.Context)
+	CleanRecipients(aa.Generator)
+	CleanRecipients(aa.AttributedTo)
+	CleanRecipients(aa.Preview)
+	CleanRecipients(aa.Tag)
+	CleanRecipients(aa.Actor)
+	CleanRecipients(aa.Object)
+	CleanRecipients(aa.Target)
+	CleanRecipients(aa.Origin)
+	CleanRecipients(aa.Instrument)
+	return &aa
 }
 
 type (
@@ -916,10 +927,7 @@ func (a *Activity) GobDecode(data []byte) error {
 }
 
 // Equals verifies if our receiver Activity is equals with the "with" Item
-func (a *Activity) Equals(with Item) bool {
-	if IsNil(with) {
-		return a == nil
-	}
+func (a Activity) Equals(with Item) bool {
 	withActivity, err := ToActivity(with)
 	if err != nil {
 		return false
@@ -928,18 +936,19 @@ func (a *Activity) Equals(with Item) bool {
 }
 
 // equal verifies if our receiver Activity is equals with the "with" Activity
-func (a Activity) equal(with Activity) bool {
+func (a *Activity) equal(with Activity) bool {
 	result := true
 	_ = OnIntransitiveActivity(a, func(oi *IntransitiveActivity) error {
 		result = oi.Equals(with)
 		return nil
 	})
-	if with.Object != nil {
-		if !ItemsEqual(a.Object, with.Object) {
-			result = false
-		}
+	if !result {
+		return false
 	}
-	return result
+	if !ItemsEqual(a.Object, with.Object) {
+		return false
+	}
+	return true
 }
 
 // OnActivity calls function fn on it Item if it can be asserted to type *Activity

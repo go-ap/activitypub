@@ -275,10 +275,7 @@ func (i ItemCollection) ItemsMatch(col ...Item) bool {
 }
 
 // Equals verifies if our receiver ItemCollection is equals with the "with" Item
-func (i *ItemCollection) Equals(with Item) bool {
-	if IsNil(with) {
-		return i == nil
-	}
+func (i ItemCollection) Equals(with Item) bool {
 	if !with.IsCollection() {
 		return false
 	}
@@ -315,10 +312,12 @@ func (i ItemCollection) equal(with ItemCollection) bool {
 }
 
 // Clean removes Bto and BCC properties on all the members of the collection
-func (i ItemCollection) Clean() {
-	for j, it := range i {
-		i[j] = CleanRecipients(it)
+func (i ItemCollection) Clean() Item {
+	jj := slices.Clone(i)
+	for j, it := range jj {
+		jj[j] = CleanRecipients(it)
 	}
+	return jj
 }
 
 func (i ItemCollection) Recipients() ItemCollection {

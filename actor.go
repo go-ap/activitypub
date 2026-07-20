@@ -349,11 +349,20 @@ func (a *Actor) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&a.To, &a.CC, &a.Bto, &a.BCC, &aud)
 }
 
-func (a *Actor) Clean() {
-	_ = OnObject(a, func(o *Object) error {
-		o.Clean()
-		return nil
-	})
+func (a *Actor) Clean() Item {
+	aa := *a
+	aa.BCC = nil
+	aa.Bto = nil
+	CleanRecipients(aa.Audience)
+	CleanRecipients(aa.Attachment)
+	CleanRecipients(aa.Icon)
+	CleanRecipients(aa.Image)
+	CleanRecipients(aa.Context)
+	CleanRecipients(aa.Generator)
+	CleanRecipients(aa.AttributedTo)
+	CleanRecipients(aa.Preview)
+	CleanRecipients(aa.Tag)
+	return &aa
 }
 
 func (a *Actor) UnmarshalJSON(data []byte) error {
@@ -524,10 +533,7 @@ func ToActor(it LinkOrIRI) (*Actor, error) {
 }
 
 // Equals verifies if our receiver Object is equals with the "with" Item
-func (a *Actor) Equals(with Item) bool {
-	if IsNil(with) {
-		return a == nil
-	}
+func (a Actor) Equals(with Item) bool {
 	withActor, err := ToActor(with)
 	if err != nil {
 		return false
@@ -538,32 +544,26 @@ func (a *Actor) Equals(with Item) bool {
 // equal verifies if our receiver Object is equals with the "with" Object
 func (a Actor) equal(with Actor) bool {
 	result := true
-
 	_ = OnObject(a, func(oa *Object) error {
 		result = oa.Equals(with)
 		return nil
 	})
-	if with.Inbox != nil {
-		if !ItemsEqual(a.Inbox, with.Inbox) {
-			result = false
-		}
+	if !result {
+		return false
 	}
-	if with.Outbox != nil {
-		if !ItemsEqual(a.Outbox, with.Outbox) {
-			result = false
-		}
+	if !ItemsEqual(a.Inbox, with.Inbox) {
+		return false
 	}
-	if with.Liked != nil {
-		if !ItemsEqual(a.Liked, with.Liked) {
-			result = false
-		}
+	if !ItemsEqual(a.Outbox, with.Outbox) {
+		return false
 	}
-	if with.PreferredUsername != nil {
-		if !a.PreferredUsername.Equal(with.PreferredUsername) {
-			result = false
-		}
+	if !ItemsEqual(a.Liked, with.Liked) {
+		return false
 	}
-	return result
+	if !a.PreferredUsername.Equal(with.PreferredUsername) {
+		return false
+	}
+	return true
 }
 
 func (e Endpoints) GobEncode() ([]byte, error) {
