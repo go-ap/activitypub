@@ -10,7 +10,8 @@ This project is part of the [GoActivityPub](https://github.com/go-ap) library wh
 It contains data types for most of the [Activity Vocabulary](https://www.w3.org/TR/activitystreams-vocabulary/) and the [ActivityPub](https://www.w3.org/TR/activitypub/) extension.
 They are documented accordingly with annotations from these specifications.
 
-You can find an expanded documentation about the whole library [on SourceHut](https://man.sr.ht/~mariusor/go-activitypub/go-ap/index.md).
+<!-- Expanded [documentation](https://man.sr.ht/~mariusor/go-activitypub/lib/index.md) -->
+For more details you can have a look at [the expanded documentation](https://go-activitypub.federated.id/lib).
 
 For discussions about the projects you can write to the discussions mailing list: [~mariusor/go-activitypub-discuss@lists.sr.ht](mailto:~mariusor/go-activitypub-discuss@lists.sr.ht)
 
