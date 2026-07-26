@@ -172,10 +172,7 @@ func (l Link) equal(with Link) bool {
 	if l.Width != with.Width {
 		return false
 	}
-	if !ItemsEqual(l.Preview, with.Preview) {
-		return false
-	}
-	return true
+	return ItemsEqual(l.Preview, with.Preview)
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
