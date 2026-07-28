@@ -106,7 +106,6 @@ func FlattenProperties(it Item) Item {
 	}
 	typ := it.GetType()
 	switch {
-
 	case IntransitiveActivityTypes.Match(typ):
 		_ = OnIntransitiveActivity(it, func(a *IntransitiveActivity) error {
 			FlattenIntransitiveActivityProperties(a)
@@ -122,7 +121,7 @@ func FlattenProperties(it Item) Item {
 			FlattenActorProperties(a)
 			return nil
 		})
-	case ObjectTypes.Match(typ):
+	case ObjectTypes.Match(typ) || typ == nil:
 		_ = OnObject(it, func(o *Object) error {
 			FlattenObjectProperties(o)
 			return nil
