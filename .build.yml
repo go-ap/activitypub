@@ -9,9 +9,6 @@ secrets:
 environment:
   GO111MODULE: 'on'
 tasks:
-  - fmt: |
-      cd activitypub
-      test -z $(gofmt -l .)
   - tests: |
       cd activitypub
       make test
@@ -20,6 +17,9 @@ tasks:
       git switch -C master origin/master
       make coverage
       go tool goveralls -flagname unit-tests -service=${CI_NAME} -coverprofile activitypub.coverprofile -repotokenfile ~/.coveralls.tok
+  - fmt: |
+      cd activitypub
+      test -z $(gofmt -l .)
   - lint: |
       cd activitypub
       golangci-lint run || true
