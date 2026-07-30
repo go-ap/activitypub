@@ -61,6 +61,11 @@ func TestToPlace(t *testing.T) {
 			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
 			wantErr: ErrorInvalidType[Place](&IntransitiveActivity{}),
 		},
+		{
+			name: "Tombstone",
+			it:   &Tombstone{ID: "test", Type: TombstoneType, FormerType: PersonType},
+			want: &Place{ID: "test", Type: TombstoneType},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -72,8 +77,9 @@ func TestToPlace(t *testing.T) {
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("ToPlace() got = %s", cmp.Diff(tt.want, got))
 			}
-			if got != nil && !got.Match(PlaceType) {
-				t.Errorf("ToPlace() expected to match Place type, got = %v", got.GetType())
+			validTypes := ActivityVocabularyTypes{PlaceType, TombstoneType}
+			if got != nil && !validTypes.Match(got.Type) {
+				t.Errorf("ToPlace() expected to match %v types, got = %v", validTypes, got.Type)
 			}
 		})
 	}

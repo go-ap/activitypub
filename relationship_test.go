@@ -88,6 +88,11 @@ func TestToRelationship(t *testing.T) {
 			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
 			wantErr: ErrorInvalidType[Relationship](&IntransitiveActivity{}),
 		},
+		{
+			name: "Tombstone",
+			it:   &Tombstone{ID: "test", Type: TombstoneType, FormerType: PersonType},
+			want: &Relationship{ID: "test", Type: TombstoneType},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -99,8 +104,9 @@ func TestToRelationship(t *testing.T) {
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("ToRelationship() got = %s", cmp.Diff(tt.want, got))
 			}
-			if got != nil && !got.Match(RelationshipType) {
-				t.Errorf("ToRelationship() expected to match Relationship type, got = %v", got.GetType())
+			validTypes := ActivityVocabularyTypes{RelationshipType, TombstoneType}
+			if got != nil && !validTypes.Match(got.Type) {
+				t.Errorf("ToRelationship() expected to match %v types, got = %v", validTypes, got.Type)
 			}
 		})
 	}

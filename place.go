@@ -292,6 +292,17 @@ func (p Place) equal(with Place) bool {
 	return result
 }
 
+func tombstoneAsPlace(t *Tombstone) (*Place, error) {
+	p := new(Place)
+	err := OnObject(p, func(pob *Object) error {
+		return OnObject(t, func(tob *Object) error {
+			_, err := CopyObjectProperties(pob, tob)
+			return err
+		})
+	})
+	return p, err
+}
+
 // ToPlace
 func ToPlace(it LinkOrIRI) (*Place, error) {
 	switch i := it.(type) {
@@ -299,6 +310,10 @@ func ToPlace(it LinkOrIRI) (*Place, error) {
 		return i, nil
 	case Place:
 		return &i, nil
+	case *Tombstone:
+		return tombstoneAsPlace(i)
+	case Tombstone:
+		return tombstoneAsPlace(&i)
 	default:
 		return reflectItemToType[Place](it)
 	}

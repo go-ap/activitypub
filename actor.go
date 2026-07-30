@@ -520,6 +520,17 @@ func (e Endpoints) MarshalJSON() ([]byte, error) {
 	return b.Bytes(), nil
 }
 
+func tombstoneAsActor(t *Tombstone) (*Actor, error) {
+	a := new(Actor)
+	err := OnObject(a, func(aob *Object) error {
+		return OnObject(t, func(tob *Object) error {
+			_, err := CopyObjectProperties(aob, tob)
+			return err
+		})
+	})
+	return a, err
+}
+
 // ToActor
 func ToActor(it LinkOrIRI) (*Actor, error) {
 	switch i := it.(type) {
@@ -527,6 +538,10 @@ func ToActor(it LinkOrIRI) (*Actor, error) {
 		return i, nil
 	case Actor:
 		return &i, nil
+	case *Tombstone:
+		return tombstoneAsActor(i)
+	case Tombstone:
+		return tombstoneAsActor(&i)
 	default:
 		return reflectItemToType[Actor](it)
 	}

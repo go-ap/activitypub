@@ -263,6 +263,17 @@ func (r Relationship) Format(s fmt.State, verb rune) {
 	}
 }
 
+func tombstoneAsRelationship(t *Tombstone) (*Relationship, error) {
+	r := new(Relationship)
+	err := OnObject(r, func(pob *Object) error {
+		return OnObject(t, func(tob *Object) error {
+			_, err := CopyObjectProperties(pob, tob)
+			return err
+		})
+	})
+	return r, err
+}
+
 // ToRelationship tries to convert the "it" Item to a Relationship object.
 func ToRelationship(it LinkOrIRI) (*Relationship, error) {
 	switch i := it.(type) {
@@ -270,6 +281,10 @@ func ToRelationship(it LinkOrIRI) (*Relationship, error) {
 		return i, nil
 	case Relationship:
 		return &i, nil
+	case *Tombstone:
+		return tombstoneAsRelationship(i)
+	case Tombstone:
+		return tombstoneAsRelationship(&i)
 	default:
 		return reflectItemToType[Relationship](it)
 	}

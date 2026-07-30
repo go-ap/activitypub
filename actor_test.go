@@ -402,6 +402,11 @@ func TestToActor(t *testing.T) {
 			it:      &IntransitiveActivity{ID: "test", Type: ArriveType},
 			wantErr: ErrorInvalidType[Actor](&IntransitiveActivity{}),
 		},
+		{
+			name: "Tombstone",
+			it:   &Tombstone{ID: "test", Type: TombstoneType, FormerType: PersonType},
+			want: &Actor{ID: "test", Type: TombstoneType},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
