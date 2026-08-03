@@ -85,6 +85,9 @@ type (
 	ObjectOrLink interface {
 		ActivityObject
 		LinkOrIRI
+	}
+	// Deprecated
+	deprecated interface {
 		// IsLink shows if current item represents a Link object or an IRI
 		IsLink() bool
 		// IsObject shows if current item represents an ActivityStreams object
@@ -92,12 +95,7 @@ type (
 		// IsCollection shows if the current item represents an ItemCollection
 		IsCollection() bool
 	}
-	// Mapper interface allows external objects to implement their own mechanism for loading information
-	// from an ActivityStreams vocabulary object
-	Mapper interface {
-		// FromActivityStreams maps an ActivityStreams object to another struct representation
-		FromActivityStreams(Item) error
-	}
+
 	// Typer interface for ActivityPub items returns one or more ActivityVocabularyTypes
 	// that the Item represent.
 	Typer interface {
@@ -832,7 +830,7 @@ func (o Object) Equals(with Item) bool {
 	if !TypesEqual(o.Type, withObject.Type) {
 		return false
 	}
-	if with.IsLink() && !with.GetLink().Equal(o.GetLink()) {
+	if !with.GetLink().Equal(o.GetLink()) {
 		return false
 	}
 	return o.equal(*withObject)

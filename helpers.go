@@ -252,7 +252,7 @@ func notEmptyActor(a *Actor) bool {
 		len(a.PublicKey.ID)+len(a.PublicKey.Owner)+len(a.PublicKey.PublicKeyPem) > 0
 }
 
-// NotEmpty tells us if a Item interface value has a non nil value for various types
+// NotEmpty tells us if an Item interface value has a non nil value for various types
 // that implement
 func NotEmpty(i Item) bool {
 	if IsNil(i) {
@@ -262,23 +262,24 @@ func NotEmpty(i Item) bool {
 	if IsIRI(i) {
 		notEmpty = len(i.GetLink()) > 0
 	}
-	if i.IsCollection() {
+	typ := i.GetType()
+	if CollectionTypes.Match(typ) {
 		_ = OnCollectionIntf(i, func(c CollectionInterface) error {
 			notEmpty = c != nil || len(c.Collection()) > 0
 			return nil
 		})
 	}
-	if ActivityTypes.Match(i.GetType()) {
+	if ActivityTypes.Match(typ) {
 		_ = OnActivity(i, func(a *Activity) error {
 			notEmpty = notEmptyActivity(a)
 			return nil
 		})
-	} else if ActorTypes.Match(i.GetType()) {
+	} else if ActorTypes.Match(typ) {
 		_ = OnActor(i, func(a *Actor) error {
 			notEmpty = notEmptyActor(a)
 			return nil
 		})
-	} else if i.IsLink() {
+	} else if LinkTypes.Match(typ) {
 		_ = OnLink(i, func(l *Link) error {
 			notEmpty = notEmptyLink(l)
 			return nil

@@ -353,7 +353,7 @@ func ValidCollectionIRI(i IRI) bool {
 
 // AddTo adds CollectionPath type IRI on the corresponding property of the i Item
 func (t CollectionPath) AddTo(i Item) (IRI, bool) {
-	if IsNil(i) || !i.IsObject() {
+	if IsNil(i) || !IsObject(i) {
 		return NilIRI, false
 	}
 	status := false

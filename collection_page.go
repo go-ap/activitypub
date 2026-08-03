@@ -372,9 +372,6 @@ func (c CollectionPage) ItemsMatch(col ...Item) bool {
 
 // Equals verifies if our receiver CollectionPage is equals with the "with" Item
 func (c CollectionPage) Equals(with Item) bool {
-	if !with.IsCollection() {
-		return false
-	}
 	withCollectionPage, err := ToCollectionPage(with)
 	if err != nil {
 		return false

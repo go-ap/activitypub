@@ -37,36 +37,37 @@ func itemsNeedSwapping(i1, i2 Item) bool {
 
 func compareByType(typ Typer, it, with Item) bool {
 	result := false
-	if ActivityTypes.Match(typ) {
+	iTyp := it.GetType()
+	if ActivityTypes.Match(iTyp) {
 		_ = OnActivity(it, func(i *Activity) error {
 			result = i.Equals(with)
 			return nil
 		})
-	} else if ActorTypes.Match(with.GetType()) {
+	} else if ActorTypes.Match(iTyp) {
 		_ = OnActor(it, func(i *Actor) error {
 			result = i.Equals(with)
 			return nil
 		})
-	} else if it.IsCollection() {
+	} else if CollectionTypes.Match(iTyp) {
 		if CollectionType.Match(it.GetType()) {
 			_ = OnCollection(it, func(c *Collection) error {
 				result = c.Equals(with)
 				return nil
 			})
 		}
-		if OrderedCollectionType.Match(it.GetType()) {
+		if OrderedCollectionType.Match(iTyp) {
 			_ = OnOrderedCollection(it, func(c *OrderedCollection) error {
 				result = c.Equals(with)
 				return nil
 			})
 		}
-		if CollectionPageType.Match(it.GetType()) {
+		if CollectionPageType.Match(iTyp) {
 			_ = OnCollectionPage(it, func(c *CollectionPage) error {
 				result = c.Equals(with)
 				return nil
 			})
 		}
-		if OrderedCollectionPageType.Match(it.GetType()) {
+		if OrderedCollectionPageType.Match(iTyp) {
 			_ = OnOrderedCollectionPage(it, func(c *OrderedCollectionPage) error {
 				result = c.Equals(with)
 				return nil
@@ -124,6 +125,30 @@ func ItemsEqual(it, with Item) bool {
 		result = compareByType(typ, it, with)
 	}
 	return result
+}
+
+// IsCollection returns if the current Item interface holds an ItemCollection, or any of the collection types
+func IsCollection(it LinkOrIRI) bool {
+	switch it.(type) {
+	case Collection:
+		return true
+	case *Collection:
+		return true
+	case CollectionPage:
+		return true
+	case *CollectionPage:
+		return true
+	case OrderedCollection:
+		return true
+	case *OrderedCollection:
+		return true
+	case OrderedCollectionPage:
+		return true
+	case *OrderedCollectionPage:
+		return true
+	default:
+		return IsItemCollection(it)
+	}
 }
 
 // IsItemCollection returns if the current Item interface holds a Collection

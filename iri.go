@@ -200,9 +200,9 @@ func (i IRI) IsCollection() bool {
 	return false
 }
 
-// FlattenToIRI checks if Item can be flatten to an IRI and returns it if so
+// FlattenToIRI checks if Item can be flattened to an IRI and returns it if so
 func FlattenToIRI(it Item) Item {
-	if !IsNil(it) && it.IsObject() && len(it.GetLink()) > 0 {
+	if !IsNil(it) && len(it.GetLink()) > 0 {
 		return it.GetLink()
 	}
 	return it

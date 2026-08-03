@@ -155,9 +155,9 @@ func ItemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
 				continue
 			}
 			var testIt IRI
-			if cur.IsObject() {
+			if IsObject(cur) {
 				testIt = cur.GetID()
-			} else if cur.IsLink() {
+			} else if IsIRI(cur) {
 				testIt = cur.GetLink()
 			} else {
 				continue
@@ -276,9 +276,6 @@ func (i ItemCollection) ItemsMatch(col ...Item) bool {
 
 // Equals verifies if our receiver ItemCollection is equals with the "with" Item
 func (i ItemCollection) Equals(with Item) bool {
-	if !with.IsCollection() {
-		return false
-	}
 	if !CollectionOfItems.Match(with.GetType()) {
 		return false
 	}

@@ -398,9 +398,6 @@ func (o OrderedCollection) ItemsMatch(col ...Item) bool {
 
 // Equals verifies if our receiver OrderedCollection is equals with the "with" Item
 func (o OrderedCollection) Equals(with Item) bool {
-	if !with.IsCollection() {
-		return false
-	}
 	withCollection, err := ToOrderedCollection(with)
 	if err != nil {
 		return false

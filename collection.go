@@ -392,9 +392,6 @@ func (c Collection) ItemsMatch(col ...Item) bool {
 
 // Equals verifies if our receiver Collection is equals with the "with" Item
 func (c Collection) Equals(with Item) bool {
-	if !with.IsCollection() {
-		return false
-	}
 	withCollection, err := ToCollection(with)
 	if err != nil {
 		return false

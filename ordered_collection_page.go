@@ -329,9 +329,6 @@ func (o OrderedCollectionPage) ItemsMatch(col ...Item) bool {
 
 // Equals verifies if our receiver OrderedCollectionPage is equals with the "with" Item
 func (o OrderedCollectionPage) Equals(with Item) bool {
-	if !with.IsCollection() {
-		return false
-	}
 	withPage, err := ToOrderedCollectionPage(with)
 	if err != nil {
 		return false

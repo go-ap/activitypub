@@ -686,3 +686,59 @@ func TestIsLink(t *testing.T) {
 		})
 	}
 }
+
+func TestIsCollection(t *testing.T) {
+	tests := []struct {
+		name string
+		it   LinkOrIRI
+		want bool
+	}{
+		{
+			name: "nil",
+			it:   nil,
+			want: false,
+		},
+		{
+			name: "nil Item",
+			it:   Item(nil),
+			want: false,
+		},
+		{
+			name: "nil IRIs",
+			it:   IRIs(nil),
+			want: false,
+		},
+		{
+			name: "nil ItemCollection",
+			it:   ItemCollection(nil),
+			want: true,
+		},
+		{
+			name: "nil *OrderedCollection",
+			it:   (*OrderedCollection)(nil),
+			want: true,
+		},
+		{
+			name: "nil *OrderedCollectionPage",
+			it:   (*OrderedCollectionPage)(nil),
+			want: true,
+		},
+		{
+			name: "nil *Collection",
+			it:   (*Collection)(nil),
+			want: true,
+		},
+		{
+			name: "nil *CollectionPage",
+			it:   (*CollectionPage)(nil),
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsCollection(tt.it); got != tt.want {
+				t.Errorf("IsCollection() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
