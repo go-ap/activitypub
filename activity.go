@@ -237,9 +237,6 @@ type HasRecipients interface {
 	// Recipients is a method that should do a recipients de-duplication step and then return
 	// the remaining recipients.
 	Recipients() ItemCollection
-	// Clean is a method that removes BCC/Bto recipients in preparation for public consumption of
-	// the Object.
-	Clean() Item
 }
 
 type Activities interface {
@@ -459,12 +456,18 @@ func (a *Activity) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&a.To, &a.CC, &a.Bto, &a.BCC, &aud)
 }
 
+type Cleanable interface {
+	// Clean is a method that removes BCC/Bto recipients in preparation for public consumption of
+	// the Object.
+	Clean() Item
+}
+
 // CleanRecipients checks if the "it" Item has recipients and cleans them if it does
 func CleanRecipients(it Item) Item {
 	if IsNil(it) || IsIRI(it) {
 		return nil
 	}
-	if s, ok := it.(HasRecipients); ok {
+	if s, ok := it.(Cleanable); ok {
 		it = s.Clean()
 	}
 	return it
