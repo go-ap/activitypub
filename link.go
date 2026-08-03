@@ -79,21 +79,6 @@ func MentionNew(id ID) *Mention {
 	return &Mention{ID: id, Type: MentionType}
 }
 
-// IsLink validates if current Link is a Link
-func (l Link) IsLink() bool {
-	return LinkTypes.Match(l.GetType())
-}
-
-// IsObject validates if current Link is an GetID
-func (l Link) IsObject() bool {
-	return append(ObjectTypes, ObjectType).Match(l.GetType())
-}
-
-// IsCollection returns false for Link objects
-func (l Link) IsCollection() bool {
-	return false
-}
-
 // GetID returns the ID corresponding to the Link object
 func (l Link) GetID() ID {
 	return l.ID

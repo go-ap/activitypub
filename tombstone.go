@@ -111,21 +111,6 @@ type Tombstone struct {
 	Deleted time.Time `jsonld:"deleted,omitempty"`
 }
 
-// IsLink returns false for Tombstone objects
-func (t Tombstone) IsLink() bool {
-	return false
-}
-
-// IsObject returns true for Tombstone objects
-func (t Tombstone) IsObject() bool {
-	return true
-}
-
-// IsCollection returns false for Tombstone objects
-func (t Tombstone) IsCollection() bool {
-	return false
-}
-
 // GetLink returns the IRI corresponding to the current Tombstone object
 func (t Tombstone) GetLink() IRI {
 	return IRI(t.ID)

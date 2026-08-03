@@ -174,11 +174,6 @@ func (i IntransitiveActivity) GetType() Typer {
 	return i.Type
 }
 
-// IsLink returns false for Activity objects
-func (i IntransitiveActivity) IsLink() bool {
-	return false
-}
-
 // GetID returns the ID corresponding to the IntransitiveActivity object
 func (i IntransitiveActivity) GetID() ID {
 	return i.ID
@@ -187,16 +182,6 @@ func (i IntransitiveActivity) GetID() ID {
 // GetLink returns the IRI corresponding to the IntransitiveActivity object
 func (i IntransitiveActivity) GetLink() IRI {
 	return IRI(i.ID)
-}
-
-// IsObject returns true for IntransitiveActivity objects
-func (i IntransitiveActivity) IsObject() bool {
-	return true
-}
-
-// IsCollection returns false for IntransitiveActivity objects
-func (i IntransitiveActivity) IsCollection() bool {
-	return false
 }
 
 // Match returns whether the receiver matches the ActivityVocabularyType arguments.

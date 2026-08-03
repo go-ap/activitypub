@@ -155,11 +155,6 @@ func (o OrderedCollection) GetType() Typer {
 	return o.Type
 }
 
-// IsLink returns false for an OrderedCollection object
-func (o OrderedCollection) IsLink() bool {
-	return false
-}
-
 // GetID returns the ID corresponding to the OrderedCollection
 func (o OrderedCollection) GetID() ID {
 	return o.ID
@@ -175,19 +170,9 @@ func (o OrderedCollection) Match(tt ...ActivityVocabularyType) bool {
 	return ActivityVocabularyTypes(tt).Match(o.Type)
 }
 
-// IsObject returns true for am OrderedCollection object
-func (o OrderedCollection) IsObject() bool {
-	return true
-}
-
 // Collection returns the underlying Collection type
 func (o OrderedCollection) Collection() ItemCollection {
 	return o.OrderedItems
-}
-
-// IsCollection returns true for OrderedCollection objects.
-func (o OrderedCollection) IsCollection() bool {
-	return true
 }
 
 // Contains verifies if OrderedCollection array contains the received item r.

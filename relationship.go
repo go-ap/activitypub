@@ -120,21 +120,6 @@ type Relationship struct {
 	Relationship Item `jsonld:"relationship,omitempty"`
 }
 
-// IsLink returns false for Relationship objects
-func (r Relationship) IsLink() bool {
-	return false
-}
-
-// IsObject returns true for Relationship objects
-func (r Relationship) IsObject() bool {
-	return true
-}
-
-// IsCollection returns false for Relationship objects
-func (r Relationship) IsCollection() bool {
-	return false
-}
-
 // GetLink returns the IRI corresponding to the current Relationship object
 func (r Relationship) GetLink() IRI {
 	return IRI(r.ID)

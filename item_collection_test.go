@@ -8,7 +8,18 @@ import (
 )
 
 func TestItemCollection_Append(t *testing.T) {
-	t.Skipf("TODO")
+	d := make(ItemCollection, 0)
+
+	val := Object{ID: ID("grrr")}
+
+	_ = d.Append(val)
+
+	if len(d) != 1 {
+		t.Errorf("Objects array should have exactly an element")
+	}
+	if !reflect.DeepEqual(d[0], val) {
+		t.Errorf("First item in object array does not match %q", val.ID)
+	}
 }
 
 func TestItemCollection_Collection(t *testing.T) {

@@ -127,22 +127,6 @@ func TestIntransitiveActivity_GetObject(t *testing.T) {
 	}
 }
 
-func TestIntransitiveActivity_IsLink(t *testing.T) {
-	i := IntransitiveActivityNew("test", QuestionType)
-
-	if i.IsLink() {
-		t.Errorf("%T should not respond true to IsLink", i)
-	}
-}
-
-func TestIntransitiveActivity_IsObject(t *testing.T) {
-	i := IntransitiveActivityNew("test", ActivityType)
-
-	if !i.IsObject() {
-		t.Errorf("%T should respond true to IsObject", i)
-	}
-}
-
 func TestIntransitiveActivity_Recipients(t *testing.T) {
 	to := PersonNew("bob")
 	o := ObjectNew(ArticleType)

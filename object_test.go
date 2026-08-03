@@ -34,47 +34,6 @@ func TestObjectNew(t *testing.T) {
 	}
 }
 
-func TestObject_IsLink(t *testing.T) {
-	o := ObjectNew(ObjectType)
-	o.ID = "test"
-	if o.IsLink() {
-		t.Errorf("%#v should not be a valid link", o.Type)
-	}
-	m := ObjectNew(AcceptType)
-	m.ID = "test"
-	if m.IsLink() {
-		t.Errorf("%#v should not be a valid link", m.Type)
-	}
-}
-
-func TestObject_IsObject(t *testing.T) {
-	o := ObjectNew(ObjectType)
-	o.ID = "test"
-	if !o.IsObject() {
-		t.Errorf("%#v should be a valid object", o.Type)
-	}
-	m := ObjectNew(AcceptType)
-	m.ID = "test"
-	if !m.IsObject() {
-		t.Errorf("%#v should be a valid object", m.Type)
-	}
-}
-
-func TestObjectsArr_Append(t *testing.T) {
-	d := make(ItemCollection, 0)
-
-	val := Object{ID: ID("grrr")}
-
-	_ = d.Append(val)
-
-	if len(d) != 1 {
-		t.Errorf("Objects array should have exactly an element")
-	}
-	if !reflect.DeepEqual(d[0], val) {
-		t.Errorf("First item in object array does not match %q", val.ID)
-	}
-}
-
 func TestRecipients(t *testing.T) {
 	bob := PersonNew("bob")
 	alice := PersonNew("alice")

@@ -38,28 +38,6 @@ func TestIRI_GetType(t *testing.T) {
 	}
 }
 
-func TestIRI_IsLink(t *testing.T) {
-	i := IRI("http://example.com")
-	if i.IsLink() != true {
-		t.Errorf("%T.IsLink() returned %t, expected %t", i, i.IsLink(), true)
-	}
-}
-
-func TestIRI_IsObject(t *testing.T) {
-	i := IRI("http://example.com")
-	if i.IsObject() {
-		t.Errorf("%T.IsObject() returned %t, expected %t", i, i.IsObject(), false)
-	}
-	ii := IRI([]byte("https://example.com"))
-	if ii.IsObject() {
-		t.Errorf("%T.IsObject() returned %t, expected %t", ii, ii.IsObject(), false)
-	}
-	iii := &ii
-	if iii.IsObject() {
-		t.Errorf("%T.IsObject() returned %t, expected %t", iii, iii.IsObject(), false)
-	}
-}
-
 func TestIRI_UnmarshalJSON(t *testing.T) {
 	val := "http://example.com"
 	i := IRI("")

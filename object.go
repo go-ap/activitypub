@@ -109,11 +109,11 @@ type (
 
 type Objects interface {
 	Object | Tombstone | Place | Profile | Relationship |
-		Actors |
-		Activities |
-		IntransitiveActivities |
-		Collections |
-		IRI
+	Actors |
+	Activities |
+	IntransitiveActivities |
+	Collections |
+	IRI
 }
 
 // Object describes an ActivityPub object of any kind.
@@ -249,21 +249,6 @@ func (o Object) GetLink() IRI {
 // GetType returns the type of the current Object
 func (o Object) GetType() Typer {
 	return o.Type
-}
-
-// IsLink validates if currentActivity Pub Object is a Link
-func (o Object) IsLink() bool {
-	return false
-}
-
-// IsObject validates if currentActivity Pub Object is an Object
-func (o Object) IsObject() bool {
-	return true
-}
-
-// IsCollection returns false for Object objects
-func (o Object) IsCollection() bool {
-	return false
 }
 
 // Match returns whether the receiver matches the ActivityVocabularyType arguments.

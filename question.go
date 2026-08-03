@@ -150,21 +150,6 @@ func (q Question) GetType() Typer {
 	return q.Type
 }
 
-// IsObject returns true for Question objects
-func (q Question) IsObject() bool {
-	return true
-}
-
-// IsLink returns false for Question objects
-func (q Question) IsLink() bool {
-	return false
-}
-
-// IsCollection returns false for Question objects
-func (q Question) IsCollection() bool {
-	return false
-}
-
 // Match returns whether the receiver matches the ActivityVocabularyType arguments.
 func (q Question) Match(tt ...ActivityVocabularyType) bool {
 	return ActivityVocabularyTypes(tt).Match(q.Type)

@@ -109,21 +109,6 @@ type Profile struct {
 	Describes Item `jsonld:"describes,omitempty"`
 }
 
-// IsLink returns false for Profile objects
-func (p Profile) IsLink() bool {
-	return false
-}
-
-// IsObject returns true for Profile objects
-func (p Profile) IsObject() bool {
-	return true
-}
-
-// IsCollection returns false for Profile objects
-func (p Profile) IsCollection() bool {
-	return false
-}
-
 // GetLink returns the IRI corresponding to the current Profile object
 func (p Profile) GetLink() IRI {
 	return IRI(p.ID)

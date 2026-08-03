@@ -652,22 +652,6 @@ func TestActivity_GetIDGetType(t *testing.T) {
 	}
 }
 
-func TestActivity_IsLink(t *testing.T) {
-	a := ActivityNew("test", ActivityType, Person{})
-
-	if a.IsLink() {
-		t.Errorf("%T should not respond true to IsLink", a)
-	}
-}
-
-func TestActivity_IsObject(t *testing.T) {
-	a := ActivityNew("test", ActivityType, Person{})
-
-	if !a.IsObject() {
-		t.Errorf("%T should respond true to IsObject", a)
-	}
-}
-
 func checkDedup(list ItemCollection, recIds *[]ID) error {
 	for _, rec := range list {
 		for _, id := range *recIds {

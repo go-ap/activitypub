@@ -135,21 +135,6 @@ func (c CollectionPage) GetType() Typer {
 	return c.Type
 }
 
-// IsLink returns false for a CollectionPage object
-func (c CollectionPage) IsLink() bool {
-	return false
-}
-
-// IsObject returns true for a CollectionPage object
-func (c CollectionPage) IsObject() bool {
-	return true
-}
-
-// IsCollection returns true for CollectionPage objects
-func (c CollectionPage) IsCollection() bool {
-	return true
-}
-
 // GetLink returns the IRI corresponding to the CollectionPage object
 func (c CollectionPage) GetLink() IRI {
 	return IRI(c.ID)

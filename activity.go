@@ -371,11 +371,6 @@ func (a Activity) GetType() Typer {
 	return a.Type
 }
 
-// IsLink returns false for Activity objects
-func (a Activity) IsLink() bool {
-	return false
-}
-
 // GetID returns the ID corresponding to the Activity object
 func (a Activity) GetID() ID {
 	return a.ID
@@ -384,16 +379,6 @@ func (a Activity) GetID() ID {
 // GetLink returns the IRI corresponding to the Activity object
 func (a Activity) GetLink() IRI {
 	return IRI(a.ID)
-}
-
-// IsObject returns true for Activity objects
-func (a Activity) IsObject() bool {
-	return true
-}
-
-// IsCollection returns false for Activity objects
-func (a Activity) IsCollection() bool {
-	return false
 }
 
 // Match returns whether the receiver matches the ActivityVocabularyType arguments.

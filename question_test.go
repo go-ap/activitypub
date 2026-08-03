@@ -27,22 +27,6 @@ func TestQuestion_GetID(t *testing.T) {
 	}
 }
 
-func TestQuestion_IsObject(t *testing.T) {
-	a := QuestionNew("test")
-
-	if !a.IsObject() {
-		t.Errorf("%T should respond true to IsObject", a)
-	}
-}
-
-func TestQuestion_IsLink(t *testing.T) {
-	a := QuestionNew("test")
-
-	if a.IsLink() {
-		t.Errorf("%T should respond false to IsLink", a)
-	}
-}
-
 func TestQuestion_GetLink(t *testing.T) {
 	a := QuestionNew("test")
 

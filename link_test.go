@@ -19,28 +19,6 @@ func TestLinkNew(t *testing.T) {
 	}
 }
 
-func TestLink_IsLink(t *testing.T) {
-	l := LinkNew("test", LinkType)
-	if !l.IsLink() {
-		t.Errorf("%#v should be a valid link", l.GetType())
-	}
-	m := LinkNew("test", MentionType)
-	if !m.IsLink() {
-		t.Errorf("%#v should be a valid link", m.GetType())
-	}
-}
-
-func TestLink_IsObject(t *testing.T) {
-	l := LinkNew("test", LinkType)
-	if l.IsObject() {
-		t.Errorf("%#v should not be a valid object", l.GetType())
-	}
-	m := LinkNew("test", MentionType)
-	if m.IsObject() {
-		t.Errorf("%#v should not be a valid object", m.GetType())
-	}
-}
-
 func TestLink_GetID(t *testing.T) {
 	t.Skipf("TODO")
 }

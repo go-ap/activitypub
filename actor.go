@@ -177,21 +177,6 @@ func (a Actor) GetType() Typer {
 	return a.Type
 }
 
-// IsLink validates if currentActivity Pub Actor is a Link
-func (a Actor) IsLink() bool {
-	return false
-}
-
-// IsObject validates if currentActivity Pub Actor is an Object
-func (a Actor) IsObject() bool {
-	return true
-}
-
-// IsCollection returns false for Actor Objects
-func (a Actor) IsCollection() bool {
-	return false
-}
-
 // Match returns whether the receiver matches the ActivityVocabularyType arguments.
 func (a Actor) Match(tt ...ActivityVocabularyType) bool {
 	return ActivityVocabularyTypes(tt).Match(a.Type)

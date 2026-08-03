@@ -123,21 +123,6 @@ type Place struct {
 	Units string `jsonld:"units,omitempty"`
 }
 
-// IsLink returns false for Place objects
-func (p Place) IsLink() bool {
-	return false
-}
-
-// IsObject returns true for Place objects
-func (p Place) IsObject() bool {
-	return true
-}
-
-// IsCollection returns false for Place objects
-func (p Place) IsCollection() bool {
-	return false
-}
-
 // GetLink returns the IRI corresponding to the current Place object
 func (p Place) GetLink() IRI {
 	return IRI(p.ID)

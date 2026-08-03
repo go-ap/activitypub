@@ -29,16 +29,6 @@ func (i ItemCollection) Match(tt ...ActivityVocabularyType) bool {
 	return ActivityVocabularyTypes(tt).Match(i.GetType())
 }
 
-// IsLink returns false for an ItemCollection object
-func (i ItemCollection) IsLink() bool {
-	return false
-}
-
-// IsObject returns true for a ItemCollection object
-func (i ItemCollection) IsObject() bool {
-	return false
-}
-
 func (i ItemCollection) IRIs() IRIs {
 	if i == nil {
 		return nil
@@ -111,11 +101,6 @@ func (i ItemCollection) Normalize() Item {
 // Collection returns the current object as collection interface
 func (i *ItemCollection) Collection() ItemCollection {
 	return *i
-}
-
-// IsCollection returns true for ItemCollection arrays
-func (i ItemCollection) IsCollection() bool {
-	return true
 }
 
 // Contains verifies if ItemCollection contains the received one

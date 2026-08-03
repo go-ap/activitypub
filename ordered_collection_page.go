@@ -138,21 +138,6 @@ func (o OrderedCollectionPage) GetType() Typer {
 	return o.Type
 }
 
-// IsLink returns false for a OrderedCollectionPage object
-func (o OrderedCollectionPage) IsLink() bool {
-	return false
-}
-
-// IsObject returns true for a OrderedCollectionPage object
-func (o OrderedCollectionPage) IsObject() bool {
-	return true
-}
-
-// IsCollection returns true for OrderedCollectionPage objects
-func (o OrderedCollectionPage) IsCollection() bool {
-	return true
-}
-
 // GetLink returns the IRI corresponding to the OrderedCollectionPage object
 func (o OrderedCollectionPage) GetLink() IRI {
 	return IRI(o.ID)

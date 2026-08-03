@@ -185,21 +185,6 @@ func (i IRI) Match(tt ...ActivityVocabularyType) bool {
 	return ActivityVocabularyTypes(tt).Match(i.GetType())
 }
 
-// IsLink
-func (i IRI) IsLink() bool {
-	return true
-}
-
-// IsObject
-func (i IRI) IsObject() bool {
-	return false
-}
-
-// IsCollection returns false for IRI objects
-func (i IRI) IsCollection() bool {
-	return false
-}
-
 // FlattenToIRI checks if Item can be flattened to an IRI and returns it if so
 func FlattenToIRI(it Item) Item {
 	if !IsNil(it) && len(it.GetLink()) > 0 {
@@ -266,21 +251,6 @@ func (i IRIs) GetLink() IRI {
 // GetType returns the ItemCollection's types
 func (i IRIs) GetType() Typer {
 	return CollectionOfIRIs
-}
-
-// IsLink returns false for an ItemCollection object
-func (i IRIs) IsLink() bool {
-	return false
-}
-
-// IsObject returns true for a ItemCollection object
-func (i IRIs) IsObject() bool {
-	return false
-}
-
-// IsCollection returns true for IRI slices
-func (i IRIs) IsCollection() bool {
-	return true
 }
 
 // Append facilitates adding elements to the IRIs slices

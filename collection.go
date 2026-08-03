@@ -197,21 +197,6 @@ func (c Collection) GetType() Typer {
 	return c.Type
 }
 
-// IsLink returns false for a Collection object
-func (c Collection) IsLink() bool {
-	return false
-}
-
-// IsObject returns true for a Collection object
-func (c Collection) IsObject() bool {
-	return true
-}
-
-// IsCollection returns true for Collection objects
-func (c Collection) IsCollection() bool {
-	return true
-}
-
 // GetLink returns the IRI corresponding to the Collection object
 func (c Collection) GetLink() IRI {
 	return IRI(c.ID)

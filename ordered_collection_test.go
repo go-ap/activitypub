@@ -126,26 +126,6 @@ func TestOrderedCollection_GetType(t *testing.T) {
 	}
 }
 
-func TestOrderedCollection_IsLink(t *testing.T) {
-	id := ID("test")
-
-	c := OrderedCollectionNew(id)
-
-	if c.IsLink() != false {
-		t.Errorf("OrderedCollection should not be a link, received %t", c.IsLink())
-	}
-}
-
-func TestOrderedCollection_IsObject(t *testing.T) {
-	id := ID("test")
-
-	c := OrderedCollectionNew(id)
-
-	if c.IsObject() != true {
-		t.Errorf("OrderedCollection should be an object, received %t", c.IsObject())
-	}
-}
-
 func TestOrderedCollection_UnmarshalJSON(t *testing.T) {
 	c := OrderedCollection{}
 
