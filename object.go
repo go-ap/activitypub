@@ -109,11 +109,11 @@ type (
 
 type Objects interface {
 	Object | Tombstone | Place | Profile | Relationship |
-	Actors |
-	Activities |
-	IntransitiveActivities |
-	Collections |
-	IRI
+		Actors |
+		Activities |
+		IntransitiveActivities |
+		Collections |
+		IRI
 }
 
 // Object describes an ActivityPub object of any kind.

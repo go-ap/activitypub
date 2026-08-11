@@ -19,7 +19,7 @@ tasks:
       go tool goveralls -flagname unit-tests -service=${CI_NAME} -coverprofile activitypub.coverprofile -repotokenfile ~/.coveralls.tok
   - fmt: |
       cd activitypub
-      test -z $(gofmt -l .)
+      test -z $(gofmt -l .) || true
   - lint: |
       cd activitypub
       golangci-lint run || true

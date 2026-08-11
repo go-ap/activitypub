@@ -330,6 +330,20 @@ func TestCollectionPaths_Split(t *testing.T) {
 			maybeCol:   Inbox,
 		},
 		{
+			name:       "IRI with query params",
+			t:          CollectionPaths{Outbox, Inbox},
+			given:      "https://example.com/inbox?maxItems=100",
+			maybeActor: "https://example.com",
+			maybeCol:   Inbox,
+		},
+		{
+			name:       "IRI with fragment",
+			t:          CollectionPaths{Outbox, Inbox},
+			given:      "https://example.com/outbox#top",
+			maybeActor: "https://example.com",
+			maybeCol:   Outbox,
+		},
+		{
 			// TODO(marius): This feels wrong.
 			name:       "outbox with https://example.com/inbox",
 			t:          CollectionPaths{Outbox},

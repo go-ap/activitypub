@@ -162,6 +162,8 @@ func (t CollectionPaths) Split(i IRI) (IRI, CollectionPath) {
 			tt = ""
 		}
 		u.Path = strings.TrimRight(maybeActor, "/")
+		u.RawQuery = ""
+		u.Fragment = ""
 		iri := IRI(u.String())
 		return iri, tt
 	}
