@@ -60,6 +60,9 @@ func (i ItemCollection) MarshalJSON() ([]byte, error) {
 // Append facilitates adding elements to Item arrays
 // and ensures ItemCollection implements the Collection interface
 func (i *ItemCollection) Append(it ...Item) error {
+	if i == nil {
+		*i = make(ItemCollection, 0, len(it))
+	}
 	for _, ob := range it {
 		if i.Contains(ob) {
 			continue

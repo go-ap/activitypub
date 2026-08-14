@@ -255,6 +255,9 @@ func (i IRIs) GetType() Typer {
 
 // Append facilitates adding elements to the IRIs slices
 func (i *IRIs) Append(items ...Item) error {
+	if i == nil {
+		*i = make(IRIs, 0, len(items))
+	}
 	for _, it := range items {
 		if IsNil(it) {
 			continue
