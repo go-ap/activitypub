@@ -67,7 +67,7 @@ func (i *ItemCollection) Append(it ...Item) error {
 		*i = make(ItemCollection, 0, len(it))
 	}
 	for _, ob := range it {
-		if i.Contains(ob) {
+		if i.Contains(ob) || IsNil(ob) {
 			continue
 		}
 		*i = append(*i, ob)

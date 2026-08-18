@@ -262,10 +262,7 @@ func (i *IRIs) Append(items ...Item) error {
 		*i = make(IRIs, 0, len(items))
 	}
 	for _, it := range items {
-		if IsNil(it) {
-			continue
-		}
-		if (*i).Contains(it.GetLink()) {
+		if IsNil(it) || (*i).Contains(it.GetLink()) {
 			continue
 		}
 		*i = append(*i, it.GetLink())
