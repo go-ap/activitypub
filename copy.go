@@ -74,13 +74,15 @@ func CopyObjectProperties(to, from *Object) (*Object, error) {
 	to.InReplyTo = replaceIfItem(to.InReplyTo, from.InReplyTo)
 	to.Location = replaceIfItem(to.Location, from.Location)
 	to.Preview = replaceIfItem(to.Preview, from.Preview)
+	to.Replies = replaceIfItem(to.Replies, from.Replies)
+	to.Likes = replaceIfItem(to.Likes, from.Likes)
+	to.Shares = replaceIfItem(to.Shares, from.Shares)
 	if to.Published.IsZero() && !from.Published.IsZero() {
 		to.Published = from.Published
 	}
 	if to.Updated.IsZero() && !from.Updated.IsZero() {
 		to.Updated = from.Updated
 	}
-	to.Replies = replaceIfItem(to.Replies, from.Replies)
 	if !from.StartTime.IsZero() {
 		to.StartTime = from.StartTime
 	}
@@ -101,7 +103,8 @@ func CopyObjectProperties(to, from *Object) (*Object, error) {
 }
 
 func copyAllItemProperties(to, from Item) (Item, error) {
-	if CollectionType.Match(to.GetType()) {
+	switch {
+	case CollectionType.Match(to.GetType()):
 		o, err := ToCollection(to)
 		if err != nil {
 			return o, err
@@ -111,8 +114,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 			return o, err
 		}
 		return CopyCollectionProperties(o, n)
-	}
-	if CollectionPageType.Match(to.GetType()) {
+	case CollectionPageType.Match(to.GetType()):
 		o, err := ToCollectionPage(to)
 		if err != nil {
 			return o, err
@@ -122,8 +124,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 			return o, err
 		}
 		return CopyCollectionPageProperties(o, n)
-	}
-	if OrderedCollectionType.Match(to.GetType()) {
+	case OrderedCollectionType.Match(to.GetType()):
 		o, err := ToOrderedCollection(to)
 		if err != nil {
 			return o, err
@@ -133,8 +134,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 			return o, err
 		}
 		return CopyOrderedCollectionProperties(o, n)
-	}
-	if OrderedCollectionPageType.Match(to.GetType()) {
+	case OrderedCollectionPageType.Match(to.GetType()):
 		o, err := ToOrderedCollectionPage(to)
 		if err != nil {
 			return o, err
@@ -144,8 +144,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 			return o, err
 		}
 		return CopyOrderedCollectionPageProperties(o, n)
-	}
-	if ActorTypes.Match(to.GetType()) {
+	case ActorTypes.Match(to.GetType()):
 		o, err := ToActor(to)
 		if err != nil {
 			return o, err
@@ -155,8 +154,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 			return o, err
 		}
 		return UpdatePersonProperties(o, n)
-	}
-	if !HasTypes(to) || ObjectTypes.Match(to.GetType()) {
+	case !HasTypes(to) || ObjectTypes.Match(to.GetType()):
 		o, err := ToObject(to)
 		if err != nil {
 			return o, err
