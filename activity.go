@@ -406,7 +406,7 @@ func removeFromCollection(col ItemCollection, items ...Item) ItemCollection {
 	return result
 }
 
-func removeFromAudience(a *Activity, items ...Item) error {
+func removeFromAllRecipients(a *Activity, items ...Item) error {
 	if a.To != nil {
 		a.To = removeFromCollection(a.To, items...)
 	}
@@ -427,15 +427,15 @@ func removeFromAudience(a *Activity, items ...Item) error {
 
 // Recipients performs recipient de-duplication on the Activity's To, Bto, CC and BCC properties
 func (a *Activity) Recipients() ItemCollection {
-	alwaysRemove := make(ItemCollection, 0)
+	toRemove := make(ItemCollection, 0)
 	if BlockType.Match(a.GetType()) && !IsNil(a.Object) {
 		_ = OnItem(a.Object, func(object Item) error {
-			_ = alwaysRemove.Append(object)
+			_ = toRemove.Append(object)
 			return nil
 		})
 	}
-	if len(alwaysRemove) > 0 {
-		_ = removeFromAudience(a, alwaysRemove...)
+	if len(toRemove) > 0 {
+		_ = removeFromAllRecipients(a, toRemove...)
 	}
 	aud := a.Audience
 	return ItemCollectionDeduplication(&a.To, &a.CC, &a.Bto, &a.BCC, &aud)
