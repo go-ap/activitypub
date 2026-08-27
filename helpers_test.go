@@ -558,11 +558,16 @@ func TestDerefItem(t *testing.T) {
 	}
 }
 
-func TestItemOrderTimestamp(t *testing.T) {
+func TestTimestampSortFunc(t *testing.T) {
 	early1 := time.Date(2001, 6, 6, 6, 0, 0, 0, time.UTC)
 	early2 := time.Date(2001, 6, 6, 6, 0, 1, 0, time.UTC)
 	late1 := time.Date(2001, 6, 6, 7, 0, 0, 0, time.UTC)
 	late2 := time.Date(2001, 6, 6, 7, 0, 1, 0, time.UTC)
+
+	compareTimes := func(t1, t2 time.Time) int {
+		return int(t1.Sub(t2).Milliseconds())
+	}
+
 	type args struct {
 		i1 Item
 		i2 Item
@@ -570,12 +575,12 @@ func TestItemOrderTimestamp(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want bool
+		want int
 	}{
 		{
 			name: "empty",
 			args: args{},
-			want: false,
+			want: 0,
 		},
 		{
 			name: "first empty",
@@ -583,7 +588,7 @@ func TestItemOrderTimestamp(t *testing.T) {
 				i1: nil,
 				i2: &Object{},
 			},
-			want: true,
+			want: 0,
 		},
 		{
 			name: "second empty",
@@ -591,7 +596,7 @@ func TestItemOrderTimestamp(t *testing.T) {
 				i1: &Object{},
 				i2: nil,
 			},
-			want: false,
+			want: 0,
 		},
 		{
 			name: "empty published/updated",
@@ -599,7 +604,7 @@ func TestItemOrderTimestamp(t *testing.T) {
 				i1: &Object{},
 				i2: &Object{},
 			},
-			want: false,
+			want: 0,
 		},
 		{
 			name: "first has empty published/updated",
@@ -607,7 +612,7 @@ func TestItemOrderTimestamp(t *testing.T) {
 				i1: &Object{},
 				i2: &Object{Published: early1},
 			},
-			want: false,
+			want: compareTimes(time.Time{}, early1),
 		},
 		{
 			name: "check published equals",
@@ -615,7 +620,7 @@ func TestItemOrderTimestamp(t *testing.T) {
 				i1: &Object{Published: early1},
 				i2: &Object{Published: early1},
 			},
-			want: false,
+			want: 0,
 		},
 		{
 			name: "check published/updated equals",
@@ -623,7 +628,7 @@ func TestItemOrderTimestamp(t *testing.T) {
 				i1: &Object{Published: early2},
 				i2: &Object{Updated: early2},
 			},
-			want: false,
+			want: 0,
 		},
 		{
 			name: "check updated/published equals",
@@ -631,7 +636,7 @@ func TestItemOrderTimestamp(t *testing.T) {
 				i1: &Object{Updated: late1},
 				i2: &Object{Published: late1},
 			},
-			want: false,
+			want: 0,
 		},
 		{
 			name: "check first published earlier",
@@ -639,7 +644,7 @@ func TestItemOrderTimestamp(t *testing.T) {
 				i1: &Object{Published: early1},
 				i2: &Object{Published: late1},
 			},
-			want: false,
+			want: compareTimes(early1, late1),
 		},
 		{
 			name: "check second published earlier",
@@ -647,7 +652,7 @@ func TestItemOrderTimestamp(t *testing.T) {
 				i1: &Object{Published: late1},
 				i2: &Object{Published: early1},
 			},
-			want: true,
+			want: compareTimes(late1, early1),
 		},
 		{
 			name: "check first updated earlier",
@@ -655,7 +660,7 @@ func TestItemOrderTimestamp(t *testing.T) {
 				i1: &Object{Updated: early1},
 				i2: &Object{Updated: late1},
 			},
-			want: false,
+			want: compareTimes(early1, late1),
 		},
 		{
 			name: "check second updated earlier",
@@ -663,7 +668,7 @@ func TestItemOrderTimestamp(t *testing.T) {
 				i1: &Object{Updated: late1},
 				i2: &Object{Updated: early1},
 			},
-			want: true,
+			want: compareTimes(late1, early1),
 		},
 
 		{
@@ -672,7 +677,7 @@ func TestItemOrderTimestamp(t *testing.T) {
 				i1: &Object{Published: early1, Updated: late1},
 				i2: &Object{Published: early1, Updated: late2},
 			},
-			want: false,
+			want: compareTimes(late1, late2),
 		},
 		{
 			name: "check second earlier",
@@ -680,13 +685,13 @@ func TestItemOrderTimestamp(t *testing.T) {
 				i1: &Object{Published: early1, Updated: late2},
 				i2: &Object{Published: early1, Updated: late1},
 			},
-			want: true,
+			want: compareTimes(late2, late1),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ItemOrderTimestamp(tt.args.i1, tt.args.i2); got != tt.want {
-				t.Errorf("ItemOrderTimestamp() = %v, want %v", got, tt.want)
+			if got := TimestampSortFunc(tt.args.i1, tt.args.i2); got != tt.want {
+				t.Errorf("TimestampSortFunc() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -550,10 +550,12 @@ type (
 	Reject = Activity
 
 	// Read indicates that the actor has read the object.
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-read
 	Read = Activity
 
 	// Remove indicates that the actor is removing the object. If specified,
 	// the origin indicates the context from which the object is being removed.
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-remove
 	Remove = Activity
 
 	// TentativeReject is a specialization of Reject in which the rejection is considered tentative.

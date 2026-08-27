@@ -123,13 +123,13 @@ func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 	}
 }
 
-// ItemOrderTimestamp is used for ordering a ItemCollection slice using the slice.Sort function
+// TimestampSortFunc is used for ordering a ItemCollection slice using the slices.SortFunc function
 // It orders i1 and i2 based on their Published and Updated timestamps, whichever is later.
-func ItemOrderTimestamp(i1, i2 LinkOrIRI) bool {
+func TimestampSortFunc(i1, i2 Item) int {
 	if IsNil(i1) {
-		return !IsNil(i2)
+		return 0
 	} else if IsNil(i2) {
-		return false
+		return 0
 	}
 
 	var t1 time.Time
@@ -137,24 +137,24 @@ func ItemOrderTimestamp(i1, i2 LinkOrIRI) bool {
 	if IsObject(i1) {
 		o1, e1 := ToObject(i1)
 		if e1 != nil {
-			return false
+			return 0
 		}
-		t1 = o1.Published
+		t1 = o1.Published.Round(0)
 		if o1.Updated.After(t1) {
-			t1 = o1.Updated
+			t1 = o1.Updated.Round(0)
 		}
 	}
 	if IsObject(i2) {
 		o2, e2 := ToObject(i2)
 		if e2 != nil {
-			return false
+			return 0
 		}
-		t2 = o2.Published
+		t2 = o2.Published.Round(0)
 		if o2.Updated.After(t2) {
-			t2 = o2.Updated
+			t2 = o2.Updated.Round(0)
 		}
 	}
-	return t1.After(t2)
+	return int(t1.Sub(t2).Milliseconds())
 }
 
 func notEmptyLink(l *Link) bool {
