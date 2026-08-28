@@ -277,26 +277,24 @@ func (i ItemCollection) Equals(with Item) bool {
 	return i.equal(*itemCollection)
 }
 
+// Equal verifies if our receiver ItemCollection is equals with the "with" ItemCollection
+// The ordering of the item collections needs to be identical, so make sure you order them *before*
+// making the comparison.
 func (i ItemCollection) Equal(with ItemCollection) bool {
 	return i.equal(with)
 }
 
-// equal verifies if our receiver ItemCollection is equals with the "with" ItemCollection
 func (i ItemCollection) equal(with ItemCollection) bool {
 	if len(i) != len(with) {
 		return false
 	}
-	result := true
-	for _, it := range i {
-		itres := false
-		for _, cit := range with {
-			if it.GetLink().Equal(cit.GetLink()) {
-				itres = itres || ItemsEqual(it, cit)
-			}
+	for j, it := range i {
+		wit := with[j]
+		if !ItemsEqual(it, wit) {
+			return false
 		}
-		result = result && itres
 	}
-	return result
+	return true
 }
 
 // Clean removes Bto and BCC properties on all the members of the collection

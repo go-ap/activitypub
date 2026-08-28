@@ -17,6 +17,9 @@ import (
 //	by the subject and object properties. Used together, these three properties form what is commonly known
 //	as a "reified statement" where subject identifies the subject, relationship identifies the predicate,
 //	and object identifies the object.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-relationship
+// https://www.w3.org/TR/activitystreams-vocabulary/#connections
 type Relationship struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`

@@ -421,7 +421,7 @@ func (o OrderedCollection) equal(with OrderedCollection) bool {
 		}
 	}
 	if with.OrderedItems != nil {
-		if !ItemsEqual(o.OrderedItems, with.OrderedItems) {
+		if !with.OrderedItems.Equal(o.OrderedItems) {
 			result = false
 		}
 	}

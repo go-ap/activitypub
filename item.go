@@ -23,18 +23,6 @@ const (
 	NilID = NilIRI
 )
 
-func itemsNeedSwapping(i1, i2 Item) bool {
-	if IsIRI(i1) && !IsIRI(i2) {
-		return true
-	}
-	t1 := i1.GetType()
-	t2 := i2.GetType()
-	if ObjectTypes.Match(t2) {
-		return !ObjectTypes.Match(t1)
-	}
-	return false
-}
-
 func compareByType(typ Typer, it, with Item) bool {
 	result := false
 	iTyp := it.GetType()
@@ -89,26 +77,24 @@ func ItemsEqual(it, with Item) bool {
 	}
 
 	if ita, ok := it.(interface{ Equals(Item) bool }); ok {
-		return ita.Equals(with)
-	}
-
-	if itemsNeedSwapping(it, with) {
-		return ItemsEqual(with, it)
+		eq := ita.Equals(with)
+		return eq
 	}
 
 	result := false
-	if IsIRI(with) || IsIRI(it) {
+	switch {
+	case IsIRI(with) || IsIRI(it):
 		ii, ok := it.(IRI)
 		iw, wok := with.(IRI)
 		result = ok && wok && ii.Equal(iw)
-	} else if IsIRIs(it) {
+	case IsIRIs(it):
 		if !IsIRIs(with) {
 			return false
 		}
 		iIRIs, _ := ToIRIs(it)
 		wIRIs, _ := ToIRIs(with)
 		return slices.Equal(*iIRIs, *wIRIs)
-	} else if IsItemCollection(it) {
+	case IsItemCollection(it):
 		if !IsItemCollection(with) {
 			return false
 		}
@@ -116,15 +102,34 @@ func ItemsEqual(it, with Item) bool {
 			result = c.Equals(with)
 			return nil
 		})
-	} else if IsLink(it) {
+	case IsLink(it):
 		_ = OnLink(it, func(l *Link) error {
 			result = l.Equals(with)
 			return nil
 		})
-	} else if typ := with.GetType(); typ != nil {
-		result = compareByType(typ, it, with)
+	case with.GetType() != nil:
+		if !typesEqual(it.GetType(), with.GetType()) {
+			return false
+		}
+		result = compareByType(with.GetType(), it, with)
 	}
 	return result
+}
+
+func typesEqual(t1, t2 Typer) bool {
+	tt1 := t1.AsTypes()
+	tt2 := t2.AsTypes()
+	if len(tt1) != len(tt2) {
+		return false
+	}
+	slices.Sort(tt1)
+	slices.Sort(tt2)
+	for i, ti1 := range tt1 {
+		if ti1 != tt2[i] {
+			return false
+		}
+	}
+	return true
 }
 
 // IsCollection returns if the current Item interface holds an ItemCollection, or any of the collection types

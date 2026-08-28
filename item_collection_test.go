@@ -297,8 +297,8 @@ func TestItemCollectionDeduplication(t *testing.T) {
 			want: ItemCollection{
 				IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4/followers"),
 				IRI("https://www.w3.org/ns/activitystreams#Public"),
-				IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4"),
 				IRI("https://example.dev"),
+				IRI("https://example.dev/a801139a-0d9a-4703-b0a5-9d14ae1438e4"),
 			},
 			remaining: []*ItemCollection{
 				{
@@ -443,6 +443,8 @@ func TestItemCollection_IRIs(t *testing.T) {
 	}
 }
 
+var items = ItemCollection{}
+
 func TestItemCollection_Equal(t *testing.T) {
 	tests := []struct {
 		name string
@@ -488,19 +490,31 @@ func TestItemCollection_Equal(t *testing.T) {
 			name: "Item Collection with same IRIs in different order",
 			i:    ItemCollection{IRI("http://social.example.com"), IRI("http://example.com")},
 			with: ItemCollection{IRI("http://example.com"), IRI("http://social.example.com")},
-			want: true,
+			want: false,
 		},
 		{
 			name: "Item Collection with Object and IRI with same IRI",
-			i:    ItemCollection{Object{ID: "http://example.com"}, IRI("http://example.com")},
+			i:    ItemCollection{IRI("http://example.com"), Object{ID: "http://example.com"}},
 			with: ItemCollection{IRI("http://example.com"), Object{ID: "http://example.com"}},
 			want: true,
 		},
 		{
+			name: "Item Collection with Object and IRI with same IRI in different order",
+			i:    ItemCollection{Object{ID: "http://example.com"}, IRI("http://example.com")},
+			with: ItemCollection{IRI("http://example.com"), Object{ID: "http://example.com"}},
+			want: false,
+		},
+		{
 			name: "Item Collection with Link and IRI with same IRI",
-			i:    ItemCollection{Link{ID: "http://example.com"}, IRI("http://example.com")},
+			i:    ItemCollection{IRI("http://example.com"), Link{ID: "http://example.com"}},
 			with: ItemCollection{IRI("http://example.com"), Link{ID: "http://example.com"}},
 			want: true,
+		},
+		{
+			name: "Item Collection with Link and IRI with same IRI in different order",
+			i:    ItemCollection{Link{ID: "http://example.com"}, IRI("http://example.com")},
+			with: ItemCollection{IRI("http://example.com"), Link{ID: "http://example.com"}},
+			want: false,
 		},
 		{
 			name: "Item Collection with Link and IRI with same IRI",
@@ -514,11 +528,21 @@ func TestItemCollection_Equal(t *testing.T) {
 			with: ItemCollection{IRI("http://example.com"), IRI("http://social.example.com")},
 			want: false,
 		},
+		{
+			name: "plausible objects",
+			i:    items,
+			with: items,
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.i.Equal(tt.with); got != tt.want {
 				t.Errorf("Equal() = %v, want %v", got, tt.want)
+			}
+			// NOTE(marius): check symmetry of the function
+			if got := tt.with.Equal(tt.i); got != tt.want {
+				t.Errorf("Revered Equal() = %v, want %v", got, tt.want)
 			}
 		})
 	}

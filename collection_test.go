@@ -320,7 +320,7 @@ func TestCollection_Equals(t *testing.T) {
 		want   bool
 	}{
 		{
-			name: "collection with two items",
+			name: "collection with items in different order",
 			fields: Collection{
 				ID:    "https://example.com/1",
 				Type:  CollectionType,
@@ -339,7 +339,7 @@ func TestCollection_Equals(t *testing.T) {
 					Object{ID: "https://example.com/1/1", Type: NoteType},
 				},
 			},
-			want: true,
+			want: false,
 		},
 	}
 	for _, tt := range tests {
