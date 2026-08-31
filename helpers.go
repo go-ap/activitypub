@@ -1,9 +1,6 @@
 package activitypub
 
-import (
-	"fmt"
-	"time"
-)
+import "fmt"
 
 // WithLinkFn represents a function type that can be used as a parameter for OnLink helper function
 type WithLinkFn func(*Link) error
@@ -121,40 +118,6 @@ func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 	default:
 		return fmt.Errorf("%T[%s] can't be converted to a Collection type", it, it.GetType())
 	}
-}
-
-// TimestampSortFunc is used for ordering a ItemCollection slice using the slices.SortFunc function
-// It orders i1 and i2 based on their Published and Updated timestamps, whichever is later.
-func TimestampSortFunc(i1, i2 Item) int {
-	if IsNil(i1) {
-		return 0
-	} else if IsNil(i2) {
-		return 0
-	}
-
-	var t1 time.Time
-	var t2 time.Time
-	if IsObject(i1) {
-		o1, e1 := ToObject(i1)
-		if e1 != nil {
-			return 0
-		}
-		t1 = o1.Published.Round(0)
-		if o1.Updated.After(t1) {
-			t1 = o1.Updated.Round(0)
-		}
-	}
-	if IsObject(i2) {
-		o2, e2 := ToObject(i2)
-		if e2 != nil {
-			return 0
-		}
-		t2 = o2.Published.Round(0)
-		if o2.Updated.After(t2) {
-			t2 = o2.Updated.Round(0)
-		}
-	}
-	return int(t1.Sub(t2).Milliseconds())
 }
 
 func notEmptyLink(l *Link) bool {
