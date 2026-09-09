@@ -81,10 +81,12 @@ func JSONWriteFloatProp(b *bytes.Buffer, n string, f float64, needsComma bool) (
 	return JSONWriteProp(b, n, []byte(fmt.Sprintf("%f", f)), needsComma)
 }
 
+const RFC3339Milli = "2006-01-02T15:04:05.000Z07:00"
+
 func JSONWriteTimeProp(b *bytes.Buffer, n string, t time.Time, needsComma bool) (notEmpty bool) {
 	tb := bytes.Buffer{}
 	JSONWrite(&tb, '"')
-	JSONWriteS(&tb, t.UTC().Format(time.RFC3339))
+	JSONWriteS(&tb, t.UTC().Format(RFC3339Milli))
 	JSONWrite(&tb, '"')
 	return JSONWriteProp(b, n, tb.Bytes(), needsComma)
 }
