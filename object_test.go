@@ -10,35 +10,11 @@ import (
 	"github.com/valyala/fastjson"
 )
 
-func TestObjectNew(t *testing.T) {
-	testValue := ID("test")
-	testType := ArticleType
-
-	o := ObjectNew(testType)
-	o.ID = testValue
-
-	if o.ID != testValue {
-		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
-	}
-	if !o.Match(testType) {
-		t.Errorf("APObject Type '%v' different than expected '%v'", o.GetType(), testType)
-	}
-
-	n := ObjectNew(NilType)
-	n.ID = testValue
-	if n.ID != testValue {
-		t.Errorf("APObject Id '%v' different than expected '%v'", n.ID, testValue)
-	}
-	if !n.Match(ObjectType) {
-		t.Errorf("APObject Type '%v' different than expected '%v'", n.GetType(), ObjectType)
-	}
-}
-
 func TestRecipients(t *testing.T) {
-	bob := PersonNew("bob")
-	alice := PersonNew("alice")
-	foo := OrganizationNew("foo")
-	bar := GroupNew("bar")
+	bob := &Person{Type: PersonType, ID: "bob"}
+	alice := &Person{Type: PersonType, ID: "alice"}
+	foo := &Organization{Type: OrganizationType, ID: "foo"}
+	bar := &Group{Type: GroupType, ID: "bar"}
 
 	first := make(ItemCollection, 0)
 	if len(first) != 0 {

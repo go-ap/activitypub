@@ -225,17 +225,6 @@ func types(m Typer) ActivityVocabularyTypes {
 	return result
 }
 
-// ObjectNew initializes a new Object
-func ObjectNew(typ Typer) *Object {
-	if !ObjectTypes.Match(typ) {
-		typ = ObjectType
-	}
-	o := Object{Type: typ}
-	o.Name = NaturalLanguageValuesNew()
-	o.Content = NaturalLanguageValuesNew()
-	return &o
-}
-
 // GetID returns the ID corresponding to the current Object
 func (o Object) GetID() ID {
 	return o.ID

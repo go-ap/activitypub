@@ -224,14 +224,6 @@ func (q Question) Format(s fmt.State, verb rune) {
 	}
 }
 
-// QuestionNew initializes a Question activity
-func QuestionNew(id ID) *Question {
-	q := Question{ID: id, Type: QuestionType}
-	q.Name = NaturalLanguageValuesNew()
-	q.Content = NaturalLanguageValuesNew()
-	return &q
-}
-
 // ToQuestion tries to convert the "it" Item to a Question object.
 func ToQuestion(it LinkOrIRI) (*Question, error) {
 	switch i := it.(type) {

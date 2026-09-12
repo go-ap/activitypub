@@ -6,21 +6,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestQuestionNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := QuestionNew(testValue)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(QuestionType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), QuestionType)
-	}
-}
-
 func TestQuestion_GetID(t *testing.T) {
-	a := QuestionNew("test")
+	a := &Question{Type: QuestionType, ID: "test"}
 
 	if a.GetID() != "test" {
 		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
@@ -28,7 +15,7 @@ func TestQuestion_GetID(t *testing.T) {
 }
 
 func TestQuestion_GetLink(t *testing.T) {
-	a := QuestionNew("test")
+	a := &Question{Type: QuestionType, ID: "test"}
 
 	if a.GetLink() != "test" {
 		t.Errorf("GetLink should return \"test\" for %T, received %q", a, a.GetLink())
@@ -36,7 +23,7 @@ func TestQuestion_GetLink(t *testing.T) {
 }
 
 func TestQuestion_GetType(t *testing.T) {
-	a := QuestionNew("test")
+	a := &Question{Type: QuestionType, ID: "test"}
 
 	if !QuestionType.Match(a.GetType()) {
 		t.Errorf("GetType should return %q for %T, received %q", QuestionType, a, a.GetType())
@@ -124,7 +111,7 @@ func TestToQuestion(t *testing.T) {
 }
 func TestToQuestion1(t *testing.T) {
 	var it Item
-	act := QuestionNew("test")
+	act := &Question{Type: QuestionType, ID: "test"}
 	it = act
 
 	a, err := ToQuestion(it)
@@ -135,7 +122,7 @@ func TestToQuestion1(t *testing.T) {
 		t.Errorf("Invalid activity returned by ToActivity #%v", a)
 	}
 
-	ob := ObjectNew(ArticleType)
+	ob := &Object{Type: ArticleType}
 	it = ob
 
 	o, err := ToQuestion(it)

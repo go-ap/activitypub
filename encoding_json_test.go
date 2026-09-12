@@ -470,7 +470,7 @@ func Test_JSONWriteValue(t *testing.T) {
 }
 
 func mockOb(id IRI, typ ActivityVocabularyType) LinkOrIRI {
-	ob := ObjectNew(typ)
+	ob := &Object{Type: typ}
 	ob.ID = id
 	return ob
 }
@@ -486,11 +486,6 @@ func TestMarshalJSON(t *testing.T) {
 			name: "empty",
 			arg:  nil,
 			want: []byte("null"),
-		},
-		{
-			name: "Link to example.com",
-			arg:  LinkNew("https://example.com", MentionType),
-			want: []byte(`{"id":"https://example.com","type":"Mention"}`),
 		},
 		{
 			name: "Note",

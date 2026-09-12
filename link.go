@@ -66,19 +66,6 @@ type Link struct {
 // Mention is a specialized Link that represents a @mention.
 type Mention = Link
 
-// LinkNew initializes a new Link
-func LinkNew(id ID, typ ActivityVocabularyType) *Link {
-	if !LinkTypes.Match(typ) {
-		typ = LinkType
-	}
-	return &Link{ID: id, Type: typ}
-}
-
-// MentionNew initializes a new Mention
-func MentionNew(id ID) *Mention {
-	return &Mention{ID: id, Type: MentionType}
-}
-
 // GetID returns the ID corresponding to the Link object
 func (l Link) GetID() ID {
 	return l.ID

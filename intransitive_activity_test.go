@@ -7,36 +7,13 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestIntransitiveActivityNew(t *testing.T) {
-	testValue := ID("test")
-	var testType ActivityVocabularyType = "Arrive"
-
-	a := IntransitiveActivityNew(testValue, testType)
-
-	if a.ID != testValue {
-		t.Errorf("IntransitiveActivity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(testType) {
-		t.Errorf("IntransitiveActivity Type '%v' different than expected '%v'", a.GetType(), testType)
-	}
-
-	g := IntransitiveActivityNew(testValue, "")
-
-	if g.ID != testValue {
-		t.Errorf("IntransitiveActivity Id '%v' different than expected '%v'", g.ID, testValue)
-	}
-	if !g.Match(IntransitiveActivityType) {
-		t.Errorf("IntransitiveActivity Type '%v' different than expected '%v'", g.GetType(), IntransitiveActivityType)
-	}
-}
-
 func TestIntransitiveActivityRecipients(t *testing.T) {
-	bob := PersonNew("bob")
-	alice := PersonNew("alice")
-	foo := OrganizationNew("foo")
-	bar := GroupNew("bar")
+	bob := &Person{Type: PersonType, ID: "bob"}
+	alice := &Person{Type: PersonType, ID: "alice"}
+	foo := &Organization{Type: OrganizationType, ID: "foo"}
+	bar := &Group{Type: GroupType, ID: "bar"}
 
-	a := IntransitiveActivityNew("test", "t")
+	a := &IntransitiveActivity{ID: "test", Type: ActivityVocabularyType("t")}
 
 	a.To.Append(bob)
 	a.To.Append(alice)
@@ -59,7 +36,7 @@ func TestIntransitiveActivityRecipients(t *testing.T) {
 		t.Errorf("%T.To should have exactly 4(four) elements, not %d", a, len(a.To))
 	}
 
-	b := ActivityNew("t", "test", nil)
+	b := &Activity{Type: ActivityVocabularyType("t"), ID: "test"}
 
 	b.To.Append(bar)
 	b.To.Append(alice)
@@ -112,7 +89,7 @@ func TestIntransitiveActivityRecipients(t *testing.T) {
 }
 
 func TestIntransitiveActivity_GetLink(t *testing.T) {
-	i := IntransitiveActivityNew("test", QuestionType)
+	i := &IntransitiveActivity{Type: QuestionType, ID: "test"}
 
 	if i.GetID() != "test" {
 		t.Errorf("%T should return an empty %T object. Received %#v", i, i, i)
@@ -120,7 +97,7 @@ func TestIntransitiveActivity_GetLink(t *testing.T) {
 }
 
 func TestIntransitiveActivity_GetObject(t *testing.T) {
-	i := IntransitiveActivityNew("test", QuestionType)
+	i := &IntransitiveActivity{Type: QuestionType, ID: "test"}
 
 	if i.GetID() != "test" || !i.Match(QuestionType) {
 		t.Errorf("%T should not return an empty %T object. Received %#v", i, i, i)
@@ -128,13 +105,13 @@ func TestIntransitiveActivity_GetObject(t *testing.T) {
 }
 
 func TestIntransitiveActivity_Recipients(t *testing.T) {
-	to := PersonNew("bob")
-	o := ObjectNew(ArticleType)
-	cc := PersonNew("alice")
+	to := &Person{Type: PersonType, ID: "bob"}
+	o := Object{Type: ArticleType}
+	cc := &Person{Type: PersonType, ID: "alice"}
 
 	o.ID = "something"
 
-	c := IntransitiveActivityNew("act", IntransitiveActivityType)
+	c := &IntransitiveActivity{Type: IntransitiveActivityType, ID: "act"}
 	c.To.Append(to)
 	c.CC.Append(cc)
 	c.BCC.Append(cc)
@@ -162,7 +139,7 @@ func TestIntransitiveActivity_Recipients(t *testing.T) {
 }
 
 func TestIntransitiveActivity_GetID(t *testing.T) {
-	a := IntransitiveActivityNew("test", IntransitiveActivityType)
+	a := &IntransitiveActivity{Type: IntransitiveActivityType, ID: "test"}
 
 	if a.GetID() != "test" {
 		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
@@ -171,19 +148,19 @@ func TestIntransitiveActivity_GetID(t *testing.T) {
 
 func TestIntransitiveActivity_GetType(t *testing.T) {
 	{
-		a := IntransitiveActivityNew("test", IntransitiveActivityType)
+		a := &IntransitiveActivity{Type: IntransitiveActivityType, ID: "test"}
 		if !a.Match(IntransitiveActivityType) {
 			t.Errorf("GetType should return %q for %T, received %q", IntransitiveActivityType, a, a.GetType())
 		}
 	}
 	{
-		a := IntransitiveActivityNew("test", ArriveType)
+		a := &IntransitiveActivity{Type: ArriveType, ID: "test"}
 		if !a.Match(ArriveType) {
 			t.Errorf("GetType should return %q for %T, received %q", ArriveType, a, a.GetType())
 		}
 	}
 	{
-		a := IntransitiveActivityNew("test", QuestionType)
+		a := &IntransitiveActivity{Type: QuestionType, ID: "test"}
 		if !a.Match(QuestionType) {
 			t.Errorf("GetType should return %q for %T, received %q", QuestionType, a, a.GetType())
 		}
@@ -275,32 +252,6 @@ func TestIntransitiveActivity_IsCollection(t *testing.T) {
 
 func TestIntransitiveActivity_UnmarshalJSON(t *testing.T) {
 	t.Skipf("TODO")
-}
-
-func TestArriveNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := ArriveNew(testValue)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(ArriveType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), ArriveType)
-	}
-}
-
-func TestTravelNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := TravelNew(testValue)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(TravelType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), TravelType)
-	}
 }
 
 func TestIntransitiveActivity_Equals(t *testing.T) {

@@ -249,18 +249,6 @@ func (i *IntransitiveActivity) GobDecode(data []byte) error {
 	return unmapIntransitiveActivityProperties(mm, i)
 }
 
-// IntransitiveActivityNew initializes a intransitive activity
-func IntransitiveActivityNew(id ID, typ ActivityVocabularyType) *IntransitiveActivity {
-	if !IntransitiveActivityTypes.Match(typ) {
-		typ = IntransitiveActivityType
-	}
-	i := IntransitiveActivity{ID: id, Type: typ}
-	i.Name = NaturalLanguageValuesNew()
-	i.Content = NaturalLanguageValuesNew()
-
-	return &i
-}
-
 // ToIntransitiveActivity tries to convert it Item to an IntransitiveActivity object
 func ToIntransitiveActivity(it LinkOrIRI) (*IntransitiveActivity, error) {
 	switch i := it.(type) {
@@ -279,20 +267,6 @@ func ToIntransitiveActivity(it LinkOrIRI) (*IntransitiveActivity, error) {
 	default:
 		return reflectItemToType[IntransitiveActivity](it)
 	}
-}
-
-// ArriveNew initializes an Arrive activity
-func ArriveNew(id ID) *Arrive {
-	a := IntransitiveActivityNew(id, ArriveType)
-	o := Arrive(*a)
-	return &o
-}
-
-// TravelNew initializes a Travel activity
-func TravelNew(id ID) *Travel {
-	a := IntransitiveActivityNew(id, TravelType)
-	o := Travel(*a)
-	return &o
 }
 
 // Equal verifies if our receiver IntransitiveActivity is equals with the "with" Item

@@ -10,97 +10,15 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
-func TestActorNew(t *testing.T) {
-	testValue := ID("test")
-	testType := ApplicationType
-
-	o := ActorNew(testValue, testType)
-
-	if o.ID != testValue {
-		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
-	}
-	if !testType.Match(o.GetType()) {
-		t.Errorf("APObject Type '%v' different than expected '%v'", o.GetType(), testType)
-	}
-
-	n := ActorNew(testValue, "")
-	if n.ID != testValue {
-		t.Errorf("APObject Id '%v' different than expected '%v'", n.ID, testValue)
-	}
-	if !cmp.Equal(n.GetType(), ActorType) {
-		t.Errorf("APObject Type '%v' different than expected '%v'", n.GetType(), ActorType)
-	}
-}
-
-func TestPersonNew(t *testing.T) {
-	testValue := ID("test")
-
-	o := PersonNew(testValue)
-	if o.ID != testValue {
-		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
-	}
-	if !cmp.Equal(o.GetType(), PersonType) {
-		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, PersonType)
-	}
-}
-
-func TestApplicationNew(t *testing.T) {
-	testValue := ID("test")
-
-	o := ApplicationNew(testValue)
-	if o.ID != testValue {
-		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
-	}
-	if !cmp.Equal(o.GetType(), ApplicationType) {
-		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, ApplicationType)
-	}
-}
-
-func TestGroupNew(t *testing.T) {
-	testValue := ID("test")
-
-	o := GroupNew(testValue)
-	if o.ID != testValue {
-		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
-	}
-	if !cmp.Equal(o.GetType(), GroupType) {
-		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, GroupType)
-	}
-}
-
-func TestOrganizationNew(t *testing.T) {
-	testValue := ID("test")
-
-	o := OrganizationNew(testValue)
-	if o.ID != testValue {
-		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
-	}
-	if !cmp.Equal(o.GetType(), OrganizationType) {
-		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, OrganizationType)
-	}
-}
-
-func TestServiceNew(t *testing.T) {
-	testValue := ID("test")
-
-	o := ServiceNew(testValue)
-	if o.ID != testValue {
-		t.Errorf("APObject Id '%v' different than expected '%v'", o.ID, testValue)
-	}
-	if !cmp.Equal(o.GetType(), ServiceType) {
-		t.Errorf("APObject Type '%v' different than expected '%v'", o.Type, ServiceType)
-	}
-}
-
 func TestActor_Object(t *testing.T) {
-	m := ActorNew("test", ActorType)
+	m := &Actor{Type: ActorType, ID: "test"}
 	if reflect.DeepEqual(ID(""), m.GetID()) {
 		t.Errorf("%#v should not be an empty activity pub object", m.GetID())
 	}
 }
 
 func TestActor_Type(t *testing.T) {
-	m := ActorNew("test", ActorType)
+	m := &Actor{Type: ActorType, ID: "test"}
 	if !cmp.Equal(m.GetType(), ActorType) {
 		t.Errorf("%#v should be an empty Link object", m.GetType())
 	}
@@ -338,11 +256,6 @@ func TestToActor(t *testing.T) {
 			name: "Valid Actor",
 			it:   Actor{ID: "test", Type: UpdateType},
 			want: &Actor{ID: "test", Type: UpdateType},
-		},
-		{
-			name: "Valid *Actor",
-			it:   ActorNew("test", CreateType),
-			want: ActorNew("test", CreateType),
 		},
 		{
 			name:    "IRI",

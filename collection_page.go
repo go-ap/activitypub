@@ -279,18 +279,6 @@ func (c *CollectionPage) GobDecode(data []byte) error {
 	return unmapCollectionPageProperties(mm, c)
 }
 
-// CollectionNew initializes a new CollectionPage
-func CollectionPageNew(parent CollectionInterface) *CollectionPage {
-	p := CollectionPage{
-		PartOf: parent.GetLink(),
-	}
-	if pc, ok := parent.(*Collection); ok {
-		_ = copyCollectionToPage(pc, &p)
-	}
-	p.Type = CollectionPageType
-	return &p
-}
-
 func copyCollectionToPage(c *Collection, p *CollectionPage) error {
 	p.Type = CollectionPageType
 	p.Name = c.Name

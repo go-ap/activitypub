@@ -5,20 +5,6 @@ import (
 	"testing"
 )
 
-func TestLinkNew(t *testing.T) {
-	testValue := ID("test")
-	var testType ActivityVocabularyType
-
-	l := LinkNew(testValue, testType)
-
-	if l.ID != testValue {
-		t.Errorf("APObject Id '%v' different than expected '%v'", l.ID, testValue)
-	}
-	if !l.Match(LinkType) {
-		t.Errorf("APObject Type '%v' different than expected '%v'", l.GetType(), LinkType)
-	}
-}
-
 func TestLink_GetID(t *testing.T) {
 	t.Skipf("TODO")
 }
@@ -32,10 +18,6 @@ func TestLink_GetType(t *testing.T) {
 }
 
 func TestLink_UnmarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestMentionNew(t *testing.T) {
 	t.Skipf("TODO")
 }
 

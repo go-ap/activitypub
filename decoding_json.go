@@ -469,7 +469,7 @@ func GetItemByType(typ Typer) (Item, error) {
 	case ActivityVocabularyTypes{QuestionType}.Match(typ):
 		return &Question{Type: typ}, nil
 	case ActivityVocabularyTypes{ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType}.Match(typ):
-		return ObjectNew(typ), nil
+		return &Object{Type: typ}, nil
 	case ActivityVocabularyTypes{LinkType, MentionType}.Match(typ):
 		return &Link{Type: typ}, nil
 	case ActivityVocabularyTypes{ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,

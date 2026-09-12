@@ -9,360 +9,13 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestActivityNew(t *testing.T) {
-	testValue := ID("test")
-	var testType ActivityVocabularyType = "Accept"
-
-	a := ActivityNew(testValue, testType, nil)
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(testType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), testType)
-	}
-
-	g := ActivityNew(testValue, "", nil)
-
-	if g.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", g.ID, testValue)
-	}
-	if !g.Match(ActivityType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", g.GetType(), ActivityType)
-	}
-}
-
-func TestAcceptNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := AcceptNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(AcceptType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), AcceptType)
-	}
-}
-
-func TestAddNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := AddNew(testValue, nil, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(AddType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), AddType)
-	}
-}
-
-func TestAnnounceNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := AnnounceNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(AnnounceType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), AnnounceType)
-	}
-}
-
-func TestBlockNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := BlockNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(BlockType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), BlockType)
-	}
-}
-
-func TestCreateNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := CreateNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(CreateType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), CreateType)
-	}
-}
-
-func TestDeleteNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := DeleteNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(DeleteType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), DeleteType)
-	}
-}
-
-func TestDislikeNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := DislikeNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(DislikeType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), DislikeType)
-	}
-}
-
-func TestFlagNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := FlagNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(FlagType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), FlagType)
-	}
-}
-
-func TestFollowNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := FollowNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(FollowType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), FollowType)
-	}
-}
-
-func TestIgnoreNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := IgnoreNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(IgnoreType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), IgnoreType)
-	}
-}
-
-func TestInviteNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := InviteNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(InviteType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), InviteType)
-	}
-}
-
-func TestJoinNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := JoinNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(JoinType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), JoinType)
-	}
-}
-
-func TestLeaveNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := LeaveNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(LeaveType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), LeaveType)
-	}
-}
-
-func TestLikeNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := LikeNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(LikeType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), LikeType)
-	}
-}
-
-func TestListenNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := ListenNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(ListenType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), ListenType)
-	}
-}
-
-func TestMoveNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := MoveNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(MoveType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), MoveType)
-	}
-}
-
-func TestOfferNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := OfferNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(OfferType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), OfferType)
-	}
-}
-
-func TestRejectNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := RejectNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(RejectType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), RejectType)
-	}
-}
-
-func TestReadNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := ReadNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(ReadType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), ReadType)
-	}
-}
-
-func TestRemoveNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := RemoveNew(testValue, nil, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(RemoveType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), RemoveType)
-	}
-}
-
-func TestTentativeRejectNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := TentativeRejectNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(TentativeRejectType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), TentativeRejectType)
-	}
-}
-
-func TestTentativeAcceptNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := TentativeAcceptNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(TentativeAcceptType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), TentativeAcceptType)
-	}
-}
-
-func TestUndoNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := UndoNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(UndoType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), UndoType)
-	}
-}
-
-func TestUpdateNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := UpdateNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(UpdateType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), UpdateType)
-	}
-}
-
-func TestViewNew(t *testing.T) {
-	testValue := ID("test")
-
-	a := ViewNew(testValue, nil)
-
-	if a.ID != testValue {
-		t.Errorf("Activity Id '%v' different than expected '%v'", a.ID, testValue)
-	}
-	if !a.Match(ViewType) {
-		t.Errorf("Activity Type '%v' different than expected '%v'", a.GetType(), ViewType)
-	}
-}
-
 func TestActivityRecipients(t *testing.T) {
-	bob := PersonNew("bob")
-	alice := PersonNew("alice")
-	foo := OrganizationNew("foo")
-	bar := GroupNew("bar")
+	bob := &Person{Type: PersonType, ID: "bob"}
+	alice := &Person{Type: PersonType, ID: "alice"}
+	foo := &Organization{Type: OrganizationType, ID: "foo"}
+	bar := &Group{Type: GroupType, ID: "bar"}
 
-	a := ActivityNew("t", "test", nil)
+	a := &Question{Type: ActivityVocabularyType("t"), ID: "test"}
 
 	_ = a.To.Append(bob)
 	_ = a.To.Append(alice)
@@ -385,7 +38,7 @@ func TestActivityRecipients(t *testing.T) {
 		t.Errorf("%T.To should have exactly 4(four) elements, not %d", a, len(a.To))
 	}
 
-	b := ActivityNew("t", "test", nil)
+	b := &Question{Type: ActivityVocabularyType("t"), ID: "test"}
 
 	_ = b.To.Append(bar)
 	_ = b.To.Append(alice)
@@ -420,12 +73,12 @@ func TestActivityRecipients(t *testing.T) {
 }
 
 func TestBlockRecipients(t *testing.T) {
-	bob := PersonNew("bob")
-	alice := PersonNew("alice")
-	foo := OrganizationNew("foo")
-	bar := GroupNew("bar")
+	bob := &Person{Type: PersonType, ID: "bob"}
+	alice := &Person{Type: PersonType, ID: "alice"}
+	foo := &Organization{Type: OrganizationType, ID: "foo"}
+	bar := &Group{Type: GroupType, ID: "bar"}
 
-	a := BlockNew("bbb", bob)
+	a := &Block{Type: BlockType, ID: "bbb", Object: bob}
 
 	_ = a.To.Append(bob)
 	_ = a.To.Append(alice)
@@ -448,7 +101,7 @@ func TestBlockRecipients(t *testing.T) {
 		t.Errorf("%T.To should have exactly 3(three) elements, not %d", a, len(a.To))
 	}
 
-	b := BlockNew("t", bob)
+	b := &Block{Type: BlockType, ID: "t", Object: bob}
 
 	_ = b.To.Append(bar)
 	_ = b.To.Append(alice)
@@ -501,13 +154,13 @@ func TestBlockRecipients(t *testing.T) {
 }
 
 func TestCreate_Recipients(t *testing.T) {
-	to := PersonNew("bob")
-	o := ObjectNew(ArticleType)
-	cc := PersonNew("alice")
+	to := &Person{Type: PersonType, ID: "bob"}
+	o := &Object{Type: ArticleType}
+	cc := &Person{Type: PersonType, ID: "alice"}
 
 	o.ID = "something"
 
-	c := CreateNew("act", o)
+	c := &Create{Type: CreateType, ID: "act", Object: o}
 	_ = c.To.Append(to)
 	_ = c.CC.Append(cc)
 	_ = c.BCC.Append(cc)
@@ -535,13 +188,13 @@ func TestCreate_Recipients(t *testing.T) {
 }
 
 func TestDislike_Recipients(t *testing.T) {
-	to := PersonNew("bob")
-	o := ObjectNew(ArticleType)
-	cc := PersonNew("alice")
+	to := &Person{Type: PersonType, ID: "bob"}
+	o := Object{Type: ArticleType}
+	cc := &Person{Type: PersonType, ID: "alice"}
 
 	o.ID = "something"
 
-	d := DislikeNew("act", o)
+	d := &Dislike{Type: DislikeType, ID: "act", Object: o}
 	_ = d.To.Append(to)
 	_ = d.CC.Append(cc)
 	_ = d.BCC.Append(cc)
@@ -569,13 +222,13 @@ func TestDislike_Recipients(t *testing.T) {
 }
 
 func TestLike_Recipients(t *testing.T) {
-	to := PersonNew("bob")
-	o := ObjectNew(ArticleType)
-	cc := PersonNew("alice")
+	to := &Person{Type: PersonType, ID: "bob"}
+	o := Object{Type: ArticleType}
+	cc := &Person{Type: PersonType, ID: "alice"}
 
 	o.ID = "something"
 
-	l := LikeNew("act", o)
+	l := &Like{Type: LikeType, ID: "act", Object: o}
 	_ = l.To.Append(to)
 	_ = l.CC.Append(cc)
 	_ = l.BCC.Append(cc)
@@ -603,13 +256,13 @@ func TestLike_Recipients(t *testing.T) {
 }
 
 func TestUpdate_Recipients(t *testing.T) {
-	to := PersonNew("bob")
-	o := ObjectNew(ArticleType)
-	cc := PersonNew("alice")
+	to := &Person{Type: PersonType, ID: "bob"}
+	o := Object{Type: ArticleType}
+	cc := &Person{Type: PersonType, ID: "alice"}
 
 	o.ID = "something"
 
-	u := UpdateNew("act", o)
+	u := &Update{Type: UpdateType, ID: "act", Object: o}
 	_ = u.To.Append(to)
 	_ = u.CC.Append(cc)
 	_ = u.BCC.Append(cc)
@@ -637,7 +290,7 @@ func TestUpdate_Recipients(t *testing.T) {
 }
 
 func TestActivity_GetID(t *testing.T) {
-	a := ActivityNew("test", ActivityType, Person{})
+	a := &Activity{Type: ActivityType, ID: "test", Object: Person{}}
 
 	if a.GetID() != "test" {
 		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
@@ -645,7 +298,7 @@ func TestActivity_GetID(t *testing.T) {
 }
 
 func TestActivity_GetIDGetType(t *testing.T) {
-	a := ActivityNew("test", ActivityType, Person{})
+	a := &Activity{Type: ActivityType, ID: "test", Object: Person{}}
 
 	if a.GetID() != "test" || !a.Match(ActivityType) {
 		t.Errorf("%T should not return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
@@ -665,13 +318,13 @@ func checkDedup(list ItemCollection, recIds *[]ID) error {
 }
 
 func TestActivity_Recipients(t *testing.T) {
-	to := PersonNew("bob")
-	o := ObjectNew(ArticleType)
-	cc := PersonNew("alice")
+	to := &Person{Type: PersonType, ID: "bob"}
+	o := Object{Type: ArticleType}
+	cc := &Person{Type: PersonType, ID: "alice"}
 
 	o.ID = "something"
 
-	c := ActivityNew("act", ActivityType, o)
+	c := &Activity{Type: ActivityType, ID: "act", Object: o}
 	_ = c.To.Append(to)
 	_ = c.CC.Append(cc)
 	_ = c.BCC.Append(cc)
@@ -699,13 +352,13 @@ func TestActivity_Recipients(t *testing.T) {
 }
 
 func TestBlock_Recipients(t *testing.T) {
-	to := PersonNew("bob")
-	o := ObjectNew(ArticleType)
-	cc := PersonNew("alice")
+	to := &Person{Type: PersonType, ID: "bob"}
+	o := Object{Type: ArticleType}
+	cc := &Person{Type: PersonType, ID: "alice"}
 
 	o.ID = "something"
 
-	b := BlockNew("act", o)
+	b := &Block{Type: BlockType, ID: "act", Object: o}
 	_ = b.To.Append(to)
 	_ = b.CC.Append(cc)
 	_ = b.BCC.Append(cc)

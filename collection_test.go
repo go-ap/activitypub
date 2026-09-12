@@ -22,19 +22,6 @@ func mockCollection(items ...Item) Collection {
 	return cc
 }
 
-func TestCollectionNew(t *testing.T) {
-	testValue := ID("test")
-
-	c := CollectionNew(testValue)
-
-	if c.ID != testValue {
-		t.Errorf("APObject Id '%v' different than expected '%v'", c.ID, testValue)
-	}
-	if !c.Match(CollectionType) {
-		t.Errorf("APObject Type '%v' different than expected '%v'", c.GetType(), CollectionType)
-	}
-}
-
 func TestCollection_Append(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -88,7 +75,7 @@ func TestCollection_Append(t *testing.T) {
 func TestCollection_Collection(t *testing.T) {
 	id := ID("test")
 
-	c := CollectionNew(id)
+	c := &Collection{Type: CollectionType, ID: id}
 
 	if !reflect.DeepEqual(c.Collection(), c.Items) {
 		t.Errorf("Collection items should be equal %v %v", c.Collection(), c.Items)
@@ -98,7 +85,7 @@ func TestCollection_Collection(t *testing.T) {
 func TestCollection_GetID(t *testing.T) {
 	id := ID("test")
 
-	c := CollectionNew(id)
+	c := &Collection{Type: CollectionType, ID: id}
 
 	if c.GetID() != id {
 		t.Errorf("GetID should return %s, received %s", id, c.GetID())
@@ -109,7 +96,7 @@ func TestCollection_GetLink(t *testing.T) {
 	id := ID("test")
 	link := IRI(id)
 
-	c := CollectionNew(id)
+	c := &Collection{Type: CollectionType, ID: id}
 
 	if c.GetLink() != link {
 		t.Errorf("GetLink should return %q, received %q", link, c.GetLink())
@@ -119,7 +106,7 @@ func TestCollection_GetLink(t *testing.T) {
 func TestCollection_GetType(t *testing.T) {
 	id := ID("test")
 
-	c := CollectionNew(id)
+	c := &Collection{Type: CollectionType, ID: id}
 
 	if !c.Match(CollectionType) {
 		t.Errorf("Collection Type should be %q, received %q", CollectionType, c.GetType())
@@ -172,7 +159,7 @@ func TestCollection_UnmarshalJSON(t *testing.T) {
 func TestCollection_Count(t *testing.T) {
 	id := ID("test")
 
-	c := CollectionNew(id)
+	c := &Collection{Type: CollectionType, ID: id}
 
 	if c.TotalItems != 0 {
 		t.Errorf("Empty object should have empty TotalItems, received %d", c.TotalItems)
@@ -198,14 +185,6 @@ func TestCollection_Contains(t *testing.T) {
 }
 
 func TestCollection_IsCollection(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestFollowersNew(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestFollowingNew(t *testing.T) {
 	t.Skipf("TODO")
 }
 

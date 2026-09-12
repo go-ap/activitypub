@@ -279,56 +279,6 @@ type (
 	Service = Actor
 )
 
-// ActorNew initializes an CanReceiveActivities type actor
-func ActorNew(id ID, typ ActivityVocabularyType) *Actor {
-	if !ActorTypes.Match(typ) {
-		typ = ActorType
-	}
-
-	a := Actor{ID: id, Type: typ}
-	a.Name = NaturalLanguageValuesNew()
-	a.Content = NaturalLanguageValuesNew()
-	a.Summary = NaturalLanguageValuesNew()
-	a.PreferredUsername = NaturalLanguageValuesNew()
-
-	return &a
-}
-
-// ApplicationNew initializes an Application type actor
-func ApplicationNew(id ID) *Application {
-	a := ActorNew(id, ApplicationType)
-	o := Application(*a)
-	return &o
-}
-
-// GroupNew initializes a Group type actor
-func GroupNew(id ID) *Group {
-	a := ActorNew(id, GroupType)
-	o := Group(*a)
-	return &o
-}
-
-// OrganizationNew initializes an Organization type actor
-func OrganizationNew(id ID) *Organization {
-	a := ActorNew(id, OrganizationType)
-	o := Organization(*a)
-	return &o
-}
-
-// PersonNew initializes a Person type actor
-func PersonNew(id ID) *Person {
-	a := ActorNew(id, PersonType)
-	o := Person(*a)
-	return &o
-}
-
-// ServiceNew initializes a Service type actor
-func ServiceNew(id ID) *Service {
-	a := ActorNew(id, ServiceType)
-	o := Service(*a)
-	return &o
-}
-
 func (a *Actor) Recipients() ItemCollection {
 	aud := a.Audience
 	return ItemCollectionDeduplication(&a.To, &a.CC, &a.Bto, &a.BCC, &aud)

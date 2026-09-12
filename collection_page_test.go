@@ -22,19 +22,6 @@ func mockCollectionPage(items ...Item) CollectionPage {
 	return cc
 }
 
-func TestCollectionPageNew(t *testing.T) {
-	testValue := ID("test")
-
-	c := CollectionNew(testValue)
-	p := CollectionPageNew(c)
-	if reflect.DeepEqual(p.Collection, c) {
-		t.Errorf("Invalid collection parent '%v'", p.PartOf)
-	}
-	if p.PartOf != c.GetLink() {
-		t.Errorf("Invalid collection '%v'", p.PartOf)
-	}
-}
-
 func TestCollectionPage_Append(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -140,8 +127,7 @@ func TestCollectionPage_UnmarshalJSON(t *testing.T) {
 func TestCollectionPage_Collection(t *testing.T) {
 	id := ID("test")
 
-	c := CollectionNew(id)
-	p := CollectionPageNew(c)
+	p := &CollectionPage{Type: CollectionPageType, ID: id}
 
 	if !reflect.DeepEqual(p.Collection(), p.Items) {
 		t.Errorf("Collection items should be equal %v %v", p.Collection(), p.Items)
@@ -151,8 +137,8 @@ func TestCollectionPage_Collection(t *testing.T) {
 func TestCollectionPage_Count(t *testing.T) {
 	id := ID("test")
 
-	c := CollectionNew(id)
-	p := CollectionPageNew(c)
+	c := &Collection{Type: CollectionType, ID: id}
+	p := &CollectionPage{Type: CollectionPageType, ID: id}
 
 	if p.TotalItems != 0 {
 		t.Errorf("Object should have empty TotalItems, received %d", p.TotalItems)

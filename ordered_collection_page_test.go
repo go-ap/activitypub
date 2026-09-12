@@ -22,19 +22,6 @@ func mockOrderedCollectionPage(items ...Item) OrderedCollectionPage {
 	return cc
 }
 
-func TestOrderedCollectionPageNew(t *testing.T) {
-	testValue := ID("test")
-
-	c := OrderedCollectionNew(testValue)
-	p := OrderedCollectionPageNew(c)
-	if reflect.DeepEqual(p, c) {
-		t.Errorf("Invalid ordered collection parent '%v'", p.PartOf)
-	}
-	if p.PartOf != c.GetLink() {
-		t.Errorf("Invalid collection '%v'", p.PartOf)
-	}
-}
-
 func TestOrderedCollectionPage_UnmarshalJSON(t *testing.T) {
 	p := OrderedCollectionPage{}
 
@@ -149,8 +136,7 @@ func TestOrderedCollectionPage_Append(t *testing.T) {
 func TestOrderedCollectionPage_Collection(t *testing.T) {
 	id := ID("test")
 
-	c := OrderedCollectionNew(id)
-	p := OrderedCollectionPageNew(c)
+	p := &OrderedCollectionPage{Type: OrderedCollectionPageType, ID: id}
 
 	if !reflect.DeepEqual(p.Collection(), p.OrderedItems) {
 		t.Errorf("Collection items should be equal %v %v", p.Collection(), p.OrderedItems)
@@ -164,8 +150,8 @@ func TestOrderedCollectionPage_Contains(t *testing.T) {
 func TestOrderedCollectionPage_Count(t *testing.T) {
 	id := ID("test")
 
-	c := OrderedCollectionNew(id)
-	p := OrderedCollectionPageNew(c)
+	c := &OrderedCollection{Type: CollectionType, ID: id}
+	p := &OrderedCollectionPage{Type: OrderedCollectionType, ID: id}
 
 	if p.TotalItems != 0 {
 		t.Errorf("Empty object should have empty TotalItems, received %d", p.TotalItems)

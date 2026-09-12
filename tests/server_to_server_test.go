@@ -23,69 +23,69 @@ S2S Server: Activities requiring the object property
 `
 	t.Log(desc)
 
-	obj := pub.MentionNew("gigel")
+	obj := pub.Mention{ID: "gigel", Type: pub.MentionType}
 
-	add := pub.AddNew("https://localhost/myactivity", obj, nil)
+	add := pub.Add{ID: "https://localhost/myactivity", Type: pub.AddType, Object: obj}
 	if pub.IsNil(add.Object) {
 		t.Errorf("Missing GetID in Add activity %#v", add.Object)
 	}
-	if add.Object != obj {
+	if !pub.ItemsEqual(add.Object, obj) {
 		t.Errorf("Add.GetID different than what we initialized %#v %#v", add.Object, obj)
 	}
 
-	block := pub.BlockNew("https://localhost/myactivity", obj)
+	block := pub.Block{ID: "https://localhost/myactivity", Type: pub.BlockType, Object: obj}
 	if pub.IsNil(block.Object) {
 		t.Errorf("Missing GetID in Add activity %#v", block.Object)
 	}
-	if block.Object != obj {
+	if !pub.ItemsEqual(block.Object, obj) {
 		t.Errorf("Block.GetID different than what we initialized %#v %#v", block.Object, obj)
 	}
 
-	create := pub.CreateNew("https://localhost/myactivity", obj)
+	create := pub.Create{ID: "https://localhost/myactivity", Type: pub.CreateType, Object: obj}
 	if create.Object == nil {
 		t.Errorf("Missing GetID in Add activity %#v", create.Object)
 	}
-	if create.Object != obj {
+	if !pub.ItemsEqual(create.Object, obj) {
 		t.Errorf("Create.GetID different than what we initialized %#v %#v", create.Object, obj)
 	}
 
-	delete := pub.DeleteNew("https://localhost/myactivity", obj)
+	delete := pub.Delete{ID: "https://localhost/myactivity", Type: pub.DeleteType, Object: obj}
 	if pub.IsNil(delete.Object) {
 		t.Errorf("Missing GetID in Delete activity %#v", delete.Object)
 	}
-	if delete.Object != obj {
+	if !pub.ItemsEqual(delete.Object, obj) {
 		t.Errorf("Delete.GetID different than what we initialized %#v %#v", delete.Object, obj)
 	}
 
-	follow := pub.FollowNew("https://localhost/myactivity", obj)
+	follow := &pub.Follow{ID: "https://localhost/myactivity", Type: pub.FollowType, Object: obj}
 	if pub.IsNil(follow.Object) {
 		t.Errorf("Missing GetID in Follow activity %#v", follow.Object)
 	}
-	if follow.Object != obj {
+	if !pub.ItemsEqual(follow.Object, obj) {
 		t.Errorf("Follow.GetID different than what we initialized %#v %#v", follow.Object, obj)
 	}
 
-	like := pub.LikeNew("https://localhost/myactivity", obj)
+	like := pub.Like{ID: "https://localhost/myactivity", Type: pub.LikeType, Object: obj}
 	if pub.IsNil(like.Object) {
 		t.Errorf("Missing GetID in Like activity %#v", like.Object)
 	}
-	if like.Object != obj {
+	if !pub.ItemsEqual(like.Object, obj) {
 		t.Errorf("Like.GetID different than what we initialized %#v %#v", add.Object, obj)
 	}
 
-	update := pub.UpdateNew("https://localhost/myactivity", obj)
+	update := pub.Update{ID: "https://localhost/myactivity", Type: pub.UpdateType, Object: obj}
 	if pub.IsNil(update.Object) {
 		t.Errorf("Missing GetID in Update activity %#v", update.Object)
 	}
-	if update.Object != obj {
+	if !pub.ItemsEqual(update.Object, obj) {
 		t.Errorf("Update.GetID different than what we initialized %#v %#v", update.Object, obj)
 	}
 
-	undo := pub.UndoNew("https://localhost/myactivity", obj)
+	undo := pub.Undo{ID: "https://localhost/myactivity", Type: pub.UndoType, Object: obj}
 	if undo.Object == nil {
 		t.Errorf("Missing GetID in Undo activity %#v", undo.Object)
 	}
-	if undo.Object != obj {
+	if !pub.ItemsEqual(undo.Object, obj) {
 		t.Errorf("Undo.GetID different than what we initialized %#v %#v", undo.Object, obj)
 	}
 }
@@ -104,22 +104,22 @@ property: Add, Remove.
 `
 	t.Log(desc)
 
-	obj := pub.MentionNew("foo")
-	target := pub.MentionNew("bar")
+	obj := pub.Mention{ID: "foo"}
+	target := pub.Mention{ID: "bar"}
 
-	add := pub.AddNew("https://localhost/myactivity", obj, target)
+	add := pub.Add{ID: "https://localhost/myactivity", Type: pub.AddType, Object: obj, Target: target}
 	if pub.IsNil(add.Target) {
 		t.Errorf("Missing Target in Add activity %#v", add.Target)
 	}
-	if add.Target != target {
+	if !pub.ItemsEqual(add.Target, target) {
 		t.Errorf("Add.Target different than what we initialized %#v %#v", add.Target, target)
 	}
 
-	remove := pub.RemoveNew("https://localhost/myactivity", obj, target)
+	remove := pub.Remove{ID: "https://localhost/myactivity", Type: pub.RemoveType, Object: obj, Target: target}
 	if pub.IsNil(remove.Target) {
 		t.Errorf("Missing Target in Remove activity %#v", remove.Target)
 	}
-	if remove.Target != target {
+	if !pub.ItemsEqual(remove.Target, target) {
 		t.Errorf("Remove.Target different than what we initialized %#v %#v", remove.Target, target)
 	}
 }
@@ -142,12 +142,12 @@ S2S Server: Deduplication of recipient list
 `
 	t.Log(desc)
 
-	to := pub.PersonNew("bob")
-	o := pub.ObjectNew(pub.ArticleType)
-	cc := pub.PersonNew("alice")
+	to := &pub.Person{Type: pub.PersonType, ID: ("bob")}
+	o := &pub.Object{Type: pub.ArticleType}
+	cc := &pub.Person{Type: pub.PersonType, ID: ("alice")}
 
 	o.ID = "something"
-	c := pub.CreateNew("create", o)
+	c := pub.Create{ID: "create", Type: pub.CreateType, Object: o}
 	c.To.Append(to)
 	c.CC.Append(cc)
 	c.BCC.Append(cc)
@@ -198,14 +198,14 @@ Activity being notified about
 `
 	t.Skip(desc)
 
-	p := pub.PersonNew("main actor")
+	p := &pub.Person{Type: pub.PersonType, ID: ("main actor")}
 
-	to := pub.PersonNew("bob")
-	o := pub.ObjectNew(pub.ArticleType)
-	cc := pub.PersonNew("alice")
+	to := &pub.Person{Type: pub.PersonType, ID: ("bob")}
+	o := &pub.Object{Type: pub.ArticleType}
+	cc := &pub.Person{Type: pub.PersonType, ID: ("alice")}
 
 	o.ID = "something"
-	c := pub.CreateNew("create", o)
+	c := pub.Create{ID: "create", Type: pub.CreateType, Object: o}
 	c.Actor = *p
 
 	_ = c.To.Append(p)
@@ -259,12 +259,11 @@ S2S Server: Do-not-deliver considerations
 `
 	t.Log(desc)
 
-	p := pub.PersonNew("blocked")
+	p := &pub.Person{Type: pub.PersonType, ID: ("blocked")}
+	bob := &pub.Person{Type: pub.PersonType, ID: ("bob")}
+	jane := &pub.Person{Type: pub.PersonType, ID: ("jane doe")}
 
-	bob := pub.PersonNew("bob")
-	jane := pub.PersonNew("jane doe")
-
-	b := pub.BlockNew("block actor", p)
+	b := &pub.Block{Type: pub.BlockType, ID: "block actor", Object: p}
 	b.Actor = *bob
 
 	_ = b.To.Append(jane)

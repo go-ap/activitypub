@@ -297,18 +297,6 @@ func (o *OrderedCollection) GobDecode(data []byte) error {
 	return unmapOrderedCollectionProperties(mm, o)
 }
 
-// OrderedCollectionPageNew initializes a new OrderedCollectionPage
-func OrderedCollectionPageNew(parent CollectionInterface) *OrderedCollectionPage {
-	p := OrderedCollectionPage{
-		PartOf: parent.GetLink(),
-	}
-	if pc, ok := parent.(*OrderedCollection); ok {
-		_ = copyOrderedCollectionToPage(pc, &p)
-	}
-	p.Type = OrderedCollectionPageType
-	return &p
-}
-
 // ToOrderedCollection
 func ToOrderedCollection(it LinkOrIRI) (*OrderedCollection, error) {
 	switch i := it.(type) {

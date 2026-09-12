@@ -22,19 +22,6 @@ func mockOrderedCollection(items ...Item) OrderedCollection {
 	return cc
 }
 
-func TestOrderedCollectionNew(t *testing.T) {
-	testValue := ID("test")
-
-	c := OrderedCollectionNew(testValue)
-
-	if c.ID != testValue {
-		t.Errorf("APObject Id '%v' different than expected '%v'", c.ID, testValue)
-	}
-	if !c.Match(OrderedCollectionType) {
-		t.Errorf("APObject Type '%v' different than expected '%v'", c.GetType(), OrderedCollectionType)
-	}
-}
-
 func TestOrderedCollection_Append(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -88,7 +75,7 @@ func TestOrderedCollection_Append(t *testing.T) {
 func TestOrderedCollection_Collection(t *testing.T) {
 	id := ID("test")
 
-	o := OrderedCollectionNew(id)
+	o := &OrderedCollection{Type: OrderedCollectionType, ID: id}
 
 	if !reflect.DeepEqual(o.Collection(), o.OrderedItems) {
 		t.Errorf("Collection items should be equal %v %v", o.Collection(), o.OrderedItems)
@@ -98,7 +85,7 @@ func TestOrderedCollection_Collection(t *testing.T) {
 func TestOrderedCollection_GetID(t *testing.T) {
 	id := ID("test")
 
-	c := OrderedCollectionNew(id)
+	c := &OrderedCollection{Type: OrderedCollectionType, ID: id}
 
 	if c.GetID() != id {
 		t.Errorf("GetID should return %q, received %q", id, c.GetID())
@@ -109,7 +96,7 @@ func TestOrderedCollection_GetLink(t *testing.T) {
 	id := ID("test")
 	link := IRI(id)
 
-	c := OrderedCollectionNew(id)
+	c := &OrderedCollection{Type: OrderedCollectionType, ID: id}
 
 	if c.GetLink() != link {
 		t.Errorf("GetLink should return %q, received %q", link, c.GetLink())
@@ -119,7 +106,7 @@ func TestOrderedCollection_GetLink(t *testing.T) {
 func TestOrderedCollection_GetType(t *testing.T) {
 	id := ID("test")
 
-	c := OrderedCollectionNew(id)
+	c := &OrderedCollection{Type: OrderedCollectionType, ID: id}
 
 	if !c.Match(OrderedCollectionType) {
 		t.Errorf("OrderedCollection Type should be %q, received %q", OrderedCollectionType, c.GetType())
@@ -172,7 +159,7 @@ func TestOrderedCollection_UnmarshalJSON(t *testing.T) {
 func TestOrderedCollection_Count(t *testing.T) {
 	id := ID("test")
 
-	c := OrderedCollectionNew(id)
+	c := &OrderedCollection{Type: OrderedCollectionType, ID: id}
 
 	if c.TotalItems != 0 {
 		t.Errorf("Empty object should have empty TotalItems, received %d", c.TotalItems)

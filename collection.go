@@ -169,24 +169,6 @@ type (
 	FollowingCollection = Collection
 )
 
-// CollectionNew initializes a new Collection
-func CollectionNew(id ID) *Collection {
-	c := Collection{ID: id, Type: CollectionType}
-	c.Name = NaturalLanguageValuesNew()
-	c.Content = NaturalLanguageValuesNew()
-	c.Summary = NaturalLanguageValuesNew()
-	return &c
-}
-
-// OrderedCollectionNew initializes a new OrderedCollection
-func OrderedCollectionNew(id ID) *OrderedCollection {
-	o := OrderedCollection{ID: id, Type: OrderedCollectionType}
-	o.Name = NaturalLanguageValuesNew()
-	o.Content = NaturalLanguageValuesNew()
-
-	return &o
-}
-
 // GetID returns the ID corresponding to the Collection object
 func (c Collection) GetID() ID {
 	return c.ID
