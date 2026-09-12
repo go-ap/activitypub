@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
+	"io"
 	"time"
 
 	"github.com/valyala/fastjson"
@@ -42,6 +43,18 @@ type Actors interface {
 // For example, a Profile object might be used as an actor, or a type from an ActivityStreams extension.
 // Actors are retrieved like any other Object in ActivityPub.
 // Like other ActivityStreams objects, actors have an id, which is a URI.
+//
+// Actor objects are specializations of the base Object type that represent entities capable of carrying
+// out an Activity. The Activity Vocabulary provides the normative definition of five specific types of
+// Actors: Application | Group | Organization | Person | Service.
+//
+// This specification intentionally defines Actors in only the most generalized way, stopping short of
+// defining semantically specific properties for each. All Actor objects are specializations of Object and
+// inherit all of the core properties common to all Objects. External vocabularies can be used to express
+// additional detail not covered by the Activity Vocabulary. VCard SHOULD be used to provide additional
+// metadata for Person, Group, and Organization instances.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#actor-types
 type Actor struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
@@ -264,18 +277,28 @@ func (a *Actor) GobDecode(data []byte) error {
 
 type (
 	// Application describes a software application.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-application
 	Application = Actor
 
 	// Group represents a formal or informal collective of Actors.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-group
 	Group = Actor
 
 	// Organization represents an organization.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-organization
 	Organization = Actor
 
 	// Person represents an individual person.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-person
 	Person = Actor
 
 	// Service represents a service of any kind.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-service
 	Service = Actor
 )
 
@@ -357,25 +380,53 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func (a Actor) Format(s fmt.State, verb rune) {
-	switch verb {
-	case 's':
-		if HasTypes(a) && a.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", a, a.GetType(), a.ID)
-		} else if a.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T( %s )", a, a.ID)
-		} else {
-			_, _ = fmt.Fprintf(s, "%T[%p]", a, &a)
+func fmtActorProps(w io.Writer, nn *int) func(*Actor) error {
+	n := *nn
+	return func(a *Actor) error {
+		_ = OnObject(a, fmtObjectProps(w, &n))
+		comma := func() {
+			if n > 0 {
+				_, _ = io.WriteString(w, ", ")
+			}
 		}
-	case 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] { }", a, a.Type)
+
+		if len(a.PreferredUsername) > 0 {
+			comma()
+			n, _ = fmt.Fprintf(w, "preferredUsername: %s", a.PreferredUsername)
+		}
+		*nn = n
+		return nil
 	}
 }
 
-// Endpoints a json object which maps additional (typically server/domain-wide)
-// endpoints which may be useful either for this actor or someone referencing this actor.
-// This mapping may be nested inside the actor document as the value or may be a link to
-// a JSON-LD document with these properties.
+func (a Actor) Format(s fmt.State, verb rune) {
+	typ := a.Type
+	switch verb {
+	case 's':
+		iri := a.ID
+		if iri != "" {
+			s.Write([]byte(iri))
+		} else {
+			_, _ = fmt.Fprintf(s, "%T[%v]", a, typ)
+		}
+	case 'v':
+		n := 0
+		if typ != nil {
+			_, _ = fmt.Fprintf(s, "%T[%v] { ", a, typ)
+			_ = fmtActorProps(s, &n)(&a)
+			_, _ = io.WriteString(s, " }")
+		} else {
+			_, _ = fmt.Fprintf(s, "%T { ", a)
+			_ = fmtActorProps(s, &n)(&a)
+			_, _ = io.WriteString(s, " }")
+		}
+	}
+}
+
+// Endpoints maps additional (typically server/domain-wide) endpoints which may be
+// useful either for this actor or someone referencing this actor.
+// This mapping may be nested inside the actor document as the value, or may be a link to
+// a JSON-LD document with these properties (this is not yet possible in the library).
 type Endpoints struct {
 	// UploadMedia Upload endpoint URI for this user for binary data.
 	UploadMedia Item `jsonld:"uploadMedia,omitempty"`

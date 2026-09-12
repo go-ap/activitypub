@@ -437,19 +437,31 @@ func (n NaturalLanguageValues) MarshalText() ([]byte, error) {
 }
 
 func (n NaturalLanguageValues) Format(s fmt.State, verb rune) {
+	cnt := len(n)
+	if cnt == 0 {
+		s.Write([]byte("-"))
+	}
 	switch verb {
 	case 's', 'q':
-		_, _ = io.WriteString(s, "[")
-		for _, nn := range n {
-			nn.Format(s, verb)
+		if cnt == 1 {
+			n.First().Format(s, verb)
+		} else {
+			_, _ = io.WriteString(s, "[")
+			for _, nn := range n {
+				nn.Format(s, verb)
+			}
+			_, _ = io.WriteString(s, "]")
 		}
-		_, _ = io.WriteString(s, "]")
 	case 'v':
-		_, _ = io.WriteString(s, "[")
-		for _, nn := range n {
-			nn.Format(s, verb)
+		if cnt == 1 {
+			n.First().Format(s, verb)
+		} else {
+			_, _ = io.WriteString(s, "[")
+			for _, nn := range n {
+				nn.Format(s, verb)
+			}
+			_, _ = io.WriteString(s, "]")
 		}
-		_, _ = io.WriteString(s, "]")
 	}
 }
 

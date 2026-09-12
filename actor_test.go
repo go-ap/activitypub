@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"bytes"
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -610,4 +611,29 @@ func TestActor_Equals(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ExampleActor_initialization() {
+	// actor1 is a struct that can be operated on directly
+	// For example we can set the URL
+	actor1 := Actor{}
+	actor1.URL = IRI("http://example.com/1")
+	fmt.Printf("Actor1: %v\n", actor1)
+
+	// actor2 is an Item interface instance
+	// That means we can't set any properties directly
+	var actor2 Item = &Actor{Type: ActorType}
+	// If you uncommment the next line you will get a compiler error.
+	// actor2.URL = IRI("http://example.com")
+	// In order to operate on it, we must wrap it in a call to OnActor
+	OnActor(actor2, func(actor *Actor) error {
+		actor.URL = IRI("http://example.com/~jdoe")
+		actor.PreferredUsername = DefaultNaturalLanguage("jdoe")
+		return nil
+	})
+	fmt.Printf("Actor2: %v\n", actor2)
+
+	// Output:
+	// Actor1: activitypub.Actor { url: http://example.com/1 }
+	// Actor2: activitypub.Actor[Actor] { url: http://example.com/~jdoe, preferredUsername: jdoe }
 }
