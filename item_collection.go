@@ -130,8 +130,7 @@ func (i *ItemCollection) Remove(it ...Item) {
 	*i = slices.DeleteFunc(*i, checkContainsFn)
 }
 
-// ItemCollectionDeduplication normalizes the received arguments lists into a single unified one
-func ItemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
+func itemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
 	rec := make(ItemCollection, 0)
 
 	for _, recCol := range recCols {
@@ -171,6 +170,11 @@ func ItemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
 		}
 	}
 	return rec
+}
+
+// ItemCollectionDeduplication normalizes the received arguments lists into a single unified one
+func ItemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
+	return itemCollectionDeduplication(recCols...)
 }
 
 // ToItemCollection checks if the received LinkOrIRI can be represented as an ItemCollection
