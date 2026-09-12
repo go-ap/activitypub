@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"bytes"
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -1189,4 +1190,28 @@ func Test_reflectedItemByType_Object(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ExampleObject_initialization() {
+	// object1 is a struct that can be operated on directly
+	// For example we can set the URL
+	object1 := Object{}
+	object1.URL = IRI("http://example.com/1")
+	fmt.Printf("Object1: %v\n", object1)
+
+	// object2 is an Item interface instance
+	// That means we can't set any properties directly
+	var object2 Item = &Object{Type: ObjectType}
+	// If you uncommment the next line you will get a compiler error.
+	// object2.URL = IRI("http://example.com")
+	// In order to operate on it, we must wrap it in a call to OnObject
+	OnObject(object2, func(object *Object) error {
+		object.URL = IRI("http://example.com/2")
+		return nil
+	})
+	fmt.Printf("Object2: %v\n", object2)
+
+	// Output:
+	// Object1: activitypub.Object { url: http://example.com/1 }
+	// Object2: activitypub.Object[Object] { url: http://example.com/2 }
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 
 	"github.com/valyala/fastjson"
 )
@@ -18,6 +19,15 @@ type Links interface {
 	Link | IRI
 }
 
+// Link represents an indirect, qualified reference to a resource identified by a URL.
+// The fundamental model for links is established by [RFC5988].
+// Many of the properties defined by the Activity-Vocabulary allow values that are either instances of Object or Link.
+// When a Link is used, it establishes a qualified relation connecting the subject (the containing object) to the
+// resource identified by the href. Properties of the Link are properties of the reference as opposed to properties
+// of the resource.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-link
+//
 // Link describes a qualified, indirect reference to another resource that is closely related to the conceptual model
 // of Links as established in [RFC5988]. The properties of the Link object are not the properties of the referenced
 // resource, but are provided as hints for rendering agents to understand how to make use of the resource.
@@ -30,9 +40,10 @@ type Links interface {
 //
 // For example, all Objects can contain an image property whose value describes a graphical representation of the
 // containing object. This property will typically be used to provide the URL to an image (e.g. JPEG, GIF or PNG)
-// resource that can be displayed to the user. Any given object might have multiple such visual representations --
+// resource that can be displayed to the user. Any given object might have multiple such visual representations -
 // multiple screenshots, for instance, or the same image at different resolutions. In [Activity Streams 2.0],
-// there are essentially three ways of describing such references.
+// there are essentially three ways of describing such references: a direct IRI, an embedded Object, an array of values
+// which can be IRIs or Objects.
 //
 // https://www.w3.org/TR/activitystreams-core/#link
 type Link struct {
@@ -185,16 +196,70 @@ func (l *Link) GobDecode(data []byte) error {
 	return unmapLinkProperties(mm, l)
 }
 
-func (l Link) Format(s fmt.State, verb rune) {
-	iri := l.ID
-	if l.Href != "" {
-		iri = l.Href
+func fmtLinkProps(w io.Writer) func(*Link) error {
+	return func(l *Link) error {
+		var n int
+		comma := func() {
+			if n > 0 {
+				_, _ = io.WriteString(w, ", ")
+			}
+		}
+
+		if len(l.ID) > 0 {
+			n, _ = fmt.Fprintf(w, "ID: %s", l.ID)
+		}
+		if len(l.Href) > 0 {
+			comma()
+			n, _ = fmt.Fprintf(w, "href: %s", l.Href)
+		}
+		if l.HrefLang != Und {
+			comma()
+			n, _ = fmt.Fprintf(w, "hrefLang: %s", l.HrefLang)
+		}
+		if len(l.Name) > 0 {
+			comma()
+			n, _ = fmt.Fprintf(w, "name: %s", l.Name)
+		}
+		if len(l.MediaType) > 0 {
+			comma()
+			n, _ = fmt.Fprintf(w, "mediaType: %s", l.MediaType)
+		}
+		if l.Height > 0 {
+			comma()
+			n, _ = fmt.Fprintf(w, "height: %d", l.Height)
+		}
+		if l.Width > 0 {
+			comma()
+			n, _ = fmt.Fprintf(w, "width: %d", l.Width)
+		}
+		if !IsNil(l.Preview) {
+			comma()
+			n, _ = fmt.Fprintf(w, "preview: %s", l.Preview)
+		}
+		if len(l.Rel) > 0 {
+			comma()
+			n, _ = fmt.Fprintf(w, "rel: %s", l.Rel)
+		}
+		return nil
 	}
+}
+
+func (l Link) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's':
+		iri := l.ID
+		if l.Href != "" {
+			iri = l.Href
+		}
 		_, _ = s.Write([]byte(iri))
 	case 'v':
-		_, _ = fmt.Fprintf(s, "%T[%v] { %s }", l, l.Type, iri)
+		if l.Type != nil {
+			_, _ = fmt.Fprintf(s, "%T[%v] { ", l, l.Type)
+		} else {
+			_, _ = fmt.Fprintf(s, "%T { ", l)
+		}
+		fmtLinkProps(s)(&l)
+		s.Write([]byte(" }"))
 	}
 }
 

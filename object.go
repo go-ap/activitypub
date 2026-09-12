@@ -109,16 +109,32 @@ type (
 
 type Objects interface {
 	Object | Tombstone | Place | Profile | Relationship |
-		Actors |
-		Activities |
-		IntransitiveActivities |
-		Collections |
-		IRI
+	Actors |
+	Activities |
+	IntransitiveActivities |
+	Collections |
+	IRI
 }
 
 // Object describes an ActivityPub object of any kind.
-// It serves as the base type for most of the other kinds of objects defined in the Activity
-// Vocabulary, including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
+// The Object type serves as the base type for most of the other kinds of objects defined in the Activity-Vocabulary,
+// including other Core types such as Activity, IntransitiveActivity, Collection and OrderedCollection.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-object
+//
+// The Object is the primary base type for the Activity Streams vocabulary.
+//
+// In addition to having a global identifier (expressed as an absolute IRI using the id property) and an "object type"
+// (expressed using the type property), all instances of the Object type share a common set of properties normatively
+// defined by the Activity-Vocabulary.
+//
+// These include: attachment | attributedTo | audience | content | context | contentMap | name | nameMap | endTime |
+// generator | icon | image | inReplyTo | location | preview | published | replies | startTime | summary | summaryMap |
+// tag | updated | url | to | bto | cc | bcc | mediaType | duration
+//
+// All properties are optional (including the id and type).
+//
+// https://www.w3.org/TR/activitystreams-core/#object
 type Object struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
@@ -309,166 +325,144 @@ func (o *Object) GobDecode(data []byte) error {
 
 func fmtObjectProps(w io.Writer) func(*Object) error {
 	return func(o *Object) error {
-		if len(o.ID) > 0 {
-			if n, _ := fmt.Fprintf(w, "ID:%s", o.ID); n > 0 {
+		var n int
+		comma := func() {
+			if n > 0 {
 				_, _ = io.WriteString(w, ", ")
 			}
+		}
+
+		if len(o.ID) > 0 {
+			n, _ = fmt.Fprintf(w, "ID:%s", o.ID)
 		}
 		if len(o.Name) > 0 {
-			if n, _ := fmt.Fprintf(w, "%s: [%s]", "name", o.Name); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: [%s]", "name", o.Name)
 		}
 		if len(o.Summary) > 0 {
-			if n, _ := fmt.Fprintf(w, "%s: [%s]", "summary", o.Summary); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: [%s]", "summary", o.Summary)
 		}
 		if len(o.Content) > 0 {
-			if n, _ := fmt.Fprintf(w, "%s: [%s]", "content", o.Content); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: [%s]", "content", o.Content)
 		}
 		if !IsNil(o.Attachment) {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "attachment", o.Attachment); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "attachment", o.Attachment)
 		}
 		if !IsNil(o.AttributedTo) {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "attributedTo", o.AttributedTo); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "attributedTo", o.AttributedTo)
 		}
 		if !IsNil(o.Audience) && o.Audience.Count() > 0 {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "audience", o.Audience); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "audience", o.Audience)
 		}
 		if !IsNil(o.Context) {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "context", o.Context); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "context", o.Context)
 		}
 		if !IsNil(o.Generator) {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "generator", o.Generator); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "generator", o.Generator)
 		}
 		if !IsNil(o.Icon) {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "icon", o.Icon); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "icon", o.Icon)
 		}
 		if !IsNil(o.Image) {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "image", o.Image); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "image", o.Image)
 		}
 		if !IsNil(o.InReplyTo) {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "inReplyTo", o.InReplyTo); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "inReplyTo", o.InReplyTo)
 		}
 		if !IsNil(o.Location) {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "location", o.Location); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "location", o.Location)
 		}
 		if !IsNil(o.Preview) {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "preview", o.Preview); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "preview", o.Preview)
 		}
 		if !IsNil(o.Replies) {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "replies", o.Replies); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "replies", o.Replies)
 		}
 		if !IsNil(o.Tag) && o.Tag.Count() > 0 {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "tag", o.Tag); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "tag", o.Tag)
 		}
 		if !IsNil(o.URL) {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "url", o.URL); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "url", o.URL)
 		}
-		if !IsNil(o.To) && o.To.Count() > 0 {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "to", o.To); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+		if o.To.Count() > 0 {
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "to", o.To)
 		}
-		if !IsNil(o.Bto) && o.Bto.Count() > 0 {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "bto", o.Bto); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+		if o.Bto.Count() > 0 {
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "bto", o.Bto)
 		}
-		if !IsNil(o.CC) && o.CC.Count() > 0 {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "cc", o.CC); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+		if o.CC.Count() > 0 {
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "cc", o.CC)
 		}
-		if !IsNil(o.BCC) && o.BCC.Count() > 0 {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "bcc", o.BCC); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+		if o.BCC.Count() > 0 {
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "bcc", o.BCC)
 		}
 		if !o.Published.IsZero() {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "published", o.Published); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "published", o.Published)
 		}
 		if !o.Updated.IsZero() {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "updated", o.Updated); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "updated", o.Updated)
 		}
 		if !o.StartTime.IsZero() {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "startTime", o.StartTime); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "startTime", o.StartTime)
 		}
 		if !o.EndTime.IsZero() {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "endTime", o.EndTime); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "endTime", o.EndTime)
 		}
 		if o.Duration != 0 {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "duration", o.Duration); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "duration", o.Duration)
 		}
 		if !IsNil(o.Likes) {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "likes", o.Likes); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "likes", o.Likes)
 		}
 		if !IsNil(o.Shares) {
-			if n, _ := fmt.Fprintf(w, "%s: %s", "shares", o.Shares); n > 0 {
-				_, _ = io.WriteString(w, ", ")
-			}
+			comma()
+			n, _ = fmt.Fprintf(w, "%s: %s", "shares", o.Shares)
 		}
 		return nil
 	}
 }
 
 func (o Object) Format(s fmt.State, verb rune) {
+	typ := o.Type
 	switch verb {
 	case 's':
-		if HasTypes(o) && o.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", o, o.GetType(), o.ID)
-		} else if o.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T( %s )", o, o.ID)
+		iri := o.ID
+		if iri != "" {
+			s.Write([]byte(iri))
 		} else {
-			_, _ = fmt.Fprintf(s, "%T[%p]", o, &o)
+			_, _ = fmt.Fprintf(s, "%T[%v]", o, typ)
 		}
 	case 'v':
-		if HasTypes(o) && o.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T[%s] {", o, o.GetType())
+		if typ != nil {
+			_, _ = fmt.Fprintf(s, "%T[%v] { ", o, typ)
 			_ = fmtObjectProps(s)(&o)
 			_, _ = io.WriteString(s, " }")
-		} else if o.ID != "" {
+		} else {
 			_, _ = fmt.Fprintf(s, "%T { ", o)
 			_ = fmtObjectProps(s)(&o)
 			_, _ = io.WriteString(s, " }")

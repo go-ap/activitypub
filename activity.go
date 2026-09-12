@@ -227,8 +227,8 @@ var ActivityTypes = ActivityVocabularyTypes{
 	ViewType,
 }
 
-// HasRecipients is an interface implemented by activities to return their audience
-// for further propagation
+// HasRecipients is an interface implemented by objects to return their audience
+// for further propagation.
 //
 // Please take care to the fact that the de-duplication functionality requires a pointer receiver
 // therefore a valid Item interface that wraps around an Object struct, can not be type asserted

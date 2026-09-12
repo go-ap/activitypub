@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -122,4 +123,28 @@ func TestLink_GobDecode(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ExampleLink_initialization() {
+	// link1 is a struct that can be operated on directly
+	// For example we can set the language:
+	link1 := Link{Href: "http://example.com/1"}
+	link1.HrefLang = English
+	fmt.Printf("Link1: %v\n", link1)
+
+	// link2 is an Item interface instance
+	// That means we can't set any properties directly
+	var link2 Item = &Link{Type: LinkType}
+	// If you uncommment the next line you will get a compiler error.
+	// link2.Href = "http://example.com"
+	// In order to operate on it, we must wrap it in a call to OnLink
+	OnLink(link2, func(link *Link) error {
+		link.Href = "http://example.com/2"
+		return nil
+	})
+	fmt.Printf("Link2: %v\n", link2)
+
+	// Output:
+	// Link1: activitypub.Link { href: http://example.com/1, hrefLang: en }
+	// Link2: activitypub.Link[Link] { href: http://example.com/2 }
 }
