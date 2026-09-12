@@ -186,9 +186,15 @@ func (l *Link) GobDecode(data []byte) error {
 }
 
 func (l Link) Format(s fmt.State, verb rune) {
+	iri := l.ID
+	if l.Href != "" {
+		iri = l.Href
+	}
 	switch verb {
-	case 's', 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] { %s }", l, l.Type, l.Href)
+	case 's':
+		_, _ = s.Write([]byte(iri))
+	case 'v':
+		_, _ = fmt.Fprintf(s, "%T[%v] { %s }", l, l.Type, iri)
 	}
 }
 
