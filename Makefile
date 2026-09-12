@@ -20,12 +20,15 @@ go.sum: go.mod
 	$(GO) mod tidy
 
 test: go.sum
-	$(TEST) $(TEST_FLAGS) -cover $(TEST_TARGET) -json | go tool tparse -all
+	@
+	$(TEST) $(TEST_FLAGS) -coverpkg github.com/go-ap/activitypub -cover -json $(TEST_TARGET) > tests.json || true
+	$(TEST) $(TEST_FLAGS) -coverpkg github.com/go-ap/activitypub -cover -json ./tests >> tests.json || true
+	go tool tparse -file tests.json
 
 coverage: go.sum clean
 	@mkdir ./_coverage
-	$(TEST) $(TEST_FLAGS) -covermode=count -args -test.gocoverdir="$(PWD)/_coverage" ./tests > /dev/null
-	$(TEST) $(TEST_FLAGS) -covermode=count -args -test.gocoverdir="$(PWD)/_coverage" $(TEST_TARGET) > /dev/null
+	$(TEST) $(TEST_FLAGS) -coverpkg github.com/go-ap/activitypub -covermode=count -args -test.gocoverdir="$(PWD)/_coverage" ./tests > /dev/null
+	$(TEST) $(TEST_FLAGS) -coverpkg github.com/go-ap/activitypub -covermode=count -args -test.gocoverdir="$(PWD)/_coverage" $(TEST_TARGET) > /dev/null
 	$(GO) tool covdata percent -i=./_coverage/ -o $(PROJECT_NAME).coverprofile
 
 clean:
