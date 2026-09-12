@@ -196,23 +196,17 @@ func (c Collection) Collection() ItemCollection {
 
 // Append adds items to a Collection
 func (c *Collection) Append(it ...Item) error {
-	for _, ob := range it {
-		if !c.Items.Contains(ob) {
-			c.Items = append(c.Items, ob)
-			c.TotalItems += 1
-		}
-	}
+	l := len(c.Items)
+	_ = c.Items.Append(it...)
+	c.TotalItems += uint(len(c.Items) - l)
 	return nil
 }
 
 // Remove removes items from a Collection
 func (c *Collection) Remove(it ...Item) {
-	for _, ob := range it {
-		if c.Items.Contains(ob) {
-			c.Items.Remove(ob)
-			c.TotalItems -= 1
-		}
-	}
+	l := len(c.Items)
+	c.Items.Remove(it...)
+	c.TotalItems += uint(len(c.Items) - l)
 }
 
 // Count returns the maximum between the length of Items in collection and its TotalItems property
