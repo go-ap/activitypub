@@ -63,7 +63,7 @@ func (i *ItemCollection) Append(it ...Item) error {
 	if len(it) == 0 {
 		return nil
 	}
-	if i == nil {
+	if *i == nil {
 		*i = make(ItemCollection, 0, len(it))
 	}
 	for _, ob := range it {
