@@ -248,6 +248,18 @@ type Activities interface {
 // The Activity type itself serves as an abstract base type for all types of activities.
 // It is important to note that the Activity type itself does not carry any specific semantics
 // about the kind of action being taken.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-activity
+//
+//  Activity objects are specializations of the base Object type that provide information about
+//  actions that have either already occurred, are in the process of occurring, or may occur in the future.
+//
+// In addition to common properties supported by all Object instances, Activity objects support the following
+// additional properties defined by the Vocabulary: actor | object | target | origin | result | instrument
+//
+// The type property is used to identify the type of action the Activity Statement represents.
+//
+// https://www.w3.org/TR/activitystreams-core/#activities
 type Activity struct {
 	// ID provides the globally unique identifier for anActivity Pub Object or Link.
 	ID ID `jsonld:"id,omitempty"`
@@ -589,29 +601,45 @@ func (a *Activity) UnmarshalJSON(data []byte) error {
 	return JSONLoadActivity(val, a)
 }
 
-func fmtActivityProps(w io.Writer) func(*Activity) error {
+func fmtActivityProps(w io.Writer, n *int) func(*Activity) error {
 	return func(a *Activity) error {
-		if !IsNil(a.Object) {
-			_, _ = fmt.Fprintf(w, " object: %s", a.Object)
+		_ = OnIntransitiveActivity(a, fmtIntransitiveActivityProps(w, n))
+
+		comma := func() {
+			if *n > 0 {
+				_, _ = io.WriteString(w, ", ")
+			}
 		}
-		return OnIntransitiveActivity(a, fmtIntransitiveActivityProps(w))
+
+		if !IsNil(a.Object) {
+			comma()
+			*n, _ = fmt.Fprintf(w, "object: %s", a.Object)
+		}
+		return nil
 	}
 }
 
 func (a Activity) Format(s fmt.State, verb rune) {
+	typ := a.Type
 	switch verb {
 	case 's':
-		if HasTypes(a) && a.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", a, a.GetType(), a.ID)
-		} else if a.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T( %s )", a, a.ID)
+		iri := a.ID
+		if iri != "" {
+			s.Write([]byte(iri))
 		} else {
-			_, _ = fmt.Fprintf(s, "%T[%p]", a, &a)
+			_, _ = fmt.Fprintf(s, "%T[%v]", a, typ)
 		}
 	case 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] {", a, a.GetType())
-		_ = fmtActivityProps(s)(&a)
-		_, _ = io.WriteString(s, " }")
+		n := 0
+		if typ != nil {
+			_, _ = fmt.Fprintf(s, "%T[%v] { ", a, typ)
+			_ = fmtActivityProps(s, &n)(&a)
+			_, _ = io.WriteString(s, " }")
+		} else {
+			_, _ = fmt.Fprintf(s, "%T { ", a)
+			_ = fmtActivityProps(s, &n)(&a)
+			_, _ = io.WriteString(s, " }")
+		}
 	}
 }
 

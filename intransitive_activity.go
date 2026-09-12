@@ -308,40 +308,59 @@ func (i IntransitiveActivity) equal(with IntransitiveActivity) bool {
 }
 
 func (i IntransitiveActivity) Format(s fmt.State, verb rune) {
+	typ := i.Type
 	switch verb {
 	case 's':
-		if HasTypes(i) && i.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T[%s]( %s )", i, i.GetType(), i.ID)
-		} else if i.ID != "" {
-			_, _ = fmt.Fprintf(s, "%T( %s )", i, i.ID)
+		iri := i.ID
+		if iri != "" {
+			s.Write([]byte(iri))
 		} else {
-			_, _ = fmt.Fprintf(s, "%T[%p]", i, &i)
+			_, _ = fmt.Fprintf(s, "%T[%v]", i, typ)
 		}
 	case 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] {", i, i.GetType())
-		_ = fmtIntransitiveActivityProps(s)(&i)
-		_, _ = io.WriteString(s, " }")
+		n := 0
+		if typ != nil {
+			_, _ = fmt.Fprintf(s, "%T[%v] { ", i, typ)
+			_ = fmtIntransitiveActivityProps(s, &n)(&i)
+			_, _ = io.WriteString(s, " }")
+		} else {
+			_, _ = fmt.Fprintf(s, "%T { ", i)
+			_ = fmtIntransitiveActivityProps(s, &n)(&i)
+			_, _ = io.WriteString(s, " }")
+		}
 	}
 }
 
-func fmtIntransitiveActivityProps(w io.Writer) func(*IntransitiveActivity) error {
+func fmtIntransitiveActivityProps(w io.Writer, n *int) func(*IntransitiveActivity) error {
 	return func(ia *IntransitiveActivity) error {
+		_ = OnObject(ia, fmtObjectProps(w, n))
+		comma := func() {
+			if *n > 0 {
+				_, _ = io.WriteString(w, ", ")
+			}
+		}
+
 		if !IsNil(ia.Actor) {
-			_, _ = fmt.Fprintf(w, " actor: %s", ia.Actor)
+			comma()
+			*n, _ = fmt.Fprintf(w, "actor: %s", ia.Actor)
 		}
 		if !IsNil(ia.Target) {
-			_, _ = fmt.Fprintf(w, " target: %s", ia.Target)
+			comma()
+			*n, _ = fmt.Fprintf(w, "target: %s", ia.Target)
 		}
 		if !IsNil(ia.Result) {
-			_, _ = fmt.Fprintf(w, " result: %s", ia.Result)
+			comma()
+			*n, _ = fmt.Fprintf(w, "result: %s", ia.Result)
 		}
 		if !IsNil(ia.Origin) {
-			_, _ = fmt.Fprintf(w, " origin: %s", ia.Origin)
+			comma()
+			*n, _ = fmt.Fprintf(w, "origin: %s", ia.Origin)
 		}
 		if !IsNil(ia.Instrument) {
-			_, _ = fmt.Fprintf(w, " instrument: %s", ia.Instrument)
+			comma()
+			*n, _ = fmt.Fprintf(w, "instrument: %s", ia.Instrument)
 		}
-		return OnObject(ia, fmtObjectProps(w))
+		return nil
 	}
 }
 

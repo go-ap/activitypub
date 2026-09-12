@@ -1428,3 +1428,27 @@ func TestCleanRecipients(t *testing.T) {
 		})
 	}
 }
+
+func ExampleActivity_initialization() {
+	// activity1 is a struct that can be operated on directly
+	// For example we can set the Object:
+	activity1 := Activity{ID: "http://example.com/1"}
+	activity1.Object = IRI("http://example.com/thing")
+	fmt.Printf("Activity1: %v\n", activity1)
+
+	// activity2 is an Item interface instance
+	// That means we can't set any properties directly
+	var activity2 Item = &Activity{Type: ActivityType}
+	// If you uncommment the next line you will get a compiler error.
+	// activity2.Actor = IRI("http://example.com/~jdoe")
+	// In order to operate on it, we must wrap it in a call to OnActivity
+	OnActivity(activity2, func(activity *Activity) error {
+		activity.ID = "http://example.com/2"
+		return nil
+	})
+	fmt.Printf("Activity2: %v\n", activity2)
+
+	// Output:
+	// Activity1: activitypub.Activity { id: http://example.com/1, object: http://example.com/thing }
+	// Activity2: activitypub.Activity[Activity] { id: http://example.com/2 }
+}

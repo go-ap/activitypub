@@ -323,125 +323,124 @@ func (o *Object) GobDecode(data []byte) error {
 	return unmapObjectProperties(mm, o)
 }
 
-func fmtObjectProps(w io.Writer) func(*Object) error {
+func fmtObjectProps(w io.Writer, n *int) func(*Object) error {
 	return func(o *Object) error {
-		var n int
 		comma := func() {
-			if n > 0 {
+			if *n > 0 {
 				_, _ = io.WriteString(w, ", ")
 			}
 		}
 
 		if len(o.ID) > 0 {
-			n, _ = fmt.Fprintf(w, "ID:%s", o.ID)
+			*n, _ = fmt.Fprintf(w, "id: %s", o.ID)
 		}
 		if len(o.Name) > 0 {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: [%s]", "name", o.Name)
+			*n, _ = fmt.Fprintf(w, "%s: [%s]", "name", o.Name)
 		}
 		if len(o.Summary) > 0 {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: [%s]", "summary", o.Summary)
+			*n, _ = fmt.Fprintf(w, "%s: [%s]", "summary", o.Summary)
 		}
 		if len(o.Content) > 0 {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: [%s]", "content", o.Content)
+			*n, _ = fmt.Fprintf(w, "%s: [%s]", "content", o.Content)
 		}
 		if !IsNil(o.Attachment) {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "attachment", o.Attachment)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "attachment", o.Attachment)
 		}
 		if !IsNil(o.AttributedTo) {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "attributedTo", o.AttributedTo)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "attributedTo", o.AttributedTo)
 		}
 		if !IsNil(o.Audience) && o.Audience.Count() > 0 {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "audience", o.Audience)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "audience", o.Audience)
 		}
 		if !IsNil(o.Context) {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "context", o.Context)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "context", o.Context)
 		}
 		if !IsNil(o.Generator) {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "generator", o.Generator)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "generator", o.Generator)
 		}
 		if !IsNil(o.Icon) {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "icon", o.Icon)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "icon", o.Icon)
 		}
 		if !IsNil(o.Image) {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "image", o.Image)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "image", o.Image)
 		}
 		if !IsNil(o.InReplyTo) {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "inReplyTo", o.InReplyTo)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "inReplyTo", o.InReplyTo)
 		}
 		if !IsNil(o.Location) {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "location", o.Location)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "location", o.Location)
 		}
 		if !IsNil(o.Preview) {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "preview", o.Preview)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "preview", o.Preview)
 		}
 		if !IsNil(o.Replies) {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "replies", o.Replies)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "replies", o.Replies)
 		}
 		if !IsNil(o.Tag) && o.Tag.Count() > 0 {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "tag", o.Tag)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "tag", o.Tag)
 		}
 		if !IsNil(o.URL) {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "url", o.URL)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "url", o.URL)
 		}
 		if o.To.Count() > 0 {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "to", o.To)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "to", o.To)
 		}
 		if o.Bto.Count() > 0 {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "bto", o.Bto)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "bto", o.Bto)
 		}
 		if o.CC.Count() > 0 {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "cc", o.CC)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "cc", o.CC)
 		}
 		if o.BCC.Count() > 0 {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "bcc", o.BCC)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "bcc", o.BCC)
 		}
 		if !o.Published.IsZero() {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "published", o.Published)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "published", o.Published)
 		}
 		if !o.Updated.IsZero() {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "updated", o.Updated)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "updated", o.Updated)
 		}
 		if !o.StartTime.IsZero() {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "startTime", o.StartTime)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "startTime", o.StartTime)
 		}
 		if !o.EndTime.IsZero() {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "endTime", o.EndTime)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "endTime", o.EndTime)
 		}
 		if o.Duration != 0 {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "duration", o.Duration)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "duration", o.Duration)
 		}
 		if !IsNil(o.Likes) {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "likes", o.Likes)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "likes", o.Likes)
 		}
 		if !IsNil(o.Shares) {
 			comma()
-			n, _ = fmt.Fprintf(w, "%s: %s", "shares", o.Shares)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "shares", o.Shares)
 		}
 		return nil
 	}
@@ -458,13 +457,14 @@ func (o Object) Format(s fmt.State, verb rune) {
 			_, _ = fmt.Fprintf(s, "%T[%v]", o, typ)
 		}
 	case 'v':
+		n := 0
 		if typ != nil {
 			_, _ = fmt.Fprintf(s, "%T[%v] { ", o, typ)
-			_ = fmtObjectProps(s)(&o)
+			_ = fmtObjectProps(s, &n)(&o)
 			_, _ = io.WriteString(s, " }")
 		} else {
 			_, _ = fmt.Fprintf(s, "%T { ", o)
-			_ = fmtObjectProps(s)(&o)
+			_ = fmtObjectProps(s, &n)(&o)
 			_, _ = io.WriteString(s, " }")
 		}
 	}
