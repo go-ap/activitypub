@@ -380,21 +380,19 @@ func (a Actor) MarshalJSON() ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func fmtActorProps(w io.Writer, nn *int) func(*Actor) error {
-	n := *nn
+func fmtActorProps(w io.Writer, n *int) func(*Actor) error {
 	return func(a *Actor) error {
-		_ = OnObject(a, fmtObjectProps(w, &n))
+		_ = OnObject(a, fmtObjectProps(w, n))
 		comma := func() {
-			if n > 0 {
+			if *n > 0 {
 				_, _ = io.WriteString(w, ", ")
 			}
 		}
 
 		if len(a.PreferredUsername) > 0 {
 			comma()
-			n, _ = fmt.Fprintf(w, "preferredUsername: %s", a.PreferredUsername)
+			*n, _ = fmt.Fprintf(w, "preferredUsername: %s", a.PreferredUsername)
 		}
-		*nn = n
 		return nil
 	}
 }

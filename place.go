@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"time"
 
 	"github.com/valyala/fastjson"
@@ -251,10 +252,62 @@ func (p *Place) Clean() Item {
 	return &oo
 }
 
+func fmtPlaceProps(w io.Writer, n *int) func(*Place) error {
+	return func(p *Place) error {
+		_ = OnObject(p, fmtObjectProps(w, n))
+		comma := func() {
+			if *n > 0 {
+				_, _ = io.WriteString(w, ", ")
+			}
+		}
+		if p.Accuracy > 0 {
+			comma()
+			*n, _ = fmt.Fprintf(w, "accuracy: %f", p.Accuracy)
+		}
+		if p.Altitude > 0 {
+			comma()
+			*n, _ = fmt.Fprintf(w, "altitude: %f", p.Altitude)
+		}
+		if p.Latitude > 0 {
+			comma()
+			*n, _ = fmt.Fprintf(w, "latitude: %f", p.Latitude)
+		}
+		if p.Longitude > 0 {
+			comma()
+			*n, _ = fmt.Fprintf(w, "longitude: %f", p.Longitude)
+		}
+		if p.Radius > 0 {
+			comma()
+			*n, _ = fmt.Fprintf(w, "radius: %d", p.Radius)
+		}
+		if len(p.Units) > 0 {
+			comma()
+			*n, _ = fmt.Fprintf(w, "units: %s", p.Units)
+		}
+		return nil
+	}
+}
 func (p Place) Format(s fmt.State, verb rune) {
+	typ := p.Type
 	switch verb {
-	case 's', 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] { }", p, p.Type)
+	case 's':
+		iri := p.ID
+		if iri != "" {
+			s.Write([]byte(iri))
+		} else {
+			_, _ = fmt.Fprintf(s, "%T[%v]", p, typ)
+		}
+	case 'v':
+		n := 0
+		if typ != nil {
+			_, _ = fmt.Fprintf(s, "%T[%v] { ", p, typ)
+			_ = fmtPlaceProps(s, &n)(&p)
+			_, _ = io.WriteString(s, " }")
+		} else {
+			_, _ = fmt.Fprintf(s, "%T { ", p)
+			_ = fmtPlaceProps(s, &n)(&p)
+			_, _ = io.WriteString(s, " }")
+		}
 	}
 }
 

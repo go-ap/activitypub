@@ -1219,3 +1219,113 @@ func ExampleObject_initialization() {
 	// Object1: activitypub.Object { content: Lorem ipsum }
 	// Object2: activitypub.Object[Object] { content: Lorem ipsum }
 }
+
+func ExampleToObject() {
+	// Due to providing a consistent memory shape, most of the types of the library
+	// can be converted to an Object struct.
+	//
+	// **If you write your own data-types you must keep that in mind!**
+	//
+	// This fact represents the cornerstone element for the rest of the library's functionality,
+	// as it allows us to access properties of objects even when we're not certain of which data type
+	// they are.
+
+	// One additional **very important** consideration is about the data type of the original.
+	// If it is a struct pointer, modifying the return value, will modify the original
+	object1 := &Object{ID: "http://example.com/1", Type: NoteType, Name: DefaultNaturalLanguage("object1")}
+	o1, _ := ToObject(object1)
+	o1.Name = nil
+	fmt.Printf("Object1: %v\n", object1)
+	fmt.Printf("       : %v\n\n", o1)
+
+	// If our initial type it's an inline struct, modifying the return value will not affect the original.
+	object2 := Object{ID: "http://example.com/2", Type: DocumentType, Name: DefaultNaturalLanguage("object2")}
+	o2, _ := ToObject(object2)
+	o2.Name = nil
+	fmt.Printf("Object2: %v\n", object2)
+	fmt.Printf("       : %v\n\n", o2)
+
+	// The Place type is disjoint to Object, but it can still be converted, due to sharing
+	// the same memory shape for the common properties.
+	place := Place{ID: "http://example.com/ys", Type: PlaceType, Name: DefaultNaturalLanguage("Ys")}
+	p, _ := ToObject(place)
+	p.Name = nil
+	fmt.Printf("Place: %v\n", place)
+	fmt.Printf("     : %v\n\n", p)
+
+	// Here we see an Item instance wrapped around an Actor type.
+	// Unless you're initializing the values manually, the library deals only with instances of the Item interface.
+	var maybeActor Item = &Actor{ID: "http://example.com/~jdoe", Type: PersonType, Name: DefaultNaturalLanguage("John")}
+	a, _ := ToObject(maybeActor)
+	a.Name = DefaultNaturalLanguage("Jane")
+	fmt.Printf("Actor: %v\n", maybeActor)
+	fmt.Printf("     : %v\n\n", a)
+
+	// We can't access any of maybeActor's properties directly, so for using it
+	// as an actor for our activity, we retrieve its ID from the converted "a" object.
+	activity := Activity{ID: "http://example.com/create", Type: CreateType, Actor: a.ID}
+	// Additionally, in the output we can see that the actor property
+	// is no longer accessible when we print the activity's converted object.
+	aa, _ := ToObject(activity)
+	fmt.Printf("Activity: %v\n", activity)
+	fmt.Printf("        : %v\n\n", aa)
+
+	question := Question{ID: "http://example.com/huh", Type: QuestionType}
+	// Similarly to above, we can no longer access the Question's custom properties.
+	q, _ := ToObject(question)
+	// Uncommenting the next line triggers a compilation error.
+	//q.AnyOf = IRI("http://example.com/1")
+	fmt.Printf("Question: %v\n", question)
+	fmt.Printf("        : %v\n", q)
+
+	// Output:
+	// Object1: activitypub.Object[Note] { id: http://example.com/1 }
+	//        : activitypub.Object[Note] { id: http://example.com/1 }
+	//
+	// Object2: activitypub.Object[Document] { id: http://example.com/2, name: object2 }
+	//        : activitypub.Object[Document] { id: http://example.com/2 }
+	//
+	// Place: activitypub.Place[Place] { id: http://example.com/ys, name: Ys }
+	//      : activitypub.Object[Place] { id: http://example.com/ys }
+	//
+	// Actor: activitypub.Actor[Person] { id: http://example.com/~jdoe, name: Jane }
+	//      : activitypub.Object[Person] { id: http://example.com/~jdoe, name: Jane }
+	//
+	// Activity: activitypub.Activity[Create] { id: http://example.com/create, actor: http://example.com/~jdoe }
+	//         : activitypub.Object[Create] { id: http://example.com/create }
+	//
+	// Question: activitypub.Question[Question] { id: http://example.com/huh }
+	//         : activitypub.Object[Question] { id: http://example.com/huh }
+}
+
+func ExampleOnObject() {
+	object1 := Object{ID: "http://example.com/1", Type: NoteType}
+	_ = OnObject(object1, func(ob *Object) error {
+		return nil
+	})
+
+	object2 := &Object{ID: "http://example.com/2", Type: DocumentType}
+	_ = OnObject(object2, func(ob *Object) error {
+		return nil
+	})
+
+	place := Place{ID: "http://example.com/ys", Type: PlaceType}
+	_ = OnObject(place, func(ob *Object) error {
+		return nil
+	})
+
+	actor := Actor{ID: "http://example.com/~jdoe", Type: PersonType}
+	_ = OnObject(actor, func(ob *Object) error {
+		return nil
+	})
+
+	activity := Activity{ID: "http://example.com/create", Type: CreateType}
+	_ = OnObject(activity, func(ob *Object) error {
+		return nil
+	})
+
+	question := Question{ID: "http://example.com/huh", Type: QuestionType}
+	_ = OnObject(question, func(ob *Object) error {
+		return nil
+	})
+}

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"time"
 
 	"github.com/valyala/fastjson"
@@ -216,11 +217,54 @@ func (q *Question) GobDecode(data []byte) error {
 	}
 	return unmapQuestionProperties(mm, q)
 }
+func fmtQuestionProps(w io.Writer, n *int) func(*Question) error {
+	return func(q *Question) error {
+		_ = OnIntransitiveActivity(q, fmtIntransitiveActivityProps(w, n))
+
+		comma := func() {
+			if *n > 0 {
+				_, _ = io.WriteString(w, ", ")
+			}
+		}
+
+		if !IsNil(q.AnyOf) {
+			comma()
+			*n, _ = fmt.Fprintf(w, "anyOf: %s", q.AnyOf)
+		}
+		if !IsNil(q.OneOf) {
+			comma()
+			*n, _ = fmt.Fprintf(w, "oneOf: %s", q.OneOf)
+		}
+		if q.Closed {
+			comma()
+			*n, _ = fmt.Fprintf(w, "closed: %t", q.Closed)
+		}
+
+		return nil
+	}
+}
 
 func (q Question) Format(s fmt.State, verb rune) {
+	typ := q.Type
 	switch verb {
-	case 's', 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] { }", q, q.Type)
+	case 's':
+		iri := q.ID
+		if iri != "" {
+			s.Write([]byte(iri))
+		} else {
+			_, _ = fmt.Fprintf(s, "%T[%v]", q, typ)
+		}
+	case 'v':
+		n := 0
+		if typ != nil {
+			_, _ = fmt.Fprintf(s, "%T[%v] { ", q, typ)
+			_ = fmtQuestionProps(s, &n)(&q)
+			_, _ = io.WriteString(s, " }")
+		} else {
+			_, _ = fmt.Fprintf(s, "%T { ", q)
+			_ = fmtQuestionProps(s, &n)(&q)
+			_, _ = io.WriteString(s, " }")
+		}
 	}
 }
 
