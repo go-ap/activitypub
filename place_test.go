@@ -114,7 +114,79 @@ func TestPlace_UnmarshalJSON(t *testing.T) {
 }
 
 func TestPlace_Clean(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		a    Place
+		want Item
+	}{
+		{
+			name: "empty",
+			a:    Place{},
+			want: &Place{},
+		},
+		{
+			name: "has Bto",
+			a:    Place{Type: PlaceType, Bto: ItemCollection{IRI("http://example.com")}},
+			want: &Place{Type: PlaceType},
+		},
+		{
+			name: "has BCC",
+			a:    Place{Type: PlaceType, BCC: ItemCollection{IRI("http://example.com")}},
+			want: &Place{Type: PlaceType},
+		},
+		{
+			name: "audience has BCC",
+			a:    Place{Type: PlaceType, Audience: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Place{Type: PlaceType, Audience: ItemCollection{&Object{}}},
+		},
+		{
+			name: "attachment has BCC",
+			a:    Place{Type: PlaceType, Attachment: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Place{Type: PlaceType, Attachment: &Object{}},
+		},
+		{
+			name: "icon has BCC",
+			a:    Place{Type: PlaceType, Icon: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Place{Type: PlaceType, Icon: &Object{}},
+		},
+		{
+			name: "image has BCC",
+			a:    Place{Type: PlaceType, Image: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Place{Type: PlaceType, Image: &Object{}},
+		},
+		{
+			name: "context has BCC",
+			a:    Place{Type: PlaceType, Context: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Place{Type: PlaceType, Context: &Object{}},
+		},
+		{
+			name: "generator has BCC",
+			a:    Place{Type: PlaceType, Generator: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Place{Type: PlaceType, Generator: &Object{}},
+		},
+		{
+			name: "attributedTo has BCC",
+			a:    Place{Type: PlaceType, AttributedTo: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Place{Type: PlaceType, AttributedTo: &Object{}},
+		},
+		{
+			name: "preview has BCC",
+			a:    Place{Type: PlaceType, Preview: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Place{Type: PlaceType, Preview: &Object{}},
+		},
+		{
+			name: "tag has BCC",
+			a:    Place{Type: PlaceType, Tag: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Place{Type: PlaceType, Tag: ItemCollection{&Object{}}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.Clean(); !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("Clean() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
 }
 
 func assertPlaceWithTesting(fn logFn, expected *Place) withPlaceFn {

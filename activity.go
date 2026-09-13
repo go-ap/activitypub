@@ -461,35 +461,25 @@ type Cleanable interface {
 
 // CleanRecipients checks if the "it" Item has recipients and cleans them if it does
 func CleanRecipients(it Item) Item {
-	if IsNil(it) || IsIRI(it) {
-		return nil
-	}
 	if s, ok := it.(Cleanable); ok {
 		it = s.Clean()
 	}
 	return it
 }
 
+func cleanActivityProperties(aa *Activity) {
+	_ = OnIntransitiveActivity(aa, func(i *IntransitiveActivity) error {
+		cleanIntransitiveActivityProperties(i)
+		return nil
+	})
+	aa.Object = CleanRecipients(aa.Object)
+}
+
 // Clean removes Bto and BCC properties
 func (a *Activity) Clean() Item {
 	aa := *a
-	aa.BCC = nil
-	aa.Bto = nil
-	CleanRecipients(aa.Audience)
-	CleanRecipients(aa.Attachment)
-	CleanRecipients(aa.Icon)
-	CleanRecipients(aa.Image)
-	CleanRecipients(aa.Context)
-	CleanRecipients(aa.Generator)
-	CleanRecipients(aa.AttributedTo)
-	CleanRecipients(aa.Preview)
-	CleanRecipients(aa.Tag)
-	CleanRecipients(aa.Actor)
-	CleanRecipients(aa.Object)
-	CleanRecipients(aa.Target)
-	CleanRecipients(aa.Origin)
-	CleanRecipients(aa.Instrument)
-	return &aa
+	cleanActivityProperties(&aa)
+	return aa
 }
 
 type (

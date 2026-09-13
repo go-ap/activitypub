@@ -141,3 +141,99 @@ func TestQuestion_IsCollection(t *testing.T) {
 func TestQuestion_UnmarshalJSON(t *testing.T) {
 	t.Skipf("TODO")
 }
+
+func TestQuestion_Clean(t *testing.T) {
+	tests := []struct {
+		name string
+		i    Question
+		want Item
+	}{
+		{
+			name: "empty",
+			i:    Question{},
+			want: &Question{},
+		},
+		{
+			name: "has Bto",
+			i:    Question{Type: QuestionType, Bto: ItemCollection{IRI("http://example.com")}},
+			want: &Question{Type: QuestionType},
+		},
+		{
+			name: "has BCC",
+			i:    Question{Type: QuestionType, BCC: ItemCollection{IRI("http://example.com")}},
+			want: &Question{Type: QuestionType},
+		},
+		{
+			name: "audience has BCC",
+			i:    Question{Type: QuestionType, Audience: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Question{Type: QuestionType, Audience: ItemCollection{&Object{}}},
+		},
+		{
+			name: "attachment has BCC",
+			i:    Question{Type: QuestionType, Attachment: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Question{Type: QuestionType, Attachment: &Object{}},
+		},
+		{
+			name: "icon has BCC",
+			i:    Question{Type: QuestionType, Icon: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Question{Type: QuestionType, Icon: &Object{}},
+		},
+		{
+			name: "image has BCC",
+			i:    Question{Type: QuestionType, Image: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Question{Type: QuestionType, Image: &Object{}},
+		},
+		{
+			name: "context has BCC",
+			i:    Question{Type: QuestionType, Context: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Question{Type: QuestionType, Context: &Object{}},
+		},
+		{
+			name: "generator has BCC",
+			i:    Question{Type: QuestionType, Generator: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Question{Type: QuestionType, Generator: &Object{}},
+		},
+		{
+			name: "attributedTo has BCC",
+			i:    Question{Type: QuestionType, AttributedTo: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Question{Type: QuestionType, AttributedTo: &Object{}},
+		},
+		{
+			name: "preview has BCC",
+			i:    Question{Type: QuestionType, Preview: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Question{Type: QuestionType, Preview: &Object{}},
+		},
+		{
+			name: "tag has BCC",
+			i:    Question{Type: QuestionType, Tag: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Question{Type: QuestionType, Tag: ItemCollection{&Object{}}},
+		},
+		{
+			name: "actor has BCC",
+			i:    Question{Type: QuestionType, Actor: &Person{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Question{Type: QuestionType, Actor: &Person{}},
+		},
+		{
+			name: "origin has BCC",
+			i:    Question{Type: QuestionType, Origin: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Question{Type: QuestionType, Origin: &Object{}},
+		},
+		{
+			name: "target has BCC",
+			i:    Question{Type: QuestionType, Target: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Question{Type: QuestionType, Target: &Object{}},
+		},
+		{
+			name: "instrument has BCC",
+			i:    Question{Type: QuestionType, Instrument: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Question{Type: QuestionType, Instrument: &Object{}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Clean(); !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("Clean() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
+}

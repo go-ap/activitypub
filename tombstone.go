@@ -210,21 +210,18 @@ func (t *Tombstone) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&t.To, &t.CC, &t.Bto, &t.BCC, &aud)
 }
 
+func cleanTombstoneProperties(tt *Tombstone) {
+	_ = OnObject(tt, func(ob *Object) error {
+		cleanObjectProperties(ob)
+		return nil
+	})
+}
+
 // Clean removes Bto and BCC properties
 func (t *Tombstone) Clean() Item {
-	oo := *t
-	oo.BCC = nil
-	oo.Bto = nil
-	CleanRecipients(oo.Audience)
-	CleanRecipients(oo.Attachment)
-	CleanRecipients(oo.Icon)
-	CleanRecipients(oo.Image)
-	CleanRecipients(oo.Context)
-	CleanRecipients(oo.Generator)
-	CleanRecipients(oo.AttributedTo)
-	CleanRecipients(oo.Preview)
-	CleanRecipients(oo.Tag)
-	return &oo
+	tt := *t
+	cleanTombstoneProperties(&tt)
+	return &tt
 }
 
 func (t Tombstone) Format(s fmt.State, verb rune) {

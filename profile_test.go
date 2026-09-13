@@ -108,7 +108,79 @@ func TestProfile_UnmarshalJSON(t *testing.T) {
 }
 
 func TestProfile_Clean(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		a    Profile
+		want Item
+	}{
+		{
+			name: "empty",
+			a:    Profile{},
+			want: &Profile{},
+		},
+		{
+			name: "has Bto",
+			a:    Profile{Type: ProfileType, Bto: ItemCollection{IRI("http://example.com")}},
+			want: &Profile{Type: ProfileType},
+		},
+		{
+			name: "has BCC",
+			a:    Profile{Type: ProfileType, BCC: ItemCollection{IRI("http://example.com")}},
+			want: &Profile{Type: ProfileType},
+		},
+		{
+			name: "audience has BCC",
+			a:    Profile{Type: ProfileType, Audience: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Profile{Type: ProfileType, Audience: ItemCollection{&Object{}}},
+		},
+		{
+			name: "attachment has BCC",
+			a:    Profile{Type: ProfileType, Attachment: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Profile{Type: ProfileType, Attachment: &Object{}},
+		},
+		{
+			name: "icon has BCC",
+			a:    Profile{Type: ProfileType, Icon: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Profile{Type: ProfileType, Icon: &Object{}},
+		},
+		{
+			name: "image has BCC",
+			a:    Profile{Type: ProfileType, Image: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Profile{Type: ProfileType, Image: &Object{}},
+		},
+		{
+			name: "context has BCC",
+			a:    Profile{Type: ProfileType, Context: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Profile{Type: ProfileType, Context: &Object{}},
+		},
+		{
+			name: "generator has BCC",
+			a:    Profile{Type: ProfileType, Generator: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Profile{Type: ProfileType, Generator: &Object{}},
+		},
+		{
+			name: "attributedTo has BCC",
+			a:    Profile{Type: ProfileType, AttributedTo: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Profile{Type: ProfileType, AttributedTo: &Object{}},
+		},
+		{
+			name: "preview has BCC",
+			a:    Profile{Type: ProfileType, Preview: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Profile{Type: ProfileType, Preview: &Object{}},
+		},
+		{
+			name: "tag has BCC",
+			a:    Profile{Type: ProfileType, Tag: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Profile{Type: ProfileType, Tag: ItemCollection{&Object{}}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.Clean(); !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("Clean() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
 }
 
 func assertProfileWithTesting(fn logFn, expected *Profile) withProfileFn {

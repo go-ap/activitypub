@@ -286,27 +286,51 @@ func (q *Question) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&q.To, &q.CC, &q.Bto, &q.BCC, &ItemCollection{q.Actor}, &aud)
 }
 
+func cleanQuestionProperties(qq *Question) {
+	_ = OnIntransitiveActivity(qq, func(i *IntransitiveActivity) error {
+		cleanIntransitiveActivityProperties(i)
+		return nil
+	})
+	qq.AnyOf = CleanRecipients(qq.AnyOf)
+	qq.OneOf = CleanRecipients(qq.OneOf)
+}
+
 // Clean removes Bto and BCC properties
 func (q *Question) Clean() Item {
-	aa := *q
-	aa.BCC = nil
-	aa.Bto = nil
-	CleanRecipients(aa.Audience)
-	CleanRecipients(aa.Attachment)
-	CleanRecipients(aa.Icon)
-	CleanRecipients(aa.Image)
-	CleanRecipients(aa.Context)
-	CleanRecipients(aa.Generator)
-	CleanRecipients(aa.AttributedTo)
-	CleanRecipients(aa.Preview)
-	CleanRecipients(aa.Tag)
-	CleanRecipients(aa.Actor)
-	CleanRecipients(aa.Target)
-	CleanRecipients(aa.Instrument)
-	CleanRecipients(aa.Origin)
-	CleanRecipients(aa.AnyOf)
-	CleanRecipients(aa.OneOf)
-	return &aa
+	qq := *q
+	cleanQuestionProperties(&qq)
+	return &qq
+}
+
+// Equals verifies if our receiver IntransitiveActivity is equals with the "with" Item
+func (q Question) Equals(with Item) bool {
+	withActivity, err := ToQuestion(with)
+	if err != nil {
+		return false
+	}
+	return q.equal(*withActivity)
+}
+
+// equal verifies if our receiver IntransitiveActivity is equals with the "with" IntransitiveActivity
+func (q Question) equal(with Question) bool {
+	result := true
+	_ = OnIntransitiveActivity(q, func(a *IntransitiveActivity) error {
+		result = a.Equals(with)
+		return nil
+	})
+	if !result {
+		return false
+	}
+	if !ItemsEqual(q.AnyOf, with.AnyOf) {
+		return false
+	}
+	if !ItemsEqual(q.OneOf, with.OneOf) {
+		return false
+	}
+	if q.Closed != with.Closed {
+		return false
+	}
+	return true
 }
 
 // WithQuestionFn represents a function type that can be used as a parameter for OnQuestion helper function

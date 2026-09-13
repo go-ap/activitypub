@@ -240,7 +240,79 @@ func TestEndpoints_UnmarshalJSON(t *testing.T) {
 }
 
 func TestActor_Clean(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		a    Actor
+		want Item
+	}{
+		{
+			name: "empty",
+			a:    Actor{},
+			want: &Actor{},
+		},
+		{
+			name: "has Bto",
+			a:    Actor{Type: GroupType, Bto: ItemCollection{IRI("http://example.com")}},
+			want: &Actor{Type: GroupType},
+		},
+		{
+			name: "has BCC",
+			a:    Actor{Type: ServiceType, BCC: ItemCollection{IRI("http://example.com")}},
+			want: &Actor{Type: ServiceType},
+		},
+		{
+			name: "audience has BCC",
+			a:    Actor{Type: ApplicationType, Audience: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Actor{Type: ApplicationType, Audience: ItemCollection{&Object{}}},
+		},
+		{
+			name: "attachment has BCC",
+			a:    Actor{Type: PersonType, Attachment: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Actor{Type: PersonType, Attachment: &Object{}},
+		},
+		{
+			name: "icon has BCC",
+			a:    Actor{Type: PersonType, Icon: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Actor{Type: PersonType, Icon: &Object{}},
+		},
+		{
+			name: "image has BCC",
+			a:    Actor{Type: PersonType, Image: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Actor{Type: PersonType, Image: &Object{}},
+		},
+		{
+			name: "context has BCC",
+			a:    Actor{Type: PersonType, Context: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Actor{Type: PersonType, Context: &Object{}},
+		},
+		{
+			name: "generator has BCC",
+			a:    Actor{Type: PersonType, Generator: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Actor{Type: PersonType, Generator: &Object{}},
+		},
+		{
+			name: "attributedTo has BCC",
+			a:    Actor{Type: PersonType, AttributedTo: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Actor{Type: PersonType, AttributedTo: &Object{}},
+		},
+		{
+			name: "preview has BCC",
+			a:    Actor{Type: PersonType, Preview: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Actor{Type: PersonType, Preview: &Object{}},
+		},
+		{
+			name: "tag has BCC",
+			a:    Actor{Type: ApplicationType, Tag: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Actor{Type: ApplicationType, Tag: ItemCollection{&Object{}}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.Clean(); !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("Clean() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
 }
 
 func TestToActor(t *testing.T) {

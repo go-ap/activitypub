@@ -36,7 +36,79 @@ func TestTombstone_UnmarshalJSON(t *testing.T) {
 }
 
 func TestTombstone_Clean(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		a    Tombstone
+		want Item
+	}{
+		{
+			name: "empty",
+			a:    Tombstone{},
+			want: &Tombstone{},
+		},
+		{
+			name: "has Bto",
+			a:    Tombstone{Type: TombstoneType, Bto: ItemCollection{IRI("http://example.com")}},
+			want: &Tombstone{Type: TombstoneType},
+		},
+		{
+			name: "has BCC",
+			a:    Tombstone{Type: TombstoneType, BCC: ItemCollection{IRI("http://example.com")}},
+			want: &Tombstone{Type: TombstoneType},
+		},
+		{
+			name: "audience has BCC",
+			a:    Tombstone{Type: TombstoneType, Audience: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Tombstone{Type: TombstoneType, Audience: ItemCollection{&Object{}}},
+		},
+		{
+			name: "attachment has BCC",
+			a:    Tombstone{Type: TombstoneType, Attachment: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Tombstone{Type: TombstoneType, Attachment: &Object{}},
+		},
+		{
+			name: "icon has BCC",
+			a:    Tombstone{Type: TombstoneType, Icon: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Tombstone{Type: TombstoneType, Icon: &Object{}},
+		},
+		{
+			name: "image has BCC",
+			a:    Tombstone{Type: TombstoneType, Image: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Tombstone{Type: TombstoneType, Image: &Object{}},
+		},
+		{
+			name: "context has BCC",
+			a:    Tombstone{Type: TombstoneType, Context: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Tombstone{Type: TombstoneType, Context: &Object{}},
+		},
+		{
+			name: "generator has BCC",
+			a:    Tombstone{Type: TombstoneType, Generator: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Tombstone{Type: TombstoneType, Generator: &Object{}},
+		},
+		{
+			name: "attributedTo has BCC",
+			a:    Tombstone{Type: TombstoneType, AttributedTo: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Tombstone{Type: TombstoneType, AttributedTo: &Object{}},
+		},
+		{
+			name: "preview has BCC",
+			a:    Tombstone{Type: TombstoneType, Preview: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Tombstone{Type: TombstoneType, Preview: &Object{}},
+		},
+		{
+			name: "tag has BCC",
+			a:    Tombstone{Type: TombstoneType, Tag: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Tombstone{Type: TombstoneType, Tag: ItemCollection{&Object{}}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.Clean(); !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("Clean() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
 }
 
 func assertTombstoneWithTesting(fn logFn, expected *Tombstone) withTombstoneFn {

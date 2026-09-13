@@ -148,24 +148,21 @@ func (i *IntransitiveActivity) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&i.To, &i.CC, &i.Bto, &i.BCC, &aud)
 }
 
+func cleanIntransitiveActivityProperties(aa *IntransitiveActivity) {
+	_ = OnObject(aa, func(ob *Object) error {
+		cleanObjectProperties(ob)
+		return nil
+	})
+	aa.Actor = CleanRecipients(aa.Actor)
+	aa.Target = CleanRecipients(aa.Target)
+	aa.Instrument = CleanRecipients(aa.Instrument)
+	aa.Origin = CleanRecipients(aa.Origin)
+}
+
 // Clean removes Bto and BCC properties
 func (i *IntransitiveActivity) Clean() Item {
 	aa := *i
-	aa.BCC = nil
-	aa.Bto = nil
-	CleanRecipients(aa.Audience)
-	CleanRecipients(aa.Attachment)
-	CleanRecipients(aa.Icon)
-	CleanRecipients(aa.Image)
-	CleanRecipients(aa.Context)
-	CleanRecipients(aa.Generator)
-	CleanRecipients(aa.AttributedTo)
-	CleanRecipients(aa.Preview)
-	CleanRecipients(aa.Tag)
-	CleanRecipients(aa.Actor)
-	CleanRecipients(aa.Target)
-	CleanRecipients(aa.Instrument)
-	CleanRecipients(aa.Origin)
+	cleanIntransitiveActivityProperties(&aa)
 	return &aa
 }
 
@@ -269,7 +266,7 @@ func ToIntransitiveActivity(it LinkOrIRI) (*IntransitiveActivity, error) {
 	}
 }
 
-// Equal verifies if our receiver IntransitiveActivity is equals with the "with" Item
+// Equals verifies if our receiver IntransitiveActivity is equals with the "with" Item
 func (i IntransitiveActivity) Equals(with Item) bool {
 	withActivity, err := ToIntransitiveActivity(with)
 	if err != nil {

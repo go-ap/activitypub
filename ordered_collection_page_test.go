@@ -387,3 +387,84 @@ func TestOrderedCollectionPage_Remove(t *testing.T) {
 		})
 	}
 }
+
+func TestOrderedCollectionPage_Clean(t *testing.T) {
+	tests := []struct {
+		name string
+		o    OrderedCollectionPage
+		want Item
+	}{
+		{
+			name: "empty",
+			o:    OrderedCollectionPage{},
+			want: &OrderedCollectionPage{},
+		},
+		{
+			name: "has Bto",
+			o:    OrderedCollectionPage{Type: OrderedCollectionPageType, Bto: ItemCollection{IRI("http://example.com")}},
+			want: &OrderedCollectionPage{Type: OrderedCollectionPageType},
+		},
+		{
+			name: "has BCC",
+			o:    OrderedCollectionPage{Type: OrderedCollectionPageType, BCC: ItemCollection{IRI("http://example.com")}},
+			want: &OrderedCollectionPage{Type: OrderedCollectionPageType},
+		},
+		{
+			name: "audience has BCC",
+			o:    OrderedCollectionPage{Type: OrderedCollectionPageType, Audience: ItemCollection{&OrderedCollectionPage{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &OrderedCollectionPage{Type: OrderedCollectionPageType, Audience: ItemCollection{&OrderedCollectionPage{}}},
+		},
+		{
+			name: "attachment has BCC",
+			o:    OrderedCollectionPage{Type: OrderedCollectionPageType, Attachment: &OrderedCollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollectionPage{Type: OrderedCollectionPageType, Attachment: &OrderedCollectionPage{}},
+		},
+		{
+			name: "icon has BCC",
+			o:    OrderedCollectionPage{Type: OrderedCollectionPageType, Icon: &OrderedCollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollectionPage{Type: OrderedCollectionPageType, Icon: &OrderedCollectionPage{}},
+		},
+		{
+			name: "image has BCC",
+			o:    OrderedCollectionPage{Type: OrderedCollectionPageType, Image: &OrderedCollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollectionPage{Type: OrderedCollectionPageType, Image: &OrderedCollectionPage{}},
+		},
+		{
+			name: "context has BCC",
+			o:    OrderedCollectionPage{Type: OrderedCollectionPageType, Context: &OrderedCollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollectionPage{Type: OrderedCollectionPageType, Context: &OrderedCollectionPage{}},
+		},
+		{
+			name: "generator has BCC",
+			o:    OrderedCollectionPage{Type: OrderedCollectionPageType, Generator: &OrderedCollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollectionPage{Type: OrderedCollectionPageType, Generator: &OrderedCollectionPage{}},
+		},
+		{
+			name: "attributedTo has BCC",
+			o:    OrderedCollectionPage{Type: OrderedCollectionPageType, AttributedTo: &OrderedCollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollectionPage{Type: OrderedCollectionPageType, AttributedTo: &OrderedCollectionPage{}},
+		},
+		{
+			name: "preview has BCC",
+			o:    OrderedCollectionPage{Type: OrderedCollectionPageType, Preview: &OrderedCollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollectionPage{Type: OrderedCollectionPageType, Preview: &OrderedCollectionPage{}},
+		},
+		{
+			name: "tag has BCC",
+			o:    OrderedCollectionPage{Type: OrderedCollectionPageType, Tag: ItemCollection{&OrderedCollectionPage{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &OrderedCollectionPage{Type: OrderedCollectionPageType, Tag: ItemCollection{&OrderedCollectionPage{}}},
+		},
+		{
+			name: "orderedItems has BCC",
+			o:    OrderedCollectionPage{Type: OrderedCollectionPageType, OrderedItems: ItemCollection{&OrderedCollectionPage{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &OrderedCollectionPage{Type: OrderedCollectionPageType, OrderedItems: ItemCollection{&OrderedCollectionPage{}}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.o.Clean(); !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("Clean() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
+}

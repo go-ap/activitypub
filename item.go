@@ -26,7 +26,17 @@ const (
 func compareByType(typ Typer, it, with Item) bool {
 	result := false
 	iTyp := it.GetType()
-	if ActivityTypes.Match(iTyp) {
+	if QuestionType.Match(iTyp) {
+		_ = OnQuestion(it, func(q *Question) error {
+			result = q.Equals(with)
+			return nil
+		})
+	} else if IntransitiveActivityTypes.Match(iTyp) {
+		_ = OnIntransitiveActivity(it, func(i *IntransitiveActivity) error {
+			result = i.Equals(with)
+			return nil
+		})
+	} else if ActivityTypes.Match(iTyp) {
 		_ = OnActivity(it, func(i *Activity) error {
 			result = i.Equals(with)
 			return nil

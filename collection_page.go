@@ -402,21 +402,17 @@ func (c *CollectionPage) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&c.To, &c.CC, &c.Bto, &c.BCC, &aud)
 }
 
+func cleanCollectionPageProperties(cc *CollectionPage) {
+	_ = OnCollection(cc, func(c *Collection) error {
+		cleanCollectionProperties(c)
+		return nil
+	})
+}
+
 func (c *CollectionPage) Clean() Item {
-	aa := *c
-	aa.BCC = nil
-	aa.Bto = nil
-	CleanRecipients(aa.Audience)
-	CleanRecipients(aa.Attachment)
-	CleanRecipients(aa.Icon)
-	CleanRecipients(aa.Image)
-	CleanRecipients(aa.Context)
-	CleanRecipients(aa.Generator)
-	CleanRecipients(aa.AttributedTo)
-	CleanRecipients(aa.Preview)
-	CleanRecipients(aa.Tag)
-	CleanRecipients(aa.Items)
-	return &aa
+	cc := *c
+	cleanCollectionPageProperties(&cc)
+	return &cc
 }
 
 // OnCollectionPage calls function fn on it Item if it can be asserted to

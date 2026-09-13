@@ -476,20 +476,34 @@ func (o *Object) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&o.To, &o.CC, &o.Bto, &o.BCC, &aud)
 }
 
+func cleanObjectProperties(oo *Object) {
+	cleanItems := func(it ItemCollection) ItemCollection {
+		if it == nil {
+			return it
+		}
+		res := make(ItemCollection, 0)
+		_ = OnItem(it, func(item Item) error {
+			return res.Append(CleanRecipients(item))
+		})
+		return res
+	}
+	oo.BCC = nil
+	oo.Bto = nil
+	oo.Audience = cleanItems(oo.Audience)
+	oo.Attachment = CleanRecipients(oo.Attachment)
+	oo.Icon = CleanRecipients(oo.Icon)
+	oo.Image = CleanRecipients(oo.Image)
+	oo.Context = CleanRecipients(oo.Context)
+	oo.Generator = CleanRecipients(oo.Generator)
+	oo.AttributedTo = CleanRecipients(oo.AttributedTo)
+	oo.Preview = CleanRecipients(oo.Preview)
+	oo.Tag = cleanItems(oo.Tag)
+}
+
 // Clean removes Bto and BCC properties
 func (o *Object) Clean() Item {
 	oo := *o
-	oo.BCC = nil
-	oo.Bto = nil
-	CleanRecipients(oo.Audience)
-	CleanRecipients(oo.Attachment)
-	CleanRecipients(oo.Icon)
-	CleanRecipients(oo.Image)
-	CleanRecipients(oo.Context)
-	CleanRecipients(oo.Generator)
-	CleanRecipients(oo.AttributedTo)
-	CleanRecipients(oo.Preview)
-	CleanRecipients(oo.Tag)
+	cleanObjectProperties(&oo)
 	return &oo
 }
 
@@ -563,17 +577,6 @@ func (m *MimeType) UnmarshalBinary(data []byte) error {
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (m MimeType) MarshalBinary() ([]byte, error) {
 	return m.GobEncode()
-}
-
-// ToLink returns a Link pointer to the data in the current Item
-func ToLink(it LinkOrIRI) (*Link, error) {
-	switch i := it.(type) {
-	case *Link:
-		return i, nil
-	case Link:
-		return &i, nil
-	}
-	return nil, fmt.Errorf("unable to convert %T to %T", it, new(Link))
 }
 
 // ToObject returns an Object pointer to the data in the current Item
@@ -699,7 +702,7 @@ func (s *Source) UnmarshalJSON(data []byte) error {
 }
 
 // MarshalJSON encodes the receiver object to a JSON document.
-func (s Source) MarshalJSON() ([]byte, error) {
+func (s *Source) MarshalJSON() ([]byte, error) {
 	b := bytes.Buffer{}
 	notEmpty := false
 	JSONWrite(&b, '{')
@@ -724,7 +727,7 @@ func (s *Source) UnmarshalBinary(data []byte) error {
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
-func (s Source) MarshalBinary() ([]byte, error) {
+func (s *Source) MarshalBinary() ([]byte, error) {
 	return s.GobEncode()
 }
 
@@ -754,7 +757,7 @@ func (s *Source) GobDecode(data []byte) error {
 }
 
 // GobEncode
-func (s Source) GobEncode() ([]byte, error) {
+func (s *Source) GobEncode() ([]byte, error) {
 	var (
 		mm      = make(map[string][]byte)
 		err     error

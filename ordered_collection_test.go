@@ -415,3 +415,84 @@ func TestOrderedCollection_Remove(t *testing.T) {
 		})
 	}
 }
+
+func TestOrderedCollection_Clean(t *testing.T) {
+	tests := []struct {
+		name string
+		o    OrderedCollection
+		want Item
+	}{
+		{
+			name: "empty",
+			o:    OrderedCollection{},
+			want: &OrderedCollection{},
+		},
+		{
+			name: "has Bto",
+			o:    OrderedCollection{Type: OrderedCollectionType, Bto: ItemCollection{IRI("http://example.com")}},
+			want: &OrderedCollection{Type: OrderedCollectionType},
+		},
+		{
+			name: "has BCC",
+			o:    OrderedCollection{Type: OrderedCollectionType, BCC: ItemCollection{IRI("http://example.com")}},
+			want: &OrderedCollection{Type: OrderedCollectionType},
+		},
+		{
+			name: "audience has BCC",
+			o:    OrderedCollection{Type: OrderedCollectionType, Audience: ItemCollection{&OrderedCollection{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &OrderedCollection{Type: OrderedCollectionType, Audience: ItemCollection{&OrderedCollection{}}},
+		},
+		{
+			name: "attachment has BCC",
+			o:    OrderedCollection{Type: OrderedCollectionType, Attachment: &OrderedCollection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollection{Type: OrderedCollectionType, Attachment: &OrderedCollection{}},
+		},
+		{
+			name: "icon has BCC",
+			o:    OrderedCollection{Type: OrderedCollectionType, Icon: &OrderedCollection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollection{Type: OrderedCollectionType, Icon: &OrderedCollection{}},
+		},
+		{
+			name: "image has BCC",
+			o:    OrderedCollection{Type: OrderedCollectionType, Image: &OrderedCollection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollection{Type: OrderedCollectionType, Image: &OrderedCollection{}},
+		},
+		{
+			name: "context has BCC",
+			o:    OrderedCollection{Type: OrderedCollectionType, Context: &OrderedCollection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollection{Type: OrderedCollectionType, Context: &OrderedCollection{}},
+		},
+		{
+			name: "generator has BCC",
+			o:    OrderedCollection{Type: OrderedCollectionType, Generator: &OrderedCollection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollection{Type: OrderedCollectionType, Generator: &OrderedCollection{}},
+		},
+		{
+			name: "attributedTo has BCC",
+			o:    OrderedCollection{Type: OrderedCollectionType, AttributedTo: &OrderedCollection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollection{Type: OrderedCollectionType, AttributedTo: &OrderedCollection{}},
+		},
+		{
+			name: "preview has BCC",
+			o:    OrderedCollection{Type: OrderedCollectionType, Preview: &OrderedCollection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &OrderedCollection{Type: OrderedCollectionType, Preview: &OrderedCollection{}},
+		},
+		{
+			name: "tag has BCC",
+			o:    OrderedCollection{Type: OrderedCollectionType, Tag: ItemCollection{&OrderedCollection{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &OrderedCollection{Type: OrderedCollectionType, Tag: ItemCollection{&OrderedCollection{}}},
+		},
+		{
+			name: "orderedItems has BCC",
+			o:    OrderedCollection{Type: OrderedCollectionType, OrderedItems: ItemCollection{&OrderedCollection{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &OrderedCollection{Type: OrderedCollectionType, OrderedItems: ItemCollection{&OrderedCollection{}}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.o.Clean(); !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("Clean() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
+}

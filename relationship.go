@@ -227,21 +227,44 @@ func (r *Relationship) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&r.To, &r.CC, &r.Bto, &r.BCC, &aud)
 }
 
+// Equals verifies if our receiver Relationship is equals with the "with" Item
+func (r Relationship) Equals(with Item) bool {
+	withRelationship, err := ToRelationship(with)
+	if err != nil {
+		return false
+	}
+	return r.equal(*withRelationship)
+}
+
+// equal verifies if our receiver Relationship is equals with the "with" Relationship
+func (r Relationship) equal(with Relationship) bool {
+	result := true
+	_ = OnObject(r, func(pi *Object) error {
+		result = pi.Equals(with)
+		return nil
+	})
+	if !result {
+		return false
+	}
+	if !ItemsEqual(r.Relationship, with.Relationship) {
+		return false
+	}
+	return true
+}
+
+func cleanRelationshipProperties(rr *Relationship) {
+	_ = OnObject(rr, func(ob *Object) error {
+		cleanObjectProperties(ob)
+		return nil
+	})
+	rr.Relationship = CleanRecipients(rr.Relationship)
+}
+
 // Clean removes Bto and BCC properties
 func (r *Relationship) Clean() Item {
-	oo := *r
-	oo.BCC = nil
-	oo.Bto = nil
-	CleanRecipients(oo.Audience)
-	CleanRecipients(oo.Attachment)
-	CleanRecipients(oo.Icon)
-	CleanRecipients(oo.Image)
-	CleanRecipients(oo.Context)
-	CleanRecipients(oo.Generator)
-	CleanRecipients(oo.AttributedTo)
-	CleanRecipients(oo.Preview)
-	CleanRecipients(oo.Tag)
-	return &oo
+	rr := *r
+	cleanRelationshipProperties(&rr)
+	return &rr
 }
 
 func (r Relationship) Format(s fmt.State, verb rune) {

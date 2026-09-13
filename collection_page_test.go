@@ -410,3 +410,84 @@ func TestCollectionPage_Remove(t *testing.T) {
 		})
 	}
 }
+
+func TestCollectionPage_Clean(t *testing.T) {
+	tests := []struct {
+		name string
+		o    CollectionPage
+		want Item
+	}{
+		{
+			name: "empty",
+			o:    CollectionPage{},
+			want: &CollectionPage{},
+		},
+		{
+			name: "has Bto",
+			o:    CollectionPage{Type: CollectionPageType, Bto: ItemCollection{IRI("http://example.com")}},
+			want: &CollectionPage{Type: CollectionPageType},
+		},
+		{
+			name: "has BCC",
+			o:    CollectionPage{Type: CollectionPageType, BCC: ItemCollection{IRI("http://example.com")}},
+			want: &CollectionPage{Type: CollectionPageType},
+		},
+		{
+			name: "audience has BCC",
+			o:    CollectionPage{Type: CollectionPageType, Audience: ItemCollection{&CollectionPage{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &CollectionPage{Type: CollectionPageType, Audience: ItemCollection{&CollectionPage{}}},
+		},
+		{
+			name: "attachment has BCC",
+			o:    CollectionPage{Type: CollectionPageType, Attachment: &CollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &CollectionPage{Type: CollectionPageType, Attachment: &CollectionPage{}},
+		},
+		{
+			name: "icon has BCC",
+			o:    CollectionPage{Type: CollectionPageType, Icon: &CollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &CollectionPage{Type: CollectionPageType, Icon: &CollectionPage{}},
+		},
+		{
+			name: "image has BCC",
+			o:    CollectionPage{Type: CollectionPageType, Image: &CollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &CollectionPage{Type: CollectionPageType, Image: &CollectionPage{}},
+		},
+		{
+			name: "context has BCC",
+			o:    CollectionPage{Type: CollectionPageType, Context: &CollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &CollectionPage{Type: CollectionPageType, Context: &CollectionPage{}},
+		},
+		{
+			name: "generator has BCC",
+			o:    CollectionPage{Type: CollectionPageType, Generator: &CollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &CollectionPage{Type: CollectionPageType, Generator: &CollectionPage{}},
+		},
+		{
+			name: "attributedTo has BCC",
+			o:    CollectionPage{Type: CollectionPageType, AttributedTo: &CollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &CollectionPage{Type: CollectionPageType, AttributedTo: &CollectionPage{}},
+		},
+		{
+			name: "preview has BCC",
+			o:    CollectionPage{Type: CollectionPageType, Preview: &CollectionPage{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &CollectionPage{Type: CollectionPageType, Preview: &CollectionPage{}},
+		},
+		{
+			name: "tag has BCC",
+			o:    CollectionPage{Type: CollectionPageType, Tag: ItemCollection{&CollectionPage{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &CollectionPage{Type: CollectionPageType, Tag: ItemCollection{&CollectionPage{}}},
+		},
+		{
+			name: "items has BCC",
+			o:    CollectionPage{Type: CollectionPageType, Items: ItemCollection{&CollectionPage{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &CollectionPage{Type: CollectionPageType, Items: ItemCollection{&CollectionPage{}}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.o.Clean(); !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("Clean() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
+}

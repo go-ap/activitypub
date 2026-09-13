@@ -244,7 +244,99 @@ func TestToIntransitiveActivity(t *testing.T) {
 }
 
 func TestIntransitiveActivity_Clean(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		i    IntransitiveActivity
+		want Item
+	}{
+		{
+			name: "empty",
+			i:    IntransitiveActivity{},
+			want: &IntransitiveActivity{},
+		},
+		{
+			name: "has Bto",
+			i:    IntransitiveActivity{Type: ArriveType, Bto: ItemCollection{IRI("http://example.com")}},
+			want: &IntransitiveActivity{Type: ArriveType},
+		},
+		{
+			name: "has BCC",
+			i:    IntransitiveActivity{Type: ArriveType, BCC: ItemCollection{IRI("http://example.com")}},
+			want: &IntransitiveActivity{Type: ArriveType},
+		},
+		{
+			name: "audience has BCC",
+			i:    IntransitiveActivity{Type: ArriveType, Audience: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &IntransitiveActivity{Type: ArriveType, Audience: ItemCollection{&Object{}}},
+		},
+		{
+			name: "attachment has BCC",
+			i:    IntransitiveActivity{Type: ArriveType, Attachment: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &IntransitiveActivity{Type: ArriveType, Attachment: &Object{}},
+		},
+		{
+			name: "icon has BCC",
+			i:    IntransitiveActivity{Type: TravelType, Icon: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &IntransitiveActivity{Type: TravelType, Icon: &Object{}},
+		},
+		{
+			name: "image has BCC",
+			i:    IntransitiveActivity{Type: TravelType, Image: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &IntransitiveActivity{Type: TravelType, Image: &Object{}},
+		},
+		{
+			name: "context has BCC",
+			i:    IntransitiveActivity{Type: TravelType, Context: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &IntransitiveActivity{Type: TravelType, Context: &Object{}},
+		},
+		{
+			name: "generator has BCC",
+			i:    IntransitiveActivity{Type: ArriveType, Generator: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &IntransitiveActivity{Type: ArriveType, Generator: &Object{}},
+		},
+		{
+			name: "attributedTo has BCC",
+			i:    IntransitiveActivity{Type: ArriveType, AttributedTo: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &IntransitiveActivity{Type: ArriveType, AttributedTo: &Object{}},
+		},
+		{
+			name: "preview has BCC",
+			i:    IntransitiveActivity{Type: ArriveType, Preview: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &IntransitiveActivity{Type: ArriveType, Preview: &Object{}},
+		},
+		{
+			name: "tag has BCC",
+			i:    IntransitiveActivity{Type: QuestionType, Tag: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &IntransitiveActivity{Type: QuestionType, Tag: ItemCollection{&Object{}}},
+		},
+		{
+			name: "actor has BCC",
+			i:    IntransitiveActivity{Type: QuestionType, Actor: &Person{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &IntransitiveActivity{Type: QuestionType, Actor: &Person{}},
+		},
+		{
+			name: "origin has BCC",
+			i:    IntransitiveActivity{Type: QuestionType, Origin: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &IntransitiveActivity{Type: QuestionType, Origin: &Object{}},
+		},
+		{
+			name: "target has BCC",
+			i:    IntransitiveActivity{Type: QuestionType, Target: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &IntransitiveActivity{Type: QuestionType, Target: &Object{}},
+		},
+		{
+			name: "instrument has BCC",
+			i:    IntransitiveActivity{Type: QuestionType, Instrument: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &IntransitiveActivity{Type: QuestionType, Instrument: &Object{}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Clean(); !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("Clean() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
 }
 
 func TestIntransitiveActivity_IsCollection(t *testing.T) {

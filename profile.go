@@ -207,22 +207,18 @@ func (p *Profile) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&p.To, &p.CC, &p.Bto, &p.BCC, &aud)
 }
 
+func cleanProfileProperties(pp *Profile) {
+	_ = OnObject(pp, func(ob *Object) error {
+		cleanObjectProperties(ob)
+		return nil
+	})
+}
+
 // Clean removes Bto and BCC properties
 func (p *Profile) Clean() Item {
-	oo := *p
-	oo.BCC = nil
-	oo.Bto = nil
-	CleanRecipients(oo.Audience)
-	CleanRecipients(oo.Attachment)
-	CleanRecipients(oo.Icon)
-	CleanRecipients(oo.Image)
-	CleanRecipients(oo.Context)
-	CleanRecipients(oo.Generator)
-	CleanRecipients(oo.AttributedTo)
-	CleanRecipients(oo.Preview)
-	CleanRecipients(oo.Tag)
-	CleanRecipients(oo.Describes)
-	return &oo
+	pp := *p
+	cleanProfileProperties(&pp)
+	return &pp
 }
 
 func (p Profile) Format(s fmt.State, verb rune) {

@@ -235,21 +235,18 @@ func (p *Place) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&p.To, &p.CC, &p.Bto, &p.BCC, &aud)
 }
 
+func cleanPlaceProperties(pp *Place) {
+	_ = OnObject(pp, func(ob *Object) error {
+		cleanObjectProperties(ob)
+		return nil
+	})
+}
+
 // Clean removes Bto and BCC properties
 func (p *Place) Clean() Item {
-	oo := *p
-	oo.BCC = nil
-	oo.Bto = nil
-	CleanRecipients(oo.Audience)
-	CleanRecipients(oo.Attachment)
-	CleanRecipients(oo.Icon)
-	CleanRecipients(oo.Image)
-	CleanRecipients(oo.Context)
-	CleanRecipients(oo.Generator)
-	CleanRecipients(oo.AttributedTo)
-	CleanRecipients(oo.Preview)
-	CleanRecipients(oo.Tag)
-	return &oo
+	pp := *p
+	cleanPlaceProperties(&pp)
+	return &pp
 }
 
 func fmtPlaceProps(w io.Writer, n *int) func(*Place) error {
@@ -327,7 +324,28 @@ func (p Place) equal(with Place) bool {
 		result = pi.Equals(with)
 		return nil
 	})
-	return result
+	if !result {
+		return false
+	}
+	if p.Accuracy != with.Accuracy {
+		return false
+	}
+	if p.Altitude != with.Altitude {
+		return false
+	}
+	if p.Latitude != with.Latitude {
+		return false
+	}
+	if p.Longitude != with.Longitude {
+		return false
+	}
+	if p.Radius != with.Radius {
+		return false
+	}
+	if p.Units != with.Units {
+		return false
+	}
+	return true
 }
 
 func tombstoneAsPlace(t *Tombstone) (*Place, error) {

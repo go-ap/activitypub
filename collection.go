@@ -393,21 +393,28 @@ func (c *Collection) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&c.To, &c.CC, &c.Bto, &c.BCC, &aud)
 }
 
+func cleanCollectionProperties(cc *Collection) {
+	_ = OnObject(cc, func(ob *Object) error {
+		cleanObjectProperties(ob)
+		return nil
+	})
+	cleanItems := func(it ItemCollection) ItemCollection {
+		if it == nil {
+			return it
+		}
+		res := make(ItemCollection, 0)
+		_ = OnItem(it, func(item Item) error {
+			return res.Append(CleanRecipients(item))
+		})
+		return res
+	}
+	cc.Items = cleanItems(cc.Items)
+}
+
 func (c *Collection) Clean() Item {
-	aa := *c
-	aa.BCC = nil
-	aa.Bto = nil
-	CleanRecipients(aa.Audience)
-	CleanRecipients(aa.Attachment)
-	CleanRecipients(aa.Icon)
-	CleanRecipients(aa.Image)
-	CleanRecipients(aa.Context)
-	CleanRecipients(aa.Generator)
-	CleanRecipients(aa.AttributedTo)
-	CleanRecipients(aa.Preview)
-	CleanRecipients(aa.Tag)
-	CleanRecipients(aa.Items)
-	return &aa
+	cc := *c
+	cleanCollectionProperties(&cc)
+	return &cc
 }
 
 // OnCollection calls function fn on it Item if it can be asserted to type *Collection

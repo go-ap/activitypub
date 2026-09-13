@@ -647,7 +647,109 @@ func TestValidGroupManagementActivityType(t *testing.T) {
 }
 
 func TestActivity_Clean(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		i    Activity
+		want Item
+	}{
+		{
+			name: "empty",
+			i:    Activity{},
+			want: &Activity{},
+		},
+		{
+			name: "has Bto",
+			i:    Activity{Type: UpdateType, Bto: ItemCollection{IRI("http://example.com")}},
+			want: &Activity{Type: UpdateType},
+		},
+		{
+			name: "has BCC",
+			i:    Activity{Type: UpdateType, BCC: ItemCollection{IRI("http://example.com")}},
+			want: &Activity{Type: UpdateType},
+		},
+		{
+			name: "audience has BCC",
+			i:    Activity{Type: UpdateType, Audience: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Activity{Type: UpdateType, Audience: ItemCollection{&Object{}}},
+		},
+		{
+			name: "attachment has BCC",
+			i:    Activity{Type: UpdateType, Attachment: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Activity{Type: UpdateType, Attachment: &Object{}},
+		},
+		{
+			name: "icon has BCC",
+			i:    Activity{Type: LikeType, Icon: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Activity{Type: LikeType, Icon: &Object{}},
+		},
+		{
+			name: "image has BCC",
+			i:    Activity{Type: LikeType, Image: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Activity{Type: LikeType, Image: &Object{}},
+		},
+		{
+			name: "context has BCC",
+			i:    Activity{Type: LikeType, Context: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Activity{Type: LikeType, Context: &Object{}},
+		},
+		{
+			name: "generator has BCC",
+			i:    Activity{Type: UpdateType, Generator: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Activity{Type: UpdateType, Generator: &Object{}},
+		},
+		{
+			name: "attributedTo has BCC",
+			i:    Activity{Type: UpdateType, AttributedTo: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Activity{Type: UpdateType, AttributedTo: &Object{}},
+		},
+		{
+			name: "preview has BCC",
+			i:    Activity{Type: UpdateType, Preview: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Activity{Type: UpdateType, Preview: &Object{}},
+		},
+		{
+			name: "tag has BCC",
+			i:    Activity{Type: CreateType, Tag: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Activity{Type: CreateType, Tag: ItemCollection{&Object{}}},
+		},
+		{
+			name: "actor has BCC",
+			i:    Activity{Type: CreateType, Actor: &Person{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Activity{Type: CreateType, Actor: &Person{}},
+		},
+		{
+			name: "actor has BCC",
+			i:    Activity{Type: CreateType, Actor: &Person{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Activity{Type: CreateType, Actor: &Person{}},
+		},
+		{
+			name: "origin has BCC",
+			i:    Activity{Type: CreateType, Origin: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Activity{Type: CreateType, Origin: &Object{}},
+		},
+		{
+			name: "target has BCC",
+			i:    Activity{Type: CreateType, Target: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Activity{Type: CreateType, Target: &Object{}},
+		},
+		{
+			name: "instrument has BCC",
+			i:    Activity{Type: CreateType, Instrument: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Activity{Type: CreateType, Instrument: &Object{}},
+		},
+		{
+			name: "object has BCC",
+			i:    Activity{Type: CreateType, Instrument: &Person{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Activity{Type: CreateType, Instrument: &Person{}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Clean(); !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("Clean() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
 }
 
 func TestActivity_IsCollection(t *testing.T) {
@@ -1413,7 +1515,7 @@ func TestCleanRecipients(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := CleanRecipients(tt.it)
-			if !cmp.Equal(got, tt.want) {
+			if !cmp.Equal(got, tt.want, EquateItems) {
 				t.Errorf("CleanRecipients() = %s", cmp.Diff(tt.want, got, EquateItems))
 			}
 			_ = OnObject(got, func(o *Object) error {

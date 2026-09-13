@@ -421,21 +421,28 @@ func (o *OrderedCollection) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&o.To, &o.CC, &o.Bto, &o.BCC, &aud)
 }
 
+func cleanOrderedCollectionProperties(cc *OrderedCollection) {
+	_ = OnObject(cc, func(ob *Object) error {
+		cleanObjectProperties(ob)
+		return nil
+	})
+	cleanItems := func(it ItemCollection) ItemCollection {
+		if it == nil {
+			return it
+		}
+		res := make(ItemCollection, 0)
+		_ = OnItem(it, func(item Item) error {
+			return res.Append(CleanRecipients(item))
+		})
+		return res
+	}
+	cc.OrderedItems = cleanItems(cc.OrderedItems)
+}
+
 func (o *OrderedCollection) Clean() Item {
-	aa := *o
-	aa.BCC = nil
-	aa.Bto = nil
-	CleanRecipients(aa.Audience)
-	CleanRecipients(aa.Attachment)
-	CleanRecipients(aa.Icon)
-	CleanRecipients(aa.Image)
-	CleanRecipients(aa.Context)
-	CleanRecipients(aa.Generator)
-	CleanRecipients(aa.AttributedTo)
-	CleanRecipients(aa.Preview)
-	CleanRecipients(aa.Tag)
-	CleanRecipients(aa.OrderedItems)
-	return &aa
+	cc := *o
+	cleanOrderedCollectionProperties(&cc)
+	return &cc
 }
 
 // OnOrderedCollection calls function fn on it Item if it can be asserted

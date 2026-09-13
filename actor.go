@@ -307,19 +307,16 @@ func (a *Actor) Recipients() ItemCollection {
 	return ItemCollectionDeduplication(&a.To, &a.CC, &a.Bto, &a.BCC, &aud)
 }
 
+func cleanActorProperties(aa *Actor) {
+	_ = OnObject(aa, func(ob *Object) error {
+		cleanObjectProperties(ob)
+		return nil
+	})
+}
+
 func (a *Actor) Clean() Item {
 	aa := *a
-	aa.BCC = nil
-	aa.Bto = nil
-	CleanRecipients(aa.Audience)
-	CleanRecipients(aa.Attachment)
-	CleanRecipients(aa.Icon)
-	CleanRecipients(aa.Image)
-	CleanRecipients(aa.Context)
-	CleanRecipients(aa.Generator)
-	CleanRecipients(aa.AttributedTo)
-	CleanRecipients(aa.Preview)
-	CleanRecipients(aa.Tag)
+	cleanActorProperties(&aa)
 	return &aa
 }
 

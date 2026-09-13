@@ -450,3 +450,84 @@ func TestCollection_Remove(t *testing.T) {
 		})
 	}
 }
+
+func TestCollection_Clean(t *testing.T) {
+	tests := []struct {
+		name string
+		o    Collection
+		want Item
+	}{
+		{
+			name: "empty",
+			o:    Collection{},
+			want: &Collection{},
+		},
+		{
+			name: "has Bto",
+			o:    Collection{Type: CollectionType, Bto: ItemCollection{IRI("http://example.com")}},
+			want: &Collection{Type: CollectionType},
+		},
+		{
+			name: "has BCC",
+			o:    Collection{Type: CollectionType, BCC: ItemCollection{IRI("http://example.com")}},
+			want: &Collection{Type: CollectionType},
+		},
+		{
+			name: "audience has BCC",
+			o:    Collection{Type: CollectionType, Audience: ItemCollection{&Collection{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Collection{Type: CollectionType, Audience: ItemCollection{&Collection{}}},
+		},
+		{
+			name: "attachment has BCC",
+			o:    Collection{Type: CollectionType, Attachment: &Collection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Collection{Type: CollectionType, Attachment: &Collection{}},
+		},
+		{
+			name: "icon has BCC",
+			o:    Collection{Type: CollectionType, Icon: &Collection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Collection{Type: CollectionType, Icon: &Collection{}},
+		},
+		{
+			name: "image has BCC",
+			o:    Collection{Type: CollectionType, Image: &Collection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Collection{Type: CollectionType, Image: &Collection{}},
+		},
+		{
+			name: "context has BCC",
+			o:    Collection{Type: CollectionType, Context: &Collection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Collection{Type: CollectionType, Context: &Collection{}},
+		},
+		{
+			name: "generator has BCC",
+			o:    Collection{Type: CollectionType, Generator: &Collection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Collection{Type: CollectionType, Generator: &Collection{}},
+		},
+		{
+			name: "attributedTo has BCC",
+			o:    Collection{Type: CollectionType, AttributedTo: &Collection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Collection{Type: CollectionType, AttributedTo: &Collection{}},
+		},
+		{
+			name: "preview has BCC",
+			o:    Collection{Type: CollectionType, Preview: &Collection{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Collection{Type: CollectionType, Preview: &Collection{}},
+		},
+		{
+			name: "tag has BCC",
+			o:    Collection{Type: CollectionType, Tag: ItemCollection{&Collection{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Collection{Type: CollectionType, Tag: ItemCollection{&Collection{}}},
+		},
+		{
+			name: "items has BCC",
+			o:    Collection{Type: CollectionType, Items: ItemCollection{&Collection{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Collection{Type: CollectionType, Items: ItemCollection{&Collection{}}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.o.Clean(); !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("Clean() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
+}

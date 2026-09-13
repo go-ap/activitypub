@@ -513,7 +513,79 @@ func TestGetAPSource(t *testing.T) {
 }
 
 func TestObject_Clean(t *testing.T) {
-	t.Skip("TODO")
+	tests := []struct {
+		name string
+		o    Object
+		want Item
+	}{
+		{
+			name: "empty",
+			o:    Object{},
+			want: &Object{},
+		},
+		{
+			name: "has Bto",
+			o:    Object{Type: ImageType, Bto: ItemCollection{IRI("http://example.com")}},
+			want: &Object{Type: ImageType},
+		},
+		{
+			name: "has BCC",
+			o:    Object{Type: AudioType, BCC: ItemCollection{IRI("http://example.com")}},
+			want: &Object{Type: AudioType},
+		},
+		{
+			name: "audience has BCC",
+			o:    Object{Type: NoteType, Audience: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Object{Type: NoteType, Audience: ItemCollection{&Object{}}},
+		},
+		{
+			name: "attachment has BCC",
+			o:    Object{Type: DocumentType, Attachment: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Object{Type: DocumentType, Attachment: &Object{}},
+		},
+		{
+			name: "icon has BCC",
+			o:    Object{Type: DocumentType, Icon: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Object{Type: DocumentType, Icon: &Object{}},
+		},
+		{
+			name: "image has BCC",
+			o:    Object{Type: DocumentType, Image: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Object{Type: DocumentType, Image: &Object{}},
+		},
+		{
+			name: "context has BCC",
+			o:    Object{Type: DocumentType, Context: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Object{Type: DocumentType, Context: &Object{}},
+		},
+		{
+			name: "generator has BCC",
+			o:    Object{Type: DocumentType, Generator: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Object{Type: DocumentType, Generator: &Object{}},
+		},
+		{
+			name: "attributedTo has BCC",
+			o:    Object{Type: DocumentType, AttributedTo: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Object{Type: DocumentType, AttributedTo: &Object{}},
+		},
+		{
+			name: "preview has BCC",
+			o:    Object{Type: DocumentType, Preview: &Object{BCC: ItemCollection{IRI("http://example.com")}}},
+			want: &Object{Type: DocumentType, Preview: &Object{}},
+		},
+		{
+			name: "tag has BCC",
+			o:    Object{Type: NoteType, Tag: ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com")}}}},
+			want: &Object{Type: NoteType, Tag: ItemCollection{&Object{}}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.o.Clean(); !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("Clean() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
 }
 
 func TestObject_IsCollection(t *testing.T) {
