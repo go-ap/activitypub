@@ -312,12 +312,23 @@ func OnRelationship(it LinkOrIRI, fn func(*Relationship) error) error {
 	if IsNil(it) {
 		return nil
 	}
-	if IsItemCollection(it) {
-		return callOnItemCollection(it, OnRelationship, fn)
+	rFn := func(it LinkOrIRI) error {
+		r, err := ToRelationship(it)
+		if err != nil {
+			return err
+		}
+		return fn(r)
 	}
-	ob, err := ToRelationship(it)
-	if err != nil {
-		return err
+
+	if !IsItemCollection(it) {
+		return rFn(it)
 	}
-	return fn(ob)
+	return OnItemCollection(it, func(col *ItemCollection) error {
+		for _, ob := range *col {
+			if err := rFn(ob); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

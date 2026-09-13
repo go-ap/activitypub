@@ -639,12 +639,24 @@ func OnActor(it LinkOrIRI, fn func(*Actor) error) error {
 	if IsNil(it) {
 		return nil
 	}
-	if IsItemCollection(it) {
-		return callOnItemCollection(it, OnActor, fn)
+
+	actFn := func(it LinkOrIRI) error {
+		act, err := ToActor(it)
+		if err != nil {
+			return err
+		}
+		return fn(act)
 	}
-	act, err := ToActor(it)
-	if err != nil {
-		return err
+
+	if !IsItemCollection(it) {
+		return actFn(it)
 	}
-	return fn(act)
+	return OnItemCollection(it, func(col *ItemCollection) error {
+		for _, ob := range *col {
+			if err := actFn(ob); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

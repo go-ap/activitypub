@@ -282,12 +282,23 @@ func OnLink(it LinkOrIRI, fn func(*Link) error) error {
 	if IsNil(it) {
 		return nil
 	}
-	if IsItemCollection(it) {
-		return callOnItemCollection(it, OnLink, fn)
+	lnkFn := func(it LinkOrIRI) error {
+		lnk, err := ToLink(it)
+		if err != nil {
+			return err
+		}
+		return fn(lnk)
 	}
-	ob, err := ToLink(it)
-	if err != nil {
-		return err
+
+	if !IsItemCollection(it) {
+		return lnkFn(it)
 	}
-	return fn(ob)
+	return OnItemCollection(it, func(col *ItemCollection) error {
+		for _, ob := range *col {
+			if err := lnkFn(ob); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

@@ -11,6 +11,75 @@ import (
 	"github.com/valyala/fastjson"
 )
 
+var (
+	maybeObject     Item = new(Object)
+	notObject       Item = new(Activity)
+	colOfObjects    Item = ItemCollection{Object{ID: "unum"}, Object{ID: "duo"}, Object{ID: "tres"}}
+	colOfNotObjects Item = ItemCollection{Actor{ID: "unum"}, Place{ID: "duo"}, Link{ID: "tres"}}
+
+	fnObj = func(_ *Object) error { return nil }
+)
+
+func Benchmark_ToObject(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ToObject(maybeObject)
+	}
+}
+
+func Benchmark_To_T_Object(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		To[Object](maybeObject)
+	}
+}
+
+func Benchmark_OnObject(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		OnObject(maybeObject, fnObj)
+	}
+}
+
+func Benchmark_On_T_Object(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		On[Object](maybeObject, fnObj)
+	}
+}
+
+func Benchmark_OnObjectNotHappy(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		OnObject(notObject, fnObj)
+	}
+}
+
+func Benchmark_On_T_ObjectNotHappy(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		On[Object](notObject, fnObj)
+	}
+}
+
+func Benchmark_OnObjectHappyCol(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		OnObject(colOfObjects, fnObj)
+	}
+}
+
+func Benchmark_On_T_ObjectHappyCol(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		On[Object](colOfObjects, fnObj)
+	}
+}
+
+func Benchmark_OnObjectNotHappyCol(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		OnObject(colOfNotObjects, fnObj)
+	}
+}
+
+func Benchmark_On_T_ObjectNotHappyCol(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		On[Object](colOfNotObjects, fnObj)
+	}
+}
+
 func TestRecipients(t *testing.T) {
 	bob := &Person{Type: PersonType, ID: "bob"}
 	alice := &Person{Type: PersonType, ID: "alice"}

@@ -265,7 +265,7 @@ func ToProfile(it LinkOrIRI) (*Profile, error) {
 	}
 }
 
-type withProfileFn func(*Profile) error
+type WithProfileFn func(*Profile) error
 
 // OnProfile calls function fn on it Item if it can be asserted to type *Profile
 //
@@ -276,12 +276,23 @@ func OnProfile(it LinkOrIRI, fn func(*Profile) error) error {
 	if IsNil(it) {
 		return nil
 	}
-	if IsItemCollection(it) {
-		return callOnItemCollection(it, OnProfile, fn)
+	pFn := func(it LinkOrIRI) error {
+		p, err := ToProfile(it)
+		if err != nil {
+			return err
+		}
+		return fn(p)
 	}
-	ob, err := ToProfile(it)
-	if err != nil {
-		return err
+
+	if !IsItemCollection(it) {
+		return pFn(it)
 	}
-	return fn(ob)
+	return OnItemCollection(it, func(col *ItemCollection) error {
+		for _, ob := range *col {
+			if err := pFn(ob); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

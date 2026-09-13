@@ -345,12 +345,23 @@ func OnQuestion(it LinkOrIRI, fn func(question *Question) error) error {
 	if IsNil(it) {
 		return nil
 	}
-	if IsItemCollection(it) {
-		return callOnItemCollection(it, OnQuestion, fn)
+	qFn := func(it LinkOrIRI) error {
+		q, err := ToQuestion(it)
+		if err != nil {
+			return err
+		}
+		return fn(q)
 	}
-	q, err := ToQuestion(it)
-	if err != nil {
-		return err
+
+	if !IsItemCollection(it) {
+		return qFn(it)
 	}
-	return fn(q)
+	return OnItemCollection(it, func(col *ItemCollection) error {
+		for _, ob := range *col {
+			if err := qFn(ob); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

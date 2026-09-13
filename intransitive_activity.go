@@ -371,12 +371,23 @@ func OnIntransitiveActivity(it LinkOrIRI, fn func(*IntransitiveActivity) error) 
 	if IsNil(it) {
 		return nil
 	}
-	if IsItemCollection(it) {
-		return callOnItemCollection(it, OnIntransitiveActivity, fn)
+	actFn := func(it LinkOrIRI) error {
+		act, err := ToIntransitiveActivity(it)
+		if err != nil {
+			return err
+		}
+		return fn(act)
 	}
-	act, err := ToIntransitiveActivity(it)
-	if err != nil {
-		return err
+
+	if !IsItemCollection(it) {
+		return actFn(it)
 	}
-	return fn(act)
+	return OnItemCollection(it, func(col *ItemCollection) error {
+		for _, ob := range *col {
+			if err := actFn(ob); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

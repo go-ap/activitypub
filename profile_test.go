@@ -183,7 +183,7 @@ func TestProfile_Clean(t *testing.T) {
 	}
 }
 
-func assertProfileWithTesting(fn logFn, expected *Profile) withProfileFn {
+func assertProfileWithTesting(fn logFn, expected *Profile) WithProfileFn {
 	return func(p *Profile) error {
 		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
@@ -198,7 +198,7 @@ func TestOnProfile(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(logFn, *Profile) withProfileFn
+		fn func(logFn, *Profile) WithProfileFn
 	}
 	tests := []struct {
 		name    string

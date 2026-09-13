@@ -189,7 +189,7 @@ func TestPlace_Clean(t *testing.T) {
 	}
 }
 
-func assertPlaceWithTesting(fn logFn, expected *Place) withPlaceFn {
+func assertPlaceWithTesting(fn logFn, expected *Place) WithPlaceFn {
 	return func(p *Place) error {
 		if !assertDeepEquals(fn, p, expected) {
 			return fmt.Errorf("not equal")
@@ -204,7 +204,7 @@ func TestOnPlace(t *testing.T) {
 	}
 	type args struct {
 		it Item
-		fn func(logFn, *Place) withPlaceFn
+		fn func(logFn, *Place) WithPlaceFn
 	}
 	tests := []struct {
 		name    string

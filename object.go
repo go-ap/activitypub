@@ -113,7 +113,8 @@ type Objects interface {
 	Activities |
 	IntransitiveActivities |
 	Collections |
-	IRI
+	IRI |
+	ItemCollection | IRIs
 }
 
 // Object describes an ActivityPub object of any kind.
@@ -902,12 +903,23 @@ func OnObject(it LinkOrIRI, fn func(*Object) error) error {
 	if IsNil(it) {
 		return nil
 	}
-	if IsItemCollection(it) {
-		return callOnItemCollection(it, OnObject, fn)
+	obFn := func(it LinkOrIRI) error {
+		ob, err := ToObject(it)
+		if err != nil {
+			return err
+		}
+		return fn(ob)
 	}
-	ob, err := ToObject(it)
-	if err != nil {
-		return err
+
+	if !IsItemCollection(it) {
+		return obFn(it)
 	}
-	return fn(ob)
+	return OnItemCollection(it, func(col *ItemCollection) error {
+		for _, ob := range *col {
+			if err := obFn(ob); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

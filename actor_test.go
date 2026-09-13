@@ -11,6 +11,36 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
+var (
+	fnAct = func(_ *Actor) error { return nil }
+
+	maybeActor Item = new(Actor)
+)
+
+func Benchmark_ToActor(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ToActor(maybeActor)
+	}
+}
+
+func Benchmark_To_T_Actor(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		To[Actor](maybeActor)
+	}
+}
+
+func Benchmark_OnActor(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		OnActor(maybeActor, fnAct)
+	}
+}
+
+func Benchmark_On_T_Actor(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		On[Actor](maybeActor, fnAct)
+	}
+}
+
 func TestActor_Object(t *testing.T) {
 	m := &Actor{Type: ActorType, ID: "test"}
 	if reflect.DeepEqual(ID(""), m.GetID()) {

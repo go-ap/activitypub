@@ -40,7 +40,7 @@ var CollectionTypes = ActivityVocabularyTypes{
 // What is used isn't important, but the ordering of elements must remain intact, with newer items first.
 // A property which changes regularly, such a "last updated" timestamp, should not be used.
 type Collections interface {
-	Collection | CollectionPage | OrderedCollection | OrderedCollectionPage | ItemCollection | IRIs
+	Collection | CollectionPage | OrderedCollection | OrderedCollectionPage
 }
 
 type CollectionInterface interface {

@@ -375,7 +375,7 @@ func ToPlace(it LinkOrIRI) (*Place, error) {
 	}
 }
 
-type withPlaceFn func(*Place) error
+type WithPlaceFn func(*Place) error
 
 // OnPlace calls function fn on it Item if it can be asserted to type *Place
 //
@@ -386,12 +386,26 @@ func OnPlace(it LinkOrIRI, fn func(*Place) error) error {
 	if IsNil(it) {
 		return nil
 	}
-	if IsItemCollection(it) {
-		return callOnItemCollection(it, OnPlace, fn)
+	pFn := func(it LinkOrIRI) error {
+		p, err := ToPlace(it)
+		if err != nil {
+			return err
+		}
+		return fn(p)
 	}
-	ob, err := ToPlace(it)
-	if err != nil {
-		return err
+
+	if !IsItemCollection(it) {
+		return pFn(it)
 	}
-	return fn(ob)
+	return OnItemCollection(it, func(col *ItemCollection) error {
+		for _, ob := range *col {
+			if IsLink(ob) {
+				continue
+			}
+			if err := pFn(ob); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

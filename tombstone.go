@@ -279,12 +279,23 @@ func OnTombstone(it LinkOrIRI, fn func(*Tombstone) error) error {
 	if IsNil(it) {
 		return nil
 	}
-	if IsItemCollection(it) {
-		return callOnItemCollection(it, OnTombstone, fn)
+	tFn := func(it LinkOrIRI) error {
+		t, err := ToTombstone(it)
+		if err != nil {
+			return err
+		}
+		return fn(t)
 	}
-	ob, err := ToTombstone(it)
-	if err != nil {
-		return err
+
+	if !IsItemCollection(it) {
+		return tFn(it)
 	}
-	return fn(ob)
+	return OnItemCollection(it, func(col *ItemCollection) error {
+		for _, ob := range *col {
+			if err := tFn(ob); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

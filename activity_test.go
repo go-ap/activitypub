@@ -9,6 +9,36 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+var (
+	fnA = func(_ *Activity) error { return nil }
+
+	maybeActivity Item = new(Activity)
+)
+
+func Benchmark_ToActivity(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		ToActivity(maybeActivity)
+	}
+}
+
+func Benchmark_To_T_Activity(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		To[Activity](maybeActivity)
+	}
+}
+
+func Benchmark_OnActivity(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		OnActivity(maybeActivity, fnA)
+	}
+}
+
+func Benchmark_On_T_Activity(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		On[Activity](maybeActivity, fnA)
+	}
+}
+
 func TestActivityRecipients(t *testing.T) {
 	bob := &Person{Type: PersonType, ID: "bob"}
 	alice := &Person{Type: PersonType, ID: "alice"}
