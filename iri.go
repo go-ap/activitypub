@@ -454,6 +454,9 @@ func (i IRI) ItemsMatch(col ...Item) bool {
 	return true
 }
 
+// WithIRIsFn represents a function type that can be used as a parameter for OnIRIs helper function
+type WithIRIsFn func(*IRIs) error
+
 // OnIRIs calls function fn on it Item if it can be asserted to type IRIs
 //
 // It should be used when Item represents an IRI slice.

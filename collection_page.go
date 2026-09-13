@@ -415,6 +415,9 @@ func (c *CollectionPage) Clean() Item {
 	return &cc
 }
 
+// WithCollectionPageFn represents a function type that can be used as a parameter for OnCollectionPage helper function
+type WithCollectionPageFn func(*CollectionPage) error
+
 // OnCollectionPage calls function fn on it Item if it can be asserted to
 // type *CollectionPage
 //

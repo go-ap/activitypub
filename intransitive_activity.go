@@ -361,13 +361,16 @@ func fmtIntransitiveActivityProps(w io.Writer, n *int) func(*IntransitiveActivit
 	}
 }
 
+// WithIntransitiveActivityFn represents a function type that can be used as a parameter for OnIntransitiveActivity helper function
+type WithIntransitiveActivityFn func(*IntransitiveActivity) error
+
 // OnIntransitiveActivity calls function fn on it Item if it can be asserted
 // to type *IntransitiveActivity
 //
 // This function should be called if trying to access the IntransitiveActivity
 // specific properties like "actor", for the other properties OnObject
 // should be used instead.
-func OnIntransitiveActivity(it LinkOrIRI, fn func(*IntransitiveActivity) error) error {
+func OnIntransitiveActivity(it LinkOrIRI, fn WithIntransitiveActivityFn) error {
 	if IsNil(it) {
 		return nil
 	}

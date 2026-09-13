@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"bytes"
+	"fmt"
 	"slices"
 	"sort"
 )
@@ -320,4 +321,83 @@ func (i ItemCollection) Recipients() ItemCollection {
 		})
 	}
 	return ItemCollectionDeduplication(&all)
+}
+
+// WithItemCollectionFn represents a function type that can be used as a parameter for OnItemCollection helper function
+type WithItemCollectionFn func(*ItemCollection) error
+
+// OnItemCollection calls function fn on it Item if it can be asserted to type ItemCollection
+//
+// It should be used when Item represents an Item collection and it's usually used as a way
+// to wrap functionality for other functions that will be called on each item in the collection.
+func OnItemCollection(it LinkOrIRI, fn WithItemCollectionFn) error {
+	if IsNil(it) {
+		return nil
+	}
+	col, err := ToItemCollection(it)
+	if err != nil {
+		return err
+	}
+	return fn(col)
+}
+
+// WithCollectionInterfaceFn represents a function type that can be used as a parameter for OnCollectionIntf helper function
+type WithCollectionInterfaceFn func(CollectionInterface) error
+
+// OnCollectionIntf calls function fn on it Item if it can be asserted to a type
+// that implements the CollectionInterface
+//
+// This function should be called if Item represents a collection of ActivityPub
+// objects. It basically wraps functionality for the different collection types
+// supported by the package.
+func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
+	if IsNil(it) {
+		return nil
+	}
+	typ := it.GetType()
+	switch {
+	case CollectionOfItems.Match(typ):
+		col, err := ToItemCollection(it)
+		if err != nil {
+			return err
+		}
+		return fn(col)
+	case CollectionOfIRIs.Match(typ):
+		col, err := ToIRIs(it)
+		if err != nil {
+			return err
+		}
+		itCol := col.Collection()
+		return fn(&itCol)
+	case CollectionType.Match(typ):
+		col, err := ToCollection(it)
+		if err != nil {
+			return err
+		}
+		return fn(col)
+	case CollectionPageType.Match(typ):
+		return OnCollectionPage(it, func(p *CollectionPage) error {
+			col, err := ToCollectionPage(p)
+			if err != nil {
+				return err
+			}
+			return fn(col)
+		})
+	case OrderedCollectionType.Match(typ):
+		col, err := ToOrderedCollection(it)
+		if err != nil {
+			return err
+		}
+		return fn(col)
+	case OrderedCollectionPageType.Match(typ):
+		return OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
+			col, err := ToOrderedCollectionPage(p)
+			if err != nil {
+				return err
+			}
+			return fn(col)
+		})
+	default:
+		return fmt.Errorf("%T[%s] can't be converted to a Collection type", it, it.GetType())
+	}
 }

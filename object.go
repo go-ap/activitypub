@@ -895,11 +895,14 @@ func (o Object) equal(with Object) bool {
 	return result
 }
 
+// WithObjectFn represents a function type that can be used as a parameter for OnObject helper function
+type WithObjectFn func(*Object) error
+
 // OnObject calls function fn on it Item if it can be asserted to type *Object
 //
 // This function should be safe to be called for all types with a structure compatible
 // to the Object type.
-func OnObject(it LinkOrIRI, fn func(*Object) error) error {
+func OnObject(it LinkOrIRI, fn WithObjectFn) error {
 	if IsNil(it) {
 		return nil
 	}

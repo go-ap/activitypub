@@ -768,12 +768,15 @@ func (a *Activity) equal(with Activity) bool {
 	return true
 }
 
+// WithActivityFn represents a function type that can be used as a parameter for OnActivity helper function
+type WithActivityFn func(*Activity) error
+
 // OnActivity calls function fn on it Item if it can be asserted to type *Activity
 //
 // This function should be called if trying to access the Activity specific properties
 // like "object", for the other properties OnObject, or OnIntransitiveActivity
 // should be used instead.
-func OnActivity(it LinkOrIRI, fn func(*Activity) error) error {
+func OnActivity(it LinkOrIRI, fn WithActivityFn) error {
 	if IsNil(it) {
 		return nil
 	}

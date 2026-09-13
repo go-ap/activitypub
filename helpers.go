@@ -6,39 +6,6 @@ import (
 	"github.com/go-ap/errors"
 )
 
-// WithLinkFn represents a function type that can be used as a parameter for OnLink helper function
-type WithLinkFn func(*Link) error
-
-// WithObjectFn represents a function type that can be used as a parameter for OnObject helper function
-type WithObjectFn func(*Object) error
-
-// WithActivityFn represents a function type that can be used as a parameter for OnActivity helper function
-type WithActivityFn func(*Activity) error
-
-// WithIntransitiveActivityFn represents a function type that can be used as a parameter for OnIntransitiveActivity helper function
-type WithIntransitiveActivityFn func(*IntransitiveActivity) error
-
-// WithCollectionInterfaceFn represents a function type that can be used as a parameter for OnCollectionIntf helper function
-type WithCollectionInterfaceFn func(CollectionInterface) error
-
-// WithCollectionFn represents a function type that can be used as a parameter for OnCollection helper function
-type WithCollectionFn func(*Collection) error
-
-// WithCollectionPageFn represents a function type that can be used as a parameter for OnCollectionPage helper function
-type WithCollectionPageFn func(*CollectionPage) error
-
-// WithOrderedCollectionFn represents a function type that can be used as a parameter for OnOrderedCollection helper function
-type WithOrderedCollectionFn func(*OrderedCollection) error
-
-// WithOrderedCollectionPageFn represents a function type that can be used as a parameter for OnOrderedCollectionPage helper function
-type WithOrderedCollectionPageFn func(*OrderedCollectionPage) error
-
-// WithItemCollectionFn represents a function type that can be used as a parameter for OnItemCollection helper function
-type WithItemCollectionFn func(*ItemCollection) error
-
-// WithIRIsFn represents a function type that can be used as a parameter for OnIRIs helper function
-type WithIRIsFn func(*IRIs) error
-
 func To[T Objects | Links](it LinkOrIRI) (*T, error) {
 	if ob, ok := it.(T); ok {
 		return &ob, nil
@@ -50,64 +17,6 @@ func To[T Objects | Links](it LinkOrIRI) (*T, error) {
 // It also covers the case where "it" is a collection of items that match the assertion.
 func On[T Objects | Links](it Item, fn func(*T) error) error {
 	return callOnItemCollection[T, func(iri LinkOrIRI) (*T, error)](it, To[T], fn)
-}
-
-// OnCollectionIntf calls function fn on it Item if it can be asserted to a type
-// that implements the CollectionInterface
-//
-// This function should be called if Item represents a collection of ActivityPub
-// objects. It basically wraps functionality for the different collection types
-// supported by the package.
-func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
-	if IsNil(it) {
-		return nil
-	}
-	typ := it.GetType()
-	switch {
-	case CollectionOfItems.Match(typ):
-		col, err := ToItemCollection(it)
-		if err != nil {
-			return err
-		}
-		return fn(col)
-	case CollectionOfIRIs.Match(typ):
-		col, err := ToIRIs(it)
-		if err != nil {
-			return err
-		}
-		itCol := col.Collection()
-		return fn(&itCol)
-	case CollectionType.Match(typ):
-		col, err := ToCollection(it)
-		if err != nil {
-			return err
-		}
-		return fn(col)
-	case CollectionPageType.Match(typ):
-		return OnCollectionPage(it, func(p *CollectionPage) error {
-			col, err := ToCollectionPage(p)
-			if err != nil {
-				return err
-			}
-			return fn(col)
-		})
-	case OrderedCollectionType.Match(typ):
-		col, err := ToOrderedCollection(it)
-		if err != nil {
-			return err
-		}
-		return fn(col)
-	case OrderedCollectionPageType.Match(typ):
-		return OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
-			col, err := ToOrderedCollectionPage(p)
-			if err != nil {
-				return err
-			}
-			return fn(col)
-		})
-	default:
-		return fmt.Errorf("%T[%s] can't be converted to a Collection type", it, it.GetType())
-	}
 }
 
 func notEmptyLink(l *Link) bool {

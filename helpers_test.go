@@ -321,11 +321,9 @@ func TestOn(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		var logFn logFn
+		logFn := t.Errorf
 		if tt.wantErr {
 			logFn = t.Logf
-		} else {
-			logFn = t.Errorf
 		}
 		t.Run(tt.name, func(t *testing.T) {
 			if err := On(tt.args.it, tt.args.fn(logFn, tt.expected)); (err != nil) != tt.wantErr {

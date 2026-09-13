@@ -324,18 +324,3 @@ func OnItem(it Item, fn func(Item) error) error {
 		return nil
 	})
 }
-
-// OnItemCollection calls function fn on it Item if it can be asserted to type ItemCollection
-//
-// It should be used when Item represents an Item collection and it's usually used as a way
-// to wrap functionality for other functions that will be called on each item in the collection.
-func OnItemCollection(it LinkOrIRI, fn WithItemCollectionFn) error {
-	if IsNil(it) {
-		return nil
-	}
-	col, err := ToItemCollection(it)
-	if err != nil {
-		return err
-	}
-	return fn(col)
-}

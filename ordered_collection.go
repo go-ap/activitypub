@@ -445,6 +445,9 @@ func (o *OrderedCollection) Clean() Item {
 	return &cc
 }
 
+// WithOrderedCollectionFn represents a function type that can be used as a parameter for OnOrderedCollection helper function
+type WithOrderedCollectionFn func(*OrderedCollection) error
+
 // OnOrderedCollection calls function fn on it Item if it can be asserted
 // to type *OrderedCollection
 //

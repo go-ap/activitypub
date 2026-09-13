@@ -417,6 +417,9 @@ func (c *Collection) Clean() Item {
 	return &cc
 }
 
+// WithCollectionFn represents a function type that can be used as a parameter for OnCollection helper function
+type WithCollectionFn func(*Collection) error
+
 // OnCollection calls function fn on it Item if it can be asserted to type *Collection
 //
 // This function should be called if trying to access the Collection specific

@@ -383,6 +383,9 @@ func (o *OrderedCollectionPage) Clean() Item {
 	return &cc
 }
 
+// WithOrderedCollectionPageFn represents a function type that can be used as a parameter for OnOrderedCollectionPage helper function
+type WithOrderedCollectionPageFn func(*OrderedCollectionPage) error
+
 // OnOrderedCollectionPage calls function fn on it Item if it can be asserted
 // to type *OrderedCollectionPage
 //

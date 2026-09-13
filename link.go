@@ -274,11 +274,14 @@ func ToLink(it LinkOrIRI) (*Link, error) {
 	return nil, fmt.Errorf("unable to convert %T to %T", it, new(Link))
 }
 
+// WithLinkFn represents a function type that can be used as a parameter for OnLink helper function
+type WithLinkFn func(*Link) error
+
 // OnLink calls function fn on the "it" LinkOrIRI if it can be asserted to type *Link
 //
 // This function should be safe to use for all types with a structure compatible
 // with the Link type
-func OnLink(it LinkOrIRI, fn func(*Link) error) error {
+func OnLink(it LinkOrIRI, fn WithLinkFn) error {
 	if IsNil(it) {
 		return nil
 	}
