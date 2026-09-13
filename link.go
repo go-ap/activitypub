@@ -263,6 +263,17 @@ func (l Link) Format(s fmt.State, verb rune) {
 	}
 }
 
+// ToLink returns a Link pointer to the data in the current Item
+func ToLink(it LinkOrIRI) (*Link, error) {
+	switch i := it.(type) {
+	case *Link:
+		return i, nil
+	case Link:
+		return &i, nil
+	}
+	return nil, fmt.Errorf("unable to convert %T to %T", it, new(Link))
+}
+
 // OnLink calls function fn on the "it" LinkOrIRI if it can be asserted to type *Link
 //
 // This function should be safe to use for all types with a structure compatible
