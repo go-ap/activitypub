@@ -118,11 +118,11 @@ func gobEncodeItem(it Item) ([]byte, error) {
 			typ = NilType
 		}
 		switch {
-		case IRIType.Match(it.GetType()):
+		case IRIType.Match(typ):
 			var bytes []byte
 			bytes, err = it.(IRI).GobEncode()
 			b.Write(bytes)
-		case CollectionType.Match(it.GetType()):
+		case CollectionType.Match(typ):
 			err = OnCollection(it, func(c *Collection) error {
 				bytes, err := c.GobEncode()
 				b.Write(bytes)

@@ -23,7 +23,7 @@ const (
 	NilID = NilIRI
 )
 
-func compareByType(typ Typer, it, with Item) bool {
+func compareByType(typ Typer, it, with ObjectOrLink) bool {
 	result := false
 	iTyp := it.GetType()
 	if QuestionType.Match(iTyp) {
@@ -327,48 +327,48 @@ func OnItem(it Item, fn func(Item) error) error {
 
 // NotEmpty tells us if an Item interface value has a non nil value for various types
 // that implement
-func NotEmpty(i Item) bool {
-	if IsNil(i) {
+func NotEmpty(it Item) bool {
+	if IsNil(it) {
 		return false
 	}
 	var notEmpty bool
-	if IsIRI(i) {
-		notEmpty = len(i.GetLink()) > 0
+	if IsIRI(it) {
+		notEmpty = len(it.GetLink()) > 0
 	}
-	typ := i.GetType()
+	typ := it.GetType()
 	switch {
 	case QuestionType.Match(typ):
-		_ = OnQuestion(i, func(q *Question) error {
+		_ = OnQuestion(it, func(q *Question) error {
 			notEmpty = notEmptyQuestion(q)
 			return nil
 		})
 	case IntransitiveActivityTypes.Match(typ):
-		_ = OnIntransitiveActivity(i, func(a *IntransitiveActivity) error {
+		_ = OnIntransitiveActivity(it, func(a *IntransitiveActivity) error {
 			notEmpty = notEmptyIntransitiveActivity(a)
 			return nil
 		})
 	case ActivityTypes.Match(typ):
-		_ = OnActivity(i, func(a *Activity) error {
+		_ = OnActivity(it, func(a *Activity) error {
 			notEmpty = notEmptyActivity(a)
 			return nil
 		})
 	case CollectionTypes.Match(typ):
-		_ = OnCollectionIntf(i, func(c CollectionInterface) error {
+		_ = OnCollectionIntf(it, func(c CollectionInterface) error {
 			notEmpty = c != nil || len(c.Collection()) > 0
 			return nil
 		})
 	case ActorTypes.Match(typ):
-		_ = OnActor(i, func(a *Actor) error {
+		_ = OnActor(it, func(a *Actor) error {
 			notEmpty = notEmptyActor(a)
 			return nil
 		})
 	case LinkTypes.Match(typ):
-		_ = OnLink(i, func(l *Link) error {
+		_ = OnLink(it, func(l *Link) error {
 			notEmpty = notEmptyLink(l)
 			return nil
 		})
 	default:
-		_ = OnObject(i, func(o *Object) error {
+		_ = OnObject(it, func(o *Object) error {
 			notEmpty = notEmptyObject(o)
 			return nil
 		})

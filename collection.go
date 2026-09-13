@@ -147,11 +147,11 @@ type Collection struct {
 	// In general, clients do the conversion from source to content, not the other way around.
 	Source Source `jsonld:"source,omitempty"`
 	// In a paged Collection, indicates the page that contains the most recently updated member items.
-	Current ObjectOrLink `jsonld:"current,omitempty"`
+	Current Item `jsonld:"current,omitempty"`
 	// In a paged Collection, indicates the furthest preceding page of items in the collection.
-	First ObjectOrLink `jsonld:"first,omitempty"`
+	First Item `jsonld:"first,omitempty"`
 	// In a paged Collection, indicates the furthest proceeding page of the collection.
-	Last ObjectOrLink `jsonld:"last,omitempty"`
+	Last Item `jsonld:"last,omitempty"`
 	// A non-negative integer specifying the total number of objects contained by the logical view of the collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
 	TotalItems uint `jsonld:"totalItems"`
