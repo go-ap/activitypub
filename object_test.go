@@ -1193,7 +1193,7 @@ func Test_reflectedItemByType_Object(t *testing.T) {
 }
 
 func ExampleObject_initialization() {
-	// object1 is a struct initialized inline which can be operated on directly.
+	// object1 is a struct literal which can be operated on directly.
 	// For example, we can set the Content
 	object1 := Object{}
 	object1.Content = DefaultNaturalLanguage("Lorem ipsum")
@@ -1205,7 +1205,7 @@ func ExampleObject_initialization() {
 	var object2 Item = &Object{Type: ObjectType}
 
 	// That means we can't set any properties directly, so
-	// if you uncommment the next line you will get a compiler error.
+	// if you uncomment the next line you will get a compiler error.
 	// object2.URL = IRI("http://example.com")
 
 	_ = OnObject(object2, func(object *Object) error {
@@ -1221,10 +1221,7 @@ func ExampleObject_initialization() {
 }
 
 func ExampleToObject() {
-	// Due to providing a consistent memory shape, most of the types of the library
-	// can be converted to an Object struct.
-	//
-	// **If you write your own data-types you must keep that in mind!**
+	// All the non Link types the library provides can be converted to an Object struct.
 	//
 	// This fact represents the cornerstone element for the rest of the library's functionality,
 	// as it allows us to access properties of objects even when we're not certain of which data type
@@ -1238,7 +1235,7 @@ func ExampleToObject() {
 	fmt.Printf("Object1: %v\n", object1)
 	fmt.Printf("       : %v\n\n", o1)
 
-	// If our initial type it's an inline struct, modifying the return value will not affect the original.
+	// If our initial type it's an struct literal, modifying the return value will not affect the original.
 	object2 := Object{ID: "http://example.com/2", Type: DocumentType, Name: DefaultNaturalLanguage("object2")}
 	o2, _ := ToObject(object2)
 	o2.Name = nil
@@ -1299,33 +1296,61 @@ func ExampleToObject() {
 }
 
 func ExampleOnObject() {
-	object1 := Object{ID: "http://example.com/1", Type: NoteType}
+	// In the ExampleToObject function, we saw how we can convert data types
+	// to Object pointer values and be allowed to use their properties in that way.
+	//
+	// Here we can see how this mechanism can be used to build specific logic when dealing
+	// with opaque Item interface values.
+
+	// As we've seen, you can not access this Object's properties
+	// because it's wrapped in the Item interface.
+	var object1 Item = &Object{ID: "http://example.com/1", Type: NoteType}
+	// Uncommenting this line will trigger a compilation error.
+	//object1.Name = DefaultNaturalLanguage("An object")
 	_ = OnObject(object1, func(ob *Object) error {
+		// Instead we can wrap it in an OnObject() call in which
+		// we can modify it, and the changes will be visible outside its scope.
+		ob.Name = DefaultNaturalLanguage("An object")
 		return nil
 	})
+	fmt.Printf("Object1: %v\n", object1)
 
-	object2 := &Object{ID: "http://example.com/2", Type: DocumentType}
+	// Caution must be taken as the Item interface also accepts non-pointer struct values
+	// but that negates the ability to modify them with OnObject() because they receive a
+	// pointer to a copy of the struct, and they won't propagate outside the function's call.
+	var object2 Item = Object{ID: "http://example.com/2", Type: DocumentType}
 	_ = OnObject(object2, func(ob *Object) error {
+		ob.Name = DefaultNaturalLanguage("Another object")
 		return nil
 	})
+	fmt.Printf("Object2: %v\n", object2)
 
-	place := Place{ID: "http://example.com/ys", Type: PlaceType}
+	// We can modify types disjoint to Object, like Place, but only their common properties.
+	var place Item = &Place{ID: "http://example.com/ys", Type: PlaceType}
 	_ = OnObject(place, func(ob *Object) error {
+		ob.Name = DefaultNaturalLanguage("Ys")
+		ob.Summary = DefaultNaturalLanguage("A mythical city on the coast of Brittany")
+		// We can't access Place specific properties.
+		// Uncommenting this will trigger a compilation error.
+		//ob.Latitude = 0.0
 		return nil
 	})
+	fmt.Printf("Place: %v\n", place)
 
-	actor := Actor{ID: "http://example.com/~jdoe", Type: PersonType}
-	_ = OnObject(actor, func(ob *Object) error {
-		return nil
-	})
-
-	activity := Activity{ID: "http://example.com/create", Type: CreateType}
+	var activity Item = &Activity{ID: "http://example.com/create", Type: CreateType, Actor: IRI("http://example.com/~jdoe")}
+	// One thing that the Go type system, and the library don't guard against,
+	// is overwriting an Item element from inside the OnObject() function.
 	_ = OnObject(activity, func(ob *Object) error {
+		// The following code is valid and compiles, but it's probably never what you want,
+		// because it results in loss of information:
+		activity = ob
 		return nil
 	})
+	fmt.Printf("Activity: %v\n", activity)
 
-	question := Question{ID: "http://example.com/huh", Type: QuestionType}
-	_ = OnObject(question, func(ob *Object) error {
-		return nil
-	})
+	// Output:
+	// Object1: activitypub.Object[Note] { id: http://example.com/1, name: An object }
+	// Object2: activitypub.Object[Document] { id: http://example.com/2 }
+	// Place: activitypub.Place[Place] { id: http://example.com/ys, name: Ys, summary: A mythical city on the coast of Brittany }
+	// Activity: activitypub.Object[Create] { id: http://example.com/create }
 }

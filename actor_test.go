@@ -614,7 +614,7 @@ func TestActor_Equals(t *testing.T) {
 }
 
 func ExampleActor_initialization() {
-	// actor1 is a struct initialized inline which can be operated on directly.
+	// actor1 is a struct literal which can be operated on directly.
 	// For example, we can set the URL
 	actor1 := Actor{}
 	actor1.URL = IRI("http://example.com/1")
@@ -626,7 +626,7 @@ func ExampleActor_initialization() {
 	var actor2 Item = &Actor{Type: ActorType}
 
 	// That means we can't set any properties directly, so
-	// if you uncommment the next line you will get a compiler error.
+	// if you uncomment the next line you will get a compiler error.
 	// actor2.URL = IRI("http://example.com")
 
 	_ = OnActor(actor2, func(actor *Actor) error {

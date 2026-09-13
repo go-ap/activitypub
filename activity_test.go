@@ -1430,7 +1430,7 @@ func TestCleanRecipients(t *testing.T) {
 }
 
 func ExampleActivity_initialization() {
-	// activity1 is a struct initialized inline which can be operated on directly.
+	// activity1 is a struct literal which can be operated on directly.
 	// For example, we can set the Object:
 	activity1 := Activity{ID: "http://example.com/1"}
 	activity1.Object = IRI("http://example.com/thing")
@@ -1442,7 +1442,7 @@ func ExampleActivity_initialization() {
 	var activity2 Item = &Activity{Type: ActivityType}
 
 	// That means we can't set any properties directly, so
-	// if you uncommment the next line you will get a compilation error.
+	// if you uncomment the next line you will get a compilation error.
 	// activity2.Actor = IRI("http://example.com/~jdoe")
 
 	_ = OnActivity(activity2, func(activity *Activity) error {

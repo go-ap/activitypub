@@ -126,7 +126,7 @@ func TestLink_GobDecode(t *testing.T) {
 }
 
 func ExampleLink_initialization() {
-	// link1 is a struct initialized inline which can be operated on directly.
+	// link1 is a struct literal which can be operated on directly.
 	// For example, we can set the language:
 	link1 := Link{Href: "http://example.com/1"}
 	link1.HrefLang = English
@@ -138,7 +138,7 @@ func ExampleLink_initialization() {
 	var link2 Item = &Link{Type: LinkType}
 
 	// That means we can't set any properties directly, so
-	// if you uncommment the next line you will get a compiler error.
+	// if you uncomment the next line you will get a compiler error.
 	// link2.Href = "http://example.com"
 
 	_ = OnLink(link2, func(link *Link) error {

@@ -379,7 +379,7 @@ func TestIntransitiveActivity_Equals(t *testing.T) {
 }
 
 func ExampleIntransitiveActivity_initialization() {
-	// intransitiveActivity1 is a struct initialized inline which can be operated on directly.
+	// intransitiveActivity1 is a struct literal which can be operated on directly.
 	// For example, we can set the Actor:
 	intransitiveActivity1 := IntransitiveActivity{ID: "http://example.com/1"}
 	intransitiveActivity1.Actor = IRI("http://example.com/~jdoe")
@@ -391,7 +391,7 @@ func ExampleIntransitiveActivity_initialization() {
 	var intransitiveActivity2 Item = &IntransitiveActivity{Type: IntransitiveActivityType}
 
 	// That means we can't set any properties directly, so
-	// if you uncommment the next line you will get a compiler error.
+	// if you uncomment the next line you will get a compiler error.
 	// intransitiveActivity2.Actor = IRI("http://example.com/~jdoe")
 
 	_ = OnIntransitiveActivity(intransitiveActivity2, func(intransitiveActivity *IntransitiveActivity) error {
