@@ -251,8 +251,8 @@ type Activities interface {
 //
 // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-activity
 //
-//  Activity objects are specializations of the base Object type that provide information about
-//  actions that have either already occurred, are in the process of occurring, or may occur in the future.
+// Activity objects are specializations of the base Object type that provide information about
+// actions that have either already occurred, are in the process of occurring, or may occur in the future.
 //
 // In addition to common properties supported by all Object instances, Activity objects support the following
 // additional properties defined by the Vocabulary: actor | object | target | origin | result | instrument
