@@ -394,3 +394,19 @@ func OnIntransitiveActivity(it LinkOrIRI, fn WithIntransitiveActivityFn) error {
 		return nil
 	})
 }
+
+func notEmptyIntransitiveActivity(i *IntransitiveActivity) bool {
+	notEmpty := i.Actor != nil ||
+		i.Target != nil ||
+		i.Result != nil ||
+		i.Origin != nil ||
+		i.Instrument != nil
+	if notEmpty {
+		return true
+	}
+	_ = OnObject(i, func(ob *Object) error {
+		notEmpty = notEmptyObject(ob)
+		return nil
+	})
+	return notEmpty
+}

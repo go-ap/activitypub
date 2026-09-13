@@ -365,3 +365,15 @@ func OnQuestion(it LinkOrIRI, fn func(question *Question) error) error {
 		return nil
 	})
 }
+
+func notEmptyQuestion(i *Question) bool {
+	notEmpty := true
+	_ = OnIntransitiveActivity(i, func(ob *IntransitiveActivity) error {
+		notEmpty = notEmptyIntransitiveActivity(ob)
+		return nil
+	})
+	if notEmpty {
+		return true
+	}
+	return i.AnyOf != nil || i.OneOf != nil
+}

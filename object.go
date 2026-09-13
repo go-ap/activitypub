@@ -926,3 +926,42 @@ func OnObject(it LinkOrIRI, fn WithObjectFn) error {
 		return nil
 	})
 }
+
+func notEmptyObject(o *Object) bool {
+	if o == nil {
+		return false
+	}
+	return len(o.ID) > 0 ||
+		HasTypes(o) ||
+		ActivityTypes.Match(o.GetType()) ||
+		o.Attachment != nil ||
+		o.AttributedTo != nil ||
+		o.Audience != nil ||
+		o.BCC != nil ||
+		o.Bto != nil ||
+		o.CC != nil ||
+		o.Context != nil ||
+		o.Duration > 0 ||
+		!o.EndTime.IsZero() ||
+		o.Generator != nil ||
+		o.Icon != nil ||
+		o.Image != nil ||
+		o.InReplyTo != nil ||
+		o.Likes != nil ||
+		o.Location != nil ||
+		len(o.MediaType) > 0 ||
+		len(o.Name) > 0 ||
+		len(o.Content) > 0 ||
+		len(o.Summary) > 0 ||
+		o.Preview != nil ||
+		!o.Published.IsZero() ||
+		o.Replies != nil ||
+		o.Shares != nil ||
+		o.Source.MediaType != "" ||
+		len(o.Source.Content) > 0 ||
+		!o.StartTime.IsZero() ||
+		o.Tag != nil ||
+		o.To != nil ||
+		!o.Updated.IsZero() ||
+		o.URL != nil
+}

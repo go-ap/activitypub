@@ -800,3 +800,12 @@ func OnActivity(it LinkOrIRI, fn WithActivityFn) error {
 		return nil
 	})
 }
+
+func notEmptyActivity(a *Activity) bool {
+	var notEmpty bool
+	_ = OnIntransitiveActivity(a, func(i *IntransitiveActivity) error {
+		notEmpty = notEmptyIntransitiveActivity(i)
+		return nil
+	})
+	return notEmpty || a.Object != nil
+}

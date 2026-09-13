@@ -305,3 +305,16 @@ func OnLink(it LinkOrIRI, fn WithLinkFn) error {
 		return nil
 	})
 }
+
+func notEmptyLink(l *Link) bool {
+	return len(l.ID) > 0 ||
+		LinkTypes.Match(l.GetType()) ||
+		len(l.MediaType) > 0 ||
+		l.Preview != nil ||
+		l.Name != nil ||
+		len(l.Href) > 0 ||
+		len(l.Rel) > 0 ||
+		l.HrefLang.Valid() ||
+		l.Height > 0 ||
+		l.Width > 0
+}

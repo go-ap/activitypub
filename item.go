@@ -324,3 +324,77 @@ func OnItem(it Item, fn func(Item) error) error {
 		return nil
 	})
 }
+
+// NotEmpty tells us if an Item interface value has a non nil value for various types
+// that implement
+func NotEmpty(i Item) bool {
+	if IsNil(i) {
+		return false
+	}
+	var notEmpty bool
+	if IsIRI(i) {
+		notEmpty = len(i.GetLink()) > 0
+	}
+	typ := i.GetType()
+	switch {
+	case QuestionType.Match(typ):
+		_ = OnQuestion(i, func(q *Question) error {
+			notEmpty = notEmptyQuestion(q)
+			return nil
+		})
+	case IntransitiveActivityTypes.Match(typ):
+		_ = OnIntransitiveActivity(i, func(a *IntransitiveActivity) error {
+			notEmpty = notEmptyIntransitiveActivity(a)
+			return nil
+		})
+	case ActivityTypes.Match(typ):
+		_ = OnActivity(i, func(a *Activity) error {
+			notEmpty = notEmptyActivity(a)
+			return nil
+		})
+	case CollectionTypes.Match(typ):
+		_ = OnCollectionIntf(i, func(c CollectionInterface) error {
+			notEmpty = c != nil || len(c.Collection()) > 0
+			return nil
+		})
+	case ActorTypes.Match(typ):
+		_ = OnActor(i, func(a *Actor) error {
+			notEmpty = notEmptyActor(a)
+			return nil
+		})
+	case LinkTypes.Match(typ):
+		_ = OnLink(i, func(l *Link) error {
+			notEmpty = notEmptyLink(l)
+			return nil
+		})
+	default:
+		_ = OnObject(i, func(o *Object) error {
+			notEmpty = notEmptyObject(o)
+			return nil
+		})
+	}
+	return notEmpty
+}
+
+// DerefItem unpacks an Item into an ItemCollection.
+// If the Item is a slice type, like [IRIs], or [ItemCollection], it returns an [ItemCollection] corresponding to that
+func DerefItem(it Item) ItemCollection {
+	if IsNil(it) {
+		return nil
+	}
+
+	var items ItemCollection
+	switch {
+	case IsIRIs(it):
+		if col, err := ToIRIs(it); err == nil {
+			items = col.Collection()
+		}
+	case IsItemCollection(it):
+		if col, err := ToItemCollection(it); err == nil {
+			items = *col
+		}
+	default:
+		items = ItemCollection{it}
+	}
+	return items
+}
