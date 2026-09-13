@@ -678,3 +678,21 @@ func notEmptyActor(a *Actor) bool {
 		a.Streams != nil ||
 		len(a.PublicKey.ID)+len(a.PublicKey.Owner)+len(a.PublicKey.PublicKeyPem) > 0
 }
+
+// CopyActorProperties
+func CopyActorProperties(to, from *Actor) (*Actor, error) {
+	oldOb, _ := ToObject(to)
+	newOb, _ := ToObject(from)
+	_, err := CopyObjectProperties(oldOb, newOb)
+	if err != nil {
+		return to, err
+	}
+	to.Inbox = replaceIfItem(to.Inbox, from.Inbox)
+	to.Outbox = replaceIfItem(to.Outbox, from.Outbox)
+	to.Following = replaceIfItem(to.Following, from.Following)
+	to.Followers = replaceIfItem(to.Followers, from.Followers)
+	to.Liked = replaceIfItem(to.Liked, from.Liked)
+	to.PreferredUsername = replaceIfNaturalLanguageValues(to.PreferredUsername, from.PreferredUsername)
+	to.PublicKey = replaceIfPublicKey(to.PublicKey, from.PublicKey)
+	return to, nil
+}

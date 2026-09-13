@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"slices"
 	"strings"
+
+	"github.com/go-ap/errors"
 )
 
 // Item struct
@@ -423,4 +425,201 @@ func DerefItem(it Item) ItemCollection {
 		items = ItemCollection{it}
 	}
 	return items
+}
+
+// Clone returns a copy of item
+func Clone(it Item) Item {
+	var n Item
+	switch ob := it.(type) {
+	case *IRI:
+		n = *ob
+	case IRI:
+		n = ob
+	case *IRIs:
+		t := make(IRIs, len(*ob))
+		copy(t, *ob)
+		n = &t
+	case IRIs:
+		t := make(IRIs, len(ob))
+		copy(t, ob)
+		n = &t
+	case *ItemCollection:
+		t := make(ItemCollection, len(*ob))
+		copy(t, *ob)
+		n = &t
+	case ItemCollection:
+		t := make(ItemCollection, len(ob))
+		copy(t, ob)
+		n = &t
+	case *Object:
+		t := *ob
+		n = &t
+	case Object:
+		t := ob
+		n = &t
+	case *Place:
+		t := *ob
+		n = &t
+	case Place:
+		t := ob
+		n = &t
+	case *Profile:
+		t := *ob
+		n = &t
+	case Profile:
+		t := ob
+		n = &t
+	case *Relationship:
+		t := *ob
+		n = &t
+	case Relationship:
+		t := ob
+		n = &t
+	case *Tombstone:
+		t := *ob
+		n = &t
+	case Tombstone:
+		t := ob
+		n = &t
+	case *Activity:
+		t := *ob
+		n = &t
+	case Activity:
+		t := ob
+		n = &t
+	case *IntransitiveActivity:
+		t := *ob
+		n = &t
+	case IntransitiveActivity:
+		t := ob
+		n = &t
+	case *Question:
+		t := *ob
+		n = &t
+	case Question:
+		t := ob
+		n = &t
+	case *Actor:
+		t := *ob
+		n = &t
+	case Actor:
+		t := ob
+		n = &t
+	case *Collection:
+		t := *ob
+		n = &t
+	case Collection:
+		t := ob
+		n = &t
+	case *OrderedCollection:
+		t := *ob
+		n = &t
+	case OrderedCollection:
+		t := ob
+		n = &t
+	case *CollectionPage:
+		t := *ob
+		n = &t
+	case CollectionPage:
+		t := ob
+		n = &t
+	case *OrderedCollectionPage:
+		t := *ob
+		n = &t
+	case OrderedCollectionPage:
+		t := ob
+		n = &t
+	}
+	return n
+}
+
+func copyAllItemProperties(to, from ObjectOrLink) (ObjectOrLink, error) {
+	switch {
+	case CollectionType.Match(to.GetType()):
+		o, err := ToCollection(to)
+		if err != nil {
+			return o, err
+		}
+		n, err := ToCollection(from)
+		if err != nil {
+			return o, err
+		}
+		return CopyCollectionProperties(o, n)
+	case CollectionPageType.Match(to.GetType()):
+		o, err := ToCollectionPage(to)
+		if err != nil {
+			return o, err
+		}
+		n, err := ToCollectionPage(from)
+		if err != nil {
+			return o, err
+		}
+		return CopyCollectionPageProperties(o, n)
+	case OrderedCollectionType.Match(to.GetType()):
+		o, err := ToOrderedCollection(to)
+		if err != nil {
+			return o, err
+		}
+		n, err := ToOrderedCollection(from)
+		if err != nil {
+			return o, err
+		}
+		return CopyOrderedCollectionProperties(o, n)
+	case OrderedCollectionPageType.Match(to.GetType()):
+		o, err := ToOrderedCollectionPage(to)
+		if err != nil {
+			return o, err
+		}
+		n, err := ToOrderedCollectionPage(from)
+		if err != nil {
+			return o, err
+		}
+		return CopyOrderedCollectionPageProperties(o, n)
+	case ActorTypes.Match(to.GetType()):
+		o, err := ToActor(to)
+		if err != nil {
+			return o, err
+		}
+		n, err := ToActor(from)
+		if err != nil {
+			return o, err
+		}
+		return CopyActorProperties(o, n)
+	case !HasTypes(to) || ObjectTypes.Match(to.GetType()):
+		o, err := ToObject(to)
+		if err != nil {
+			return o, err
+		}
+		n, err := ToObject(from)
+		if err != nil {
+			return o, err
+		}
+		return CopyObjectProperties(o, n)
+	}
+	return to, errors.Errorf("could not process objects with type %s", to.GetType())
+}
+
+// CopyItemProperties delegates to the correct per type functions for copying
+// properties between matching Activity Objects
+func CopyItemProperties(to, from ObjectOrLink) (Item, error) {
+	if to == nil {
+		return to, errors.Errorf("nil object to update")
+	}
+	if from == nil {
+		return to, errors.Errorf("nil object for update")
+	}
+	if !to.GetLink().Equal(from.GetLink()) {
+		return to, errors.Errorf("object IDs don't match")
+	}
+	return copyAllItemProperties(to, from)
+}
+
+func CopyUnsafeItemProperties(to, from ObjectOrLink) (ObjectOrLink, error) {
+	if from == nil || IsNil(from) {
+		return to, nil
+	}
+	if to == nil {
+		return to, errors.Errorf("nil object to update")
+	}
+	return copyAllItemProperties(to, from)
 }

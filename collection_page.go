@@ -434,3 +434,13 @@ func OnCollectionPage(it Item, fn WithCollectionPageFn) error {
 	}
 	return fn(col)
 }
+
+func CopyCollectionPageProperties(to, from *CollectionPage) (*CollectionPage, error) {
+	to.PartOf = replaceIfItem(to.PartOf, from.PartOf)
+	to.Next = replaceIfItem(to.Next, from.Next)
+	to.Prev = replaceIfItem(to.Prev, from.Prev)
+	toCol, _ := ToCollection(to)
+	fromCol, _ := ToCollection(from)
+	_, err := CopyCollectionProperties(toCol, fromCol)
+	return to, err
+}

@@ -464,3 +464,16 @@ func OnOrderedCollection(it Item, fn WithOrderedCollectionFn) error {
 	}
 	return fn(col)
 }
+
+func CopyOrderedCollectionProperties(to, from *OrderedCollection) (*OrderedCollection, error) {
+	to.First = replaceIfItem(to.First, from.First)
+	to.Last = replaceIfItem(to.Last, from.Last)
+	to.OrderedItems = replaceIfItemCollection(to.OrderedItems, from.OrderedItems)
+	if to.TotalItems == 0 {
+		to.TotalItems = from.TotalItems
+	}
+	oldOb, _ := ToObject(to)
+	newOb, _ := ToObject(from)
+	_, err := CopyObjectProperties(oldOb, newOb)
+	return to, err
+}

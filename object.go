@@ -959,3 +959,54 @@ func notEmptyObject(o *Object) bool {
 		!o.Updated.IsZero() ||
 		o.URL != nil
 }
+
+// CopyObjectProperties updates the "old" object properties with the "new's"
+// Including ID and Type
+func CopyObjectProperties(to, from *Object) (*Object, error) {
+	to.ID = from.ID
+	to.Type = from.Type
+	to.Name = replaceIfNaturalLanguageValues(to.Name, from.Name)
+	to.Attachment = replaceIfItem(to.Attachment, from.Attachment)
+	to.AttributedTo = replaceIfItem(to.AttributedTo, from.AttributedTo)
+	to.Audience = replaceIfItemCollection(to.Audience, from.Audience)
+	to.Content = replaceIfNaturalLanguageValues(to.Content, from.Content)
+	to.Context = replaceIfItem(to.Context, from.Context)
+	if len(from.MediaType) > 0 {
+		to.MediaType = from.MediaType
+	}
+	if !from.EndTime.IsZero() {
+		to.EndTime = from.EndTime
+	}
+	to.Generator = replaceIfItem(to.Generator, from.Generator)
+	to.Icon = replaceIfItem(to.Icon, from.Icon)
+	to.Image = replaceIfItem(to.Image, from.Image)
+	to.InReplyTo = replaceIfItem(to.InReplyTo, from.InReplyTo)
+	to.Location = replaceIfItem(to.Location, from.Location)
+	to.Preview = replaceIfItem(to.Preview, from.Preview)
+	to.Replies = replaceIfItem(to.Replies, from.Replies)
+	to.Likes = replaceIfItem(to.Likes, from.Likes)
+	to.Shares = replaceIfItem(to.Shares, from.Shares)
+	if to.Published.IsZero() && !from.Published.IsZero() {
+		to.Published = from.Published
+	}
+	if to.Updated.IsZero() && !from.Updated.IsZero() {
+		to.Updated = from.Updated
+	}
+	if !from.StartTime.IsZero() {
+		to.StartTime = from.StartTime
+	}
+	to.Summary = replaceIfNaturalLanguageValues(to.Summary, from.Summary)
+	to.Tag = replaceIfItemCollection(to.Tag, from.Tag)
+	if from.URL != nil {
+		to.URL = from.URL
+	}
+	to.To = replaceIfItemCollection(to.To, from.To)
+	to.Bto = replaceIfItemCollection(to.Bto, from.Bto)
+	to.CC = replaceIfItemCollection(to.CC, from.CC)
+	to.BCC = replaceIfItemCollection(to.BCC, from.BCC)
+	if from.Duration == 0 {
+		to.Duration = from.Duration
+	}
+	to.Source = replaceIfSource(to.Source, from.Source)
+	return to, nil
+}

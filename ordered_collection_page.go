@@ -402,3 +402,16 @@ func OnOrderedCollectionPage(it Item, fn WithOrderedCollectionPageFn) error {
 	}
 	return fn(col)
 }
+
+func CopyOrderedCollectionPageProperties(to, from *OrderedCollectionPage) (*OrderedCollectionPage, error) {
+	to.PartOf = replaceIfItem(to.PartOf, from.PartOf)
+	to.Next = replaceIfItem(to.Next, from.Next)
+	to.Prev = replaceIfItem(to.Prev, from.Prev)
+	oldCol, _ := ToOrderedCollection(to)
+	newCol, _ := ToOrderedCollection(from)
+	_, err := CopyOrderedCollectionProperties(oldCol, newCol)
+	if err != nil {
+		return to, err
+	}
+	return to, nil
+}

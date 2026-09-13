@@ -435,3 +435,16 @@ func OnCollection(it Item, fn WithCollectionFn) error {
 	}
 	return fn(col)
 }
+
+func CopyCollectionProperties(to, from *Collection) (*Collection, error) {
+	to.First = replaceIfItem(to.First, from.First)
+	to.Last = replaceIfItem(to.Last, from.Last)
+	to.Items = replaceIfItemCollection(to.Items, from.Items)
+	if to.TotalItems == 0 {
+		to.TotalItems = from.TotalItems
+	}
+	oldOb, _ := ToObject(to)
+	newOb, _ := ToObject(from)
+	_, err := CopyObjectProperties(oldOb, newOb)
+	return to, err
+}
