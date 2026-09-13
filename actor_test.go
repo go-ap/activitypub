@@ -614,19 +614,23 @@ func TestActor_Equals(t *testing.T) {
 }
 
 func ExampleActor_initialization() {
-	// actor1 is a struct that can be operated on directly
-	// For example we can set the URL
+	// actor1 is a struct initialized inline which can be operated on directly.
+	// For example, we can set the URL
 	actor1 := Actor{}
 	actor1.URL = IRI("http://example.com/1")
 	fmt.Printf("Actor1: %v\n", actor1)
 
-	// actor2 is an Item interface instance
-	// That means we can't set any properties directly
+	// actor2 is wrapped in an Item interface.
+	// It is probably the most common way of interacting with objects in the library,
+	// because usually they get unmarshaled from an HTTP request, or another representation.
 	var actor2 Item = &Actor{Type: ActorType}
-	// If you uncommment the next line you will get a compiler error.
+
+	// That means we can't set any properties directly, so
+	// if you uncommment the next line you will get a compiler error.
 	// actor2.URL = IRI("http://example.com")
-	// In order to operate on it, we must wrap it in a call to OnActor
-	OnActor(actor2, func(actor *Actor) error {
+
+	_ = OnActor(actor2, func(actor *Actor) error {
+		// In order to operate on it, we must wrap it in a call to OnActor
 		actor.URL = IRI("http://example.com/~jdoe")
 		actor.PreferredUsername = DefaultNaturalLanguage("jdoe")
 		return nil

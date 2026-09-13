@@ -336,15 +336,15 @@ func fmtObjectProps(w io.Writer, n *int) func(*Object) error {
 		}
 		if len(o.Name) > 0 {
 			comma()
-			*n, _ = fmt.Fprintf(w, "%s: [%s]", "name", o.Name)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "name", o.Name)
 		}
 		if len(o.Summary) > 0 {
 			comma()
-			*n, _ = fmt.Fprintf(w, "%s: [%s]", "summary", o.Summary)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "summary", o.Summary)
 		}
 		if len(o.Content) > 0 {
 			comma()
-			*n, _ = fmt.Fprintf(w, "%s: [%s]", "content", o.Content)
+			*n, _ = fmt.Fprintf(w, "%s: %s", "content", o.Content)
 		}
 		if !IsNil(o.Attachment) {
 			comma()

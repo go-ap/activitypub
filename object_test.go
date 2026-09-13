@@ -1193,25 +1193,29 @@ func Test_reflectedItemByType_Object(t *testing.T) {
 }
 
 func ExampleObject_initialization() {
-	// object1 is a struct that can be operated on directly
-	// For example we can set the URL
+	// object1 is a struct initialized inline which can be operated on directly.
+	// For example, we can set the Content
 	object1 := Object{}
-	object1.URL = IRI("http://example.com/1")
+	object1.Content = DefaultNaturalLanguage("Lorem ipsum")
 	fmt.Printf("Object1: %v\n", object1)
 
-	// object2 is an Item interface instance
-	// That means we can't set any properties directly
+	// object2 is wrapped in an Item interface.
+	// It is probably the most common way of interacting with objects in the library,
+	// because usually they get unmarshaled from an HTTP request, or another representation.
 	var object2 Item = &Object{Type: ObjectType}
-	// If you uncommment the next line you will get a compiler error.
+
+	// That means we can't set any properties directly, so
+	// if you uncommment the next line you will get a compiler error.
 	// object2.URL = IRI("http://example.com")
-	// In order to operate on it, we must wrap it in a call to OnObject
-	OnObject(object2, func(object *Object) error {
-		object.URL = IRI("http://example.com/2")
+
+	_ = OnObject(object2, func(object *Object) error {
+		// In order to operate on it, we must wrap it in a call to OnObject
+		object.Content = DefaultNaturalLanguage("Lorem ipsum")
 		return nil
 	})
 	fmt.Printf("Object2: %v\n", object2)
 
 	// Output:
-	// Object1: activitypub.Object { url: http://example.com/1 }
-	// Object2: activitypub.Object[Object] { url: http://example.com/2 }
+	// Object1: activitypub.Object { content: Lorem ipsum }
+	// Object2: activitypub.Object[Object] { content: Lorem ipsum }
 }

@@ -126,19 +126,23 @@ func TestLink_GobDecode(t *testing.T) {
 }
 
 func ExampleLink_initialization() {
-	// link1 is a struct that can be operated on directly
-	// For example we can set the language:
+	// link1 is a struct initialized inline which can be operated on directly.
+	// For example, we can set the language:
 	link1 := Link{Href: "http://example.com/1"}
 	link1.HrefLang = English
 	fmt.Printf("Link1: %v\n", link1)
 
-	// link2 is an Item interface instance
-	// That means we can't set any properties directly
+	// link2 is wrapped in an Item interface.
+	// It is probably the most common way of interacting with objects in the library,
+	// because usually they get unmarshaled from an HTTP request, or another representation.
 	var link2 Item = &Link{Type: LinkType}
-	// If you uncommment the next line you will get a compiler error.
+
+	// That means we can't set any properties directly, so
+	// if you uncommment the next line you will get a compiler error.
 	// link2.Href = "http://example.com"
-	// In order to operate on it, we must wrap it in a call to OnLink
-	OnLink(link2, func(link *Link) error {
+
+	_ = OnLink(link2, func(link *Link) error {
+		// In order to operate on it, we must wrap it in a call to OnLink
 		link.Href = "http://example.com/2"
 		return nil
 	})

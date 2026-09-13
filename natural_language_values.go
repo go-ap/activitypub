@@ -665,10 +665,8 @@ func (c Content) Equal(other Content) bool {
 
 func (c Content) Format(s fmt.State, verb rune) {
 	switch verb {
-	case 's', 'q':
-		_, _ = io.WriteString(s, string(c))
-	case 'v':
-		_, _ = fmt.Fprintf(s, "%q", string(c))
+	case 's', 'q', 'v':
+		_, _ = s.Write(c)
 	}
 }
 

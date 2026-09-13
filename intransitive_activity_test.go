@@ -379,25 +379,29 @@ func TestIntransitiveActivity_Equals(t *testing.T) {
 }
 
 func ExampleIntransitiveActivity_initialization() {
-	// intransitiveActivity1 is a struct that can be operated on directly
-	// For example we can set the Actor:
+	// intransitiveActivity1 is a struct initialized inline which can be operated on directly.
+	// For example, we can set the Actor:
 	intransitiveActivity1 := IntransitiveActivity{ID: "http://example.com/1"}
 	intransitiveActivity1.Actor = IRI("http://example.com/~jdoe")
 	fmt.Printf("IntransitiveActivity1: %v\n", intransitiveActivity1)
 
-	// intransitiveActivity2 is an Item interface instance
-	// That means we can't set any properties directly
+	// intransitiveActivity2 is wrapped in an Item interface.
+	// It is probably the most common way of interacting with objects in the library,
+	// because usually they get unmarshaled from an HTTP request, or another representation.
 	var intransitiveActivity2 Item = &IntransitiveActivity{Type: IntransitiveActivityType}
-	// If you uncommment the next line you will get a compiler error.
+
+	// That means we can't set any properties directly, so
+	// if you uncommment the next line you will get a compiler error.
 	// intransitiveActivity2.Actor = IRI("http://example.com/~jdoe")
-	// In order to operate on it, we must wrap it in a call to OnIntransitiveActivity
-	OnIntransitiveActivity(intransitiveActivity2, func(intransitiveActivity *IntransitiveActivity) error {
-		intransitiveActivity.ID = "http://example.com/2"
+
+	_ = OnIntransitiveActivity(intransitiveActivity2, func(intransitiveActivity *IntransitiveActivity) error {
+		// In order to operate on it, we must wrap it in a call to OnIntransitiveActivity
+		intransitiveActivity.Actor = IRI("http://example.com/~jdoe")
 		return nil
 	})
 	fmt.Printf("IntransitiveActivity2: %v\n", intransitiveActivity2)
 
 	// Output:
 	// IntransitiveActivity1: activitypub.IntransitiveActivity { id: http://example.com/1, actor: http://example.com/~jdoe }
-	// IntransitiveActivity2: activitypub.IntransitiveActivity[IntransitiveActivity] { id: http://example.com/2 }
+	// IntransitiveActivity2: activitypub.IntransitiveActivity[IntransitiveActivity] { actor: http://example.com/~jdoe }
 }
