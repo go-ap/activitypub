@@ -1,6 +1,10 @@
 package activitypub
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-ap/errors"
+)
 
 // WithLinkFn represents a function type that can be used as a parameter for OnLink helper function
 type WithLinkFn func(*Link) error
@@ -35,7 +39,7 @@ type WithItemCollectionFn func(*ItemCollection) error
 // WithIRIsFn represents a function type that can be used as a parameter for OnIRIs helper function
 type WithIRIsFn func(*IRIs) error
 
-func To[T Item](it Item) (*T, error) {
+func To[T Objects | Links](it LinkOrIRI) (*T, error) {
 	if ob, ok := it.(T); ok {
 		return &ob, nil
 	}
@@ -44,22 +48,8 @@ func To[T Item](it Item) (*T, error) {
 
 // On handles in a generic way the call to fn(*T) if the "it" Item can be asserted to one of the Objects type.
 // It also covers the case where "it" is a collection of items that match the assertion.
-func On[T Item](it Item, fn func(*T) error) error {
-	if !IsItemCollection(it) {
-		ob, err := To[T](it)
-		if err != nil {
-			return err
-		}
-		return fn(ob)
-	}
-	return OnItemCollection(it, func(col *ItemCollection) error {
-		for _, it := range *col {
-			if err := On[T](it, fn); err != nil {
-				return err
-			}
-		}
-		return nil
-	})
+func On[T Objects | Links](it Item, fn func(*T) error) error {
+	return callOnItemCollection[T, func(iri LinkOrIRI) (*T, error)](it, To[T], fn)
 }
 
 // OnCollectionIntf calls function fn on it Item if it can be asserted to a type
@@ -278,16 +268,24 @@ func DerefItem(it Item) ItemCollection {
 	return items
 }
 
-func callOnItemCollection[T Objects | Links, F func(*T) error](it LinkOrIRI, callFn func(LinkOrIRI, F) error, fn F) error {
+func callOnItemCollection[T Objects | Links, F func(iri LinkOrIRI) (*T, error)](it LinkOrIRI, fn F, callFn func(*T) error) error {
+	call := func(it LinkOrIRI) error {
+		if tt, err := fn(it); err != nil {
+			return err
+		} else {
+			return callFn(tt)
+		}
+	}
+	if !IsItemCollection(it) {
+		return call(it)
+	}
 	return OnItemCollection(it, func(col *ItemCollection) error {
+		errs := make([]error, 0, len(*col))
 		for _, ob := range *col {
-			if IsLink(ob) {
-				continue
-			}
-			if err := callFn(ob, fn); err != nil {
-				return err
+			if err := call(ob); err != nil {
+				errs = append(errs, err)
 			}
 		}
-		return nil
+		return errors.Join(errs...)
 	})
 }
