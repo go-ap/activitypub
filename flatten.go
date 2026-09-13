@@ -100,7 +100,7 @@ func FlattenObjectProperties(o *Object) *Object {
 }
 
 // FlattenProperties flattens the Item's properties from Object types to IRI
-func FlattenProperties(it Item) Item {
+func FlattenProperties(it ObjectOrLink) Item {
 	if IsNil(it) {
 		return nil
 	}

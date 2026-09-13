@@ -338,11 +338,11 @@ func TestActivity_GetIDGetType(t *testing.T) {
 func checkDedup(list ItemCollection, recIds *[]ID) error {
 	for _, rec := range list {
 		for _, id := range *recIds {
-			if rec.GetID() == id {
+			if rec.GetLink() == id {
 				return fmt.Errorf("%T[%s] already stored in recipients list, Deduplication faild", rec, id)
 			}
 		}
-		*recIds = append(*recIds, rec.GetID())
+		*recIds = append(*recIds, rec.GetLink())
 	}
 	return nil
 }

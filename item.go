@@ -117,13 +117,19 @@ func ItemsEqual(it, with Item) bool {
 			result = l.Equals(with)
 			return nil
 		})
-	case with.GetType() != nil:
-		if !typesEqual(it.GetType(), with.GetType()) {
-			return false
-		}
-		result = compareByType(with.GetType(), it, with)
+	default:
+		itt, oki := it.(ObjectOrLink)
+		witht, okw := it.(ObjectOrLink)
+		result = (oki && okw) && typedObjectsEqual(itt, witht)
 	}
 	return result
+}
+
+func typedObjectsEqual(it, with ObjectOrLink) bool {
+	if !typesEqual(it.GetType(), with.GetType()) {
+		return false
+	}
+	return compareByType(with.GetType(), it, with)
 }
 
 func typesEqual(t1, t2 Typer) bool {
@@ -332,9 +338,29 @@ func NotEmpty(it Item) bool {
 		return false
 	}
 	var notEmpty bool
-	if IsIRI(it) {
+	switch {
+	case IsIRI(it):
 		notEmpty = len(it.GetLink()) > 0
+	case IsIRIs(it):
+		_ = OnIRIs(it, func(is *IRIs) error {
+			notEmpty = len(*is) > 0
+			return nil
+		})
+	case IsItemCollection(it):
+		_ = OnItemCollection(it, func(ic *ItemCollection) error {
+			notEmpty = len(*ic) > 0
+			return nil
+		})
+	default:
+		if itt, ok := it.(ObjectOrLink); ok {
+			notEmpty = emptyByType(itt)
+		}
 	}
+	return notEmpty
+}
+
+func emptyByType(it ObjectOrLink) bool {
+	var notEmpty bool
 	typ := it.GetType()
 	switch {
 	case QuestionType.Match(typ):

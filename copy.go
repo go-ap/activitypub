@@ -102,7 +102,7 @@ func CopyObjectProperties(to, from *Object) (*Object, error) {
 	return to, nil
 }
 
-func copyAllItemProperties(to, from Item) (Item, error) {
+func copyAllItemProperties(to, from ObjectOrLink) (ObjectOrLink, error) {
 	switch {
 	case CollectionType.Match(to.GetType()):
 		o, err := ToCollection(to)
@@ -170,7 +170,7 @@ func copyAllItemProperties(to, from Item) (Item, error) {
 
 // CopyItemProperties delegates to the correct per type functions for copying
 // properties between matching Activity Objects
-func CopyItemProperties(to, from Item) (Item, error) {
+func CopyItemProperties(to, from ObjectOrLink) (Item, error) {
 	if to == nil {
 		return to, errors.Errorf("nil object to update")
 	}
@@ -183,7 +183,7 @@ func CopyItemProperties(to, from Item) (Item, error) {
 	return copyAllItemProperties(to, from)
 }
 
-func CopyUnsafeItemProperties(to, from Item) (Item, error) {
+func CopyUnsafeItemProperties(to, from ObjectOrLink) (ObjectOrLink, error) {
 	if from == nil || IsNil(from) {
 		return to, nil
 	}

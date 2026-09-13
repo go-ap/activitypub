@@ -98,119 +98,122 @@ func gobEncodeItem(it Item) ([]byte, error) {
 	}
 	b := bytes.Buffer{}
 	var err error
-	if IsIRIs(it) {
+	switch {
+	case IsIRIs(it):
 		err = OnIRIs(it, func(iris *IRIs) error {
 			bytes, err := gobEncodeIRIs(*iris)
 			b.Write(bytes)
 			return err
 		})
-	}
-	if IsItemCollection(it) {
+	case IsItemCollection(it):
 		err = OnItemCollection(it, func(col *ItemCollection) error {
 			bytes, err := gobEncodeItems(*col)
 			b.Write(bytes)
 			return err
 		})
-	}
-	if IsObject(it) {
-		typ := it.GetType()
-		if typ == nil {
-			typ = NilType
+	default:
+		itt, ok := it.(ObjectOrLink)
+		if ok {
+			typ := itt.GetType()
+			if typ == nil {
+				typ = NilType
+			}
+			switch {
+			case IRIType.Match(typ):
+				var bytes []byte
+				bytes, err = it.(IRI).GobEncode()
+				b.Write(bytes)
+			case CollectionType.Match(typ):
+				err = OnCollection(it, func(c *Collection) error {
+					bytes, err := c.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			case OrderedCollectionType.Match(typ):
+				err = OnOrderedCollection(it, func(c *OrderedCollection) error {
+					bytes, err := c.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			case CollectionPageType.Match(typ):
+				err = OnCollectionPage(it, func(p *CollectionPage) error {
+					bytes, err := p.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			case OrderedCollectionPageType.Match(typ):
+				err = OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
+					bytes, err := p.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			case PlaceType.Match(typ):
+				err = OnPlace(it, func(p *Place) error {
+					bytes, err := p.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			case ProfileType.Match(typ):
+				err = OnProfile(it, func(p *Profile) error {
+					bytes, err := p.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			case RelationshipType.Match(typ):
+				err = OnRelationship(it, func(r *Relationship) error {
+					bytes, err := r.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			case TombstoneType.Match(typ):
+				err = OnTombstone(it, func(t *Tombstone) error {
+					bytes, err := t.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			case QuestionType.Match(typ):
+				err = OnQuestion(it, func(q *Question) error {
+					bytes, err := q.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			case ActivityVocabularyTypes{NilType, ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType}.Match(typ):
+				err = OnObject(it, func(ob *Object) error {
+					bytes, err := ob.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			case ActivityVocabularyTypes{LinkType, MentionType}.Match(typ):
+				// TODO(marius): this shouldn't work, as Link does not implement Item? (or rather, should not)
+				err = OnLink(it, func(l *Link) error {
+					bytes, err := l.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			case ActivityVocabularyTypes{ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
+				FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
+				RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType}.Match(typ):
+				err = OnActivity(it, func(act *Activity) error {
+					bytes, err := act.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			case ActivityVocabularyTypes{IntransitiveActivityType, ArriveType, TravelType}.Match(typ):
+				err = OnIntransitiveActivity(it, func(act *IntransitiveActivity) error {
+					bytes, err := act.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			case ActivityVocabularyTypes{ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType}.Match(typ):
+				err = OnActor(it, func(a *Actor) error {
+					bytes, err := a.GobEncode()
+					b.Write(bytes)
+					return err
+				})
+			}
 		}
-		switch {
-		case IRIType.Match(typ):
-			var bytes []byte
-			bytes, err = it.(IRI).GobEncode()
-			b.Write(bytes)
-		case CollectionType.Match(typ):
-			err = OnCollection(it, func(c *Collection) error {
-				bytes, err := c.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case OrderedCollectionType.Match(typ):
-			err = OnOrderedCollection(it, func(c *OrderedCollection) error {
-				bytes, err := c.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case CollectionPageType.Match(typ):
-			err = OnCollectionPage(it, func(p *CollectionPage) error {
-				bytes, err := p.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case OrderedCollectionPageType.Match(typ):
-			err = OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
-				bytes, err := p.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case PlaceType.Match(typ):
-			err = OnPlace(it, func(p *Place) error {
-				bytes, err := p.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case ProfileType.Match(typ):
-			err = OnProfile(it, func(p *Profile) error {
-				bytes, err := p.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case RelationshipType.Match(typ):
-			err = OnRelationship(it, func(r *Relationship) error {
-				bytes, err := r.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case TombstoneType.Match(typ):
-			err = OnTombstone(it, func(t *Tombstone) error {
-				bytes, err := t.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case QuestionType.Match(typ):
-			err = OnQuestion(it, func(q *Question) error {
-				bytes, err := q.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case ActivityVocabularyTypes{NilType, ObjectType, ArticleType, AudioType, DocumentType, EventType, ImageType, NoteType, PageType, VideoType}.Match(typ):
-			err = OnObject(it, func(ob *Object) error {
-				bytes, err := ob.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case ActivityVocabularyTypes{LinkType, MentionType}.Match(typ):
-			// TODO(marius): this shouldn't work, as Link does not implement Item? (or rather, should not)
-			err = OnLink(it, func(l *Link) error {
-				bytes, err := l.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case ActivityVocabularyTypes{ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
-			FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
-			RejectType, ReadType, RemoveType, TentativeRejectType, TentativeAcceptType, UndoType, UpdateType, ViewType}.Match(typ):
-			err = OnActivity(it, func(act *Activity) error {
-				bytes, err := act.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case ActivityVocabularyTypes{IntransitiveActivityType, ArriveType, TravelType}.Match(typ):
-			err = OnIntransitiveActivity(it, func(act *IntransitiveActivity) error {
-				bytes, err := act.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		case ActivityVocabularyTypes{ActorType, ApplicationType, GroupType, OrganizationType, PersonType, ServiceType}.Match(typ):
-			err = OnActor(it, func(a *Actor) error {
-				bytes, err := a.GobEncode()
-				b.Write(bytes)
-				return err
-			})
-		}
 	}
+
 	return b.Bytes(), err
 }
 

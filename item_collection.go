@@ -147,14 +147,14 @@ func itemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
 			}
 			var testIt IRI
 			if IsObject(cur) {
-				testIt = cur.GetID()
+				testIt = cur.GetLink()
 			} else if IsIRI(cur) {
 				testIt = cur.GetLink()
 			} else {
 				continue
 			}
 			for _, it := range rec {
-				if testIt.Equal(it.GetID()) {
+				if testIt.Equal(it.GetLink()) {
 					// mark the element for removal
 					toRemove = append(toRemove, i)
 					save = false
@@ -272,7 +272,7 @@ func (i ItemCollection) ItemsMatch(col ...Item) bool {
 
 // Equals verifies if our receiver ItemCollection is equals with the "with" Item
 func (i ItemCollection) Equals(with Item) bool {
-	if !CollectionOfItems.Match(with.GetType()) {
+	if !IsItemCollection(with) {
 		return false
 	}
 	itemCollection, err := ToItemCollection(with)
@@ -354,50 +354,52 @@ func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 	if IsNil(it) {
 		return nil
 	}
-	typ := it.GetType()
 	switch {
-	case CollectionOfItems.Match(typ):
+	case IsIRIs(it):
+		col, err := ToIRIs(it)
+		if err != nil {
+			return err
+		}
+		return fn(col)
+	case IsItemCollection(it):
 		col, err := ToItemCollection(it)
 		if err != nil {
 			return err
 		}
 		return fn(col)
-	case CollectionOfIRIs.Match(typ):
-		col, err := ToIRIs(it)
-		if err != nil {
-			return err
-		}
-		itCol := col.Collection()
-		return fn(&itCol)
-	case CollectionType.Match(typ):
-		col, err := ToCollection(it)
-		if err != nil {
-			return err
-		}
-		return fn(col)
-	case CollectionPageType.Match(typ):
-		return OnCollectionPage(it, func(p *CollectionPage) error {
-			col, err := ToCollectionPage(p)
-			if err != nil {
-				return err
-			}
-			return fn(col)
-		})
-	case OrderedCollectionType.Match(typ):
-		col, err := ToOrderedCollection(it)
-		if err != nil {
-			return err
-		}
-		return fn(col)
-	case OrderedCollectionPageType.Match(typ):
-		return OnOrderedCollectionPage(it, func(p *OrderedCollectionPage) error {
-			col, err := ToOrderedCollectionPage(p)
-			if err != nil {
-				return err
-			}
-			return fn(col)
-		})
 	default:
-		return fmt.Errorf("%T[%s] can't be converted to a Collection type", it, it.GetType())
+		itt, ok := it.(ObjectOrLink)
+		if !ok {
+			return fmt.Errorf("%T can't be converted to a Collection type", it)
+		}
+		typ := itt.GetType()
+		switch {
+		case CollectionType.Match(typ):
+			col, err := ToCollection(it)
+			if err != nil {
+				return err
+			}
+			return fn(col)
+		case CollectionPageType.Match(typ):
+			col, err := ToCollectionPage(it)
+			if err != nil {
+				return err
+			}
+			return fn(col)
+		case OrderedCollectionType.Match(typ):
+			col, err := ToOrderedCollection(it)
+			if err != nil {
+				return err
+			}
+			return fn(col)
+		case OrderedCollectionPageType.Match(typ):
+			col, err := ToOrderedCollectionPage(it)
+			if err != nil {
+				return err
+			}
+			return fn(col)
+		default:
+			return fmt.Errorf("%T[%s] can't be converted to a Collection type", it, typ)
+		}
 	}
 }

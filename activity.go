@@ -404,14 +404,7 @@ func removeFromCollection(col ItemCollection, items ...Item) ItemCollection {
 		return col
 	}
 	for _, ob := range col {
-		found := false
-		for _, it := range items {
-			if ob.GetID().Equal(it.GetID()) {
-				found = true
-				break
-			}
-		}
-		if !found {
+		if !ItemCollection(items).Contains(ob) {
 			result = append(result, ob)
 		}
 	}
