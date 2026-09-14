@@ -1416,10 +1416,18 @@ func ExampleToObject() {
 	question := Question{ID: "http://example.com/huh", Type: QuestionType}
 	// Similarly to above, we can no longer access the Question's custom properties.
 	q, _ := ToObject(question)
-	// Uncommenting the next line triggers a compilation error:
+	// Uncommenting the next line triggers a compiler error:
 	//q.AnyOf = IRI("http://example.com/1")
 	fmt.Printf("Question: %v\n", question)
-	fmt.Printf("        : %v\n", q)
+	fmt.Printf("        : %v\n\n", q)
+
+	// Due to the fact that they are disjoint, the only type that can't have an Object value extracted from is Link.
+	// Trying to do so results in an error.
+	var notObject Item = &Link{Type: LinkType, Name: DefaultNaturalLanguage("Eh?"), Href: "http://example.com/huh"}
+	no, err := ToObject(notObject)
+	fmt.Printf("NotObject: %v\n", notObject)
+	fmt.Printf("         : %v\n", no)
+	fmt.Printf("Error    : %v\n", err)
 
 	// Output:
 	// Object1: activitypub.Object[Note] { id: http://example.com/1 }
@@ -1439,6 +1447,10 @@ func ExampleToObject() {
 	//
 	// Question: activitypub.Question[Question] { id: http://example.com/huh }
 	//         : activitypub.Object[Question] { id: http://example.com/huh }
+	//
+	// NotObject: activitypub.Link[Link] { href: http://example.com/huh, name: Eh? }
+	//          : <nil>
+	// Error    : unable to convert *activitypub.Link to *activitypub.Object
 }
 
 func ExampleOnObject() {
@@ -1452,7 +1464,7 @@ func ExampleOnObject() {
 	// because it's wrapped in the Item interface.
 	var object1 Item = &Object{ID: "http://example.com/1", Type: NoteType}
 
-	// Uncommenting this line will trigger a compilation error.
+	// Uncommenting this line will trigger a compiler error.
 	//object1.Name = DefaultNaturalLanguage("An object")
 	_ = OnObject(object1, func(ob *Object) error {
 		// Instead we can wrap it in an OnObject() call in which
@@ -1478,7 +1490,7 @@ func ExampleOnObject() {
 		ob.Name = DefaultNaturalLanguage("Ys")
 		ob.Summary = DefaultNaturalLanguage("A mythical city on the coast of Brittany")
 		// We can't access Place specific properties, so
-		// uncommenting this will trigger a compilation error.
+		// uncommenting this will trigger a compiler error.
 		//ob.Latitude = 0.0
 		return nil
 	})

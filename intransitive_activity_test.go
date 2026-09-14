@@ -622,7 +622,7 @@ func ExampleOnIntransitiveActivity() {
 	// As we've seen, you can not access this IntransitiveActivity's properties
 	// because it's wrapped in the Item interface.
 	var intransitiveActivity1 Item = &IntransitiveActivity{Type: ArriveType, Target: IRI("http://example.com/ys")}
-	// Uncommenting this line will trigger a compilation error.
+	// Uncommenting this line will trigger a compiler error.
 	//intransitiveActivity1.Actor = IRI("http://example.com/~jdoe")
 
 	_ = OnIntransitiveActivity(intransitiveActivity1, func(ia *IntransitiveActivity) error {
@@ -644,7 +644,7 @@ func ExampleOnIntransitiveActivity() {
 	_ = OnIntransitiveActivity(question, func(q *IntransitiveActivity) error {
 		q.Actor = IRI("http://example.com/~jdoe")
 		// We can't access Question specific properties, so
-		// uncommenting this will trigger a compilation error.
+		// uncommenting this will trigger a compiler error.
 		//q.AnyOf = nil
 		return nil
 	})

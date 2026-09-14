@@ -1574,7 +1574,7 @@ func ExampleActivity_initialization() {
 	var activity2 Item = &Activity{Type: ActivityType}
 
 	// That means we can't set any properties directly, so
-	// if you uncomment the next line you will get a compilation error.
+	// if you uncomment the next line you will get a compiler error.
 	// activity2.Actor = IRI("http://example.com/~jdoe")
 
 	_ = OnActivity(activity2, func(activity *Activity) error {
@@ -1639,7 +1639,7 @@ func ExampleOnActivity() {
 	// As we've seen, you can not access this Activity's properties
 	// because it's wrapped in the Item interface.
 	var activity1 Item = &Activity{Type: LikeType}
-	// Uncommenting this line will trigger a compilation error.
+	// Uncommenting this line will trigger a compiler error.
 	//activity1.Actor = IRI("http://example.com/~jdoe")
 
 	_ = OnActivity(activity1, func(a *Activity) error {

@@ -745,8 +745,10 @@ func ExampleActor_initialization() {
 }
 
 func ExampleToActor() {
-	// We can see here an initialization for the Application type which,
-	// unlike the disjoint Place type that we've seen before,
+	// The Actor types form a large part of the data handled by the library,
+	// especially in the ActivityPub state machine module.
+
+	// We can see here an initialization for the Application type which
 	// is just an alias for Actor, but can be used to convey additional meaning.
 	// There are additional aliases for all Actor types: Person, Group, and Service.
 	//
@@ -830,7 +832,7 @@ func ExampleOnActor() {
 	// As we've seen, you can not access this Actor's properties
 	// because it's wrapped in the Item interface.
 	var actor1 Item = &Actor{ID: "http://example.com/~jdoe", Type: PersonType}
-	// Uncommenting this line will trigger a compilation error.
+	// Uncommenting this line will trigger a compiler error.
 	//actor1.Name = DefaultNaturalLanguage("John Doe")
 
 	_ = OnActor(actor1, func(act *Actor) error {
