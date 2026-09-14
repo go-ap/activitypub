@@ -1376,7 +1376,7 @@ func ExampleToObject() {
 	fmt.Printf("Object1: %v\n", object1)
 	fmt.Printf("       : %v\n\n", o1)
 
-	// If our initial type it's an struct literal, modifying the return value will not affect the original.
+	// If our initial type it's a struct literal, modifying the return value will not affect the original.
 	object2 := Object{ID: "http://example.com/2", Type: DocumentType, Name: DefaultNaturalLanguage("object2")}
 	o2, _ := ToObject(object2)
 	o2.Name = nil
@@ -1411,7 +1411,7 @@ func ExampleToObject() {
 	question := Question{ID: "http://example.com/huh", Type: QuestionType}
 	// Similarly to above, we can no longer access the Question's custom properties.
 	q, _ := ToObject(question)
-	// Uncommenting the next line triggers a compilation error.
+	// Uncommenting the next line triggers a compilation error:
 	//q.AnyOf = IRI("http://example.com/1")
 	fmt.Printf("Question: %v\n", question)
 	fmt.Printf("        : %v\n", q)

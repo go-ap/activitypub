@@ -743,3 +743,124 @@ func ExampleActor_initialization() {
 	// Actor1: activitypub.Actor { url: http://example.com/1 }
 	// Actor2: activitypub.Actor[Actor] { url: http://example.com/~jdoe, preferredUsername: jdoe }
 }
+
+func ExampleToActor() {
+	// We can see here an initialization for the Application type which,
+	// unlike the disjoint Place type that we've seen before,
+	// is just an alias for Actor, but can be used to convey additional meaning.
+	// There are additional aliases for all Actor types: Person, Group, and Service.
+	//
+	// However, there is no mechanism to coerce the Type property to the correct
+	// Vocabulary Type value corresponding to the used alias, so it must be set manually.
+	var actor1 Item = &Application{ID: "http://example.com/app-1", Type: ApplicationType}
+
+	// As we've seen previously, we can't operate on actor1 as it's an Item instance, so
+	// uncommenting the following line will trigger a compiler error:
+	//actor1.PreferredUsername = DefaultNaturalLanguage("app")
+	a1, _ := ToActor(actor1)
+	a1.PreferredUsername = DefaultNaturalLanguage("app")
+	fmt.Printf("Actor1: %v\n", actor1)
+	fmt.Printf("      : %v\n\n", a1)
+
+	// Here we see another valid, but maybe slightly misleading inline initialization.
+	var actor2 Item = Actor{ID: "http://example.com/~jdoe", Type: PersonType, Name: DefaultNaturalLanguage("Jane Doe")}
+	a2, _ := ToActor(actor2)
+	a2.PreferredUsername = DefaultNaturalLanguage("jdoe")
+	// We can still access the properties common with the Object type
+	a2.Name = DefaultNaturalLanguage("Jane Doe Phd")
+	// However since the Item interface is not wrapping a pointer to Actor,
+	// these changes won't be reflected onto the actor2 value.
+	fmt.Printf("Actor2: %v\n", actor2)
+	// They persist though, on the "a2" value.
+	fmt.Printf("      : %v\n", a2)
+
+	// Another thing that we could do here is to assign back to actor2.
+	// But, take care because stomping on the original value might not *always* be what you want.
+	// I think that most times the correct thing to do is to ensure that the Item interface
+	// wraps a pointer to the data you want.
+	actor2 = a2
+	fmt.Printf("Actor2: %v\n\n", actor2)
+
+	// A special case in the library must be allowed for Tombstone types.
+	// Tombstones are the objects left behind Delete activities, and they can replace
+	// any of the other types, including Actor.
+	//
+	// Therefore, we support converting them to an Actor instance,
+	// even though there is loss of data incurred, and the mechanism is slower as it
+	// requires copying the common properties.
+	maybeActor := Tombstone{ID: "http://example.com", Type: TombstoneType, FormerType: ServiceType}
+	ma, _ := ToActor(maybeActor)
+	fmt.Printf("MaybeActor: %v\n", maybeActor)
+	fmt.Printf("          : %v\n\n", ma)
+
+	// We should also consider that the hierarchy of types that can be converted is unidirectional.
+	// As an example, an Object type can't be converted to an Actor type, and trying results in an error.
+	//
+	// We could use the same mechanism as for Tombstone objects, but we want to enforce the fact that
+	// the types are actually disjoint in the Activity Vocabulary ontology.
+	var notActor Item = &Object{ID: "http://example.com", Type: GroupType}
+	na, err := ToActor(notActor)
+	fmt.Printf("NotActor: %v\n", notActor)
+	fmt.Printf("        : %v\n", na)
+	fmt.Printf("Error   : %v\n\n", err)
+
+	// Output:
+	// Actor1: activitypub.Actor[Application] { id: http://example.com/app-1, preferredUsername: app }
+	//       : activitypub.Actor[Application] { id: http://example.com/app-1, preferredUsername: app }
+	//
+	// Actor2: activitypub.Actor[Person] { id: http://example.com/~jdoe, name: Jane Doe }
+	//       : activitypub.Actor[Person] { id: http://example.com/~jdoe, name: Jane Doe Phd, preferredUsername: jdoe }
+	// Actor2: activitypub.Actor[Person] { id: http://example.com/~jdoe, name: Jane Doe Phd, preferredUsername: jdoe }
+	//
+	// MaybeActor: activitypub.Tombstone[Tombstone] { id: http://example.com, formerType: Service }
+	//           : activitypub.Actor[Tombstone] { id: http://example.com }
+	//
+	// NotActor: activitypub.Object[Group] { id: http://example.com }
+	//         : <nil>
+	// Error   : unable to convert *activitypub.Object to *activitypub.Actor
+}
+
+func ExampleOnActor() {
+	// In the ExampleToActor function, we saw how we can convert data types
+	// to Actor pointer values and be allowed to use their properties in that way.
+	//
+	// Here we can see how this mechanism can be used to build specific logic when dealing
+	// with opaque Item interface values.
+
+	// As we've seen, you can not access this Actor's properties
+	// because it's wrapped in the Item interface.
+	var actor1 Item = &Actor{ID: "http://example.com/~jdoe", Type: PersonType}
+	// Uncommenting this line will trigger a compilation error.
+	//actor1.Name = DefaultNaturalLanguage("John Doe")
+	_ = OnActor(actor1, func(act *Actor) error {
+		// Instead we can wrap it in an OnActor() call in which
+		// we can modify it, and the changes will be visible outside its scope.
+		act.PreferredUsername = DefaultNaturalLanguage("jdoe")
+
+		// Similarly, as we've seen in the ExampleToActor, we can also modify
+		// the properties in common with the Object type, without needing
+		// a call to OnObject/ToObject.
+		act.Name = DefaultNaturalLanguage("John Doe")
+		return nil
+	})
+	fmt.Printf("Actor1: %v\n", actor1)
+
+	// Here's an example of handling a Tombstone actor that's a little more realistic.
+	var deletedActor *Actor
+	tombstone := Tombstone{ID: "http://example.com", Type: TombstoneType, FormerType: ServiceType}
+	_ = OnActor(tombstone, func(act *Actor) error {
+		// We can set the deletedActor's Type to the value contained in the
+		// Tombstone.formerType property, as a way to ensure that future
+		// type switches happening in the code, work as expected.
+		act.Type = tombstone.FormerType
+		deletedActor = act
+		return nil
+	})
+	if ServiceType.Match(deletedActor.GetType()) {
+		fmt.Printf("DeletedActor: %v\n", deletedActor)
+	}
+
+	// Output:
+	// Actor1: activitypub.Actor[Person] { id: http://example.com/~jdoe, name: John Doe, preferredUsername: jdoe }
+	// DeletedActor: activitypub.Actor[Service] { id: http://example.com }
+}
