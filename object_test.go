@@ -1446,6 +1446,7 @@ func ExampleOnObject() {
 	// As we've seen, you can not access this Object's properties
 	// because it's wrapped in the Item interface.
 	var object1 Item = &Object{ID: "http://example.com/1", Type: NoteType}
+
 	// Uncommenting this line will trigger a compilation error.
 	//object1.Name = DefaultNaturalLanguage("An object")
 	_ = OnObject(object1, func(ob *Object) error {
@@ -1456,9 +1457,9 @@ func ExampleOnObject() {
 	})
 	fmt.Printf("Object1: %v\n", object1)
 
-	// Caution must be taken as the Item interface also accepts non-pointer struct values
-	// but that negates the ability to modify them with OnObject() because they receive a
-	// pointer to a copy of the struct, and they won't propagate outside the function's call.
+	// Caution must be taken as the Item interface also accepts non-pointer struct values,
+	// which negates the ability to modify them with OnObject() because they receive a
+	// pointer to a **copy** of the struct, and they won't propagate outside the function's call.
 	var object2 Item = Object{ID: "http://example.com/2", Type: DocumentType}
 	_ = OnObject(object2, func(ob *Object) error {
 		ob.Name = DefaultNaturalLanguage("Another object")
@@ -1471,8 +1472,8 @@ func ExampleOnObject() {
 	_ = OnObject(place, func(ob *Object) error {
 		ob.Name = DefaultNaturalLanguage("Ys")
 		ob.Summary = DefaultNaturalLanguage("A mythical city on the coast of Brittany")
-		// We can't access Place specific properties.
-		// Uncommenting this will trigger a compilation error.
+		// We can't access Place specific properties, so
+		// uncommenting this will trigger a compilation error.
 		//ob.Latitude = 0.0
 		return nil
 	})

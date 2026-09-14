@@ -540,3 +540,115 @@ func ExampleIntransitiveActivity_initialization() {
 	// IntransitiveActivity1: activitypub.IntransitiveActivity { id: http://example.com/1, actor: http://example.com/~jdoe }
 	// IntransitiveActivity2: activitypub.IntransitiveActivity[IntransitiveActivity] { actor: http://example.com/~jdoe }
 }
+
+func ExampleToIntransitiveActivity() {
+	// IntransitiveActivities form a special case of activities that do not contain an Object
+	// property that they operate on.
+
+	// We can see here an initialization for the Arrive struct which is an alias for
+	// the IntransitiveActivity type.
+	// Using it makes no difference on a semantic level, but it can provide more context about the
+	// intention to other developers.
+	//
+	// There are two other intransitive activities in the Activity Vocabulary, the Travel type
+	// which is also an alias, and the Question which is a disjoint type as it contains additional
+	// properties.
+	//
+	// We mentioned before that the Type needs to be set manually, so developers also need to take
+	// care about their correctness. An invalid type can be set onto an activity and there's no
+	// mechanism for validating that - at least at the moment.
+	var intransitiveActivity1 Item = &Arrive{ID: "http://example.com/1", Type: UpdateType}
+
+	// As we've seen previously, we can't operate directly on intransitiveActivity1 as it's an Item instance,
+	// so uncommenting the following line will trigger a compiler error:
+	// activity1.Actor = IRI("http://example.com/~jdoe")
+	ia1, _ := ToIntransitiveActivity(intransitiveActivity1)
+	ia1.Target = IRI("http://example.com/ys")
+	fmt.Printf("IntransitiveActivity1: %v\n", intransitiveActivity1)
+	fmt.Printf("                     : %v\n\n", ia1)
+
+	// Here is how a Question intransitive activity can interact with the conversion to intransitive activity.
+	var question Item = &Question{
+		ID:    "http://example.com/huh",
+		AnyOf: ItemCollection{},
+	}
+	q, _ := ToIntransitiveActivity(question)
+	// We can set intransitive activity properties on the new value,
+	// and they will be reflected in the original object.
+	q.Actor = IRI("http://example.com/~jdoe")
+	fmt.Printf("Question: %v\n", question)
+	// But also it results in loss of data, as the anyOf properties
+	// are no longer accessible in the converted value.
+	fmt.Printf("        : %v\n", q)
+	// Normally this is not a problem, because, as we mentioned in the ExampleToActor
+	// assigning back to the pointer should usually not be done, losing data being
+	// the most important reason why.
+	//
+	// If we uncomment the following line, we lose the question specific data permanently:
+	//question = q
+	fmt.Printf("Question: %v\n\n", question)
+
+	// Another consideration is that the hierarchy of types that can be converted is unidirectional.
+	// As an example, an Object type can't be converted to an IntransitiveActivity type,
+	// and trying to do so results in an error.
+	var notWhatWeWant Item = &Object{Type: TravelType}
+	na, err := ToIntransitiveActivity(notWhatWeWant)
+	fmt.Printf("NotWhatWeWant: %v\n", notWhatWeWant)
+	fmt.Printf("             : %v\n", na)
+	fmt.Printf("Error        : %v\n\n", err)
+
+	// Output:
+	// IntransitiveActivity1: activitypub.IntransitiveActivity[Update] { id: http://example.com/1, target: http://example.com/ys }
+	//                      : activitypub.IntransitiveActivity[Update] { id: http://example.com/1, target: http://example.com/ys }
+	//
+	// Question: activitypub.Question { id: http://example.com/huh, actor: http://example.com/~jdoe, anyOf: [] }
+	//         : activitypub.IntransitiveActivity { id: http://example.com/huh, actor: http://example.com/~jdoe }
+	// Question: activitypub.Question { id: http://example.com/huh, actor: http://example.com/~jdoe, anyOf: [] }
+	//
+	// NotWhatWeWant: activitypub.Object[Travel] {  }
+	//              : <nil>
+	// Error        : unable to convert *activitypub.Object to *activitypub.IntransitiveActivity
+}
+
+func ExampleOnIntransitiveActivity() {
+	// In the ExampleToIntransitiveActivity() function, we saw how we can convert data types
+	// to IntransitiveActivity pointer values and be allowed to use their properties in that way.
+	//
+	// Here we can see how this mechanism can be used to build specific logic when dealing
+	// with opaque Item interface values.
+
+	// As we've seen, you can not access this IntransitiveActivity's properties
+	// because it's wrapped in the Item interface.
+	var intransitiveActivity1 Item = &IntransitiveActivity{Type: ArriveType, Target: IRI("http://example.com/ys")}
+	// Uncommenting this line will trigger a compilation error.
+	//intransitiveActivity1.Actor = IRI("http://example.com/~jdoe")
+
+	_ = OnIntransitiveActivity(intransitiveActivity1, func(ia *IntransitiveActivity) error {
+		// Instead we can wrap it in an OnIntransitiveActivity() call in which
+		// we can modify it, and the changes will be visible outside its scope.
+		ia.Actor = IRI("http://example.com/~jdoe")
+
+		// Similarly, as we've seen in the ExampleToIntransitiveActivity, we can also modify
+		// the properties in common with the Object type, without needing
+		// a call to OnObject/ToObject.
+		ia.Summary = DefaultNaturalLanguage("I made it!")
+		return nil
+	})
+	fmt.Printf("IntransitiveActivity1: %v\n", intransitiveActivity1)
+
+	// We can also modify the Question type, which is disjoint to IntransitiveActivity,
+	// but only the properties they have in common.
+	var question Item = &Question{Type: QuestionType, AnyOf: IRIs{"http://example.com/yay", "http://example.com/nay"}}
+	_ = OnIntransitiveActivity(question, func(q *IntransitiveActivity) error {
+		q.Actor = IRI("http://example.com/~jdoe")
+		// We can't access Question specific properties, so
+		// uncommenting this will trigger a compilation error.
+		//q.AnyOf = nil
+		return nil
+	})
+	fmt.Printf("Question: %v\n", question)
+
+	// Output:
+	// IntransitiveActivity1: activitypub.IntransitiveActivity[Arrive] { summary: I made it!, actor: http://example.com/~jdoe, target: http://example.com/ys }
+	// Question: activitypub.Question[Question] { actor: http://example.com/~jdoe, anyOf: [http://example.com/yay http://example.com/nay] }
+}

@@ -821,7 +821,7 @@ func ExampleToActor() {
 }
 
 func ExampleOnActor() {
-	// In the ExampleToActor function, we saw how we can convert data types
+	// In the ExampleToActor() function, we saw how we can convert data types
 	// to Actor pointer values and be allowed to use their properties in that way.
 	//
 	// Here we can see how this mechanism can be used to build specific logic when dealing
@@ -832,6 +832,7 @@ func ExampleOnActor() {
 	var actor1 Item = &Actor{ID: "http://example.com/~jdoe", Type: PersonType}
 	// Uncommenting this line will trigger a compilation error.
 	//actor1.Name = DefaultNaturalLanguage("John Doe")
+
 	_ = OnActor(actor1, func(act *Actor) error {
 		// Instead we can wrap it in an OnActor() call in which
 		// we can modify it, and the changes will be visible outside its scope.
