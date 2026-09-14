@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"time"
 
 	"github.com/valyala/fastjson"
@@ -224,10 +225,48 @@ func (t *Tombstone) Clean() Item {
 	return &tt
 }
 
+func fmtTombstoneProps(w io.Writer, n *int) func(*Tombstone) error {
+	return func(t *Tombstone) error {
+		_ = OnObject(t, fmtObjectProps(w, n))
+		comma := func() {
+			if *n > 0 {
+				_, _ = io.WriteString(w, ", ")
+			}
+		}
+
+		if t.FormerType != nil {
+			comma()
+			*n, _ = fmt.Fprintf(w, "formerType: %v", t.FormerType)
+		}
+		if !t.Deleted.IsZero() {
+			comma()
+			*n, _ = fmt.Fprintf(w, "%s: %s", "deleted", t.Deleted)
+		}
+		return nil
+	}
+}
+
 func (t Tombstone) Format(s fmt.State, verb rune) {
+	typ := t.Type
 	switch verb {
-	case 's', 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] { formerType: %q }", t, t.Type, t.FormerType)
+	case 's':
+		iri := t.ID
+		if iri != "" {
+			s.Write([]byte(iri))
+		} else {
+			_, _ = fmt.Fprintf(s, "%T[%v]", t, typ)
+		}
+	case 'v':
+		n := 0
+		if typ != nil {
+			_, _ = fmt.Fprintf(s, "%T[%v] { ", t, typ)
+			_ = fmtTombstoneProps(s, &n)(&t)
+			_, _ = io.WriteString(s, " }")
+		} else {
+			_, _ = fmt.Fprintf(s, "%T { ", t)
+			_ = fmtTombstoneProps(s, &n)(&t)
+			_, _ = io.WriteString(s, " }")
+		}
 	}
 }
 
