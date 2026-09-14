@@ -1380,7 +1380,7 @@ func ExampleToObject() {
 	// But, if the type wrapped in the interface is only a struct literal, modifying
 	// the return value will not affect the original, which might have unexpected side effects.
 	// Here we wrap the Document type, which is a type alias to Object.
-	// Alongside it there are some others like: Audio, Video, Image, etc.
+	// There are other aliases for the remaining Object types: Audio, Video, Image, etc.
 	object2 := Document{ID: "http://example.com/2", Type: DocumentType, Name: DefaultNaturalLanguage("object2")}
 	o2, _ := ToObject(object2)
 	o2.Name = nil

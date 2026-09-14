@@ -549,7 +549,8 @@ func ExampleToIntransitiveActivity() {
 	// the IntransitiveActivity type.
 	// Using it makes no difference on a semantic level, but it can provide more context about the
 	// intention to other developers.
-	//
+	var intransitiveActivity1 Item = &Arrive{Type: UpdateType}
+
 	// There are two other intransitive activities in the Activity Vocabulary, the Travel type
 	// which is also an alias, and the Question which is a disjoint type as it contains additional
 	// properties.
@@ -557,21 +558,20 @@ func ExampleToIntransitiveActivity() {
 	// We mentioned before that the Type needs to be set manually, so developers also need to take
 	// care about their correctness. An invalid type can be set onto an activity and there's no
 	// mechanism for validating that - at least at the moment.
-	var intransitiveActivity1 Item = &Arrive{ID: "http://example.com/1", Type: UpdateType}
+	// As an example, the above initialization contains uses the semantically invalid Update type.
 
-	// As we've seen previously, we can't operate directly on intransitiveActivity1 as it's an Item instance,
-	// so uncommenting the following line will trigger a compiler error:
-	// activity1.Actor = IRI("http://example.com/~jdoe")
+	// As we've seen previously, we can't operate directly on intransitiveActivity1 as it's an Item
+	// instance, so uncommenting the following line will trigger a compiler error:
+	//activity1.Actor = IRI("http://example.com/~jdoe")
+
 	ia1, _ := ToIntransitiveActivity(intransitiveActivity1)
+	ia1.Type = ArriveType
 	ia1.Target = IRI("http://example.com/ys")
 	fmt.Printf("IntransitiveActivity1: %v\n", intransitiveActivity1)
 	fmt.Printf("                     : %v\n\n", ia1)
 
-	// Here is how a Question intransitive activity can interact with the conversion to intransitive activity.
-	var question Item = &Question{
-		ID:    "http://example.com/huh",
-		AnyOf: ItemCollection{},
-	}
+	// Here is how a Question value can interact with the conversion to IntransitiveActivity.
+	var question Item = &Question{ID: "http://example.com/huh", AnyOf: ItemCollection{}}
 	q, _ := ToIntransitiveActivity(question)
 	// We can set intransitive activity properties on the new value,
 	// and they will be reflected in the original object.
@@ -580,11 +580,13 @@ func ExampleToIntransitiveActivity() {
 	// But also it results in loss of data, as the anyOf properties
 	// are no longer accessible in the converted value.
 	fmt.Printf("        : %v\n", q)
-	// Normally this is not a problem, because, as we mentioned in the ExampleToActor
-	// assigning back to the pointer should usually not be done, losing data being
-	// the most important reason why.
+
+	// Normally this is not a problem, because, as we mentioned in the ExampleToActor,
+	// assigning back to the interface value should be avoided.
+	// Losing the data of the specific type being the major reason as to why not.
 	//
-	// If we uncomment the following line, we lose the question specific data permanently:
+	// If we uncomment the following line, the test fails as
+	// we lose the question specific data permanently:
 	//question = q
 	fmt.Printf("Question: %v\n\n", question)
 
@@ -598,8 +600,8 @@ func ExampleToIntransitiveActivity() {
 	fmt.Printf("Error        : %v\n\n", err)
 
 	// Output:
-	// IntransitiveActivity1: activitypub.IntransitiveActivity[Update] { id: http://example.com/1, target: http://example.com/ys }
-	//                      : activitypub.IntransitiveActivity[Update] { id: http://example.com/1, target: http://example.com/ys }
+	// IntransitiveActivity1: activitypub.IntransitiveActivity[Arrive] { target: http://example.com/ys }
+	//                      : activitypub.IntransitiveActivity[Arrive] { target: http://example.com/ys }
 	//
 	// Question: activitypub.Question { id: http://example.com/huh, actor: http://example.com/~jdoe, anyOf: [] }
 	//         : activitypub.IntransitiveActivity { id: http://example.com/huh, actor: http://example.com/~jdoe }
@@ -628,9 +630,9 @@ func ExampleOnIntransitiveActivity() {
 		// we can modify it, and the changes will be visible outside its scope.
 		ia.Actor = IRI("http://example.com/~jdoe")
 
-		// Similarly, as we've seen in the ExampleToIntransitiveActivity, we can also modify
+		// Similarly, as we've seen in the ExampleToIntransitiveActivity(), we can also modify
 		// the properties in common with the Object type, without needing
-		// a call to OnObject/ToObject.
+		// a call to OnObject().
 		ia.Summary = DefaultNaturalLanguage("I made it!")
 		return nil
 	})

@@ -1588,3 +1588,75 @@ func ExampleActivity_initialization() {
 	// Activity1: activitypub.Activity { id: http://example.com/1, object: http://example.com/thing }
 	// Activity2: activitypub.Activity[Activity] { actor: http://example.com/~jdoe }
 }
+
+func ExampleToActivity() {
+	// Activity types represent a large number of the Activity Vocabulary objects that the
+	// library handles. This is most visible in module for the ActivityPub state machine, where
+	// we make use of the ToActivity() and ToIntransitiveActivity() quite a lot.
+
+	// We can see here an initialization for the Announce type which,
+	// unlike the disjoint Place type that we've seen before, is an alias for Activity.
+	// It makes no difference on a semantic level, but it can provide more context about the
+	// intention to other developers.
+	// There are additional aliases for all Activity types: Create, Update, Delete, Like, etc.
+	//
+	// However, there is no mechanism to coerce the Type property to the correct
+	// Vocabulary Type value corresponding to the used alias, so it must be set manually.
+	var activity1 Item = &Announce{Type: AnnounceType}
+
+	// As we've seen in previous examples, we can't operate on activity1 as it's an Item instance,
+	// so uncommenting the following line will trigger a compiler error:
+	//activity1.Actor = IRI("http://example.com/~jdoe")
+
+	a1, _ := ToActivity(activity1)
+	a1.Actor = IRI("http://example.com/~jdoe")
+	fmt.Printf("Activity1: %v\n\n", activity1)
+
+	// Another consideration is that the hierarchy of types that can be converted is unidirectional.
+	// As an example, an IntransitiveActivity type can't be converted to an Activity type,
+	// and trying to do so results in an error.
+	var notWhatWeWant Item = &IntransitiveActivity{Type: TravelType}
+	na, err := ToActivity(notWhatWeWant)
+	fmt.Printf("NotWhatWeWant: %v\n", notWhatWeWant)
+	fmt.Printf("             : %v\n", na)
+	fmt.Printf("Error        : %v\n\n", err)
+
+	// Output:
+	// Activity1: activitypub.Activity[Announce] { actor: http://example.com/~jdoe }
+	//
+	// NotWhatWeWant: activitypub.IntransitiveActivity[Travel] {  }
+	//              : <nil>
+	// Error        : unable to convert *activitypub.IntransitiveActivity to *activitypub.Activity
+}
+
+func ExampleOnActivity() {
+	// In the ExampleToActivity() function, we saw how we can convert data types
+	// to Activity pointer values and be allowed to use their properties in that way.
+	//
+	// Here we can see how this mechanism can be used to build specific logic when dealing
+	// with opaque Item interface values.
+
+	// As we've seen, you can not access this Activity's properties
+	// because it's wrapped in the Item interface.
+	var activity1 Item = &Activity{Type: LikeType}
+	// Uncommenting this line will trigger a compilation error.
+	//activity1.Actor = IRI("http://example.com/~jdoe")
+
+	_ = OnActivity(activity1, func(a *Activity) error {
+		// Instead we can wrap it in an OnActivity() call in which
+		// we can modify it, and the changes will be visible outside its scope.
+		a.Actor = IRI("http://example.com/~jdoe")
+
+		// Similarly, as we've seen in the ExampleToActivity(), we can also modify
+		// the properties in common with the Object type, without needing
+		// a call to OnIntransitiveActivity(),
+		a.Object = IRI("http://example.com/ys")
+		// or OnObject().
+		a.Summary = DefaultNaturalLanguage("I like it here!")
+		return nil
+	})
+	fmt.Printf("Activity1: %v\n", activity1)
+
+	// Output:
+	// Activity1: activitypub.Activity[Like] { summary: I like it here!, actor: http://example.com/~jdoe, object: http://example.com/ys }
+}
