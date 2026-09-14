@@ -1364,20 +1364,24 @@ func ExampleObject_initialization() {
 func ExampleToObject() {
 	// All the non Link types the library provides can be converted to an Object struct.
 	//
-	// This fact represents the cornerstone element for the rest of the library's functionality,
-	// as it allows us to access properties of objects even when we're not certain of which data type
-	// they are.
+	// This fact represents the cornerstone for the functionality of the library,
+	// as it allows us to access properties of objects even when we're not certain
+	// of which data type they are.
 
 	// One additional **very important** consideration is about the data type of the original.
-	// If it is a struct pointer, modifying the return value, will modify the original
+	// If it is a struct pointer, modifying the return value will modify the original, which
+	// is what we usually want from this API.
 	object1 := &Object{ID: "http://example.com/1", Type: NoteType, Name: DefaultNaturalLanguage("object1")}
 	o1, _ := ToObject(object1)
 	o1.Name = nil
 	fmt.Printf("Object1: %v\n", object1)
 	fmt.Printf("       : %v\n\n", o1)
 
-	// If our initial type it's a struct literal, modifying the return value will not affect the original.
-	object2 := Object{ID: "http://example.com/2", Type: DocumentType, Name: DefaultNaturalLanguage("object2")}
+	// But, if the type wrapped in the interface is only a struct literal, modifying
+	// the return value will not affect the original, which might have unexpected side effects.
+	// Here we wrap the Document type, which is a type alias to Object.
+	// Alongside it there are some others like: Audio, Video, Image, etc.
+	object2 := Document{ID: "http://example.com/2", Type: DocumentType, Name: DefaultNaturalLanguage("object2")}
 	o2, _ := ToObject(object2)
 	o2.Name = nil
 	fmt.Printf("Object2: %v\n", object2)
@@ -1385,6 +1389,7 @@ func ExampleToObject() {
 
 	// The Place type is disjoint to Object, but it can still be converted, due to sharing
 	// the same memory shape for the common properties.
+	// The other disjoint Object types are: Profile, Relationship and Tombstone.
 	place := Place{ID: "http://example.com/ys", Type: PlaceType, Name: DefaultNaturalLanguage("Ys")}
 	p, _ := ToObject(place)
 	p.Name = nil
