@@ -423,8 +423,8 @@ func TestUnmarshalJSON(t *testing.T) {
 				}
 				return
 			}
-			if !cmp.Equal(got, tt.want) {
-				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, got))
+			if !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, got, EquateItems))
 			}
 		})
 	}

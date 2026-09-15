@@ -536,7 +536,7 @@ func JSONLoadObject(val *fastjson.Value, o *Object) error {
 	o.CC = JSONGetItems(val, "cc")
 	o.BCC = JSONGetItems(val, "bcc")
 	o.Replies = JSONGetItem(val, "replies")
-	o.Tag = JSONGetItems(val, "tag")
+	o.Tag = JSONGetItem(val, "tag")
 	o.Likes = JSONGetItem(val, "likes")
 	o.Shares = JSONGetItem(val, "shares")
 	o.Source = GetAPSource(val)
@@ -678,16 +678,12 @@ func jsonLoadToLink(val *fastjson.Value, l *Link) error {
 		l.HrefLang = hrefLang
 	}
 	if href := JSONGetURIItem(val, "href"); href != nil {
-		ll := href.GetLink()
-		if len(ll) > 0 {
+		if ll := href.GetLink(); len(ll) > 0 {
 			l.Href = ll
 		}
 	}
-	if rel := JSONGetURIItem(val, "rel"); rel != nil {
-		rr := rel.GetLink()
-		if len(rr) > 0 {
-			l.Rel = rr
-		}
+	if rel := JSONGetString(val, "rel"); len(rel) > 0 {
+		l.Rel = rel
 	}
 	return nil
 }

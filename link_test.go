@@ -31,7 +31,7 @@ func TestLink_GobEncode(t *testing.T) {
 		ID        ID
 		Type      Typer
 		Name      NaturalLanguageValues
-		Rel       IRI
+		Rel       string
 		MediaType MimeType
 		Height    uint
 		Width     uint
@@ -83,7 +83,7 @@ func TestLink_GobDecode(t *testing.T) {
 		ID        ID
 		Type      Typer
 		Name      NaturalLanguageValues
-		Rel       IRI
+		Rel       string
 		MediaType MimeType
 		Height    uint
 		Width     uint

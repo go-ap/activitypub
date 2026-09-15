@@ -21,6 +21,15 @@ func gobEncodeInt64(i int64) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
+func gobEncodeString(s string) ([]byte, error) {
+	b := bytes.Buffer{}
+	gg := gob.NewEncoder(&b)
+	if err := gg.Encode(s); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
 // TODO(marius): when migrating to go1.18, use a numeric constraint for this
 func gobEncodeUint(i uint) ([]byte, error) {
 	b := bytes.Buffer{}
@@ -659,7 +668,7 @@ func mapLinkProperties(mm map[string][]byte, l Link) (hasData bool, err error) {
 		hasData = true
 	}
 	if len(l.Rel) > 0 {
-		if mm["rel"], err = l.Rel.GobEncode(); err != nil {
+		if mm["rel"], err = gobEncodeString(l.Rel); err != nil {
 			return
 		}
 		hasData = true
