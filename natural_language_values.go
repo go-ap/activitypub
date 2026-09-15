@@ -15,14 +15,23 @@ import (
 type (
 	Content []byte
 
-	// LangRefValue is a type for storing per language values
+	// LangRefValue is a type for storing language/content key pair values.
 	LangRefValue struct {
 		Ref   LangRef
 		Value Content
 	}
-	// NaturalLanguageValues is a mapping for multiple language values
-	NaturalLanguageValues map[LangRef]Content
 )
+
+// NaturalLanguageValues represents a mapping for multiple language values.
+// Several properties defined by the Activity Vocabulary are defined as having natural language values.
+// These are human-readable strings using one or more languages. Within the JSON serialization,
+// they are expressed as either (1) a single JSON string or (2) a JSON object mapping well-formed [BCP47]
+// Language-Tags to localized, equivalent translations of the same string value. In the serialized JSON,
+// these two forms are differentiated using a simple property naming convention, for instance: "name"
+// identifies the JSON string form for the name property while "nameMap" represents the object form.
+//
+// https://www.w3.org/TR/activitystreams-core/#naturalLanguageValues
+type NaturalLanguageValues map[LangRef]Content
 
 func RefValue[T ~string](l LangRef, v T) LangRefValue {
 	return LangRefValue{l, []byte(v)}

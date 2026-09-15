@@ -47,29 +47,29 @@ type Links interface {
 //
 // https://www.w3.org/TR/activitystreams-core/#link
 type Link struct {
-	// Provides the globally unique identifier for an APObject or Link.
+	// ID provides the globally unique identifier for the Link.
 	ID ID `jsonld:"id,omitempty"`
-	// Identifies the APObject or Link type. Multiple values may be specified.
+	// Type identifies the Link type. Multiple values may be specified.
 	Type Typer `jsonld:"type,omitempty"`
-	// A simple, human-readable, plain-text name for the object.
+	// Name represents a simple, human-readable, plain-text name for the Link.
 	// HTML markup MUST NOT be included. The name MAY be expressed using multiple language-tagged values.
 	Name NaturalLanguageValues `jsonld:"name,omitempty,collapsible"`
-	// A link relation associated with a Link. The value must conform to both the [HTML5] and
+	// Rel represents the link relation associated with a Link. The value must conform to both the [HTML5] and
 	// [RFC5988](https://tools.ietf.org/html/rfc5988) "link relation" definitions.
 	// In the [HTML5], any string not containing the "space" U+0020, "tab" (U+0009), "LF" (U+000A),
 	// "FF" (U+000C), "CR" (U+000D) or "," (U+002C) characters can be used as a valid link relation.
-	Rel IRI `jsonld:"rel,omitempty"`
-	// When used on a Link, identifies the MIME media type of the referenced resource.
+	Rel string `jsonld:"rel,omitempty"`
+	// MediaType identifies the MIME media type of the referenced resource.
 	MediaType MimeType `jsonld:"mediaType,omitempty"`
-	// On a Link, specifies a hint as to the rendering height in device-independent pixels of the linked resource.
+	// Height specifies a hint as to the rendering height in device-independent pixels of the linked resource.
 	Height uint `jsonld:"height,omitempty"`
-	// On a Link, specifies a hint as to the rendering width in device-independent pixels of the linked resource.
+	// Width specifies a hint as to the rendering width in device-independent pixels of the linked resource.
 	Width uint `jsonld:"width,omitempty"`
-	// Identifies an entity that provides a preview of this object.
+	// Preview identifies an entity that provides a preview for this Link.
 	Preview Item `jsonld:"preview,omitempty"`
-	// The target resource pointed to by a Link.
+	// Href represents the target resource pointed to by the Link.
 	Href IRI `jsonld:"href,omitempty"`
-	// Hints as to the language used by the target resource.
+	// HrefLang hints as to the language used by the target resource.
 	// Value must be a [BCP47](https://tools.ietf.org/html/bcp47) Language-Tag.
 	HrefLang LangRef `jsonld:"hrefLang,omitempty"`
 }

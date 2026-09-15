@@ -1183,7 +1183,7 @@ func TestObject_GobEncode(t *testing.T) {
 		Replies      Item
 		StartTime    time.Time
 		Summary      NaturalLanguageValues
-		Tag          ItemCollection
+		Tag          Item
 		Updated      time.Time
 		URL          Item
 		To           ItemCollection

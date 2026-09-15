@@ -266,7 +266,7 @@ func JSONWriteObjectValue(b *bytes.Buffer, o Object) (notEmpty bool) {
 		notEmpty = JSONWriteItemProp(b, "replies", o.Replies, notEmpty) || notEmpty
 	}
 	if o.Tag != nil {
-		notEmpty = JSONWriteItemCollectionProp(b, "tag", o.Tag, false, notEmpty) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "tag", o.Tag, notEmpty) || notEmpty
 	}
 	if o.URL != nil {
 		notEmpty = JSONWriteItemProp(b, "url", o.URL, notEmpty) || notEmpty
@@ -391,8 +391,8 @@ func JSONWriteLinkValue(b *bytes.Buffer, l Link) (notEmpty bool) {
 	if len(l.Name) > 0 {
 		notEmpty = JSONWriteNaturalLanguageProp(b, "name", l.Name, notEmpty) || notEmpty
 	}
-	if v, err := l.Rel.MarshalJSON(); err == nil && len(v) > 0 {
-		notEmpty = JSONWriteProp(b, "rel", v, notEmpty) || notEmpty
+	if len(l.Rel) > 0 {
+		notEmpty = JSONWriteStringProp(b, "rel", l.Rel, notEmpty) || notEmpty
 	}
 	if l.Height > 0 {
 		notEmpty = JSONWriteIntProp(b, "height", int64(l.Height), notEmpty) || notEmpty

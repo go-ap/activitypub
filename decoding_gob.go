@@ -11,6 +11,11 @@ func GobDecode(data []byte) (Item, error) {
 	return gobDecodeItem(data)
 }
 
+func gobDecodeString(s *string, data []byte) error {
+	g := gob.NewDecoder(bytes.NewReader(data))
+	return g.Decode(s)
+}
+
 func gobDecodeUint(i *uint, data []byte) error {
 	g := gob.NewDecoder(bytes.NewReader(data))
 	return g.Decode(i)
@@ -169,7 +174,7 @@ func unmapLinkProperties(mm map[string][]byte, l *Link) error {
 		}
 	}
 	if raw, ok := mm["rel"]; ok {
-		if err := l.Rel.GobDecode(raw); err != nil {
+		if err := gobDecodeString(&l.Rel, raw); err != nil {
 			return err
 		}
 	}
