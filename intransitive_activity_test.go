@@ -581,7 +581,7 @@ func ExampleToIntransitiveActivity() {
 	// are no longer accessible in the converted value.
 	fmt.Printf("        : %v\n", q)
 
-	// Normally this is not a problem, because, as we mentioned in the ExampleToActor,
+	// Normally this is not a problem, because, as we mentioned in the ToActor() example,
 	// assigning back to the interface value should be avoided.
 	// Losing the data of the specific type being the major reason as to why not.
 	//
@@ -613,7 +613,7 @@ func ExampleToIntransitiveActivity() {
 }
 
 func ExampleToIntransitiveActivity_returning() {
-	// Similarly to the ExampleToObject_returning(), returning from
+	// Similarly to the ToObject() returning example, returning from
 	// functions that deal with IntransitiveActivities will result
 	// in lost information when the pointer wraps an Activity type.
 
@@ -643,7 +643,7 @@ func ExampleToIntransitiveActivity_returning() {
 }
 
 func ExampleOnIntransitiveActivity() {
-	// In the ExampleToIntransitiveActivity() function, we saw how we can convert data types
+	// In the ToIntransitiveActivity() example function, we saw how we can convert data types
 	// to IntransitiveActivity pointer values and be allowed to use their properties in that way.
 	//
 	// Here we can see how this mechanism can be used to build specific logic when dealing
@@ -660,8 +660,8 @@ func ExampleOnIntransitiveActivity() {
 		// we can modify it, and the changes will be visible outside its scope.
 		ia.Actor = IRI("http://example.com/~jdoe")
 
-		// Similarly, as we've seen in the ExampleToIntransitiveActivity(), we can also modify
-		// the properties in common with the Object type, without needing
+		// Similarly, as we've seen in the ToIntransitiveActivity() example, we can also
+		// modify the properties in common with the Object type, without needing
 		// a call to OnObject().
 		ia.Summary = DefaultNaturalLanguage("I made it!")
 		return nil

@@ -1,6 +1,9 @@
 package activitypub
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestItemsEqual(t *testing.T) {
 	type args struct {
@@ -741,4 +744,42 @@ func TestIsCollection(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ExampleOnItem() {
+	// In the OnObject() examples we have seen how for the cases of Item values
+	// wrapping a slice of elements, the call is done for each of them.
+	//
+	// This can work most of the time, as generally ItemCollections will contain
+	// the same type of objects. But that is not always the case, there are cases
+	// when collections contain heterogeneous types, eg (a collection of objects
+	// that contains Object, Place, Relationship and Tombstone elements,
+	// a collection of actors that contains Actor and Tombstone elements, or,
+	// a collection of activities that contains both Activity and
+	// IntransitiveActivity elements.
+	//
+	// When we want to apply similar logic to these types of slices, we can use
+	// the OnItem() function.
+
+	var heterogeneous Item = ItemCollection{
+		// We haven't yet explored how an IRI string satisfies the Item interface
+		// but here is a short example.
+		IRI("http://example.com"),
+		&Object{ID: "http://example.com/1", Type: ImageType},
+		&Actor{ID: "http://example.com/~jdoe", Type: PersonType},
+		&Tombstone{ID: "http://example.com/2", Type: TombstoneType, FormerType: NoteType},
+	}
+
+	cnt := 0
+	_ = OnItem(heterogeneous, func(it Item) error {
+		fmt.Printf("%d: %v\n", cnt, it)
+		cnt++
+		return nil
+	})
+
+	// Output:
+	// 0: http://example.com
+	// 1: activitypub.Object[Image] { id: http://example.com/1 }
+	// 2: activitypub.Actor[Person] { id: http://example.com/~jdoe }
+	// 3: activitypub.Tombstone[Tombstone] { id: http://example.com/2, formerType: Note }
 }

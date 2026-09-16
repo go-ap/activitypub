@@ -1630,7 +1630,7 @@ func ExampleToActivity() {
 }
 
 func ExampleOnActivity() {
-	// In the ExampleToActivity() function, we saw how we can convert data types
+	// In the ToActivity() example function, we saw how we can convert data types
 	// to Activity pointer values and be allowed to use their properties in that way.
 	//
 	// Here we can see how this mechanism can be used to build specific logic when dealing

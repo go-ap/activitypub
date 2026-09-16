@@ -186,7 +186,7 @@ func ExampleToLink() {
 	fmt.Printf("       : %v\n", na)
 	fmt.Printf("Error  : %v\n\n", err)
 
-	// The reverse is also true, and you can see that in the ExampleToObject() test function.
+	// The reverse is also true, and you can see that in the ToObject() example function.
 
 	// Output:
 	// Link1: activitypub.Link[Mention] { href: http://example.com/~jdoe, name: Jane Doe }

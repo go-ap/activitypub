@@ -1486,7 +1486,7 @@ func ExampleToObject_returning() {
 }
 
 func ExampleOnObject() {
-	// In the ExampleToObject function, we saw how we can convert data types
+	// In the ToObject() example function, we saw how we can convert data types
 	// to Object pointer values and be allowed to use their properties in that way.
 	//
 	// Here we can see how this mechanism can be used to build specific logic when dealing

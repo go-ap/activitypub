@@ -823,7 +823,7 @@ func ExampleToActor() {
 }
 
 func ExampleOnActor() {
-	// In the ExampleToActor() function, we saw how we can convert data types
+	// In the ToActor() example function, we saw how we can convert data types
 	// to Actor pointer values and be allowed to use their properties in that way.
 	//
 	// Here we can see how this mechanism can be used to build specific logic when dealing
@@ -840,7 +840,7 @@ func ExampleOnActor() {
 		// we can modify it, and the changes will be visible outside its scope.
 		act.PreferredUsername = DefaultNaturalLanguage("jdoe")
 
-		// Similarly, as we've seen in the ExampleToActor, we can also modify
+		// Similarly, as we've seen in the ToActor() example, we can also modify
 		// the properties in common with the Object type, without needing
 		// a call to OnObject/ToObject.
 		act.Name = DefaultNaturalLanguage("John Doe")
