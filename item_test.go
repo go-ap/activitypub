@@ -3,7 +3,29 @@ package activitypub
 import (
 	"fmt"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
+
+func areItems(a, b any) bool {
+	_, ok1 := a.(Item)
+	_, ok2 := b.(Item)
+	return ok1 && ok2
+}
+
+func compareItems(x, y any) bool {
+	var i1 Item
+	var i2 Item
+	if ic1, ok := x.(Item); ok {
+		i1 = ic1
+	}
+	if ic2, ok := y.(Item); ok {
+		i2 = ic2
+	}
+	return ItemsEqual(i1, i2)
+}
+
+var EquateItems = cmp.FilterValues(areItems, cmp.Comparer(compareItems))
 
 func TestItemsEqual(t *testing.T) {
 	type args struct {
@@ -776,6 +798,8 @@ func ExampleOnItem() {
 		cnt++
 		return nil
 	})
+	// For a more idiomatic way about handling an ItemCollection slice,
+	// see the OnItemCollection() example.
 
 	// Output:
 	// 0: http://example.com

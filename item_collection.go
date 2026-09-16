@@ -328,7 +328,7 @@ type WithItemCollectionFn func(*ItemCollection) error
 
 // OnItemCollection calls function fn on it Item if it can be asserted to type ItemCollection
 //
-// It should be used when Item represents an Item collection and it's usually used as a way
+// It should be used when Item represents an Item collection, and it's usually used as a way
 // to wrap functionality for other functions that will be called on each item in the collection.
 func OnItemCollection(it LinkOrIRI, fn WithItemCollectionFn) error {
 	if IsNil(it) {

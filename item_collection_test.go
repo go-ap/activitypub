@@ -1,10 +1,10 @@
 package activitypub
 
 import (
+	"fmt"
 	"reflect"
+	"strconv"
 	"testing"
-
-	"github.com/google/go-cmp/cmp"
 )
 
 func TestItemCollection_Append(t *testing.T) {
@@ -548,22 +548,57 @@ func TestItemCollection_Equal(t *testing.T) {
 	}
 }
 
-func areItems(a, b any) bool {
-	_, ok1 := a.(Item)
-	_, ok2 := b.(Item)
-	return ok1 && ok2
-}
+func ExampleOnItemCollection() {
+	// When operating on a known ItemCollection slice, we can use a direct
+	// approach for accessing and modifying it, instead of relying on the
+	// slice iteration functionality provided by the other OnXXX() functions.
+	//
+	// This allows more flexibility regarding the slice itself, as opposed to
+	// its elements.
 
-func compareItems(x, y any) bool {
-	var i1 Item
-	var i2 Item
-	if ic1, ok := x.(Item); ok {
-		i1 = ic1
+	many := ItemCollection{
+		&Place{ID: "http://example.com/home"},
+		&Tombstone{ID: "http://example.com/missing"},
 	}
-	if ic2, ok := y.(Item); ok {
-		i2 = ic2
-	}
-	return ItemsEqual(i1, i2)
-}
 
-var EquateItems = cmp.FilterValues(areItems, cmp.Comparer(compareItems))
+	// In a way that's perhaps confusing compared to the behaviour
+	// of the other OnXXX() functions that allow for side effects
+	// outside the closure based on whether the Item element is a
+	// pointer value or not, this function's side effects are dependent
+	// on the fact that a pointer value is passed as its first argument.
+	_ = OnItemCollection(many, func(col *ItemCollection) error {
+		// Here the appended Item will not be present outside
+		// this closure.
+		*col = append(*col, &Question{Type: QuestionType})
+		return nil
+	})
+	fmt.Printf("Many: %v\n", many)
+
+	_ = OnItemCollection(&many, func(col *ItemCollection) error {
+		// But here it will.
+		*col = append(*col, &Question{Type: QuestionType})
+		return nil
+	})
+	fmt.Printf("    : %v\n\n", many)
+
+	others := ItemCollection{
+		&Person{ID: "http://example.com/~jdoe", Type: PersonType},
+		&Group{ID: "http://example.com/the-samples", Type: GroupType},
+	}
+	_ = OnItemCollection(&others, func(col *ItemCollection) error {
+		for i, it := range *col {
+			_ = OnActor(it, func(act *Actor) error {
+				act.Name = DefaultNaturalLanguage("Actor #" + strconv.Itoa(i))
+				return nil
+			})
+		}
+		return nil
+	})
+	fmt.Printf("Others: %v\n", others)
+
+	// Output:
+	// Many: [activitypub.Place { id: http://example.com/home } activitypub.Tombstone { id: http://example.com/missing }]
+	//     : [activitypub.Place { id: http://example.com/home } activitypub.Tombstone { id: http://example.com/missing } activitypub.Question[Question] {  }]
+	//
+	// Others: [activitypub.Actor[Person] { id: http://example.com/~jdoe, name: Actor #0 } activitypub.Actor[Group] { id: http://example.com/the-samples, name: Actor #1 }]
+}
