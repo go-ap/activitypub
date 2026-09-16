@@ -1453,6 +1453,38 @@ func ExampleToObject() {
 	// Error    : unable to convert *activitypub.Link to *activitypub.Object
 }
 
+func ExampleToObject_returning() {
+	// Generally we tend to not use ToObject in user code, because it's not
+	// always apparent when it might result in data loss.
+
+	// To prevent this type of bugs, the library offers the OnObject()
+	// function which contains the logic that gets applied on the
+	// restricted Object type to a non-returning closure.
+	//
+	// See the examples for it for more details, and be wary of the
+	// similar corner case presented there when assigning back to the
+	// item pointer which also results in lost data.
+
+	mangleItems := func(it Item) Item {
+		ob, _ := ToObject(it)
+		ob.Name = DefaultNaturalLanguage("Renamed")
+
+		// This is a bug, when the "it" Item is of a wider type
+		// the extra information will be lost past this return.
+		return ob
+	}
+
+	var notAnObject Item = &Relationship{Type: RelationshipType, Subject: IRI("http://example.com/alice"), Object: IRI("http://example.com/bob")}
+	mangled := mangleItems(notAnObject)
+
+	fmt.Printf("Original: %v\n", notAnObject)
+	fmt.Printf(" Mangled: %v\n", mangled)
+
+	// Output:
+	// Original: activitypub.Relationship[Relationship] { name: Renamed, subject: http://example.com/alice, object: http://example.com/bob }
+	//  Mangled: activitypub.Object[Relationship] { name: Renamed }
+}
+
 func ExampleOnObject() {
 	// In the ExampleToObject function, we saw how we can convert data types
 	// to Object pointer values and be allowed to use their properties in that way.
@@ -1512,4 +1544,41 @@ func ExampleOnObject() {
 	// Object2: activitypub.Object[Document] { id: http://example.com/2 }
 	// Place: activitypub.Place[Place] { id: http://example.com/ys, name: Ys, summary: A mythical city on the coast of Brittany }
 	// Activity: activitypub.Object[Create] { id: http://example.com/create }
+}
+
+func ExampleOnObject_item_slices() {
+	// As a side effect of the breadth of the types that fulfill an Item
+	// interface, the OnXXX functions can be called on slices of the
+	// type ItemCollections.
+
+	var many Item = ItemCollection{
+		&Object{ID: "http://example.com/1"},
+		&Tombstone{ID: "http://example.com/2"},
+	}
+
+	// For all intents and purposes the function works as an iterator.
+	cnt := 0
+	_ = OnObject(many, func(ob *Object) error {
+		// We'll see that inside the closure, the printed items have the Object type.
+		fmt.Printf("Many[%d]: %v\n", cnt, ob)
+		cnt++
+		return nil
+	})
+
+	// Operating any changes to the object, will be applied in bulk to
+	// all the slice elements, which sometimes is not what you want.
+	_ = OnObject(many, func(ob *Object) error {
+		ob.Name = DefaultNaturalLanguage("Stompy")
+		return nil
+	})
+
+	// In the outside scope, the second element's type is preserved as Tombstone,
+	// which is what we expected.
+	fmt.Printf("Many  : %v\n", many)
+
+	// Output:
+	// Many[0]: activitypub.Object { id: http://example.com/1 }
+	// Many[1]: activitypub.Object { id: http://example.com/2 }
+	// Many  : [activitypub.Object { id: http://example.com/1, name: Stompy } activitypub.Tombstone { id: http://example.com/2, name: Stompy }]
+
 }

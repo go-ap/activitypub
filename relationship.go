@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"time"
 
 	"github.com/valyala/fastjson"
@@ -267,10 +268,52 @@ func (r *Relationship) Clean() Item {
 	return &rr
 }
 
+func fmtRelationshipProps(w io.Writer, n *int) func(*Relationship) error {
+	return func(r *Relationship) error {
+		_ = OnObject(r, fmtObjectProps(w, n))
+		comma := func() {
+			if *n > 0 {
+				_, _ = io.WriteString(w, ", ")
+			}
+		}
+
+		if !IsNil(r.Subject) {
+			comma()
+			*n, _ = fmt.Fprintf(w, "subject: %s", r.Subject)
+		}
+		if !IsNil(r.Object) {
+			comma()
+			*n, _ = fmt.Fprintf(w, "object: %s", r.Object)
+		}
+		if !IsNil(r.Relationship) {
+			comma()
+			*n, _ = fmt.Fprintf(w, "relationship: %s", r.Relationship)
+		}
+		return nil
+	}
+}
+
 func (r Relationship) Format(s fmt.State, verb rune) {
+	typ := r.Type
 	switch verb {
-	case 's', 'v':
-		_, _ = fmt.Fprintf(s, "%T[%s] { }", r, r.Type)
+	case 's':
+		iri := r.ID
+		if iri != "" {
+			s.Write([]byte(iri))
+		} else {
+			_, _ = fmt.Fprintf(s, "%T[%v]", r, typ)
+		}
+	case 'v':
+		n := 0
+		if typ != nil {
+			_, _ = fmt.Fprintf(s, "%T[%v] { ", r, typ)
+			_ = fmtRelationshipProps(s, &n)(&r)
+			_, _ = io.WriteString(s, " }")
+		} else {
+			_, _ = fmt.Fprintf(s, "%T { ", r)
+			_ = fmtRelationshipProps(s, &n)(&r)
+			_, _ = io.WriteString(s, " }")
+		}
 	}
 }
 

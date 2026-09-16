@@ -612,6 +612,36 @@ func ExampleToIntransitiveActivity() {
 	// Error        : unable to convert *activitypub.Object to *activitypub.IntransitiveActivity
 }
 
+func ExampleToIntransitiveActivity_returning() {
+	// Similarly to the ExampleToObject_returning(), returning from
+	// functions that deal with IntransitiveActivities will result
+	// in lost information when the pointer wraps an Activity type.
+
+	mangleItems := func(it Item) Item {
+		ob, _ := ToIntransitiveActivity(it)
+		ob.Actor = IRI("http://example.com/~jdoe")
+
+		// This is a bug, the Object property is lost for Activity objects.
+		return ob
+	}
+
+	var originalA Item = &Activity{Type: LikeType, Object: IRI("http://example.com/bob")}
+	mangledA := mangleItems(originalA)
+	fmt.Printf("OriginalA: %v\n", originalA)
+	fmt.Printf(" MangledA: %v\n", mangledA)
+
+	var originalQ Item = &Question{Type: QuestionType, AnyOf: IRIs{"http://example.com/1", "http://example.com/2"}}
+	mangledQ := mangleItems(originalQ)
+	fmt.Printf("OriginalQ: %v\n", originalQ)
+	fmt.Printf(" MangledQ: %v\n", mangledQ)
+
+	// Output:
+	// OriginalA: activitypub.Activity[Like] { actor: http://example.com/~jdoe, object: http://example.com/bob }
+	//  MangledA: activitypub.IntransitiveActivity[Like] { actor: http://example.com/~jdoe }
+	// OriginalQ: activitypub.Question[Question] { actor: http://example.com/~jdoe, anyOf: [http://example.com/1 http://example.com/2] }
+	//  MangledQ: activitypub.IntransitiveActivity[Question] { actor: http://example.com/~jdoe }
+}
+
 func ExampleOnIntransitiveActivity() {
 	// In the ExampleToIntransitiveActivity() function, we saw how we can convert data types
 	// to IntransitiveActivity pointer values and be allowed to use their properties in that way.
