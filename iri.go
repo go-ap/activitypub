@@ -193,9 +193,11 @@ func FlattenToIRI(it Item) Item {
 	return it
 }
 
+const emptyJSONArray = "[]"
+
 func (i IRIs) MarshalJSON() ([]byte, error) {
 	if len(i) == 0 {
-		return []byte{'[', ']'}, nil
+		return []byte(emptyJSONArray), nil
 	}
 	b := bytes.Buffer{}
 	writeCommaIfNotEmpty := func(notEmpty bool) {
