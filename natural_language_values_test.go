@@ -979,3 +979,28 @@ func TestLangValue(t *testing.T) {
 		})
 	}
 }
+
+func ExampleNaturalLanguageValues_initialize() {
+	// Some of the properties of the Activity Vocabulary objects are formed of textual content,
+	// which can be mapped per language. These properties are the "name", "summary", "content",
+	// the "content" of the "source" property of Object types, and the "preferredUsername" of the Actor ones.
+	//
+	// The library uses a map to store these, the keys are values of the [golang.org/x/text/language#Tag] type
+	// and the values are a byte slice aliased to a local Content type.
+
+	// We can initialize such a map inline:
+	fox1 := NaturalLanguageValues{
+		English: Content("The brown fox jumped"),
+		French:  Content("Le renard brun a sauté"),
+		German:  Content("Der braune Fuchs sprang"),
+	}
+	fmt.Printf("Fox1: %#v\n", fox1)
+
+	// Or we can use some of the helper functions
+	fox2 := LangValues(DefaultRefValue("The brown fox"), RefValue(French, "Le renard brun"))
+	fmt.Printf("Fox2: %#v\n", fox2)
+
+	// Output:
+	// Fox1: [en: The brown fox jumped fr: Le renard brun a sauté de: Der braune Fuchs sprang]
+	// Fox2: [en: The brown fox fr: Le renard brun]
+}

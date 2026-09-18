@@ -464,8 +464,13 @@ func (n NaturalLanguageValues) Format(s fmt.State, verb rune) {
 			n.First().Format(s, verb)
 		} else {
 			_, _ = io.WriteString(s, "[")
+			ii := 0
 			for _, nn := range n {
 				nn.Format(s, verb)
+				if ii < cnt-1 {
+					_, _ = io.WriteString(s, " ")
+				}
+				ii++
 			}
 			_, _ = io.WriteString(s, "]")
 		}
@@ -474,8 +479,14 @@ func (n NaturalLanguageValues) Format(s fmt.State, verb rune) {
 			n.First().Format(s, verb)
 		} else {
 			_, _ = io.WriteString(s, "[")
-			for _, nn := range n {
+			ii := 0
+			for l, nn := range n {
+				_, _ = io.WriteString(s, l.String()+": ")
 				nn.Format(s, verb)
+				if ii < cnt-1 {
+					_, _ = io.WriteString(s, " ")
+				}
+				ii++
 			}
 			_, _ = io.WriteString(s, "]")
 		}
