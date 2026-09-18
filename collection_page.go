@@ -10,9 +10,16 @@ import (
 	"github.com/valyala/fastjson"
 )
 
+// CollectionPage is used to represent distinct subsets of items from a Collection.
+// Refer to the Activity Streams 2.0 Core for a complete description of the CollectionPage object.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-collectionpage
+//
 // CollectionPage is a Collection that contains a large number of items and when it becomes impractical
 // for an implementation to serialize every item contained by a Collection using the items
 // property alone. In such cases, the items within a Collection can be divided into distinct subsets or "pages".
+//
+// https://www.w3.org/TR/activitystreams-core/#dfn-collectionpage
 type CollectionPage struct {
 	// ID provides the globally unique identifier for the object.
 	ID ID `jsonld:"id,omitempty"`

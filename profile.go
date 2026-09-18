@@ -12,6 +12,8 @@ import (
 // Profile a Profile is a content object that describes another Object,
 // typically used to describe CanReceiveActivities Type objects.
 // The describes property is used to reference the object being described by the profile.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-profile
 type Profile struct {
 	// ID provides the globally unique identifier for the object.
 	ID ID `jsonld:"id,omitempty"`

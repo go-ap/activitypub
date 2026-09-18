@@ -15,6 +15,8 @@ import (
 // itself and therefore it would not contain an object property.
 // Either of the anyOf and oneOf properties may be used to express possible answers,
 // but a Question object must not have both properties.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-question
 type Question struct {
 	// ID provides the globally unique identifier for the object.
 	ID ID `jsonld:"id,omitempty"`

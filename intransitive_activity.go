@@ -134,11 +134,15 @@ type (
 	// Arrive is an IntransitiveActivity that indicates that the actor has arrived at the location.
 	// The origin can be used to identify the context from which the actor originated.
 	// The target typically has no defined meaning.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-arrive
 	Arrive = IntransitiveActivity
 
 	// Travel indicates that the actor is traveling to target from origin.
 	// Travel is an IntransitiveObject whose actor specifies the direct object.
 	// If the target or origin are not specified, either can be determined by context.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-travel
 	Travel = IntransitiveActivity
 )
 

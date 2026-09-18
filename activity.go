@@ -477,99 +477,148 @@ func (a *Activity) Clean() Item {
 type (
 	// Accept indicates that the actor accepts the object. The target property can be used in certain circumstances to indicate
 	// the context into which the object has been accepted.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-accept
 	Accept = Activity
 
 	// Add indicates that the actor has added the object to the target. If the target property is not explicitly specified,
 	// the target would need to be determined implicitly by context.
 	// The origin can be used to identify the context from which the object originated.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-add
 	Add = Activity
 
 	// Announce indicates that the actor is calling the target's attention the object.
 	// The origin typically has no defined meaning.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-announce
 	Announce = Activity
 
 	// Block indicates that the actor is blocking the object. Blocking is a stronger form of Ignore.
 	// The typical use is to support social systems that allow one user to block activities or content of other users.
 	// The target and origin typically have no defined meaning.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-block
 	Block = Ignore
 
 	// Create indicates that the actor has created the object.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-create
 	Create = Activity
 
 	// Delete indicates that the actor has deleted the object.
 	// If specified, the origin indicates the context from which the object was deleted.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-delete
 	Delete = Activity
 
 	// Dislike indicates that the actor dislikes the object.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-dislike
 	Dislike = Activity
 
 	// Flag indicates that the actor is "flagging" the object.
 	// Flagging is defined in the sense common to many social platforms as reporting content as being
 	// inappropriate for any number of reasons.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-flag
 	Flag = Activity
 
 	// Follow indicates that the actor is "following" the object. Following is defined in the sense typically used within
 	// Social systems in which the actor is interested in any activity performed by or on the object.
 	// The target and origin typically have no defined meaning.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-follow
 	Follow = Activity
 
 	// Ignore indicates that the actor is ignoring the object. The target and origin typically have no defined meaning.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-ignore
 	Ignore = Activity
 
 	// Invite is a specialization of Offer in which the actor is extending an invitation for the object to the target.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-invite
 	Invite = Offer
 
 	// Join indicates that the actor has joined the object. The target and origin typically have no defined meaning.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-join
 	Join = Activity
 
 	// Leave indicates that the actor has left the object. The target and origin typically have no meaning.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-leave
 	Leave = Activity
 
 	// Like indicates that the actor likes, recommends or endorses the object.
 	// The target and origin typically have no defined meaning.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-like
 	Like = Activity
 
-	// Listen inherits all properties from Activity.
+	// Listen indicates that the actor has listened to the object.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-listen
 	Listen = Activity
 
 	// Move indicates that the actor has moved object from origin to target.
 	// If the origin or target are not specified, either can be determined by context.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-move
 	Move = Activity
 
 	// Offer indicates that the actor is offering the object.
 	// If specified, the target indicates the entity to which the object is being offered.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-offer
 	Offer = Activity
 
 	// Reject indicates that the actor is rejecting the object. The target and origin typically have no defined meaning.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-reject
 	Reject = Activity
 
 	// Read indicates that the actor has read the object.
+	//
 	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-read
 	Read = Activity
 
 	// Remove indicates that the actor is removing the object. If specified,
 	// the origin indicates the context from which the object is being removed.
+	//
 	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-remove
 	Remove = Activity
 
 	// TentativeReject is a specialization of Reject in which the rejection is considered tentative.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-tentativereject
 	TentativeReject = Reject
 
 	// TentativeAccept is a specialization of Accept indicating that the acceptance is tentative.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-tentativeaccept
 	TentativeAccept = Accept
 
 	// Undo indicates that the actor is undoing the object. In most cases, the object will be an Activity describing
 	// some previously performed action (for instance, a person may have previously "liked" an article but,
 	// for whatever reason, might choose to undo that like at some later point in time).
 	// The target and origin typically have no defined meaning.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-undo
 	Undo = Activity
 
-	// Update indicates that the actor has updated the object. Note, however, that this vocabulary does not define a mechanism
+	// Update indicates that the actor has updated the object.
+	// Please note, however, that this vocabulary does not define a mechanism
 	// for describing the actual set of modifications made to object.
 	// The target and origin typically have no defined meaning.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-update
 	Update = Activity
 
 	// View indicates that the actor has viewed the object.
+	//
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-view
 	View = Activity
 )
 

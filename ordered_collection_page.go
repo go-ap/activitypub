@@ -10,10 +10,17 @@ import (
 	"github.com/valyala/fastjson"
 )
 
+// OrderedCollectionPage is used to represent ordered subsets of items from an OrderedCollection.
+// Refer to the Activity Streams 2.0 Core for a complete description of the OrderedCollectionPage object.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollectionpage
+//
 // OrderedCollectionPage type extends from both CollectionPage and OrderedCollection.
 // In addition to the properties inherited from each of those, the OrderedCollectionPage
 // may contain an additional startIndex property whose value indicates the relative index position
 // of the first item contained by the page within the OrderedCollection to which the page belongs.
+//
+// https://www.w3.org/TR/activitystreams-core/#dfn-orderedcollectionpage
 type OrderedCollectionPage struct {
 	// ID provides the globally unique identifier for the object.
 	ID ID `jsonld:"id,omitempty"`

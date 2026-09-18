@@ -52,6 +52,12 @@ type CollectionInterface interface {
 	Contains(Item) bool
 }
 
+// Collection is a subtype of Object that represents ordered or unordered sets of Object or Link instances.
+//
+// Refer to the Activity Streams 2.0 Core specification for a complete description of the Collection type.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-collection
+//
 // Collection objects are a specialization of the base Object that serve as a container for other Objects or Links.
 //
 // In addition to the base properties inherited by all Objects, all Collection types contain the additional properties:
@@ -61,7 +67,7 @@ type CollectionInterface interface {
 // Collection whose items are always ordered. In the JSON serialization, the unordered items of a Collection are
 // represented using the items property while ordered items are represented using the orderedItems property.
 //
-// https://www.w3.org/TR/activitystreams-core/#collections
+// https://www.w3.org/TR/activitystreams-core/#collection
 type Collection struct {
 	// ID provides the globally unique identifier for the object.
 	ID ID `jsonld:"id,omitempty"`

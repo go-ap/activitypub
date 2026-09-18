@@ -11,6 +11,17 @@ import (
 )
 
 // Place represents a logical or physical location. See 5.3 Representing Places for additional information.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-place
+//
+// The Place object is used to represent both physical and logical locations.
+// While numerous existing vocabularies exist for describing locations in a variety of ways,
+// inconsistencies and incompatibilities between those vocabularies make it difficult to achieve appropriate
+// interoperability between implementations. The Place object is included within the Activity vocabulary
+// to provide a minimal, interoperable starting point for describing locations consistently across
+// Activity Streams 2.0 implementations.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#places
 type Place struct {
 	// ID provides the globally unique identifier for the object.
 	ID ID `jsonld:"id,omitempty"`

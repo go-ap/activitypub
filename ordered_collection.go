@@ -12,6 +12,14 @@ import (
 
 // OrderedCollection is a subtype of Collection in which members of the logical
 // collection are assumed to always be strictly ordered.
+//
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-orderedcollection
+//
+// The OrderedCollection type MAY be used to identify a Collection whose items are always ordered.
+// In the JSON serialization, the unordered items of a Collection are represented using the items property while
+// ordered items are represented using the orderedItems property.
+//
+// https://www.w3.org/TR/activitystreams-core/#dfn-orderedcollection
 type OrderedCollection struct {
 	// ID provides the globally unique identifier for the object.
 	ID ID `jsonld:"id,omitempty"`
@@ -127,7 +135,7 @@ type (
 	// require authentication for non-owner users, if they can access the inbox at all.
 	InboxStream = OrderedCollection
 
-	// LikedCollection is a list of every object from all of the actor's Like activities,
+	// LikedCollection is a list of every object from all the actor's Like activities,
 	// added as a side effect. The liked collection MUST be either an OrderedCollection or
 	// a Collection and MAY be filtered on privileges of an authenticated user or as
 	// appropriate when no authentication is given.
