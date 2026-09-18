@@ -2,6 +2,8 @@ package activitypub
 
 import (
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestActivityVocabularyTypes_EmptyTypes(t *testing.T) {
@@ -656,6 +658,82 @@ func TestAnyTypes(t *testing.T) {
 			got := AnyTypes(tt.toMatch...).Match(tt.toCheck...)
 			if got != tt.want {
 				t.Errorf("AnyTypes().Match() = %t, want %t", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestActivityVocabularyType_AsTypes(t *testing.T) {
+	tests := []struct {
+		name string
+		a    ActivityVocabularyType
+		want ActivityVocabularyTypes
+	}{
+		{
+			name: "empty",
+			a:    "",
+			want: ActivityVocabularyTypes{},
+		},
+		{
+			name: "random value",
+			a:    "test",
+			want: ActivityVocabularyTypes{"test"},
+		},
+		{
+			name: "create",
+			a:    CreateType,
+			want: ActivityVocabularyTypes{CreateType},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.AsTypes(); !cmp.Equal(got, tt.want) {
+				t.Errorf("AsTypes() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestActivityVocabularyTypes_AsTypes(t *testing.T) {
+	tests := []struct {
+		name string
+		a    ActivityVocabularyTypes
+		want ActivityVocabularyTypes
+	}{
+		{
+			name: "empty",
+			want: ActivityVocabularyTypes{},
+		},
+		{
+			name: "emptyType",
+			a:    ActivityVocabularyTypes{""},
+			want: ActivityVocabularyTypes{},
+		},
+		{
+			name: "empty and Like",
+			a:    ActivityVocabularyTypes{"", LikeType},
+			want: ActivityVocabularyTypes{LikeType},
+		},
+		{
+			name: "random single value",
+			a:    ActivityVocabularyTypes{"test"},
+			want: ActivityVocabularyTypes{"test"},
+		},
+		{
+			name: "random multiple values",
+			a:    ActivityVocabularyTypes{"test", "test123"},
+			want: ActivityVocabularyTypes{"test", "test123"},
+		},
+		{
+			name: "create update",
+			a:    ActivityVocabularyTypes{CreateType, UpdateType},
+			want: ActivityVocabularyTypes{CreateType, UpdateType},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.AsTypes(); !cmp.Equal(got, tt.want) {
+				t.Errorf("AsTypes() = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

@@ -87,7 +87,13 @@ func EmptyTypes(tt ...ActivityVocabularyType) bool {
 }
 
 func (at ActivityVocabularyTypes) AsTypes() ActivityVocabularyTypes {
-	return at
+	res := make(ActivityVocabularyTypes, 0, len(at))
+	for _, tt := range at {
+		if tt != NilType {
+			res = append(res, tt)
+		}
+	}
+	return res
 }
 
 // Match returns whether the receiver matches the ActivityVocabularyType arguments.
