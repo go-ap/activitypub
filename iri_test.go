@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"reflect"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestIRI_GetLink(t *testing.T) {
@@ -523,6 +525,42 @@ func TestIRIs_Remove(t *testing.T) {
 				if !tt.items.Contains(it) {
 					t.Errorf("Post Remove() unable to find %s in %T Items %v", it.GetLink(), tt.items, tt.items)
 				}
+			}
+		})
+	}
+}
+
+func TestIRIs_Normalize(t *testing.T) {
+	tests := []struct {
+		name string
+		i    IRIs
+		want Item
+	}{
+		{
+			name: "empty",
+			i:    nil,
+			want: nil,
+		},
+		{
+			name: "single IRI",
+			i:    IRIs{"http://example.com"},
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "multiple IRIs",
+			i:    IRIs{"http://example.com/1", "http://example.com/2"},
+			want: IRIs{"http://example.com/1", "http://example.com/2"},
+		},
+		{
+			name: "same IRI",
+			i:    IRIs{"http://example.com/1", "http://example.com/1"},
+			want: IRIs{"http://example.com/1", "http://example.com/1"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Normalize(); !cmp.Equal(got, tt.want) {
+				t.Errorf("Normalize() = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

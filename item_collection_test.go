@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"strconv"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestItemCollection_Append(t *testing.T) {
@@ -601,4 +603,55 @@ func ExampleOnItemCollection() {
 	//     : [activitypub.Place { id: http://example.com/home } activitypub.Tombstone { id: http://example.com/missing } activitypub.Question[Question] {  }]
 	//
 	// Others: [activitypub.Actor[Person] { id: http://example.com/~jdoe, name: Actor #0 } activitypub.Actor[Group] { id: http://example.com/the-samples, name: Actor #1 }]
+}
+
+func TestItemCollection_Normalize(t *testing.T) {
+	tests := []struct {
+		name string
+		i    ItemCollection
+		want Item
+	}{
+		{
+			name: "empty",
+			i:    nil,
+			want: nil,
+		},
+		{
+			name: "single IRI",
+			i:    ItemCollection{IRI("http://example.com")},
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "multiple IRIs",
+			i:    ItemCollection{IRI("http://example.com/1"), IRI("http://example.com/2")},
+			want: ItemCollection{IRI("http://example.com/1"), IRI("http://example.com/2")},
+		},
+		{
+			name: "single Object",
+			i:    ItemCollection{Object{ID: "http://example.com"}},
+			want: Object{ID: "http://example.com"},
+		},
+		{
+			name: "multiple Objects",
+			i:    ItemCollection{Activity{ID: "http://example.com/a1"}, Place{ID: "http://example.com/home"}},
+			want: ItemCollection{Activity{ID: "http://example.com/a1"}, Place{ID: "http://example.com/home"}},
+		},
+		{
+			name: "mixed Objects and IRIs",
+			i:    ItemCollection{Activity{ID: "http://example.com/a1"}, IRI("http://example.com/~jdoe"), Place{ID: "http://example.com/home"}, IRI("http://example.com")},
+			want: ItemCollection{Activity{ID: "http://example.com/a1"}, IRI("http://example.com/~jdoe"), Place{ID: "http://example.com/home"}, IRI("http://example.com")},
+		},
+		{
+			name: "same ID objects",
+			i:    ItemCollection{Activity{ID: "http://example.com/a1"}, Object{ID: "http://example.com/a1"}},
+			want: ItemCollection{Activity{ID: "http://example.com/a1"}, Object{ID: "http://example.com/a1"}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Normalize(); !cmp.Equal(got, tt.want) {
+				t.Errorf("Normalize() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }

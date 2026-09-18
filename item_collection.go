@@ -146,11 +146,10 @@ func itemCollectionDeduplication(recCols ...*ItemCollection) ItemCollection {
 				continue
 			}
 			var testIt IRI
-			if IsObject(cur) {
-				testIt = cur.GetLink()
-			} else if IsIRI(cur) {
+			if (IsObject(cur) && cur.GetLink() != "") || IsIRI(cur) {
 				testIt = cur.GetLink()
 			} else {
+				rec = append(rec, cur)
 				continue
 			}
 			for _, it := range rec {
@@ -192,30 +191,32 @@ func ToItemCollection(it LinkOrIRI) (*ItemCollection, error) {
 		return i, nil
 	case ItemCollection:
 		return &i, nil
+	case OrderedCollection:
+		return &i.OrderedItems, nil
 	case *OrderedCollection:
+		return &i.OrderedItems, nil
+	case OrderedCollectionPage:
 		return &i.OrderedItems, nil
 	case *OrderedCollectionPage:
 		return &i.OrderedItems, nil
 	case *Collection:
 		return &i.Items, nil
+	case Collection:
+		return &i.Items, nil
 	case *CollectionPage:
+		return &i.Items, nil
+	case CollectionPage:
 		return &i.Items, nil
 	case IRI:
 		return &ItemCollection{i}, nil
 	case *IRI:
 		return &ItemCollection{*i}, nil
 	case IRIs:
-		iris := make(ItemCollection, len(i))
-		for j, ob := range i {
-			iris[j] = ob
-		}
-		return &iris, nil
+		col := i.Collection()
+		return &col, nil
 	case *IRIs:
-		iris := make(ItemCollection, len(*i))
-		for j, ob := range *i {
-			iris[j] = ob
-		}
-		return &iris, nil
+		col := i.Collection()
+		return &col, nil
 	default:
 	}
 	return reflectItemToType[ItemCollection](it)

@@ -108,9 +108,34 @@ func TestFlatten(t *testing.T) {
 			want: IRI("http://example.com"),
 		},
 		{
-			name: "items",
+			name: "transient object",
+			it:   &Object{Type: NoteType},
+			want: &Object{Type: NoteType},
+		},
+		{
+			name: "iris as items",
 			it:   ItemCollection{IRI("http://example.com"), IRI("http://jdoe.example.com")},
 			want: ItemCollection{IRI("http://example.com"), IRI("http://jdoe.example.com")},
+		},
+		{
+			name: "same IRI multiple times",
+			it:   ItemCollection{IRI("http://example.com"), IRI("http://example.com")},
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "Object with same ID as IRI",
+			it:   ItemCollection{&Object{ID: "http://example.com"}, IRI("http://example.com")},
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "Objects with same ID",
+			it:   ItemCollection{&Object{ID: "http://example.com"}, &Activity{ID: "http://example.com"}},
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "object and transient object",
+			it:   ItemCollection{&Object{ID: "http://example.com"}, &Activity{Type: CreateType}},
+			want: ItemCollection{IRI("http://example.com"), &Activity{Type: CreateType}},
 		},
 		{
 			name: "ordered collection",

@@ -290,6 +290,16 @@ func (i *IRIs) Count() uint {
 	return uint(len(*i))
 }
 
+func (i IRIs) Normalize() Item {
+	if len(i) == 0 {
+		return nil
+	}
+	if len(i) == 1 {
+		return i[0]
+	}
+	return i
+}
+
 // Contains verifies if IRIs array contains the received one
 func (i IRIs) Contains(r Item) bool {
 	if len(i) == 0 {

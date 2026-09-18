@@ -36,12 +36,20 @@ func FlattenItemCollection(col ItemCollection) ItemCollection {
 	if len(col) == 0 {
 		return nil
 	}
-	iris := col.IRIs()
-	if len(iris) == 0 {
+
+	res := make(ItemCollection, 0, len(col))
+	// NOTE(marius): we use a slightly different logic than col.IRIs()
+	//  because we have to keep track of transient objects.
+	for _, it := range col {
+		if IsNil(it) {
+			continue
+		}
+		res = append(res, Flatten(it))
+	}
+	if len(res) == 0 {
 		return nil
 	}
-	result := iris.Collection()
-	return ItemCollectionDeduplication(&result)
+	return ItemCollectionDeduplication(&res)
 }
 
 // FlattenCollection flattens a Collection's objects to their respective IRIs
@@ -90,12 +98,14 @@ func FlattenObjectProperties(o *Object) *Object {
 	o.Shares = Flatten(o.Shares)
 	o.Likes = Flatten(o.Likes)
 	o.AttributedTo = Flatten(o.AttributedTo)
+	o.InReplyTo = Flatten(o.InReplyTo)
 	o.To = FlattenItemCollection(o.To)
 	o.Bto = FlattenItemCollection(o.Bto)
 	o.CC = FlattenItemCollection(o.CC)
 	o.BCC = FlattenItemCollection(o.BCC)
 	o.Audience = FlattenItemCollection(o.Audience)
-	// o.Tag = FlattenItemCollection(o.Tag)
+	o.Tag = Flatten(o.Tag) // NOTE(marius): we originally had tags not normalized and kept inline
+	o.Attachment = Flatten(o.Attachment)
 	return o
 }
 
@@ -142,5 +152,9 @@ func Flatten(it Item) Item {
 		})
 		return it
 	}
-	return it.GetLink()
+	// NOTE(marius): we can't flatten a transient object, that doesn't have a valid ID
+	if it.GetID() != "" {
+		return it.GetID()
+	}
+	return it
 }

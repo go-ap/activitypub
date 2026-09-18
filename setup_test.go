@@ -11,7 +11,7 @@ func areErrors(a, b any) bool {
 	return ok1 && ok2
 }
 
-func compareErrors(x, y interface{}) bool {
+func compareErrors(x, y any) bool {
 	xe := x.(error)
 	ye := y.(error)
 	if errors.Is(xe, ye) || errors.Is(ye, xe) {
