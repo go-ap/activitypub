@@ -1337,7 +1337,7 @@ func ExampleObject_initialization() {
 	// object1 is a struct literal which can be operated on directly.
 	// For example, we can set the Content
 	object1 := Object{}
-	object1.Content = DefaultNaturalLanguage("Lorem ipsum")
+	object1.Content = DefaultLangValue("Lorem ipsum")
 	fmt.Printf("Object1: %v\n", object1)
 
 	// object2 is wrapped in an Item interface.
@@ -1351,7 +1351,7 @@ func ExampleObject_initialization() {
 
 	_ = OnObject(object2, func(object *Object) error {
 		// In order to operate on it, we must wrap it in a call to OnObject
-		object.Content = DefaultNaturalLanguage("Lorem ipsum")
+		object.Content = DefaultLangValue("Lorem ipsum")
 		return nil
 	})
 	fmt.Printf("Object2: %v\n", object2)
@@ -1371,7 +1371,7 @@ func ExampleToObject() {
 	// One additional **very important** consideration is about the data type of the original.
 	// If it is a struct pointer, modifying the return value will modify the original, which
 	// is what we usually want from this API.
-	object1 := &Object{ID: "http://example.com/1", Type: NoteType, Name: DefaultNaturalLanguage("object1")}
+	object1 := &Object{ID: "http://example.com/1", Type: NoteType, Name: DefaultLangValue("object1")}
 	o1, _ := ToObject(object1)
 	o1.Name = nil
 	fmt.Printf("Object1: %v\n", object1)
@@ -1381,7 +1381,7 @@ func ExampleToObject() {
 	// the return value will not affect the original, which might have unexpected side effects.
 	// Here we wrap the Document type, which is a type alias to Object.
 	// There are other aliases for the remaining Object types: Audio, Video, Image, etc.
-	object2 := Document{ID: "http://example.com/2", Type: DocumentType, Name: DefaultNaturalLanguage("object2")}
+	object2 := Document{ID: "http://example.com/2", Type: DocumentType, Name: DefaultLangValue("object2")}
 	o2, _ := ToObject(object2)
 	o2.Name = nil
 	fmt.Printf("Object2: %v\n", object2)
@@ -1390,7 +1390,7 @@ func ExampleToObject() {
 	// The Place type is disjoint to Object, but it can still be converted, due to sharing
 	// the same memory shape for the common properties.
 	// The other disjoint Object types are: Profile, Relationship and Tombstone.
-	place := Place{ID: "http://example.com/ys", Type: PlaceType, Name: DefaultNaturalLanguage("Ys")}
+	place := Place{ID: "http://example.com/ys", Type: PlaceType, Name: DefaultLangValue("Ys")}
 	p, _ := ToObject(place)
 	p.Name = nil
 	fmt.Printf("Place: %v\n", place)
@@ -1398,9 +1398,9 @@ func ExampleToObject() {
 
 	// Here we see an Item instance wrapped around an Actor type.
 	// Unless you're initializing the values manually, the library deals only with instances of the Item interface.
-	var maybeActor Item = &Actor{ID: "http://example.com/~jdoe", Type: PersonType, Name: DefaultNaturalLanguage("John")}
+	var maybeActor Item = &Actor{ID: "http://example.com/~jdoe", Type: PersonType, Name: DefaultLangValue("John")}
 	a, _ := ToObject(maybeActor)
-	a.Name = DefaultNaturalLanguage("Jane")
+	a.Name = DefaultLangValue("Jane")
 	fmt.Printf("Actor: %v\n", maybeActor)
 	fmt.Printf("     : %v\n\n", a)
 
@@ -1423,7 +1423,7 @@ func ExampleToObject() {
 
 	// Due to the fact that they are disjoint, the only type that can't have an Object value extracted from is Link.
 	// Trying to do so results in an error.
-	var notObject Item = &Link{Type: LinkType, Name: DefaultNaturalLanguage("Eh?"), Href: "http://example.com/huh"}
+	var notObject Item = &Link{Type: LinkType, Name: DefaultLangValue("Eh?"), Href: "http://example.com/huh"}
 	no, err := ToObject(notObject)
 	fmt.Printf("NotObject: %v\n", notObject)
 	fmt.Printf("         : %v\n", no)
@@ -1467,7 +1467,7 @@ func ExampleToObject_returning() {
 
 	mangleItems := func(it Item) Item {
 		ob, _ := ToObject(it)
-		ob.Name = DefaultNaturalLanguage("Renamed")
+		ob.Name = DefaultLangValue("Renamed")
 
 		// This is a bug, when the "it" Item is of a wider type
 		// the extra information will be lost past this return.
@@ -1501,7 +1501,7 @@ func ExampleOnObject() {
 	_ = OnObject(object1, func(ob *Object) error {
 		// Instead we can wrap it in an OnObject() call in which
 		// we can modify it, and the changes will be visible outside its scope.
-		ob.Name = DefaultNaturalLanguage("An object")
+		ob.Name = DefaultLangValue("An object")
 		return nil
 	})
 	fmt.Printf("Object1: %v\n", object1)
@@ -1511,7 +1511,7 @@ func ExampleOnObject() {
 	// pointer to a **copy** of the struct, and they won't propagate outside the function's call.
 	var object2 Item = Object{ID: "http://example.com/2", Type: DocumentType}
 	_ = OnObject(object2, func(ob *Object) error {
-		ob.Name = DefaultNaturalLanguage("Another object")
+		ob.Name = DefaultLangValue("Another object")
 		return nil
 	})
 	fmt.Printf("Object2: %v\n", object2)
@@ -1519,8 +1519,8 @@ func ExampleOnObject() {
 	// We can modify types disjoint to Object, like Place, but only their common properties.
 	var place Item = &Place{ID: "http://example.com/ys", Type: PlaceType}
 	_ = OnObject(place, func(ob *Object) error {
-		ob.Name = DefaultNaturalLanguage("Ys")
-		ob.Summary = DefaultNaturalLanguage("A mythical city on the coast of Brittany")
+		ob.Name = DefaultLangValue("Ys")
+		ob.Summary = DefaultLangValue("A mythical city on the coast of Brittany")
 		// We can't access Place specific properties, so
 		// uncommenting this will trigger a compiler error.
 		//ob.Latitude = 0.0
@@ -1568,7 +1568,7 @@ func ExampleOnObject_item_slices() {
 	// Operating any changes to the object, will be applied in bulk to
 	// all the slice elements, which sometimes is not what you want.
 	_ = OnObject(many, func(ob *Object) error {
-		ob.Name = DefaultNaturalLanguage("Stompy")
+		ob.Name = DefaultLangValue("Stompy")
 		return nil
 	})
 

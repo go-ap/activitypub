@@ -33,11 +33,15 @@ type (
 // https://www.w3.org/TR/activitystreams-core/#naturalLanguageValues
 type NaturalLanguageValues map[LangRef]Content
 
+func DefaultRefValue[T ~string](v T) LangRefValue {
+	return LangRefValue{DefaultLang, []byte(v)}
+}
+
 func RefValue[T ~string](l LangRef, v T) LangRefValue {
 	return LangRefValue{l, []byte(v)}
 }
 
-func NaturalLanguageValuesNew(values ...LangRefValue) NaturalLanguageValues {
+func naturalLangValNew(values ...LangRefValue) NaturalLanguageValues {
 	n := make(NaturalLanguageValues)
 	for _, val := range values {
 		n[val.Ref] = val.Value
@@ -45,8 +49,12 @@ func NaturalLanguageValuesNew(values ...LangRefValue) NaturalLanguageValues {
 	return n
 }
 
-func DefaultNaturalLanguage[T ~string](content T) NaturalLanguageValues {
-	return NaturalLanguageValuesNew(DefaultLangRef(content))
+func LangValues(ref ...LangRefValue) NaturalLanguageValues {
+	return naturalLangValNew(ref...)
+}
+
+func DefaultLangValue[T ~string](content T) NaturalLanguageValues {
+	return naturalLangValNew(DefaultLangRef(content))
 }
 
 func (n NaturalLanguageValues) String() string {

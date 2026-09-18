@@ -1652,7 +1652,7 @@ func ExampleOnActivity() {
 		// a call to OnIntransitiveActivity(),
 		a.Object = IRI("http://example.com/ys")
 		// or OnObject().
-		a.Summary = DefaultNaturalLanguage("I like it here!")
+		a.Summary = DefaultLangValue("I like it here!")
 		return nil
 	})
 	fmt.Printf("Activity1: %v\n", activity1)

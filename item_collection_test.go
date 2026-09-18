@@ -590,7 +590,7 @@ func ExampleOnItemCollection() {
 	_ = OnItemCollection(&others, func(col *ItemCollection) error {
 		for i, it := range *col {
 			_ = OnActor(it, func(act *Actor) error {
-				act.Name = DefaultNaturalLanguage("Actor #" + strconv.Itoa(i))
+				act.Name = DefaultLangValue("Actor #" + strconv.Itoa(i))
 				return nil
 			})
 		}

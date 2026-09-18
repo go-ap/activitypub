@@ -261,7 +261,7 @@ func TestNaturalLanguageValue_First(t *testing.T) {
 }
 
 func TestNaturalLanguageValueNew(t *testing.T) {
-	n := NaturalLanguageValuesNew()
+	n := naturalLangValNew()
 
 	if len(n) != 0 {
 		t.Errorf("Initial %T should have length 0, received %d", n, len(n))
@@ -925,6 +925,56 @@ func TestLangRefValue_UnmarshalJSON(t *testing.T) {
 			l := LangRefValue{}
 			if _ = l.UnmarshalJSON(tt.data); !reflect.DeepEqual(l, tt.want) {
 				t.Errorf("UnmarshalJSON() got = %+v, want %+v", l, tt.want)
+			}
+		})
+	}
+}
+
+func TestLangValue(t *testing.T) {
+	type testCase struct {
+		name string
+		refs []LangRefValue
+		want NaturalLanguageValues
+	}
+	tests := []testCase{
+		{
+			name: "empty",
+		},
+		{
+			name: "default",
+			refs: []LangRefValue{DefaultRefValue("ana")},
+			want: NaturalLanguageValues{
+				DefaultLang: Content("ana"),
+			},
+		},
+		{
+			name: "default and eng",
+			refs: []LangRefValue{DefaultRefValue("ana"), RefValue(English, "anne")},
+			want: NaturalLanguageValues{
+				DefaultLang: Content("anne"),
+			},
+		},
+		{
+			name: "default and fr",
+			refs: []LangRefValue{DefaultRefValue("ann"), RefValue(French, "anne")},
+			want: NaturalLanguageValues{
+				DefaultLang: Content("ann"),
+				French:      Content("anne"),
+			},
+		},
+		{
+			name: "en and fr",
+			refs: []LangRefValue{RefValue(English, "ann"), RefValue(French, "anne")},
+			want: NaturalLanguageValues{
+				English: Content("ann"),
+				French:  Content("anne"),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := LangValues(tt.refs...); !cmp.Equal(got, tt.want) {
+				t.Errorf("LangValue() = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

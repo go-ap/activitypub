@@ -164,7 +164,7 @@ func ExampleToLink() {
 
 	// For Link, and it's associated type alias Mention, we can use the ToLink() to get
 	// at the wrapped value.
-	var link1 Item = &Mention{Type: MentionType, Name: DefaultNaturalLanguage("Jane Doe")}
+	var link1 Item = &Mention{Type: MentionType, Name: DefaultLangValue("Jane Doe")}
 	l1, _ := ToLink(link1)
 	l1.Href = "http://example.com/~jdoe"
 	fmt.Printf("Link1: %v\n", link1)
@@ -172,7 +172,7 @@ func ExampleToLink() {
 
 	// If the type wrapped in the interface is only a struct literal, modifying
 	// the return value will not affect the original, which might have unexpected side effects.
-	link2 := Link{Href: "http://example.com/2", Type: LinkType, Name: DefaultNaturalLanguage("link2")}
+	link2 := Link{Href: "http://example.com/2", Type: LinkType, Name: DefaultLangValue("link2")}
 	l2, _ := ToLink(link2)
 	l2.Name = nil
 	fmt.Printf("Link2: %v\n", link2)
@@ -180,7 +180,7 @@ func ExampleToLink() {
 
 	// Because the Link and Object types are disjoint, an Object type can't be converted to a Link type,
 	// and trying results in an error.
-	var notLink Item = &Object{Type: LinkType, Name: DefaultNaturalLanguage("Eh?")}
+	var notLink Item = &Object{Type: LinkType, Name: DefaultLangValue("Eh?")}
 	na, err := ToLink(notLink)
 	fmt.Printf("NotLink: %v\n", notLink)
 	fmt.Printf("       : %v\n", na)

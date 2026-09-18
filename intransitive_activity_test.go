@@ -663,7 +663,7 @@ func ExampleOnIntransitiveActivity() {
 		// Similarly, as we've seen in the ToIntransitiveActivity() example, we can also
 		// modify the properties in common with the Object type, without needing
 		// a call to OnObject().
-		ia.Summary = DefaultNaturalLanguage("I made it!")
+		ia.Summary = DefaultLangValue("I made it!")
 		return nil
 	})
 	fmt.Printf("IntransitiveActivity1: %v\n", intransitiveActivity1)

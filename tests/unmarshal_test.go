@@ -396,8 +396,8 @@ var allTests = testMaps{
 				&pub.Object{
 					ID:           pub.ID("http://example.com/outbox/53c6fb47"),
 					Type:         pub.ArticleType,
-					Name:         pub.DefaultNaturalLanguage("Example title"),
-					Content:      pub.DefaultNaturalLanguage("Example content!"),
+					Name:         pub.DefaultLangValue("Example title"),
+					Content:      pub.DefaultLangValue("Example content!"),
 					URL:          pub.IRI("http://example.com/53c6fb47"),
 					MediaType:    pub.MimeType("text/markdown"),
 					Published:    time.Date(2018, time.July, 5, 16, 46, 44, 0, zLoc),

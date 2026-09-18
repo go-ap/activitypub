@@ -734,7 +734,7 @@ func ExampleActor_initialization() {
 	_ = OnActor(actor2, func(actor *Actor) error {
 		// In order to operate on it, we must wrap it in a call to OnActor
 		actor.URL = IRI("http://example.com/~jdoe")
-		actor.PreferredUsername = DefaultNaturalLanguage("jdoe")
+		actor.PreferredUsername = DefaultLangValue("jdoe")
 		return nil
 	})
 	fmt.Printf("Actor2: %v\n", actor2)
@@ -760,16 +760,16 @@ func ExampleToActor() {
 	// uncommenting the following line will trigger a compiler error:
 	//actor1.PreferredUsername = DefaultNaturalLanguage("app")
 	a1, _ := ToActor(actor1)
-	a1.PreferredUsername = DefaultNaturalLanguage("app")
+	a1.PreferredUsername = DefaultLangValue("app")
 	fmt.Printf("Actor1: %v\n", actor1)
 	fmt.Printf("      : %v\n\n", a1)
 
 	// Here we see another valid, but maybe slightly misleading inline initialization.
-	var actor2 Item = Actor{ID: "http://example.com/~jdoe", Type: PersonType, Name: DefaultNaturalLanguage("Jane Doe")}
+	var actor2 Item = Actor{ID: "http://example.com/~jdoe", Type: PersonType, Name: DefaultLangValue("Jane Doe")}
 	a2, _ := ToActor(actor2)
-	a2.PreferredUsername = DefaultNaturalLanguage("jdoe")
+	a2.PreferredUsername = DefaultLangValue("jdoe")
 	// We can still access the properties common with the Object type
-	a2.Name = DefaultNaturalLanguage("Jane Doe Phd")
+	a2.Name = DefaultLangValue("Jane Doe Phd")
 	// However since the Item interface is not wrapping a pointer to Actor,
 	// these changes won't be reflected onto the actor2 value.
 	fmt.Printf("Actor2: %v\n", actor2)
@@ -838,12 +838,12 @@ func ExampleOnActor() {
 	_ = OnActor(actor1, func(act *Actor) error {
 		// Instead we can wrap it in an OnActor() call in which
 		// we can modify it, and the changes will be visible outside its scope.
-		act.PreferredUsername = DefaultNaturalLanguage("jdoe")
+		act.PreferredUsername = DefaultLangValue("jdoe")
 
 		// Similarly, as we've seen in the ToActor() example, we can also modify
 		// the properties in common with the Object type, without needing
 		// a call to OnObject/ToObject.
-		act.Name = DefaultNaturalLanguage("John Doe")
+		act.Name = DefaultLangValue("John Doe")
 		return nil
 	})
 	fmt.Printf("Actor1: %v\n", actor1)
