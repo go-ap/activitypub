@@ -404,27 +404,17 @@ func emptyByType(it ObjectOrLink) bool {
 	return notEmpty
 }
 
-// DerefItem unpacks an Item into an ItemCollection.
-// If the Item is a slice type, like [IRIs], or [ItemCollection], it returns an [ItemCollection] corresponding to that
+// DerefItem wraps an Item into an ItemCollection.
+// If the Item is a slice type, like [IRIs], or [ItemCollection], it returns the [ItemCollection] corresponding to that
 func DerefItem(it Item) ItemCollection {
 	if IsNil(it) {
 		return nil
 	}
-
-	var items ItemCollection
-	switch {
-	case IsIRIs(it):
-		if col, err := ToIRIs(it); err == nil {
-			items = col.Collection()
-		}
-	case IsItemCollection(it):
-		if col, err := ToItemCollection(it); err == nil {
-			items = *col
-		}
-	default:
-		items = ItemCollection{it}
-	}
-	return items
+	col := make(ItemCollection, 0)
+	_ = OnItem(it, func(item Item) error {
+		return col.Append(item)
+	})
+	return col
 }
 
 // Clone returns a copy of item
