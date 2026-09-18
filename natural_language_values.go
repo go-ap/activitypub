@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"io"
+	"slices"
 	"strings"
 	"unicode/utf8"
 
@@ -458,38 +459,41 @@ func (n NaturalLanguageValues) Format(s fmt.State, verb rune) {
 	if cnt == 0 {
 		s.Write([]byte("-"))
 	}
+	if cnt == 1 {
+		n.First().Format(s, verb)
+		return
+	}
+	sl := make([]LangRefValue, 0, len(n))
+	for l, v := range n {
+		sl = append(sl, LangRefValue{l, v})
+	}
+	slices.SortFunc(sl, func(a, b LangRefValue) int {
+		return strings.Compare(a.Ref.String(), b.Ref.String())
+	})
 	switch verb {
 	case 's', 'q':
-		if cnt == 1 {
-			n.First().Format(s, verb)
-		} else {
-			_, _ = io.WriteString(s, "[")
-			ii := 0
-			for _, nn := range n {
-				nn.Format(s, verb)
-				if ii < cnt-1 {
-					_, _ = io.WriteString(s, " ")
-				}
-				ii++
+		_, _ = io.WriteString(s, "[ ")
+		ii := 0
+		for _, nn := range sl {
+			nn.Value.Format(s, verb)
+			if ii < cnt-1 {
+				_, _ = io.WriteString(s, " ")
 			}
-			_, _ = io.WriteString(s, "]")
+			ii++
 		}
+		_, _ = io.WriteString(s, " ]")
 	case 'v':
-		if cnt == 1 {
-			n.First().Format(s, verb)
-		} else {
-			_, _ = io.WriteString(s, "[")
-			ii := 0
-			for l, nn := range n {
-				_, _ = io.WriteString(s, l.String()+": ")
-				nn.Format(s, verb)
-				if ii < cnt-1 {
-					_, _ = io.WriteString(s, " ")
-				}
-				ii++
+		_, _ = io.WriteString(s, "[ ")
+		ii := 0
+		for _, nn := range sl {
+			_, _ = io.WriteString(s, nn.Ref.String()+": ")
+			nn.Value.Format(s, verb)
+			if ii < cnt-1 {
+				_, _ = io.WriteString(s, " ")
 			}
-			_, _ = io.WriteString(s, "]")
+			ii++
 		}
+		_, _ = io.WriteString(s, " ]")
 	}
 }
 

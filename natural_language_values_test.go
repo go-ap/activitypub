@@ -603,7 +603,7 @@ func TestContent_UnmarshalText(t *testing.T) {
 	}
 }
 
-func gobValue(a interface{}) []byte {
+func gobValue(a any) []byte {
 	b := bytes.Buffer{}
 	gg := gob.NewEncoder(&b)
 	_ = gg.Encode(a)
@@ -1001,6 +1001,6 @@ func ExampleNaturalLanguageValues_initialize() {
 	fmt.Printf("Fox2: %#v\n", fox2)
 
 	// Output:
-	// Fox1: [en: The brown fox jumped fr: Le renard brun a sauté de: Der braune Fuchs sprang]
-	// Fox2: [en: The brown fox fr: Le renard brun]
+	// Fox1: [ de: Der braune Fuchs sprang en: The brown fox jumped fr: Le renard brun a sauté ]
+	// Fox2: [ en: The brown fox fr: Le renard brun ]
 }
