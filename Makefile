@@ -8,7 +8,6 @@ MAKEFLAGS += --no-builtin-rules
 GO ?= go
 TEST := $(GO) test
 TEST_FLAGS ?= -v
-TEST_TARGET ?= .
 GO111MODULE = on
 PROJECT_NAME := $(shell basename $(PWD))
 
@@ -20,17 +19,13 @@ go.sum: go.mod
 	$(GO) mod tidy
 
 test: go.sum
-	@
-	$(TEST) $(TEST_FLAGS) -coverpkg github.com/go-ap/activitypub -cover -json $(TEST_TARGET) > tests.json || true
-	$(TEST) $(TEST_FLAGS) -coverpkg github.com/go-ap/activitypub -cover -json ./tests >> tests.json || true
-	go tool tparse -file tests.json
+	$(TEST) $(TEST_FLAGS) -coverpkg github.com/go-ap/activitypub -cover -json ./... | go tool tparse
 
 coverage: go.sum clean
-	@mkdir ./_coverage
-	$(TEST) $(TEST_FLAGS) -coverpkg github.com/go-ap/activitypub -covermode=count -args -test.gocoverdir="$(PWD)/_coverage" ./tests > /dev/null
-	$(TEST) $(TEST_FLAGS) -coverpkg github.com/go-ap/activitypub -covermode=count -args -test.gocoverdir="$(PWD)/_coverage" $(TEST_TARGET) > /dev/null
-	$(GO) tool covdata percent -i=./_coverage/ -o $(PROJECT_NAME).coverprofile
+	mkdir ./.coverage
+	$(TEST) $(TEST_FLAGS) -coverpkg github.com/go-ap/activitypub -covermode=count -args -test.gocoverdir="$(PWD)/.coverage" ./... > /dev/null
+	$(GO) tool covdata percent -i=./.coverage/ -o $(PROJECT_NAME).coverprofile
 
 clean:
 	@$(RM) -v *.coverprofile
-	@$(RM) -r ./_coverage
+	@$(RM) -r ./.coverage
