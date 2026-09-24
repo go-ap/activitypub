@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -795,15 +796,36 @@ func ExampleOnItem() {
 	cnt := 0
 	_ = OnItem(heterogeneous, func(it Item) error {
 		fmt.Printf("%d: %v\n", cnt, it)
+
+		// NOTE(marius): we can operate on the items using the other OnXXX functions
+		// and the changes will be reflected outside our scope if they are pointers.
+		_ = OnObject(it, func(ob *Object) error {
+			ob.ID = IRI("http://example.com/" + strconv.Itoa(cnt))
+			return nil
+		})
 		cnt++
 		return nil
 	})
 	// For a more idiomatic way about handling an ItemCollection slice,
 	// see the OnItemCollection() example.
 
+	// NOTE(marius): we can print again the modified objects.
+	// We see that first element which is an IRI was not affected,
+	// because it wasn't convertable to an Object type,
+	// but it was still iterated over, as shown by the ID counter on the others.
+	_ = OnItem(heterogeneous, func(it Item) error {
+		fmt.Printf("%d: %v\n", cnt, it)
+		cnt++
+		return nil
+	})
+
 	// Output:
 	// 0: http://example.com
 	// 1: activitypub.Object[Image] { id: http://example.com/1 }
 	// 2: activitypub.Actor[Person] { id: http://example.com/~jdoe }
 	// 3: activitypub.Tombstone[Tombstone] { id: http://example.com/2, formerType: Note }
+	// 4: http://example.com
+	// 5: activitypub.Object[Image] { id: http://example.com/1 }
+	// 6: activitypub.Actor[Person] { id: http://example.com/2 }
+	// 7: activitypub.Tombstone[Tombstone] { id: http://example.com/3, formerType: Note }
 }
