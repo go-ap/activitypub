@@ -986,10 +986,10 @@ func CopyObjectProperties(to, from *Object) (*Object, error) {
 	to.Replies = replaceIfItem(to.Replies, from.Replies)
 	to.Likes = replaceIfItem(to.Likes, from.Likes)
 	to.Shares = replaceIfItem(to.Shares, from.Shares)
-	if to.Published.IsZero() && !from.Published.IsZero() {
+	if !from.Published.IsZero() {
 		to.Published = from.Published
 	}
-	if to.Updated.IsZero() && !from.Updated.IsZero() {
+	if !from.Updated.IsZero() {
 		to.Updated = from.Updated
 	}
 	if !from.StartTime.IsZero() {
