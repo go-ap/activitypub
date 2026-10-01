@@ -441,6 +441,12 @@ func Clone(it Item) Item {
 		t := make(ItemCollection, len(ob))
 		copy(t, ob)
 		n = &t
+	case Link:
+		t := ob
+		n = &t
+	case *Link:
+		t := *ob
+		n = &t
 	case *Object:
 		t := *ob
 		n = &t
