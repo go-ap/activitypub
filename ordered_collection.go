@@ -2,11 +2,11 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"time"
 	"unsafe"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -262,42 +262,12 @@ func (o OrderedCollection) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (o *OrderedCollection) UnmarshalBinary(data []byte) error {
-	return o.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (o OrderedCollection) MarshalBinary() ([]byte, error) {
-	return o.GobEncode()
-}
-
-// GobEncode
-func (o OrderedCollection) GobEncode() ([]byte, error) {
-	mm := make(map[string][]byte)
-	hasData, err := mapOrderedCollectionProperties(mm, o)
-	if err != nil {
-		return nil, err
-	}
-	if !hasData {
-		return []byte{}, nil
-	}
-	bb := bytes.Buffer{}
-	g := gob.NewEncoder(&bb)
-	if err := g.Encode(mm); err != nil {
-		return nil, err
-	}
-	return bb.Bytes(), nil
-}
-
-// GobDecode
-func (o *OrderedCollection) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-	mm, err := gobDecodeObjectAsMap(data)
-	if err != nil {
-		return err
-	}
-	return unmapOrderedCollectionProperties(mm, o)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // ToOrderedCollection

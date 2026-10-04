@@ -605,153 +605,8 @@ func TestContent_UnmarshalText(t *testing.T) {
 
 func gobValue(a any) []byte {
 	b := bytes.Buffer{}
-	gg := gob.NewEncoder(&b)
-	_ = gg.Encode(a)
+	_ = gob.NewEncoder(&b).Encode(a)
 	return b.Bytes()
-}
-
-func TestContent_GobEncode(t *testing.T) {
-	tests := []struct {
-		name    string
-		c       Content
-		want    []byte
-		wantErr bool
-	}{
-		{
-			name:    "empty",
-			c:       Content{},
-			want:    []byte{},
-			wantErr: false,
-		},
-		{
-			name:    "empty value",
-			c:       Content{'0'},
-			want:    gobValue([]byte{'0'}),
-			wantErr: false,
-		},
-		{
-			name:    "some text",
-			c:       Content{'a', 'n', 'a', ' ', 'a', 'r', 'e'},
-			want:    gobValue([]byte{'a', 'n', 'a', ' ', 'a', 'r', 'e'}),
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.c.GobEncode()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GobEncode() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GobEncode() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestContent_GobDecode(t *testing.T) {
-	tests := []struct {
-		name    string
-		c       Content
-		data    []byte
-		wantErr bool
-	}{
-		{
-			name:    "empty",
-			c:       Content{},
-			data:    []byte{},
-			wantErr: false,
-		},
-		{
-			name:    "empty value",
-			c:       Content{'0'},
-			data:    gobValue([]byte{'0'}),
-			wantErr: false,
-		},
-		{
-			name:    "some text",
-			c:       Content{'a', 'n', 'a', ' ', 'a', 'r', 'e'},
-			data:    gobValue([]byte{'a', 'n', 'a', ' ', 'a', 'r', 'e'}),
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.c.GobDecode(tt.data); (err != nil) != tt.wantErr {
-				t.Errorf("GobDecode() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
-
-func TestLangRef_GobDecode(t *testing.T) {
-	tests := []struct {
-		name    string
-		l       LangRef
-		data    []byte
-		wantErr bool
-	}{
-		{
-			name:    "empty",
-			l:       NilLangRef,
-			data:    []byte{},
-			wantErr: false,
-		},
-		{
-			name:    "some text",
-			l:       MakeRef([]byte("ana are")),
-			data:    gobValue([]byte("ana are")),
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.l.GobDecode(tt.data); (err != nil) != tt.wantErr {
-				t.Errorf("GobDecode() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
-
-func TestLangRefValue_GobDecode(t *testing.T) {
-	type fields struct {
-		Ref   LangRef
-		Value Content
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		data    []byte
-		wantErr bool
-	}{
-		{
-			name:    "empty",
-			fields:  fields{},
-			data:    gobValue(kv{}),
-			wantErr: false,
-		},
-		{
-			name: "some values",
-			fields: fields{
-				Ref:   MakeRef([]byte("ana")),
-				Value: Content("are mere"),
-			},
-			data:    gobValue(kv{K: []byte("ana"), V: []byte("are mere")}),
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LangRefValue{
-				Ref:   tt.fields.Ref,
-				Value: tt.fields.Value,
-			}
-			if err := l.GobDecode(tt.data); (err != nil) != tt.wantErr {
-				t.Errorf("GobDecode() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
 }
 
 func TestNaturalLanguageValues_GobEncode(t *testing.T) {
@@ -759,32 +614,30 @@ func TestNaturalLanguageValues_GobEncode(t *testing.T) {
 		name    string
 		n       NaturalLanguageValues
 		want    []byte
-		wantErr bool
+		wantErr error
 	}{
 		{
-			name:    "empty",
-			n:       NaturalLanguageValues{},
-			want:    []byte{},
-			wantErr: false,
+			name: "empty",
+			n:    NaturalLanguageValues{},
+			want: nil,
 		},
 		{
 			name: "some values",
 			n: NaturalLanguageValues{
 				Und: []byte("are mere"),
 			},
-			want:    gobValue([]kv{{K: []byte("und"), V: []byte("are mere")}}),
-			wantErr: false,
+			want: gobValue([]kv{{K: []byte("und"), V: []byte("are mere")}}),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := tt.n.GobEncode()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GobEncode() error = %v, wantErr %v", err, tt.wantErr)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("GobEncode() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GobEncode() got = %v, want %v", got, tt.want)
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("GobEncode() got = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}
@@ -795,27 +648,25 @@ func TestNaturalLanguageValues_GobDecode(t *testing.T) {
 		name    string
 		n       NaturalLanguageValues
 		data    []byte
-		wantErr bool
+		wantErr error
 	}{
 		{
-			name:    "empty",
-			n:       NaturalLanguageValues{},
-			data:    []byte{},
-			wantErr: false,
+			name: "empty",
+			n:    NaturalLanguageValues{},
+			data: []byte{},
 		},
 		{
 			name: "some values",
 			n: NaturalLanguageValues{
 				Und: []byte("are mere"),
 			},
-			data:    gobValue([]kv{{K: []byte("ana"), V: []byte("are mere")}}),
-			wantErr: false,
+			data: gobValue([]kv{{K: []byte("ana"), V: []byte("are mere")}}),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.n.GobDecode(tt.data); (err != nil) != tt.wantErr {
-				t.Errorf("GobDecode() error = %v, wantErr %v", err, tt.wantErr)
+			if err := tt.n.GobDecode(tt.data); !cmp.Equal(err, tt.wantErr) {
+				t.Errorf("GobDecode() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
 			}
 		})
 	}

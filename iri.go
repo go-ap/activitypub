@@ -121,6 +121,12 @@ func (i IRI) GobEncode() ([]byte, error) {
 	return []byte(i), nil
 }
 
+// GobDecode
+func (i *IRI) GobDecode(data []byte) error {
+	*i = IRI(data)
+	return nil
+}
+
 // GobEncode
 func (i IRIs) GobEncode() ([]byte, error) {
 	if len(i) == 0 {
@@ -136,12 +142,6 @@ func (i IRIs) GobEncode() ([]byte, error) {
 		return nil, err
 	}
 	return b.Bytes(), nil
-}
-
-// GobDecode
-func (i *IRI) GobDecode(data []byte) error {
-	*i = IRI(data)
-	return nil
 }
 
 func (i *IRIs) GobDecode(data []byte) error {

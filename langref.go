@@ -1,9 +1,7 @@
 package activitypub
 
 import (
-	"bytes"
-	"encoding/gob"
-
+	"github.com/go-ap/errors"
 	"golang.org/x/text/language"
 )
 
@@ -32,29 +30,12 @@ func MakeRef(raw []byte) LangRef {
 	return LangRef(language.Make(string(raw)))
 }
 
-func (l LangRef) GobEncode() ([]byte, error) {
-	if len(l.String()) == 0 {
-		return []byte{}, nil
-	}
-	b := new(bytes.Buffer)
-	gg := gob.NewEncoder(b)
-	if err := gobEncodeStringLikeType(gg, []byte(l.String())); err != nil {
-		return nil, err
-	}
-	return b.Bytes(), nil
+func (l LangRef) MarshalBinary() ([]byte, error) {
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
-func (l *LangRef) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		// NOTE(marius): this behaviour diverges from vanilla gob package
-		return nil
-	}
-	var bb []byte
-	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
-		return err
-	}
-	*l = MakeRef(bb)
-	return nil
+func (l *LangRef) UnmarshalBinary(data []byte) error {
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.

@@ -21,33 +21,15 @@ func Benchmark_ToIntransitiveActivityHappy(b *testing.B) {
 	}
 }
 
-func Benchmark_To_T_IntransitiveActivityHappy(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		To[IntransitiveActivity](maybeIntransitiveActivity)
-	}
-}
-
 func Benchmark_ToIntransitiveActivityNotHappy(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		ToIntransitiveActivity(notIntransitiveActivity)
 	}
 }
 
-func Benchmark_To_T_IntransitiveActivityNotHappy(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		To[IntransitiveActivity](notIntransitiveActivity)
-	}
-}
-
 func Benchmark_OnIntransitiveActivity(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		OnIntransitiveActivity(maybeIntransitiveActivity, fnIA)
-	}
-}
-
-func Benchmark_On_T_IntransitiveActivity(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		On[IntransitiveActivity](maybeIntransitiveActivity, fnIA)
 	}
 }
 

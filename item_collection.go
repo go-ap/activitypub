@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"slices"
 	"sort"
+
+	"github.com/go-ap/errors"
 )
 
 // ItemCollection represents an array of items
@@ -56,6 +58,14 @@ func (i ItemCollection) MarshalJSON() ([]byte, error) {
 	b := bytes.Buffer{}
 	JSONWriteItemCollectionValue(&b, i, true)
 	return b.Bytes(), nil
+}
+
+func (i ItemCollection) MarshalBinary() ([]byte, error) {
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
+}
+
+func (i *ItemCollection) UnmarshalBinary(data []byte) error {
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // Append facilitates adding elements to Item arrays
@@ -258,7 +268,7 @@ func ToIRIs(it LinkOrIRI) (*IRIs, error) {
 	default:
 		return reflectItemToType[IRIs](it)
 	}
-	return nil, ErrorInvalidType[IRIs](it)
+	return nil, ErrorInvalidType[ItemCollection](it)
 }
 
 // ItemsMatch

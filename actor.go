@@ -2,12 +2,12 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"io"
 	"time"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -246,40 +246,12 @@ func (p PublicKey) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (a *Actor) UnmarshalBinary(data []byte) error {
-	return a.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (a Actor) MarshalBinary() ([]byte, error) {
-	return a.GobEncode()
-}
-
-func (a Actor) GobEncode() ([]byte, error) {
-	mm := make(map[string][]byte)
-	hasData, err := mapActorProperties(mm, &a)
-	if err != nil {
-		return nil, err
-	}
-	if !hasData {
-		return []byte{}, nil
-	}
-	bb := bytes.Buffer{}
-	g := gob.NewEncoder(&bb)
-	if err := g.Encode(mm); err != nil {
-		return nil, err
-	}
-	return bb.Bytes(), nil
-}
-
-func (a *Actor) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-	mm, err := gobDecodeObjectAsMap(data)
-	if err != nil {
-		return err
-	}
-	return unmapActorProperties(mm, a)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 type (
@@ -567,71 +539,6 @@ func (a Actor) equal(with Actor) bool {
 		return false
 	}
 	return true
-}
-
-func (e Endpoints) GobEncode() ([]byte, error) {
-	return nil, nil
-}
-
-func (e *Endpoints) GobDecode(data []byte) error {
-	return nil
-}
-
-func (p PublicKey) GobEncode() ([]byte, error) {
-	var (
-		mm      = make(map[string][]byte)
-		err     error
-		hasData bool
-	)
-	if len(p.ID) > 0 {
-		if mm["id"], err = p.ID.GobEncode(); err != nil {
-			return nil, err
-		}
-		hasData = true
-	}
-	if len(p.PublicKeyPem) > 0 {
-		mm["publicKeyPem"] = []byte(p.PublicKeyPem)
-		hasData = true
-	}
-	if len(p.Owner) > 0 {
-		if mm["owner"], err = gobEncodeItem(p.Owner); err != nil {
-			return nil, err
-		}
-		hasData = true
-	}
-	if !hasData {
-		return []byte{}, nil
-	}
-	bb := bytes.Buffer{}
-	g := gob.NewEncoder(&bb)
-	if err := g.Encode(mm); err != nil {
-		return nil, err
-	}
-	return bb.Bytes(), nil
-}
-
-func (p *PublicKey) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-	mm, err := gobDecodeObjectAsMap(data)
-	if err != nil {
-		return err
-	}
-	if raw, ok := mm["id"]; ok {
-		if err = p.ID.GobDecode(raw); err != nil {
-			return err
-		}
-	}
-	if raw, ok := mm["owner"]; ok {
-		if err = p.Owner.GobDecode(raw); err != nil {
-			return err
-		}
-	}
-	if raw, ok := mm["publicKeyPem"]; ok {
-		p.PublicKeyPem = string(raw)
-	}
-	return nil
 }
 
 // WithActorFn represents a function type that can be used as a parameter for OnActor helper function

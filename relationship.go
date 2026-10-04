@@ -2,11 +2,11 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"io"
 	"time"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -185,42 +185,12 @@ func (r Relationship) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (r *Relationship) UnmarshalBinary(data []byte) error {
-	return r.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (r Relationship) MarshalBinary() ([]byte, error) {
-	return r.GobEncode()
-}
-
-// GobEncode
-func (r Relationship) GobEncode() ([]byte, error) {
-	mm := make(map[string][]byte)
-	hasData, err := mapRelationshipProperties(mm, r)
-	if err != nil {
-		return nil, err
-	}
-	if !hasData {
-		return []byte{}, nil
-	}
-	bb := bytes.Buffer{}
-	g := gob.NewEncoder(&bb)
-	if err := g.Encode(mm); err != nil {
-		return nil, err
-	}
-	return bb.Bytes(), nil
-}
-
-// GobDecode
-func (r *Relationship) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-	mm, err := gobDecodeObjectAsMap(data)
-	if err != nil {
-		return err
-	}
-	return unmapRelationshipProperties(mm, r)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // Recipients performs recipient de-duplication on the Relationship object's To, Bto, CC and BCC properties

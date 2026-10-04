@@ -2,12 +2,12 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"io"
 	"time"
 	"unsafe"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -214,40 +214,12 @@ func (i IntransitiveActivity) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (i *IntransitiveActivity) UnmarshalBinary(data []byte) error {
-	return i.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (i IntransitiveActivity) MarshalBinary() ([]byte, error) {
-	return i.GobEncode()
-}
-
-func (i IntransitiveActivity) GobEncode() ([]byte, error) {
-	mm := make(map[string][]byte)
-	hasData, err := mapIntransitiveActivityProperties(mm, &i)
-	if err != nil {
-		return nil, err
-	}
-	if !hasData {
-		return []byte{}, nil
-	}
-	bb := bytes.Buffer{}
-	g := gob.NewEncoder(&bb)
-	if err := g.Encode(mm); err != nil {
-		return nil, err
-	}
-	return bb.Bytes(), nil
-}
-
-func (i *IntransitiveActivity) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-	mm, err := gobDecodeObjectAsMap(data)
-	if err != nil {
-		return err
-	}
-	return unmapIntransitiveActivityProperties(mm, i)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // ToIntransitiveActivity tries to convert it Item to an IntransitiveActivity object

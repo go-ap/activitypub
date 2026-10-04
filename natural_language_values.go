@@ -662,29 +662,12 @@ func (c *Content) UnmarshalText(data []byte) error {
 	return nil
 }
 
-func (c Content) GobEncode() ([]byte, error) {
-	if len(c) == 0 {
-		return []byte{}, nil
-	}
-	b := new(bytes.Buffer)
-	gg := gob.NewEncoder(b)
-	if err := gobEncodeStringLikeType(gg, c); err != nil {
-		return nil, err
-	}
-	return b.Bytes(), nil
+func (c Content) MarshalBinary() ([]byte, error) {
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
-func (c *Content) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		// NOTE(marius): this behaviour diverges from vanilla gob package
-		return nil
-	}
-	bb := make([]byte, 0)
-	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
-		return err
-	}
-	*c = bb
-	return nil
+func (c *Content) UnmarshalBinary(data []byte) error {
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 func (c Content) String() string {
@@ -771,18 +754,17 @@ func (n *NaturalLanguageValues) UnmarshalText(data []byte) error {
 
 func (n NaturalLanguageValues) GobEncode() ([]byte, error) {
 	if len(n) == 0 {
-		return []byte{}, nil
+		return nil, nil
 	}
-	b := new(bytes.Buffer)
-	gg := gob.NewEncoder(b)
+
 	mm := make([]kv, 0, len(n))
 	for ref, val := range n {
 		mm = append(mm, kv{K: []byte(ref.String()), V: val})
 	}
-	if err := gg.Encode(mm); err != nil {
-		return nil, err
-	}
-	return b.Bytes(), nil
+
+	b := bytes.Buffer{}
+	err := gob.NewEncoder(&b).Encode(mm)
+	return b.Bytes(), err
 }
 
 func (n *NaturalLanguageValues) GobDecode(data []byte) error {

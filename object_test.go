@@ -26,21 +26,9 @@ func Benchmark_ToObject(b *testing.B) {
 	}
 }
 
-func Benchmark_To_T_Object(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		To[Object](maybeObject)
-	}
-}
-
 func Benchmark_OnObject(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		OnObject(maybeObject, fnObj)
-	}
-}
-
-func Benchmark_On_T_Object(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		On[Object](maybeObject, fnObj)
 	}
 }
 
@@ -50,33 +38,15 @@ func Benchmark_OnObjectNotHappy(b *testing.B) {
 	}
 }
 
-func Benchmark_On_T_ObjectNotHappy(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		On[Object](notObject, fnObj)
-	}
-}
-
 func Benchmark_OnObjectHappyCol(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		OnObject(colOfObjects, fnObj)
 	}
 }
 
-func Benchmark_On_T_ObjectHappyCol(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		On[Object](colOfObjects, fnObj)
-	}
-}
-
 func Benchmark_OnObjectNotHappyCol(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		OnObject(colOfNotObjects, fnObj)
-	}
-}
-
-func Benchmark_On_T_ObjectNotHappyCol(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		On[Object](colOfNotObjects, fnObj)
 	}
 }
 
@@ -207,69 +177,6 @@ func TestMimeType_UnmarshalJSON(t *testing.T) {
 	_ = m.UnmarshalJSON(dataEmpty)
 	if m != "" {
 		t.Errorf("Unmarshaled object %T should be an empty string, received %q", m, m)
-	}
-}
-
-func TestMimeType_GobDecode(t *testing.T) {
-	tests := []struct {
-		name    string
-		m       MimeType
-		data    []byte
-		wantErr bool
-	}{
-		{
-			name:    "empty",
-			m:       "",
-			data:    []byte{},
-			wantErr: false,
-		},
-		{
-			name:    "some mime-type",
-			m:       "application/json",
-			data:    gobValue([]byte("application/json")),
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.m.GobDecode(tt.data); (err != nil) != tt.wantErr {
-				t.Errorf("GobDecode() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
-
-func TestMimeType_GobEncode(t *testing.T) {
-	tests := []struct {
-		name    string
-		m       MimeType
-		want    []byte
-		wantErr bool
-	}{
-		{
-			name:    "empty",
-			m:       "",
-			want:    []byte{},
-			wantErr: false,
-		},
-		{
-			name:    "some mime-type",
-			m:       "application/json",
-			want:    gobValue([]byte("application/json")),
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.m.GobEncode()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GobEncode() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GobEncode() got = %v, want %v", got, tt.want)
-			}
-		})
 	}
 }
 
@@ -1161,7 +1068,8 @@ func TestObject_Equals(t *testing.T) {
 	}
 }
 
-func TestObject_GobEncode(t *testing.T) {
+func TestObject_MarshalBinary(t *testing.T) {
+	t.Skipf("Binary functionality not implemented")
 	type fields struct {
 		ID           ID
 		Type         Typer
@@ -1198,47 +1106,39 @@ func TestObject_GobEncode(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		wantErr bool
+		wantErr error
 	}{
 		{
-			name:    "empty",
-			fields:  fields{},
-			wantErr: false,
+			name:   "empty",
+			fields: fields{},
 		},
 		{
-			name:    "with ID",
-			fields:  fields{ID: ID("https://example.com")},
-			wantErr: false,
+			name:   "with ID",
+			fields: fields{ID: ID("https://example.com")},
 		},
 		{
-			name:    "with ID, type",
-			fields:  fields{ID: ID("https://example.com"), Type: ObjectType},
-			wantErr: false,
+			name:   "with ID, type",
+			fields: fields{ID: ID("https://example.com"), Type: ObjectType},
 		},
 		{
-			name:    "with ID, type, name",
-			fields:  fields{ID: ID("https://example.com"), Type: ObjectType, Name: NaturalLanguageValues{English: Content("ana")}},
-			wantErr: false,
+			name:   "with ID, type, name",
+			fields: fields{ID: ID("https://example.com"), Type: ObjectType, Name: NaturalLanguageValues{English: Content("ana")}},
 		},
 		{
-			name:    "with Source",
-			fields:  fields{Source: Source{MediaType: "image/svg+xml", Content: NaturalLanguageValues{NilLangRef: Content("data:image/svg+xml,%3csvg%3e %3c/svg%3e")}}},
-			wantErr: false,
+			name:   "with Source",
+			fields: fields{Source: Source{MediaType: "image/svg+xml", Content: NaturalLanguageValues{NilLangRef: Content("data:image/svg+xml,%3csvg%3e %3c/svg%3e")}}},
 		},
 		{
-			name:    "with IRI AttributedTo",
-			fields:  fields{AttributedTo: IRI("https://example.com/1")},
-			wantErr: false,
+			name:   "with IRI AttributedTo",
+			fields: fields{AttributedTo: IRI("https://example.com/1")},
 		},
 		{
-			name:    "with multiple IRIs AttributedTo",
-			fields:  fields{AttributedTo: ItemCollection{IRI("https://example.com/1"), IRI("https://example.com/2")}},
-			wantErr: false,
+			name:   "with multiple IRIs AttributedTo",
+			fields: fields{AttributedTo: ItemCollection{IRI("https://example.com/1"), IRI("https://example.com/2")}},
 		},
 		{
-			name:    "with single object AttributedTo",
-			fields:  fields{AttributedTo: Object{ID: "https://example.com/1"}},
-			wantErr: false,
+			name:   "with single object AttributedTo",
+			fields: fields{AttributedTo: Object{ID: "https://example.com/1"}},
 		},
 	}
 	for _, tt := range tests {
@@ -1276,18 +1176,18 @@ func TestObject_GobEncode(t *testing.T) {
 				Shares:       tt.fields.Shares,
 				Source:       tt.fields.Source,
 			}
-			got, err := o.GobEncode()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GobEncode() error = %v, wantErr %v", err, tt.wantErr)
+			got, err := o.MarshalBinary()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalBianry() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
 				return
 			}
 			ob := Object{}
-			if err = ob.GobDecode(got); (err != nil) != tt.wantErr {
-				t.Errorf("GobDecode() error = %v, wantErr %v", err, tt.wantErr)
+			if err = ob.UnmarshalBinary(got); err != nil {
+				t.Errorf("UnmarshalBinary() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !ItemsEqual(ob, o) {
-				t.Errorf("GobEncode() got = %s", cmp.Diff(ob, o))
+				t.Errorf("ItemsEqual() got = %s", cmp.Diff(ob, o))
 			}
 		})
 	}

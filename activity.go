@@ -2,11 +2,11 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"io"
 	"time"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -700,88 +700,12 @@ func (a Activity) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (a *Activity) UnmarshalBinary(data []byte) error {
-	return a.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (a Activity) MarshalBinary() ([]byte, error) {
-	return a.GobEncode()
-}
-
-func mapIntransitiveActivityProperties(mm map[string][]byte, a *IntransitiveActivity) (hasData bool, err error) {
-	err = OnObject(a, func(o *Object) error {
-		hasData, err = mapObjectProperties(mm, o)
-		return err
-	})
-	if a.Actor != nil {
-		if mm["actor"], err = gobEncodeItem(a.Actor); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	if a.Target != nil {
-		if mm["target"], err = gobEncodeItem(a.Target); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	if a.Result != nil {
-		if mm["result"], err = gobEncodeItem(a.Result); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	if a.Instrument != nil {
-		if mm["instrument"], err = gobEncodeItem(a.Instrument); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	return hasData, err
-}
-
-func mapActivityProperties(mm map[string][]byte, a *Activity) (hasData bool, err error) {
-	err = OnIntransitiveActivity(a, func(a *IntransitiveActivity) error {
-		hasData, err = mapIntransitiveActivityProperties(mm, a)
-		return err
-	})
-	if a.Object != nil {
-		if mm["object"], err = gobEncodeItem(a.Object); err != nil {
-			return hasData, err
-		}
-		hasData = true
-	}
-	return hasData, err
-}
-
-// GobEncode
-func (a Activity) GobEncode() ([]byte, error) {
-	mm := make(map[string][]byte)
-	hasData, err := mapActivityProperties(mm, &a)
-	if err != nil {
-		return nil, err
-	}
-	if !hasData {
-		return []byte{}, nil
-	}
-	bb := bytes.Buffer{}
-	g := gob.NewEncoder(&bb)
-	if err := g.Encode(mm); err != nil {
-		return nil, err
-	}
-	return bb.Bytes(), nil
-}
-
-// GobDecode
-func (a *Activity) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-	mm, err := gobDecodeObjectAsMap(data)
-	if err != nil {
-		return err
-	}
-	return unmapActivityProperties(mm, a)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // Equals verifies if our receiver Activity is equals with the "with" Item

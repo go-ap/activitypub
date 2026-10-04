@@ -2,11 +2,11 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"io"
 	"time"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -182,43 +182,14 @@ func (q Question) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (q *Question) UnmarshalBinary(data []byte) error {
-	return q.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (q Question) MarshalBinary() ([]byte, error) {
-	return q.GobEncode()
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
-// GobEncode
-func (q Question) GobEncode() ([]byte, error) {
-	mm := make(map[string][]byte)
-	hasData, err := mapQuestionProperties(mm, q)
-	if err != nil {
-		return nil, err
-	}
-	if !hasData {
-		return []byte{}, nil
-	}
-	bb := bytes.Buffer{}
-	g := gob.NewEncoder(&bb)
-	if err := g.Encode(mm); err != nil {
-		return nil, err
-	}
-	return bb.Bytes(), nil
-}
-
-// GobDecode
-func (q *Question) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-	mm, err := gobDecodeObjectAsMap(data)
-	if err != nil {
-		return err
-	}
-	return unmapQuestionProperties(mm, q)
-}
 func fmtQuestionProps(w io.Writer, n *int) func(*Question) error {
 	return func(q *Question) error {
 		_ = OnIntransitiveActivity(q, fmtIntransitiveActivityProps(w, n))

@@ -2,11 +2,11 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"io"
 	"time"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -169,42 +169,12 @@ func (t Tombstone) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (t *Tombstone) UnmarshalBinary(data []byte) error {
-	return t.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (t Tombstone) MarshalBinary() ([]byte, error) {
-	return t.GobEncode()
-}
-
-// GobEncode
-func (t Tombstone) GobEncode() ([]byte, error) {
-	mm := make(map[string][]byte)
-	hasData, err := mapTombstoneProperties(mm, t)
-	if err != nil {
-		return nil, err
-	}
-	if !hasData {
-		return []byte{}, nil
-	}
-	bb := bytes.Buffer{}
-	g := gob.NewEncoder(&bb)
-	if err := g.Encode(mm); err != nil {
-		return nil, err
-	}
-	return bb.Bytes(), nil
-}
-
-// GobDecode
-func (t *Tombstone) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-	mm, err := gobDecodeObjectAsMap(data)
-	if err != nil {
-		return err
-	}
-	return unmapTombstoneProperties(mm, t)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // Recipients performs recipient de-duplication on the Tombstone object's To, Bto, CC and BCC properties

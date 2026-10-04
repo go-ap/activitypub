@@ -2,11 +2,11 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"time"
 	"unsafe"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -245,40 +245,12 @@ func (c CollectionPage) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (c *CollectionPage) UnmarshalBinary(data []byte) error {
-	return c.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (c CollectionPage) MarshalBinary() ([]byte, error) {
-	return c.GobEncode()
-}
-
-func (c CollectionPage) GobEncode() ([]byte, error) {
-	mm := make(map[string][]byte)
-	hasData, err := mapCollectionPageProperties(mm, c)
-	if err != nil {
-		return nil, err
-	}
-	if !hasData {
-		return []byte{}, nil
-	}
-	bb := bytes.Buffer{}
-	g := gob.NewEncoder(&bb)
-	if err := g.Encode(mm); err != nil {
-		return nil, err
-	}
-	return bb.Bytes(), nil
-}
-
-func (c *CollectionPage) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-	mm, err := gobDecodeObjectAsMap(data)
-	if err != nil {
-		return err
-	}
-	return unmapCollectionPageProperties(mm, c)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 func copyCollectionToPage(c *Collection, p *CollectionPage) error {

@@ -2,7 +2,6 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"io"
 	"reflect"
@@ -10,6 +9,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -280,42 +280,12 @@ func (o Object) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (o *Object) UnmarshalBinary(data []byte) error {
-	return o.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (o Object) MarshalBinary() ([]byte, error) {
-	return o.GobEncode()
-}
-
-// GobEncode
-func (o Object) GobEncode() ([]byte, error) {
-	mm := make(map[string][]byte)
-	hasData, err := mapObjectProperties(mm, &o)
-	if err != nil {
-		return nil, err
-	}
-	if !hasData {
-		return []byte{}, nil
-	}
-	bb := bytes.Buffer{}
-	g := gob.NewEncoder(&bb)
-	if err := g.Encode(mm); err != nil {
-		return nil, err
-	}
-	return bb.Bytes(), nil
-}
-
-// GobDecode
-func (o *Object) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-	mm, err := gobDecodeObjectAsMap(data)
-	if err != nil {
-		return err
-	}
-	return unmapObjectProperties(mm, o)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 func fmtObjectProps(w io.Writer, n *int) func(*Object) error {
@@ -537,41 +507,14 @@ func (m MimeType) MarshalJSON() ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-// GobEncode
-func (m MimeType) GobEncode() ([]byte, error) {
-	if len(m) == 0 {
-		return []byte{}, nil
-	}
-	b := bytes.Buffer{}
-	gg := gob.NewEncoder(&b)
-	if err := gobEncodeStringLikeType(gg, []byte(m)); err != nil {
-		return nil, err
-	}
-	return b.Bytes(), nil
-}
-
-// GobDecode
-func (m *MimeType) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		// NOTE(marius): this behaviour diverges from vanilla gob package
-		return nil
-	}
-	var bb []byte
-	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&bb); err != nil {
-		return err
-	}
-	*m = MimeType(bb)
-	return nil
-}
-
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (m *MimeType) UnmarshalBinary(data []byte) error {
-	return m.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (m MimeType) MarshalBinary() ([]byte, error) {
-	return m.GobEncode()
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // ToObject returns an Object pointer to the data in the current Item
@@ -718,67 +661,12 @@ func (s *Source) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (s *Source) UnmarshalBinary(data []byte) error {
-	return s.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (s *Source) MarshalBinary() ([]byte, error) {
-	return s.GobEncode()
-}
-
-// GobDecode
-func (s *Source) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-	mm := make(map[string][]byte)
-	g := gob.NewDecoder(bytes.NewReader(data))
-	if err := g.Decode(&mm); err != nil {
-		return err
-	}
-	if raw, ok := mm["mediaType"]; ok {
-		if err := s.MediaType.GobDecode(raw); err != nil {
-			return err
-		}
-	}
-	if raw, ok := mm["content"]; ok {
-		content := make(NaturalLanguageValues)
-		if err := content.GobDecode(raw); err != nil {
-			return err
-		}
-		s.Content = content
-	}
-	return nil
-}
-
-// GobEncode
-func (s *Source) GobEncode() ([]byte, error) {
-	var (
-		mm      = make(map[string][]byte)
-		err     error
-		hasData bool
-	)
-	if len(s.MediaType) > 0 {
-		if mm["mediaType"], err = s.MediaType.GobEncode(); err != nil {
-			return nil, err
-		}
-		hasData = true
-	}
-	if len(s.Content) > 0 {
-		if mm["content"], err = s.Content.GobEncode(); err != nil {
-			return nil, err
-		}
-		hasData = true
-	}
-	if !hasData {
-		return []byte{}, nil
-	}
-	bb := bytes.Buffer{}
-	g := gob.NewEncoder(&bb)
-	if err := g.Encode(mm); err != nil {
-		return nil, err
-	}
-	return bb.Bytes(), nil
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // Equals verifies if our receiver Object is equals with the "with" Item

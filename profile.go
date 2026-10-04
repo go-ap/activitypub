@@ -2,10 +2,10 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"time"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -165,42 +165,12 @@ func (p Profile) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (p *Profile) UnmarshalBinary(data []byte) error {
-	return p.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (p Profile) MarshalBinary() ([]byte, error) {
-	return p.GobEncode()
-}
-
-// GobEncode
-func (p Profile) GobEncode() ([]byte, error) {
-	mm := make(map[string][]byte)
-	hasData, err := mapProfileProperties(mm, p)
-	if err != nil {
-		return nil, err
-	}
-	if !hasData {
-		return []byte{}, nil
-	}
-	bb := bytes.Buffer{}
-	g := gob.NewEncoder(&bb)
-	if err := g.Encode(mm); err != nil {
-		return nil, err
-	}
-	return bb.Bytes(), nil
-}
-
-// GobDecode
-func (p *Profile) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-	mm, err := gobDecodeObjectAsMap(data)
-	if err != nil {
-		return err
-	}
-	return unmapProfileProperties(mm, p)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // Recipients performs recipient de-duplication on the Profile object's To, Bto, CC and BCC properties

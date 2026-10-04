@@ -2,10 +2,10 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"io"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -160,40 +160,12 @@ func (l Link) equal(with Link) bool {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (l *Link) UnmarshalBinary(data []byte) error {
-	return l.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (l Link) MarshalBinary() ([]byte, error) {
-	return l.GobEncode()
-}
-
-func (l Link) GobEncode() ([]byte, error) {
-	mm := make(map[string][]byte)
-	hasData, err := mapLinkProperties(mm, l)
-	if err != nil {
-		return nil, err
-	}
-	if !hasData {
-		return []byte{}, nil
-	}
-	bb := bytes.Buffer{}
-	g := gob.NewEncoder(&bb)
-	if err := g.Encode(mm); err != nil {
-		return nil, err
-	}
-	return bb.Bytes(), nil
-}
-
-func (l *Link) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-	mm, err := gobDecodeObjectAsMap(data)
-	if err != nil {
-		return err
-	}
-	return unmapLinkProperties(mm, l)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 func fmtLinkProps(w io.Writer) func(*Link) error {

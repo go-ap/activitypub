@@ -23,21 +23,9 @@ func Benchmark_ToActor(b *testing.B) {
 	}
 }
 
-func Benchmark_To_T_Actor(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		To[Actor](maybeActor)
-	}
-}
-
 func Benchmark_OnActor(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		OnActor(maybeActor, fnAct)
-	}
-}
-
-func Benchmark_On_T_Actor(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		On[Actor](maybeActor, fnAct)
 	}
 }
 
