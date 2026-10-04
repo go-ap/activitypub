@@ -496,3 +496,25 @@ func TestOrderedCollection_Clean(t *testing.T) {
 		})
 	}
 }
+
+func TestOrderedCollection_ItemsMatch(t *testing.T) {
+	tests := []struct {
+		name    string
+		items   ItemCollection
+		matches []Item
+		want    bool
+	}{
+		{
+			name: "nil",
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			o := OrderedCollection{OrderedItems: tt.items}
+			if got := o.ItemsMatch(tt.matches...); got != tt.want {
+				t.Errorf("ItemsMatch() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

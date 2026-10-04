@@ -273,6 +273,9 @@ func ToCollectionPage(it LinkOrIRI) (*CollectionPage, error) {
 
 // ItemsMatch
 func (c CollectionPage) ItemsMatch(col ...Item) bool {
+	if len(col) == 0 {
+		return false
+	}
 	for _, it := range col {
 		if match := c.Items.Contains(it); !match {
 			return false
@@ -283,11 +286,14 @@ func (c CollectionPage) ItemsMatch(col ...Item) bool {
 
 // Equals verifies if our receiver CollectionPage is equals with the "with" Item
 func (c CollectionPage) Equals(with Item) bool {
-	withCollectionPage, err := ToCollectionPage(with)
+	withPage, err := ToCollectionPage(with)
 	if err != nil {
 		return false
 	}
-	return c.equal(*withCollectionPage)
+	if withPage == nil {
+		return false
+	}
+	return c.equal(*withPage)
 }
 
 // equal verifies if our receiver CollectionPage is equals with the "with" CollectionPage
@@ -301,35 +307,23 @@ func (c CollectionPage) equal(with CollectionPage) bool {
 		}
 		return nil
 	})
-	if with.PartOf != nil {
-		if !ItemsEqual(c.PartOf, with.PartOf) {
-			result = false
-		}
+	if !ItemsEqual(c.PartOf, with.PartOf) {
+		result = false
 	}
-	if with.Current != nil {
-		if !ItemsEqual(c.Current, with.Current) {
-			result = false
-		}
+	if !ItemsEqual(c.Current, with.Current) {
+		result = false
 	}
-	if with.First != nil {
-		if !ItemsEqual(c.First, with.First) {
-			result = false
-		}
+	if !ItemsEqual(c.First, with.First) {
+		result = false
 	}
-	if with.Last != nil {
-		if !ItemsEqual(c.Last, with.Last) {
-			result = false
-		}
+	if !ItemsEqual(c.Last, with.Last) {
+		result = false
 	}
-	if with.Next != nil {
-		if !ItemsEqual(c.Next, with.Next) {
-			result = false
-		}
+	if !ItemsEqual(c.Next, with.Next) {
+		result = false
 	}
-	if with.Prev != nil {
-		if !ItemsEqual(c.Prev, with.Prev) {
-			result = false
-		}
+	if !ItemsEqual(c.Prev, with.Prev) {
+		result = false
 	}
 	return result
 }

@@ -3,6 +3,7 @@ package activitypub
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/go-ap/errors"
 	"github.com/google/go-cmp/cmp"
@@ -464,6 +465,345 @@ func TestOrderedCollectionPage_Clean(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.o.Clean(); !cmp.Equal(got, tt.want, EquateItems) {
 				t.Errorf("Clean() = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
+}
+
+func TestOrderedCollectionPage_Equals(t *testing.T) {
+	type fields struct {
+		ID           ID
+		Type         Typer
+		Name         NaturalLanguageValues
+		Attachment   Item
+		AttributedTo Item
+		Audience     ItemCollection
+		Content      NaturalLanguageValues
+		Context      Item
+		MediaType    MimeType
+		EndTime      time.Time
+		Generator    Item
+		Icon         Item
+		Image        Item
+		InReplyTo    Item
+		Location     Item
+		Preview      Item
+		Published    time.Time
+		Replies      Item
+		StartTime    time.Time
+		Summary      NaturalLanguageValues
+		Tag          Item
+		Updated      time.Time
+		URL          Item
+		To           ItemCollection
+		Bto          ItemCollection
+		CC           ItemCollection
+		BCC          ItemCollection
+		Duration     time.Duration
+		Likes        Item
+		Shares       Item
+		Source       Source
+		Current      Item
+		First        Item
+		Last         Item
+		TotalItems   uint
+		OrderedItems ItemCollection
+		PartOf       Item
+		Next         Item
+		Prev         Item
+		StartIndex   uint
+	}
+
+	tests := []struct {
+		name   string
+		fields fields
+		with   Item
+		want   bool
+	}{
+		{
+			name:   "nil",
+			fields: fields{},
+			with:   Item(nil),
+			want:   false,
+		},
+		{
+			name:   "not-a-CollectionPage",
+			fields: fields{ID: "http://example.com"},
+			with:   &Object{ID: "http://example.com"},
+			want:   false,
+		},
+		{
+			name:   "CollectionPage-same-ID",
+			fields: fields{ID: "http://example.com"},
+			with:   &CollectionPage{ID: "http://example.com"},
+			want:   true,
+		},
+		{
+			name:   "CollectionPage-different-ID",
+			fields: fields{ID: "http://example.com"},
+			with:   &CollectionPage{ID: "http://example.com/1"},
+			want:   false,
+		},
+		{
+			name:   "CollectionPage-same-First",
+			fields: fields{First: IRI("http://example.com")},
+			with:   &CollectionPage{First: IRI("http://example.com")},
+			want:   true,
+		},
+		{
+			name:   "CollectionPage-different-First",
+			fields: fields{First: IRI("http://example.com")},
+			with:   &CollectionPage{First: IRI("http://example.com/1")},
+			want:   false,
+		},
+		{
+			name:   "CollectionPage-nil-First",
+			fields: fields{First: IRI("http://example.com")},
+			with:   &CollectionPage{},
+			want:   false,
+		},
+		{
+			name:   "CollectionPage-same-Last",
+			fields: fields{Last: IRI("http://example.com")},
+			with:   &CollectionPage{Last: IRI("http://example.com")},
+			want:   true,
+		},
+		{
+			name:   "CollectionPage-different-Last",
+			fields: fields{Last: IRI("http://example.com")},
+			with:   &CollectionPage{Last: IRI("http://example.com/2")},
+			want:   false,
+		},
+		{
+			name:   "CollectionPage-nil-Last",
+			fields: fields{Last: IRI("http://example.com")},
+			with:   &CollectionPage{},
+			want:   false,
+		},
+		{
+			name:   "CollectionPage-same-Next",
+			fields: fields{Next: IRI("http://example.com")},
+			with:   &CollectionPage{Next: IRI("http://example.com")},
+			want:   true,
+		},
+		{
+			name:   "CollectionPage-diff-Next",
+			fields: fields{Next: IRI("http://example.com")},
+			with:   &CollectionPage{Next: IRI("http://example.com/2")},
+			want:   false,
+		},
+		{
+			name:   "CollectionPage-nil-Next",
+			fields: fields{Next: IRI("http://example.com")},
+			with:   &CollectionPage{},
+			want:   false,
+		},
+		{
+			name:   "CollectionPage-same-Prev",
+			fields: fields{Prev: IRI("http://example.com")},
+			with:   &CollectionPage{Prev: IRI("http://example.com")},
+			want:   true,
+		},
+		{
+			name:   "CollectionPage-diff-Prev",
+			fields: fields{Prev: IRI("http://example.com")},
+			with:   &CollectionPage{Prev: IRI("http://example.com/2")},
+			want:   false,
+		},
+		{
+			name:   "CollectionPage-nil-Prev",
+			fields: fields{Prev: IRI("http://example.com")},
+			with:   &CollectionPage{},
+			want:   false,
+		},
+		{
+			name:   "CollectionPage-same-PartOf",
+			fields: fields{PartOf: IRI("http://example.com")},
+			with:   &CollectionPage{PartOf: IRI("http://example.com")},
+			want:   true,
+		},
+		{
+			name:   "CollectionPage-diff-PartOf",
+			fields: fields{PartOf: IRI("http://example.com")},
+			with:   &CollectionPage{PartOf: IRI("http://example.com/2")},
+			want:   false,
+		},
+		{
+			name:   "CollectionPage-nil-PartOf",
+			fields: fields{PartOf: IRI("http://example.com")},
+			with:   &CollectionPage{},
+			want:   false,
+		},
+		{
+			name:   "CollectionPage-same-Current",
+			fields: fields{Current: IRI("http://example.com")},
+			with:   &CollectionPage{Current: IRI("http://example.com")},
+			want:   true,
+		},
+		{
+			name:   "CollectionPage-diff-Current",
+			fields: fields{Current: IRI("http://example.com")},
+			with:   &CollectionPage{Current: IRI("http://example.com/2")},
+			want:   false,
+		},
+		{
+			name:   "CollectionPage-nil-Current",
+			fields: fields{Current: IRI("http://example.com")},
+			with:   &CollectionPage{},
+			want:   false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			o := OrderedCollectionPage{
+				ID:           tt.fields.ID,
+				Type:         tt.fields.Type,
+				Name:         tt.fields.Name,
+				Attachment:   tt.fields.Attachment,
+				AttributedTo: tt.fields.AttributedTo,
+				Audience:     tt.fields.Audience,
+				Content:      tt.fields.Content,
+				Context:      tt.fields.Context,
+				MediaType:    tt.fields.MediaType,
+				EndTime:      tt.fields.EndTime,
+				Generator:    tt.fields.Generator,
+				Icon:         tt.fields.Icon,
+				Image:        tt.fields.Image,
+				InReplyTo:    tt.fields.InReplyTo,
+				Location:     tt.fields.Location,
+				Preview:      tt.fields.Preview,
+				Published:    tt.fields.Published,
+				Replies:      tt.fields.Replies,
+				StartTime:    tt.fields.StartTime,
+				Summary:      tt.fields.Summary,
+				Tag:          tt.fields.Tag,
+				Updated:      tt.fields.Updated,
+				URL:          tt.fields.URL,
+				To:           tt.fields.To,
+				Bto:          tt.fields.Bto,
+				CC:           tt.fields.CC,
+				BCC:          tt.fields.BCC,
+				Duration:     tt.fields.Duration,
+				Likes:        tt.fields.Likes,
+				Shares:       tt.fields.Shares,
+				Source:       tt.fields.Source,
+				Current:      tt.fields.Current,
+				First:        tt.fields.First,
+				Last:         tt.fields.Last,
+				TotalItems:   tt.fields.TotalItems,
+				OrderedItems: tt.fields.OrderedItems,
+				PartOf:       tt.fields.PartOf,
+				Next:         tt.fields.Next,
+				Prev:         tt.fields.Prev,
+				StartIndex:   tt.fields.StartIndex,
+			}
+			if got := o.Equals(tt.with); got != tt.want {
+				t.Errorf("Equals() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestOrderedCollectionPage_Recipients(t *testing.T) {
+	type fields struct {
+		ID           ID
+		Type         Typer
+		Name         NaturalLanguageValues
+		Attachment   Item
+		AttributedTo Item
+		Audience     ItemCollection
+		Content      NaturalLanguageValues
+		Context      Item
+		MediaType    MimeType
+		EndTime      time.Time
+		Generator    Item
+		Icon         Item
+		Image        Item
+		InReplyTo    Item
+		Location     Item
+		Preview      Item
+		Published    time.Time
+		Replies      Item
+		StartTime    time.Time
+		Summary      NaturalLanguageValues
+		Tag          Item
+		Updated      time.Time
+		URL          Item
+		To           ItemCollection
+		Bto          ItemCollection
+		CC           ItemCollection
+		BCC          ItemCollection
+		Duration     time.Duration
+		Likes        Item
+		Shares       Item
+		Source       Source
+		Current      Item
+		First        Item
+		Last         Item
+		TotalItems   uint
+		OrderedItems ItemCollection
+		PartOf       Item
+		Next         Item
+		Prev         Item
+		StartIndex   uint
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   ItemCollection
+	}{
+		{
+			name:   "nil",
+			fields: fields{},
+			want:   nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			o := &OrderedCollectionPage{
+				ID:           tt.fields.ID,
+				Type:         tt.fields.Type,
+				Name:         tt.fields.Name,
+				Attachment:   tt.fields.Attachment,
+				AttributedTo: tt.fields.AttributedTo,
+				Audience:     tt.fields.Audience,
+				Content:      tt.fields.Content,
+				Context:      tt.fields.Context,
+				MediaType:    tt.fields.MediaType,
+				EndTime:      tt.fields.EndTime,
+				Generator:    tt.fields.Generator,
+				Icon:         tt.fields.Icon,
+				Image:        tt.fields.Image,
+				InReplyTo:    tt.fields.InReplyTo,
+				Location:     tt.fields.Location,
+				Preview:      tt.fields.Preview,
+				Published:    tt.fields.Published,
+				Replies:      tt.fields.Replies,
+				StartTime:    tt.fields.StartTime,
+				Summary:      tt.fields.Summary,
+				Tag:          tt.fields.Tag,
+				Updated:      tt.fields.Updated,
+				URL:          tt.fields.URL,
+				To:           tt.fields.To,
+				Bto:          tt.fields.Bto,
+				CC:           tt.fields.CC,
+				BCC:          tt.fields.BCC,
+				Duration:     tt.fields.Duration,
+				Likes:        tt.fields.Likes,
+				Shares:       tt.fields.Shares,
+				Source:       tt.fields.Source,
+				Current:      tt.fields.Current,
+				First:        tt.fields.First,
+				Last:         tt.fields.Last,
+				TotalItems:   tt.fields.TotalItems,
+				OrderedItems: tt.fields.OrderedItems,
+				PartOf:       tt.fields.PartOf,
+				Next:         tt.fields.Next,
+				Prev:         tt.fields.Prev,
+				StartIndex:   tt.fields.StartIndex,
+			}
+			if got := o.Recipients(); !cmp.Equal(got, tt.want) {
+				t.Errorf("Recipients() = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

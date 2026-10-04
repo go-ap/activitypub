@@ -26,54 +26,76 @@ const (
 )
 
 func compareByType(typ Typer, it, with ObjectOrLink) bool {
+	if it == nil || with == nil {
+		return it == nil && with == nil
+	}
 	result := false
 	iTyp := it.GetType()
-	if QuestionType.Match(iTyp) {
+	if !typesEqual(typ, iTyp) {
+		return false
+	}
+	switch {
+	case QuestionType.Match(iTyp):
 		_ = OnQuestion(it, func(q *Question) error {
 			result = q.Equals(with)
 			return nil
 		})
-	} else if IntransitiveActivityTypes.Match(iTyp) {
+	case IntransitiveActivityTypes.Match(iTyp):
 		_ = OnIntransitiveActivity(it, func(i *IntransitiveActivity) error {
 			result = i.Equals(with)
 			return nil
 		})
-	} else if ActivityTypes.Match(iTyp) {
+	case ActivityTypes.Match(iTyp):
 		_ = OnActivity(it, func(i *Activity) error {
 			result = i.Equals(with)
 			return nil
 		})
-	} else if ActorTypes.Match(iTyp) {
+	case ActorTypes.Match(iTyp):
 		_ = OnActor(it, func(i *Actor) error {
 			result = i.Equals(with)
 			return nil
 		})
-	} else if CollectionTypes.Match(iTyp) {
-		if CollectionType.Match(it.GetType()) {
-			_ = OnCollection(it, func(c *Collection) error {
-				result = c.Equals(with)
-				return nil
-			})
-		}
-		if OrderedCollectionType.Match(iTyp) {
-			_ = OnOrderedCollection(it, func(c *OrderedCollection) error {
-				result = c.Equals(with)
-				return nil
-			})
-		}
-		if CollectionPageType.Match(iTyp) {
-			_ = OnCollectionPage(it, func(c *CollectionPage) error {
-				result = c.Equals(with)
-				return nil
-			})
-		}
-		if OrderedCollectionPageType.Match(iTyp) {
-			_ = OnOrderedCollectionPage(it, func(c *OrderedCollectionPage) error {
-				result = c.Equals(with)
-				return nil
-			})
-		}
-	} else {
+	case CollectionType.Match(it.GetType()):
+		_ = OnCollection(it, func(c *Collection) error {
+			result = c.Equals(with)
+			return nil
+		})
+	case OrderedCollectionType.Match(iTyp):
+		_ = OnOrderedCollection(it, func(c *OrderedCollection) error {
+			result = c.Equals(with)
+			return nil
+		})
+	case CollectionPageType.Match(iTyp):
+		_ = OnCollectionPage(it, func(c *CollectionPage) error {
+			result = c.Equals(with)
+			return nil
+		})
+	case OrderedCollectionPageType.Match(iTyp):
+		_ = OnOrderedCollectionPage(it, func(c *OrderedCollectionPage) error {
+			result = c.Equals(with)
+			return nil
+		})
+	case TombstoneType.Match(iTyp):
+		_ = OnTombstone(it, func(t *Tombstone) error {
+			result = t.Equals(with)
+			return nil
+		})
+	case ProfileType.Match(iTyp):
+		_ = OnProfile(it, func(t *Profile) error {
+			result = t.Equals(with)
+			return nil
+		})
+	case RelationshipType.Match(iTyp):
+		_ = OnRelationship(it, func(t *Relationship) error {
+			result = t.Equals(with)
+			return nil
+		})
+	case PlaceType.Match(iTyp):
+		_ = OnPlace(it, func(t *Place) error {
+			result = t.Equals(with)
+			return nil
+		})
+	default:
 		_ = OnObject(it, func(i *Object) error {
 			result = i.Equals(with)
 			return nil
@@ -135,6 +157,9 @@ func typedObjectsEqual(it, with ObjectOrLink) bool {
 }
 
 func typesEqual(t1, t2 Typer) bool {
+	if t1 == nil || t2 == nil {
+		return t1 == nil && t2 == nil
+	}
 	tt1 := t1.AsTypes()
 	tt2 := t2.AsTypes()
 	if len(tt1) != len(tt2) {

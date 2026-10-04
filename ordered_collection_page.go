@@ -291,6 +291,9 @@ func (o OrderedCollectionPage) Equals(with Item) bool {
 	if err != nil {
 		return false
 	}
+	if withPage == nil {
+		return false
+	}
 	return o.equal(*withPage)
 }
 
@@ -304,35 +307,23 @@ func (o OrderedCollectionPage) equal(with OrderedCollectionPage) bool {
 		}
 		return nil
 	})
-	if with.PartOf != nil {
-		if !ItemsEqual(o.PartOf, with.PartOf) {
-			result = false
-		}
+	if !ItemsEqual(o.PartOf, with.PartOf) {
+		result = false
 	}
-	if with.Current != nil {
-		if !ItemsEqual(o.Current, with.Current) {
-			result = false
-		}
+	if !ItemsEqual(o.Current, with.Current) {
+		result = false
 	}
-	if with.First != nil {
-		if !ItemsEqual(o.First, with.First) {
-			result = false
-		}
+	if !ItemsEqual(o.First, with.First) {
+		result = false
 	}
-	if with.Last != nil {
-		if !ItemsEqual(o.Last, with.Last) {
-			result = false
-		}
+	if !ItemsEqual(o.Last, with.Last) {
+		result = false
 	}
-	if with.Next != nil {
-		if !ItemsEqual(o.Next, with.Next) {
-			result = false
-		}
+	if !ItemsEqual(o.Next, with.Next) {
+		result = false
 	}
-	if with.Prev != nil {
-		if !ItemsEqual(o.Prev, with.Prev) {
-			result = false
-		}
+	if !ItemsEqual(o.Prev, with.Prev) {
+		result = false
 	}
 	return result
 }

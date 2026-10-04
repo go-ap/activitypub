@@ -296,44 +296,11 @@ func ToOrderedCollection(it LinkOrIRI) (*OrderedCollection, error) {
 	}
 }
 
-func copyOrderedCollectionToPage(c *OrderedCollection, p *OrderedCollectionPage) error {
-	p.Type = OrderedCollectionPageType
-	p.Name = c.Name
-	p.Content = c.Content
-	p.Summary = c.Summary
-	p.Context = c.Context
-	p.URL = c.URL
-	p.MediaType = c.MediaType
-	p.Generator = c.Generator
-	p.AttributedTo = c.AttributedTo
-	p.Attachment = c.Attachment
-	p.Location = c.Location
-	p.Published = c.Published
-	p.StartTime = c.StartTime
-	p.EndTime = c.EndTime
-	p.Duration = c.Duration
-	p.Icon = c.Icon
-	p.Preview = c.Preview
-	p.Image = c.Image
-	p.Updated = c.Updated
-	p.InReplyTo = c.InReplyTo
-	p.To = c.To
-	p.Audience = c.Audience
-	p.Bto = c.Bto
-	p.CC = c.CC
-	p.BCC = c.BCC
-	p.Replies = c.Replies
-	p.Tag = c.Tag
-	p.TotalItems = c.TotalItems
-	p.OrderedItems = c.OrderedItems
-	p.Current = c.Current
-	p.First = c.First
-	p.PartOf = c.GetLink()
-	return nil
-}
-
 // ItemsMatch
 func (o OrderedCollection) ItemsMatch(col ...Item) bool {
+	if len(col) == 0 {
+		return false
+	}
 	for _, it := range col {
 		if match := o.OrderedItems.Contains(it); !match {
 			return false

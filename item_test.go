@@ -829,3 +829,105 @@ func ExampleOnItem() {
 	// 6: activitypub.Actor[Person] { id: http://example.com/2 }
 	// 7: activitypub.Tombstone[Tombstone] { id: http://example.com/3, formerType: Note }
 }
+
+func Test_typesEqual(t *testing.T) {
+	type args struct {
+		t1 Typer
+		t2 Typer
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "empty",
+			args: args{},
+			want: true,
+		},
+		{
+			name: "left empty",
+			args: args{t1: NoteType},
+			want: false,
+		},
+		{
+			name: "right empty",
+			args: args{t2: NoteType},
+			want: false,
+		},
+		{
+			name: "equal single type",
+			args: args{t1: NoteType, t2: NoteType},
+			want: true,
+		},
+		{
+			name: "not equal single type",
+			args: args{t1: ArticleType, t2: NoteType},
+			want: false,
+		},
+		{
+			name: "equal multiple types",
+			args: args{t1: ActivityVocabularyTypes{NoteType, TombstoneType}, t2: ActivityVocabularyTypes{TombstoneType, NoteType}},
+			want: true,
+		},
+		{
+			name: "not equal multiple types",
+			args: args{t1: ActivityVocabularyTypes{ArticleType, NoteType, TombstoneType}, t2: ActivityVocabularyTypes{TombstoneType, NoteType}},
+			want: false,
+		},
+		{
+			name: "not equal multiple types",
+			args: args{t1: ActivityVocabularyTypes{ArticleType, TombstoneType}, t2: ActivityVocabularyTypes{TombstoneType, NoteType}},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := typesEqual(tt.args.t1, tt.args.t2); got != tt.want {
+				t.Errorf("typesEqual() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_compareByType(t *testing.T) {
+	type args struct {
+		typ  Typer
+		it   ObjectOrLink
+		with ObjectOrLink
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "empty",
+			args: args{},
+			want: true,
+		},
+		{
+			name: "equal objects",
+			args: args{
+				it:   &Object{ID: "http://example.com"},
+				with: &Object{ID: "http://example.com"},
+			},
+			want: true,
+		},
+		{
+			name: "object equal actor",
+			args: args{
+				it:   &Object{ID: "http://example.com"},
+				with: &Actor{ID: "http://example.com", PreferredUsername: DefaultLangValue("jdoe")},
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := compareByType(tt.args.typ, tt.args.it, tt.args.with); got != tt.want {
+				t.Errorf("compareByType() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
