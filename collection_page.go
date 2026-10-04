@@ -253,42 +253,6 @@ func (c CollectionPage) MarshalBinary() ([]byte, error) {
 	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
-func copyCollectionToPage(c *Collection, p *CollectionPage) error {
-	p.Type = CollectionPageType
-	p.Name = c.Name
-	p.Content = c.Content
-	p.Summary = c.Summary
-	p.Context = c.Context
-	p.URL = c.URL
-	p.MediaType = c.MediaType
-	p.Generator = c.Generator
-	p.AttributedTo = c.AttributedTo
-	p.Attachment = c.Attachment
-	p.Location = c.Location
-	p.Published = c.Published
-	p.StartTime = c.StartTime
-	p.EndTime = c.EndTime
-	p.Duration = c.Duration
-	p.Icon = c.Icon
-	p.Preview = c.Preview
-	p.Image = c.Image
-	p.Updated = c.Updated
-	p.InReplyTo = c.InReplyTo
-	p.To = c.To
-	p.Audience = c.Audience
-	p.Bto = c.Bto
-	p.CC = c.CC
-	p.BCC = c.BCC
-	p.Replies = c.Replies
-	p.Tag = c.Tag
-	p.TotalItems = c.TotalItems
-	p.Items = c.Items
-	p.Current = c.Current
-	p.First = c.First
-	p.PartOf = c.GetLink()
-	return nil
-}
-
 // ToCollectionPage
 func ToCollectionPage(it LinkOrIRI) (*CollectionPage, error) {
 	switch i := it.(type) {
