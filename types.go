@@ -2,11 +2,11 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"slices"
 	"strings"
 
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -131,62 +131,6 @@ func (at *ActivityVocabularyTypes) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// GobEncode
-func (at ActivityVocabularyTypes) GobEncode() ([]byte, error) {
-	switch len(at) {
-	case 0:
-		return nil, nil
-	case 1:
-		return at[0].GobEncode()
-	default:
-		tt := make([][]byte, len(at))
-		for i, ty := range at {
-			b, err := ty.GobEncode()
-			if err != nil {
-				return nil, err
-			}
-			tt[i] = b
-		}
-		b := bytes.Buffer{}
-		err := gob.NewEncoder(&b).Encode(tt)
-		return b.Bytes(), err
-	}
-}
-
-// GobDecode
-func (at *ActivityVocabularyTypes) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		return nil
-	}
-
-	if data[0] == '[' {
-		tt := [][]byte{}
-		g := gob.NewDecoder(bytes.NewReader(data))
-		if err := g.Decode(&tt); err != nil {
-			return err
-		}
-		types := make(ActivityVocabularyTypes, len(tt))
-		for i, it := range tt {
-			if err := types[i].GobDecode(it); err != nil {
-				return err
-			}
-		}
-		if at == nil {
-			at = &types
-		} else {
-			*at = types
-		}
-	} else {
-		t := NilType
-		if err := t.GobDecode(data); err != nil {
-			return err
-		}
-		*at = ActivityVocabularyTypes{t}
-	}
-
-	return nil
-}
-
 func HasTypes(it ActivityObject) bool {
 	if it == nil || it.GetType() == nil {
 		return false
@@ -245,12 +189,12 @@ func (a *ActivityVocabularyType) GobDecode(data []byte) error {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (a *ActivityVocabularyType) UnmarshalBinary(data []byte) error {
-	return a.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
-	return a.GobEncode()
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 func (a ActivityVocabularyType) AsTypes() ActivityVocabularyTypes {

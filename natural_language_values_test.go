@@ -1,8 +1,6 @@
 package activitypub
 
 import (
-	"bytes"
-	"encoding/gob"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -598,75 +596,6 @@ func TestContent_UnmarshalText(t *testing.T) {
 			}
 			if !cmp.Equal(c, tt.want) {
 				t.Errorf("UnmarshalText() got = %s", cmp.Diff(tt.want, c))
-			}
-		})
-	}
-}
-
-func gobValue(a any) []byte {
-	b := bytes.Buffer{}
-	_ = gob.NewEncoder(&b).Encode(a)
-	return b.Bytes()
-}
-
-func TestNaturalLanguageValues_GobEncode(t *testing.T) {
-	tests := []struct {
-		name    string
-		n       NaturalLanguageValues
-		want    []byte
-		wantErr error
-	}{
-		{
-			name: "empty",
-			n:    NaturalLanguageValues{},
-			want: nil,
-		},
-		{
-			name: "some values",
-			n: NaturalLanguageValues{
-				Und: []byte("are mere"),
-			},
-			want: gobValue([]kv{{K: []byte("und"), V: []byte("are mere")}}),
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.n.GobEncode()
-			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
-				t.Errorf("GobEncode() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
-				return
-			}
-			if !cmp.Equal(got, tt.want) {
-				t.Errorf("GobEncode() got = %s", cmp.Diff(tt.want, got))
-			}
-		})
-	}
-}
-
-func TestNaturalLanguageValues_GobDecode(t *testing.T) {
-	tests := []struct {
-		name    string
-		n       NaturalLanguageValues
-		data    []byte
-		wantErr error
-	}{
-		{
-			name: "empty",
-			n:    NaturalLanguageValues{},
-			data: []byte{},
-		},
-		{
-			name: "some values",
-			n: NaturalLanguageValues{
-				Und: []byte("are mere"),
-			},
-			data: gobValue([]kv{{K: []byte("ana"), V: []byte("are mere")}}),
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.n.GobDecode(tt.data); !cmp.Equal(err, tt.wantErr) {
-				t.Errorf("GobDecode() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
 			}
 		})
 	}

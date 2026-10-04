@@ -2,7 +2,6 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"io"
 	"net/url"
@@ -108,60 +107,12 @@ func (i IRI) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (i *IRI) UnmarshalBinary(data []byte) error {
-	return i.GobDecode(data)
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (i IRI) MarshalBinary() ([]byte, error) {
-	return i.GobEncode()
-}
-
-// GobEncode
-func (i IRI) GobEncode() ([]byte, error) {
-	return []byte(i), nil
-}
-
-// GobDecode
-func (i *IRI) GobDecode(data []byte) error {
-	*i = IRI(data)
-	return nil
-}
-
-// GobEncode
-func (i IRIs) GobEncode() ([]byte, error) {
-	if len(i) == 0 {
-		return []byte{}, nil
-	}
-	b := bytes.Buffer{}
-	gg := gob.NewEncoder(&b)
-	bb := make([][]byte, 0)
-	for _, iri := range i {
-		bb = append(bb, []byte(iri))
-	}
-	if err := gg.Encode(bb); err != nil {
-		return nil, err
-	}
-	return b.Bytes(), nil
-}
-
-func (i *IRIs) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		// NOTE(marius): this behaviour diverges from vanilla gob package
-		return nil
-	}
-	err := gob.NewDecoder(bytes.NewReader(data)).Decode(i)
-	if err == nil {
-		return nil
-	}
-	bb := make([][]byte, 0)
-	err = gob.NewDecoder(bytes.NewReader(data)).Decode(&bb)
-	if err != nil {
-		return err
-	}
-	for _, b := range bb {
-		*i = append(*i, IRI(b))
-	}
-	return nil
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // AddPath concatenates el elements as a path to i

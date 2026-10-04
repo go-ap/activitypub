@@ -2,7 +2,6 @@ package activitypub
 
 import (
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"io"
 	"slices"
@@ -605,41 +604,6 @@ func (l LangRefValue) MarshalText() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-type kv struct {
-	K []byte
-	V []byte
-}
-
-func (l LangRefValue) GobEncode() ([]byte, error) {
-	if len(l.Value) == 0 && !l.Ref.Valid() {
-		return []byte{}, nil
-	}
-	b := new(bytes.Buffer)
-	gg := gob.NewEncoder(b)
-	mm := kv{
-		K: []byte(l.Ref.String()),
-		V: []byte(l.Value),
-	}
-	if err := gg.Encode(mm); err != nil {
-		return nil, err
-	}
-	return b.Bytes(), nil
-}
-
-func (l *LangRefValue) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		// NOTE(marius): this behaviour diverges from vanilla gob package
-		return nil
-	}
-	mm := kv{}
-	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&mm); err != nil {
-		return err
-	}
-	l.Ref = MakeRef(mm.K)
-	l.Value = mm.V
-	return nil
-}
-
 func (l LangRefValue) Equal(other LangRefValue) bool {
 	return l.Ref == other.Ref && l.Value.Equal(other.Value)
 }
@@ -752,34 +716,12 @@ func (n *NaturalLanguageValues) UnmarshalText(data []byte) error {
 	return n.Append(NilLangRef, c)
 }
 
-func (n NaturalLanguageValues) GobEncode() ([]byte, error) {
-	if len(n) == 0 {
-		return nil, nil
-	}
-
-	mm := make([]kv, 0, len(n))
-	for ref, val := range n {
-		mm = append(mm, kv{K: []byte(ref.String()), V: val})
-	}
-
-	b := bytes.Buffer{}
-	err := gob.NewEncoder(&b).Encode(mm)
-	return b.Bytes(), err
+func (n NaturalLanguageValues) MarshalBinary() ([]byte, error) {
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
-func (n *NaturalLanguageValues) GobDecode(data []byte) error {
-	if len(data) == 0 {
-		// NOTE(marius): this behaviour diverges from vanilla gob package
-		return nil
-	}
-	mm := make([]kv, 0)
-	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&mm); err != nil {
-		return err
-	}
-	for _, m := range mm {
-		_ = n.Append(MakeRef(m.K), m.V)
-	}
-	return nil
+func (n *NaturalLanguageValues) UnmarshalBinary(data []byte) error {
+	panic(errors.NotImplementedf("Binary functionality not implemented"))
 }
 
 // Equal
