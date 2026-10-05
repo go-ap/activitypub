@@ -202,12 +202,12 @@ func (p Place) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (p *Place) UnmarshalBinary(data []byte) error {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+	return errors.NotImplementedf("Binary functionality not implemented")
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (p Place) MarshalBinary() ([]byte, error) {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+	return nil, errors.NotImplementedf("Binary functionality not implemented")
 }
 
 // Recipients performs recipient de-duplication on the Place object's To, Bto, CC and BCC properties

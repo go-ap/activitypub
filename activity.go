@@ -700,12 +700,12 @@ func (a Activity) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (a *Activity) UnmarshalBinary(data []byte) error {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+	return errors.NotImplementedf("Binary functionality not implemented")
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (a Activity) MarshalBinary() ([]byte, error) {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+	return nil, errors.NotImplementedf("Binary functionality not implemented")
 }
 
 // Equals verifies if our receiver Activity is equals with the "with" Item

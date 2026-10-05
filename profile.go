@@ -165,12 +165,12 @@ func (p Profile) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (p *Profile) UnmarshalBinary(data []byte) error {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+	return errors.NotImplementedf("Binary functionality not implemented")
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (p Profile) MarshalBinary() ([]byte, error) {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+	return nil, errors.NotImplementedf("Binary functionality not implemented")
 }
 
 // Recipients performs recipient de-duplication on the Profile object's To, Bto, CC and BCC properties

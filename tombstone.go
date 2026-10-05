@@ -169,12 +169,12 @@ func (t Tombstone) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (t *Tombstone) UnmarshalBinary(data []byte) error {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+	return errors.NotImplementedf("Binary functionality not implemented")
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (t Tombstone) MarshalBinary() ([]byte, error) {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+	return nil, errors.NotImplementedf("Binary functionality not implemented")
 }
 
 // Recipients performs recipient de-duplication on the Tombstone object's To, Bto, CC and BCC properties

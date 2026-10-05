@@ -160,12 +160,12 @@ func (l Link) equal(with Link) bool {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (l *Link) UnmarshalBinary(data []byte) error {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+	return errors.NotImplementedf("Binary functionality not implemented")
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (l Link) MarshalBinary() ([]byte, error) {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+	return nil, errors.NotImplementedf("Binary functionality not implemented")
 }
 
 func fmtLinkProps(w io.Writer) func(*Link) error {

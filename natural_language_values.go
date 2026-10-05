@@ -626,12 +626,12 @@ func (c *Content) UnmarshalText(data []byte) error {
 	return nil
 }
 
-func (c Content) MarshalBinary() ([]byte, error) {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+func (c *Content) UnmarshalBinary(data []byte) error {
+	return errors.NotImplementedf("Binary functionality not implemented")
 }
 
-func (c *Content) UnmarshalBinary(data []byte) error {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+func (c Content) MarshalBinary() ([]byte, error) {
+	return nil, errors.NotImplementedf("Binary functionality not implemented")
 }
 
 func (c Content) String() string {
@@ -716,12 +716,12 @@ func (n *NaturalLanguageValues) UnmarshalText(data []byte) error {
 	return n.Append(NilLangRef, c)
 }
 
-func (n NaturalLanguageValues) MarshalBinary() ([]byte, error) {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+func (n *NaturalLanguageValues) UnmarshalBinary(data []byte) error {
+	return errors.NotImplementedf("Binary functionality not implemented")
 }
 
-func (n *NaturalLanguageValues) UnmarshalBinary(data []byte) error {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+func (n NaturalLanguageValues) MarshalBinary() ([]byte, error) {
+	return nil, errors.NotImplementedf("Binary functionality not implemented")
 }
 
 // Equal

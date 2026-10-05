@@ -189,12 +189,12 @@ func (a *ActivityVocabularyType) GobDecode(data []byte) error {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (a *ActivityVocabularyType) UnmarshalBinary(data []byte) error {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+	return errors.NotImplementedf("Binary functionality not implemented")
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+	return nil, errors.NotImplementedf("Binary functionality not implemented")
 }
 
 func (a ActivityVocabularyType) AsTypes() ActivityVocabularyTypes {

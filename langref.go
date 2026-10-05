@@ -30,12 +30,12 @@ func MakeRef(raw []byte) LangRef {
 	return LangRef(language.Make(string(raw)))
 }
 
-func (l LangRef) MarshalBinary() ([]byte, error) {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+func (l *LangRef) UnmarshalBinary(data []byte) error {
+	return errors.NotImplementedf("Binary functionality not implemented")
 }
 
-func (l *LangRef) UnmarshalBinary(data []byte) error {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+func (l LangRef) MarshalBinary() ([]byte, error) {
+	return nil, errors.NotImplementedf("Binary functionality not implemented")
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.

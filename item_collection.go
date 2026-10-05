@@ -60,12 +60,12 @@ func (i ItemCollection) MarshalJSON() ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func (i ItemCollection) MarshalBinary() ([]byte, error) {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+func (i *ItemCollection) UnmarshalBinary(data []byte) error {
+	return errors.NotImplementedf("Binary functionality not implemented")
 }
 
-func (i *ItemCollection) UnmarshalBinary(data []byte) error {
-	panic(errors.NotImplementedf("Binary functionality not implemented"))
+func (i ItemCollection) MarshalBinary() ([]byte, error) {
+	return nil, errors.NotImplementedf("Binary functionality not implemented")
 }
 
 // Append facilitates adding elements to Item arrays
