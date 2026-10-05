@@ -310,3 +310,16 @@ func OnTombstone(it LinkOrIRI, fn func(*Tombstone) error) error {
 		return nil
 	})
 }
+
+func notEmptyTombstone(p *Tombstone) bool {
+	notEmpty := !(p.FormerType == nil ||
+		EmptyTypes(p.FormerType.AsTypes()...))
+	if !notEmpty {
+		return notEmpty
+	}
+	_ = OnObject(p, func(ob *Object) error {
+		notEmpty = notEmptyObject(ob)
+		return nil
+	})
+	return notEmpty
+}

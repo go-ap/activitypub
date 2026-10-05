@@ -39,6 +39,38 @@ func TestItemsEqual(t *testing.T) {
 		want bool
 	}{
 		{
+			name: "equal empty items",
+			args: args{
+				it:   &Object{},
+				with: &Actor{},
+			},
+			want: true,
+		},
+		{
+			name: "equal same ID items",
+			args: args{
+				it:   &Object{ID: "example-1"},
+				with: &Object{ID: "example-1"},
+			},
+			want: true,
+		},
+		{
+			name: "different IDs",
+			args: args{
+				it:   &Object{ID: "example-1"},
+				with: &Object{ID: "example-2"},
+			},
+			want: false,
+		},
+		{
+			name: "different properties",
+			args: args{
+				it:   &Object{ID: "example-1"},
+				with: &Object{Type: ArticleType},
+			},
+			want: false,
+		},
+		{
 			name: "nil_items_equal",
 			args: args{nil, nil},
 			want: true,
@@ -108,6 +140,151 @@ func TestItemsEqual(t *testing.T) {
 			args: args{&Link{ID: "test1", Type: MentionType}, &Link{ID: "test", Type: MentionType}},
 			want: false,
 		},
+		{
+			name: "nil vs nil",
+			args: args{it: nil, with: nil},
+			want: true,
+		},
+		{
+			name: "nil vs object",
+			args: args{
+				it:   nil,
+				with: Object{},
+			},
+			want: false,
+		},
+		{
+			name: "object vs nil",
+			args: args{
+				it:   Object{},
+				with: nil,
+			},
+			want: false,
+		},
+		{
+			name: "empty object vs empty object",
+			args: args{
+				it:   Object{},
+				with: Object{},
+			},
+			want: true,
+		},
+		{
+			name: "object-id vs empty object",
+			args: args{
+				it:   Object{ID: "https://example.com"},
+				with: Object{},
+			},
+			want: false,
+		},
+		{
+			name: "empty object vs object-id",
+			args: args{
+				it:   Object{},
+				with: Object{ID: "https://example.com"},
+			},
+			want: false,
+		},
+		// IRIs
+		{
+			name: "empty iris equal",
+			args: args{
+				it:   IRIs{},
+				with: IRIs{},
+			},
+			want: true,
+		},
+		{
+			name: "iris equal",
+			args: args{
+				it:   IRIs{"http://example.com", "http://127.0.0.1:666"},
+				with: IRIs{"http://example.com", "http://127.0.0.1:666"},
+			},
+			want: true,
+		},
+		{
+			name: "iris and item-collection not equal",
+			args: args{
+				it:   IRIs{"http://example.com"},
+				with: ItemCollection{IRI("http://example.com")},
+			},
+			want: false,
+		},
+		{
+			name: "iris in different orders not equal",
+			args: args{
+				it:   IRIs{"http://example.com", "http://127.0.0.1:666"},
+				with: IRIs{"http://127.0.0.1:666", "http://example.com"},
+			},
+			want: false,
+		},
+		{
+			name: "iris not equal",
+			args: args{
+				it:   IRIs{"http://example.com", "http://127.0.0.1:666"},
+				with: IRIs{"http://example.com", "http://127.0.0.1:667"},
+			},
+			want: false,
+		},
+		{
+			name: "iris of different size not equal",
+			args: args{
+				it:   IRIs{"http://example.com", "http://127.0.0.1:666"},
+				with: IRIs{"http://example.com"},
+			},
+			want: false,
+		},
+		// ItemCollection
+		{
+			name: "empty item-collections equal",
+			args: args{
+				it:   ItemCollection{},
+				with: ItemCollection{},
+			},
+			want: true,
+		},
+		{
+			name: "item-collections equal",
+			args: args{
+				it:   ItemCollection{IRI("http://example.com"), IRI("http://127.0.0.1:666")},
+				with: ItemCollection{IRI("http://example.com"), IRI("http://127.0.0.1:666")},
+			},
+			want: true,
+		},
+		{
+			// NOTE(marius): this is different than the reverse, tested above IRIs != ItemCollection
+			// This might be a mistake
+			name: "item-collection and iris *are* equal",
+			args: args{
+				it:   ItemCollection{IRI("http://example.com")},
+				with: IRIs{"http://example.com"},
+			},
+			want: true,
+		},
+		{
+			name: "item-collections in different orders not equal",
+			args: args{
+				it:   ItemCollection{IRI("http://example.com"), IRI("http://127.0.0.1:666")},
+				with: ItemCollection{IRI("http://127.0.0.1:666"), IRI("http://example.com")},
+			},
+			want: false,
+		},
+		{
+			name: "item-collection not equal",
+			args: args{
+				it:   ItemCollection{IRI("http://example.com"), IRI("http://127.0.0.1:666")},
+				with: ItemCollection{IRI("http://example.com"), IRI("http://127.0.0.1:667")},
+			},
+			want: false,
+		},
+		{
+			name: "item-collections of different size not equal",
+			args: args{
+				it:   ItemCollection{IRI("http://example.com"), IRI("http://127.0.0.1:666")},
+				with: ItemCollection{IRI("http://example.com")},
+			},
+			want: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -119,209 +296,119 @@ func TestItemsEqual(t *testing.T) {
 }
 
 func TestIsNil(t *testing.T) {
-	type args struct {
-		it Item
-	}
-	var (
-		o      *Object
-		col    *ItemCollection
-		iris   *IRIs
-		obNil  Item = o
-		colNil Item = col
-		itIRIs Item = iris
-	)
 	tests := []struct {
 		name string
-		args args
+		it   Item
 		want bool
 	}{
 		{
 			name: "nil is nil",
-			args: args{
-				it: nil,
-			},
+			it:   nil,
 			want: true,
 		},
 		{
 			name: "Item is nil",
-			args: args{
-				it: Item(nil),
-			},
+			it:   Item(nil),
 			want: true,
 		},
 		{
 			name: "Object nil",
-			args: args{
-				it: obNil,
-			},
+			it:   obNil,
 			want: true,
 		},
 		{
 			name: "IRIs nil",
-			args: args{
-				it: iris,
-			},
+			it:   nilIRIs,
 			want: true,
 		},
 		{
 			name: "IRIs as Item nil",
-			args: args{
-				it: itIRIs,
-			},
+			it:   itIRIs,
 			want: true,
 		},
 		{
 			name: "IRIs not nil",
-			args: args{
-				it: IRIs{},
-			},
+			it:   IRIs{},
 			want: false,
 		},
 		{
 			name: "IRIs as Item not nil",
-			args: args{
-				it: Item(IRIs{}),
-			},
+			it:   Item(IRIs{}),
 			want: false,
 		},
 		{
 			name: "ItemCollection nil",
-			args: args{
-				it: col,
-			},
+			it:   nilCol,
 			want: true,
 		},
 		{
 			name: "ItemCollection as Item nil",
-			args: args{
-				it: colNil,
-			},
+			it:   colNil,
 			want: true,
 		},
 		{
 			name: "ItemCollection not nil",
-			args: args{
-				it: ItemCollection{},
-			},
+			it:   ItemCollection{},
 			want: false,
 		},
 		{
 			name: "object-not-nil",
-			args: args{
-				it: &Object{},
-			},
+			it:   &Object{},
 			want: false,
 		},
 		{
 			name: "place-not-nil",
-			args: args{
-				it: &Place{},
-			},
+			it:   &Place{},
 			want: false,
 		},
 		{
 			name: "tombstone-not-nil",
-			args: args{
-				it: &Tombstone{},
-			},
+			it:   &Tombstone{},
 			want: false,
 		},
 		{
 			name: "collection-not-nil",
-			args: args{
-				it: &Collection{},
-			},
+			it:   &Collection{},
 			want: false,
 		},
 		{
 			name: "activity-not-nil",
-			args: args{
-				it: &Activity{},
-			},
+			it:   &Activity{},
 			want: false,
 		},
 		{
 			name: "intransitive-activity-not-nil",
-			args: args{
-				it: &IntransitiveActivity{},
-			},
+			it:   &IntransitiveActivity{},
 			want: false,
 		},
 		{
 			name: "actor-not-nil",
-			args: args{
-				it: &Actor{},
-			},
+			it:   &Actor{},
 			want: false,
+		},
+		{
+			name: "nil IRI",
+			it:   nilIRI,
+			want: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsNil(tt.args.it); got != tt.want {
+			if got := IsNil(tt.it); got != tt.want {
 				t.Errorf("IsNil() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestItemsEqual1(t *testing.T) {
-	type args struct {
-		it   Item
-		with Item
-	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{
-			name: "nil",
-			args: args{},
-			want: true,
-		},
-		{
-			name: "equal empty items",
-			args: args{
-				it:   &Object{},
-				with: &Actor{},
-			},
-			want: true,
-		},
-		{
-			name: "equal same ID items",
-			args: args{
-				it:   &Object{ID: "example-1"},
-				with: &Object{ID: "example-1"},
-			},
-			want: true,
-		},
-		{
-			name: "different IDs",
-			args: args{
-				it:   &Object{ID: "example-1"},
-				with: &Object{ID: "example-2"},
-			},
-			want: false,
-		},
-		{
-			name: "different properties",
-			args: args{
-				it:   &Object{ID: "example-1"},
-				with: &Object{Type: ArticleType},
-			},
-			want: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := ItemsEqual(tt.args.it, tt.args.with); got != tt.want {
-				t.Errorf("ItemsEqual() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 var (
+	o       *Object
+	nilCol  *ItemCollection
+	nilIRIs *IRIs
+	obNil   Item = o
+	colNil  Item = nilCol
+	itIRIs  Item = nilIRIs
+
 	nilIRI *IRI = nil
 
 	nilLink *Link = nil
@@ -436,79 +523,91 @@ func TestIsObject(t *testing.T) {
 			it:   nilOrderedCollectionPage,
 			want: false,
 		},
+		{
+			name: "Actor",
+			it:   Actor{},
+			want: true,
+		},
+		{
+			name: "Profile",
+			it:   Profile{},
+			want: true,
+		},
+		{
+			name: "Place",
+			it:   Place{},
+			want: true,
+		},
+		{
+			name: "Relationship",
+			it:   Relationship{},
+			want: true,
+		},
+		{
+			name: "Tombstone",
+			it:   Tombstone{},
+			want: true,
+		},
+		{
+			name: "Activity",
+			it:   Activity{},
+			want: true,
+		},
+		{
+			name: "IntransitiveActivity",
+			it:   IntransitiveActivity{},
+			want: true,
+		},
+		{
+			name: "Question",
+			it:   Question{},
+			want: true,
+		},
+		{
+			name: "Collection",
+			it:   Collection{},
+			want: true,
+		},
+		{
+			name: "Collection ptr",
+			it:   new(Collection),
+			want: true,
+		},
+		{
+			name: "CollectionPage",
+			it:   CollectionPage{},
+			want: true,
+		},
+		{
+			name: "CollectionPage ptr",
+			it:   new(CollectionPage),
+			want: true,
+		},
+		{
+			name: "OrderedCollection",
+			it:   OrderedCollection{},
+			want: true,
+		},
+		{
+			name: "OrderedCollection ptr",
+			it:   new(OrderedCollection),
+			want: true,
+		},
+		{
+			name: "OrderedCollectionPage",
+			it:   OrderedCollectionPage{},
+			want: true,
+		},
+		{
+			name: "OrderedCollectionPage ptr",
+			it:   new(OrderedCollectionPage),
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := IsObject(tt.it); got != tt.want {
 				t.Errorf("IsObject() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestItemsEqual2(t *testing.T) {
-	type args struct {
-		it   Item
-		with Item
-	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{
-			name: "nil vs nil",
-			args: args{
-				it:   nil,
-				with: nil,
-			},
-			want: true,
-		},
-		{
-			name: "nil vs object",
-			args: args{
-				it:   nil,
-				with: Object{},
-			},
-			want: false,
-		},
-		{
-			name: "object vs nil",
-			args: args{
-				it:   Object{},
-				with: nil,
-			},
-			want: false,
-		},
-		{
-			name: "empty object vs empty object",
-			args: args{
-				it:   Object{},
-				with: Object{},
-			},
-			want: true,
-		},
-		{
-			name: "object-id vs empty object",
-			args: args{
-				it:   Object{ID: "https://example.com"},
-				with: Object{},
-			},
-			want: false,
-		},
-		{
-			name: "empty object vs object-id",
-			args: args{
-				it:   Object{},
-				with: Object{ID: "https://example.com"},
-			},
-			want: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := ItemsEqual(tt.args.it, tt.args.with); got != tt.want {
-				t.Errorf("ItemsEqual() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -757,6 +856,26 @@ func TestIsCollection(t *testing.T) {
 		{
 			name: "nil *CollectionPage",
 			it:   (*CollectionPage)(nil),
+			want: true,
+		},
+		{
+			name: "Collection",
+			it:   Collection{},
+			want: true,
+		},
+		{
+			name: "CollectionPage",
+			it:   CollectionPage{},
+			want: true,
+		},
+		{
+			name: "OrderedCollection",
+			it:   OrderedCollection{},
+			want: true,
+		},
+		{
+			name: "OrderedCollectionPage",
+			it:   OrderedCollectionPage{},
 			want: true,
 		},
 	}
@@ -1334,6 +1453,137 @@ func Test_typedObjectsEqual(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := typedObjectsEqual(tt.args.it, tt.args.with); got != tt.want {
 				t.Errorf("typedObjectsEqual() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNotEmpty(t *testing.T) {
+	tests := []struct {
+		name string
+		it   Item
+		want bool
+	}{
+		{
+			name: "nil is nil",
+			it:   nil,
+			want: false,
+		},
+		{
+			name: "Item is nil",
+			it:   Item(nil),
+			want: false,
+		},
+		{
+			name: "Object nil",
+			it:   obNil,
+			want: false,
+		},
+		{
+			name: "IRIs nil",
+			it:   nilIRIs,
+			want: false,
+		},
+		{
+			name: "IRIs as Item nil",
+			it:   itIRIs,
+			want: false,
+		},
+		{
+			name: "empty IRIs",
+			it:   IRIs{},
+			want: false,
+		},
+		{
+			name: "IRIs as Item not nil",
+			it:   Item(IRIs{}),
+			want: false,
+		},
+		{
+			name: "ItemCollection nil",
+			it:   nilCol,
+			want: false,
+		},
+		{
+			name: "ItemCollection as Item nil",
+			it:   colNil,
+			want: false,
+		},
+		{
+			name: "ItemCollection empty",
+			it:   ItemCollection{},
+			want: false,
+		},
+		{
+			name: "link empty",
+			it:   &Link{},
+			want: false,
+		},
+		{
+			name: "object empty",
+			it:   &Object{},
+			want: false,
+		},
+		{
+			name: "place empty",
+			it:   &Place{},
+			want: false,
+		},
+		{
+			name: "profile empty",
+			it:   &Profile{},
+			want: false,
+		},
+		{
+			name: "relationship empty",
+			it:   &Relationship{},
+			want: false,
+		},
+		{
+			name: "tombstone empty",
+			it:   &Tombstone{},
+			want: false,
+		},
+		{
+			name: "collection empty",
+			it:   &Collection{},
+			want: false,
+		},
+		{
+			name: "activity empty",
+			it:   &Activity{},
+			want: false,
+		},
+		{
+			name: "intransitive-activity empty",
+			it:   &IntransitiveActivity{},
+			want: false,
+		},
+		{
+			name: "question empty",
+			it:   &Question{},
+			want: false,
+		},
+		{
+			name: "actor empty",
+			it:   &Actor{},
+			want: false,
+		},
+		{
+			name: "nil IRI",
+			it:   nilIRI,
+			want: false,
+		},
+		{
+			name: "empty IRI",
+			it:   IRI(""),
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NotEmpty(tt.it); got != tt.want {
+				t.Errorf("NotEmpty() = %v, want %v", got, tt.want)
 			}
 		})
 	}

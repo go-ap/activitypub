@@ -268,3 +268,15 @@ func OnProfile(it LinkOrIRI, fn func(*Profile) error) error {
 		return nil
 	})
 }
+
+func notEmptyProfile(p *Profile) bool {
+	if !NotEmpty(p.Describes) {
+		return false
+	}
+	notEmpty := true
+	_ = OnObject(p, func(ob *Object) error {
+		notEmpty = notEmptyObject(ob)
+		return nil
+	})
+	return notEmpty
+}

@@ -115,38 +115,21 @@ func ItemsEqual(it, with Item) bool {
 		return eq
 	}
 
-	result := false
+	// NOTE(marius): these don't have Equals(Item) methods yet
 	switch {
 	case IsIRI(with) || IsIRI(it):
 		ii, ok := it.(IRI)
 		iw, wok := with.(IRI)
-		result = ok && wok && ii.Equal(iw)
-	case IsIRIs(it):
-		if !IsIRIs(with) {
+		return ok && wok && ii.Equal(iw)
+	case IsIRIs(it) || IsIRIs(with):
+		if !(IsIRIs(it) && IsIRIs(with)) {
 			return false
 		}
 		iIRIs, _ := ToIRIs(it)
 		wIRIs, _ := ToIRIs(with)
 		return slices.Equal(*iIRIs, *wIRIs)
-	case IsItemCollection(it):
-		if !IsItemCollection(with) {
-			return false
-		}
-		_ = OnItemCollection(it, func(c *ItemCollection) error {
-			result = c.Equals(with)
-			return nil
-		})
-	case IsLink(it):
-		_ = OnLink(it, func(l *Link) error {
-			result = l.Equals(with)
-			return nil
-		})
-	default:
-		itt, oki := it.(ObjectOrLink)
-		witht, okw := it.(ObjectOrLink)
-		result = (oki && okw) && typedObjectsEqual(itt, witht)
 	}
-	return result
+	return typedObjectsEqual(it, with)
 }
 
 func typedObjectsEqual(it, with ObjectOrLink) bool {
@@ -383,52 +366,100 @@ func NotEmpty(it Item) bool {
 		})
 	default:
 		if itt, ok := it.(ObjectOrLink); ok {
-			notEmpty = emptyByType(itt)
+			notEmpty = emptyItem(itt)
 		}
 	}
 	return notEmpty
 }
 
-func emptyByType(it ObjectOrLink) bool {
+func emptyItem(it ObjectOrLink) bool {
 	var notEmpty bool
-	typ := it.GetType()
-	switch {
-	case QuestionType.Match(typ):
-		_ = OnQuestion(it, func(q *Question) error {
-			notEmpty = notEmptyQuestion(q)
-			return nil
-		})
-	case IntransitiveActivityTypes.Match(typ):
-		_ = OnIntransitiveActivity(it, func(a *IntransitiveActivity) error {
-			notEmpty = notEmptyIntransitiveActivity(a)
-			return nil
-		})
-	case ActivityTypes.Match(typ):
-		_ = OnActivity(it, func(a *Activity) error {
-			notEmpty = notEmptyActivity(a)
-			return nil
-		})
-	case CollectionTypes.Match(typ):
-		_ = OnCollectionIntf(it, func(c CollectionInterface) error {
-			notEmpty = c != nil || len(c.Collection()) > 0
-			return nil
-		})
-	case ActorTypes.Match(typ):
-		_ = OnActor(it, func(a *Actor) error {
-			notEmpty = notEmptyActor(a)
-			return nil
-		})
-	case LinkTypes.Match(typ):
-		_ = OnLink(it, func(l *Link) error {
-			notEmpty = notEmptyLink(l)
-			return nil
-		})
-	default:
-		_ = OnObject(it, func(o *Object) error {
-			notEmpty = notEmptyObject(o)
-			return nil
-		})
+
+	err := OnTombstone(it, func(t *Tombstone) error {
+		notEmpty = notEmptyTombstone(t)
+		return nil
+	})
+	if err == nil {
+		return notEmpty
 	}
+
+	err = OnActivity(it, func(a *Activity) error {
+		notEmpty = notEmptyActivity(a)
+		return nil
+	})
+	if err == nil {
+		return notEmpty
+	}
+
+	err = OnQuestion(it, func(q *Question) error {
+		notEmpty = notEmptyQuestion(q)
+		return nil
+	})
+	if err == nil {
+		return notEmpty
+	}
+
+	err = OnIntransitiveActivity(it, func(a *IntransitiveActivity) error {
+		notEmpty = notEmptyIntransitiveActivity(a)
+		return nil
+	})
+	if err == nil {
+		return notEmpty
+	}
+
+	err = OnActor(it, func(a *Actor) error {
+		notEmpty = notEmptyActor(a)
+		return nil
+	})
+	if err == nil {
+		return notEmpty
+	}
+
+	err = OnLink(it, func(l *Link) error {
+		notEmpty = notEmptyLink(l)
+		return nil
+	})
+	if err == nil {
+		return notEmpty
+	}
+
+	err = OnCollectionIntf(it, func(c CollectionInterface) error {
+		notEmpty = c != nil || len(c.Collection()) > 0
+		return nil
+	})
+	if err == nil {
+		return notEmpty
+	}
+
+	err = OnProfile(it, func(p *Profile) error {
+		notEmpty = notEmptyProfile(p)
+		return nil
+	})
+	if err == nil {
+		return notEmpty
+	}
+
+	err = OnRelationship(it, func(r *Relationship) error {
+		notEmpty = notEmptyRelationship(r)
+		return nil
+	})
+	if err == nil {
+		return notEmpty
+	}
+
+	err = OnPlace(it, func(r *Place) error {
+		notEmpty = notEmptyPlace(r)
+		return nil
+	})
+	if err == nil {
+		return notEmpty
+	}
+
+	_ = OnObject(it, func(o *Object) error {
+		notEmpty = notEmptyObject(o)
+		return nil
+	})
+
 	return notEmpty
 }
 
