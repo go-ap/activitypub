@@ -348,10 +348,10 @@ func OnRelationship(it LinkOrIRI, fn WithRelationshipFn) error {
 }
 
 func notEmptyRelationship(r *Relationship) bool {
-	if !NotEmpty(r.Relationship) {
-		return false
+	notEmpty := NotEmpty(r.Relationship)
+	if notEmpty {
+		return true
 	}
-	notEmpty := true
 	_ = OnObject(r, func(ob *Object) error {
 		notEmpty = notEmptyObject(ob)
 		return nil

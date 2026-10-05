@@ -392,13 +392,13 @@ func OnPlace(it LinkOrIRI, fn func(*Place) error) error {
 }
 
 func notEmptyPlace(p *Place) bool {
-	notEmpty := p.Accuracy == 0 &&
-		p.Altitude == 0 &&
-		p.Latitude == 0 &&
-		p.Longitude == 0 &&
-		p.Radius == 0 &&
-		len(p.Units) == 0
-	if !notEmpty {
+	notEmpty := p.Accuracy != 0 &&
+		p.Altitude != 0 &&
+		p.Latitude != 0 &&
+		p.Longitude != 0 &&
+		p.Radius != 0 &&
+		len(p.Units) > 0
+	if notEmpty {
 		return notEmpty
 	}
 	_ = OnObject(p, func(ob *Object) error {

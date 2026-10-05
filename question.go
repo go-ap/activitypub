@@ -340,13 +340,13 @@ func OnQuestion(it LinkOrIRI, fn func(question *Question) error) error {
 }
 
 func notEmptyQuestion(i *Question) bool {
-	notEmpty := true
+	notEmpty := NotEmpty(i.AnyOf) || NotEmpty(i.OneOf)
+	if notEmpty {
+		return true
+	}
 	_ = OnIntransitiveActivity(i, func(ob *IntransitiveActivity) error {
 		notEmpty = notEmptyIntransitiveActivity(ob)
 		return nil
 	})
-	if notEmpty {
-		return true
-	}
-	return i.AnyOf != nil || i.OneOf != nil
+	return notEmpty
 }

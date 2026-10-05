@@ -576,21 +576,23 @@ func OnActor(it LinkOrIRI, fn func(*Actor) error) error {
 }
 
 func notEmptyActor(a *Actor) bool {
-	var notEmpty bool
+	notEmpty := NotEmpty(a.Inbox) ||
+		NotEmpty(a.Outbox) ||
+		NotEmpty(a.Following) ||
+		NotEmpty(a.Followers) ||
+		NotEmpty(a.Liked) ||
+		len(a.PreferredUsername) > 0 ||
+		a.Endpoints != nil ||
+		len(a.Streams) > 0 ||
+		len(a.PublicKey.ID)+len(a.PublicKey.Owner)+len(a.PublicKey.PublicKeyPem) > 0
+	if notEmpty {
+		return true
+	}
 	_ = OnObject(a, func(o *Object) error {
 		notEmpty = notEmptyObject(o)
 		return nil
 	})
-	return notEmpty ||
-		a.Inbox != nil ||
-		a.Outbox != nil ||
-		a.Following != nil ||
-		a.Followers != nil ||
-		a.Liked != nil ||
-		a.PreferredUsername != nil ||
-		a.Endpoints != nil ||
-		a.Streams != nil ||
-		len(a.PublicKey.ID)+len(a.PublicKey.Owner)+len(a.PublicKey.PublicKeyPem) > 0
+	return notEmpty
 }
 
 // CopyActorProperties

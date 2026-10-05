@@ -314,8 +314,8 @@ func OnTombstone(it LinkOrIRI, fn func(*Tombstone) error) error {
 func notEmptyTombstone(p *Tombstone) bool {
 	notEmpty := !(p.FormerType == nil ||
 		EmptyTypes(p.FormerType.AsTypes()...))
-	if !notEmpty {
-		return notEmpty
+	if notEmpty {
+		return true
 	}
 	_ = OnObject(p, func(ob *Object) error {
 		notEmpty = notEmptyObject(ob)

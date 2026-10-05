@@ -3,7 +3,9 @@ package activitypub
 import (
 	"fmt"
 	"testing"
+	"time"
 
+	"github.com/go-ap/errors"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -104,7 +106,47 @@ func TestProfile_IsObject(t *testing.T) {
 }
 
 func TestProfile_UnmarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name    string
+		data    []byte
+		want    Profile
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: errors.Newf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
+		},
+		{
+			name: "just with ID",
+			data: []byte(`{"id":"https://example.com/profile-1"}`),
+			want: Profile{ID: "https://example.com/profile-1"},
+		},
+		{
+			name: "a mocked profile",
+			data: []byte(`{"id":"https://example.com/~root/profile/1","type":"Profile","attributedTo":"https://example.com/~root","audience":"https://www.w3.org/ns/activitystreams#Public","published":"2000-01-04T22:23:22.000Z","likes":"https://example.com/~root/profile/1/likes"}`),
+			want: Profile{
+				ID:           "https://example.com/~root/profile/1",
+				Type:         ProfileType,
+				AttributedTo: IRI("https://example.com/~root"),
+				Audience:     ItemCollection{IRI("https://www.w3.org/ns/activitystreams#Public")},
+				Published:    time.Date(2000, time.January, 4, 22, 23, 22, 0, time.UTC),
+				Likes:        IRI("https://example.com/~root/profile/1/likes"),
+			},
+			wantErr: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := Profile{}
+			if err := p.UnmarshalJSON(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(p, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, p))
+			}
+		})
+	}
 }
 
 func TestProfile_Clean(t *testing.T) {
