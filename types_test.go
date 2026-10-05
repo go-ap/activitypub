@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -734,6 +735,69 @@ func TestActivityVocabularyTypes_AsTypes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.a.AsTypes(); !cmp.Equal(got, tt.want) {
 				t.Errorf("AsTypes() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestActivityVocabularyType_MarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		a       ActivityVocabularyType
+		want    []byte
+		wantErr error
+	}{
+		{
+			name: "empty",
+			a:    "",
+			want: []byte{},
+		},
+		{
+			name: "Note",
+			a:    NoteType,
+			want: []byte("Note"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.a.MarshalBinary()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("MarshalBinary() got = %s, want %s", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestActivityVocabularyType_UnmarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    []byte
+		want    ActivityVocabularyType
+		wantErr error
+	}{
+		{
+			name: "empty",
+			want: "",
+			data: []byte{},
+		},
+		{
+			name: "Note",
+			data: []byte("Note"),
+			want: NoteType,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			typ := new(ActivityVocabularyType)
+			if err := typ.UnmarshalBinary(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if *typ != tt.want {
+				t.Errorf("UnmarshalBinary() got = %s, want = %s", *typ, tt.want)
 			}
 		})
 	}

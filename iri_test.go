@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"net/url"
@@ -498,6 +499,63 @@ func TestIRIs_Normalize(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.i.Normalize(); !cmp.Equal(got, tt.want) {
 				t.Errorf("Normalize() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestIRI_MarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		i       IRI
+		want    []byte
+		wantErr error
+	}{
+		{
+			name: "empty",
+			i:    "",
+			want: []byte{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.i.MarshalBinary()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("MarshalBinary() got = %s, want %s", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIRI_UnmarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    []byte
+		want    IRI
+		wantErr error
+	}{
+		{
+			name: "empty",
+			data: nil,
+		},
+		{
+			name: "iri",
+			data: []byte("http://example.com"),
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := new(IRI)
+			if err := i.UnmarshalBinary(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if *i != tt.want {
+				t.Errorf("UnmarshalBinary() got = %s, want = %s", *i, tt.want)
 			}
 		})
 	}

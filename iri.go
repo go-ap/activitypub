@@ -107,12 +107,13 @@ func (i IRI) MarshalJSON() ([]byte, error) {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (i *IRI) UnmarshalBinary(data []byte) error {
-	return errors.NotImplementedf("Binary functionality not implemented")
+	*i = IRI(data)
+	return nil
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (i IRI) MarshalBinary() ([]byte, error) {
-	return nil, errors.NotImplementedf("Binary functionality not implemented")
+	return []byte(i), nil
 }
 
 // AddPath concatenates el elements as a path to i

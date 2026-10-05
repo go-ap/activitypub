@@ -6,7 +6,6 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -189,12 +188,13 @@ func (a *ActivityVocabularyType) GobDecode(data []byte) error {
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
 func (a *ActivityVocabularyType) UnmarshalBinary(data []byte) error {
-	return errors.NotImplementedf("Binary functionality not implemented")
+	*a = ActivityVocabularyType(data)
+	return nil
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (a ActivityVocabularyType) MarshalBinary() ([]byte, error) {
-	return nil, errors.NotImplementedf("Binary functionality not implemented")
+	return []byte(a), nil
 }
 
 func (a ActivityVocabularyType) AsTypes() ActivityVocabularyTypes {
