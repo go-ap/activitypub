@@ -277,11 +277,11 @@ func (q *Question) Clean() Item {
 
 // Equals verifies if our receiver IntransitiveActivity is equals with the "with" Item
 func (q Question) Equals(with Item) bool {
-	withActivity, err := ToQuestion(with)
+	withQuestion, err := ToQuestion(with)
 	if err != nil {
 		return false
 	}
-	return q.equal(*withActivity)
+	return q.equal(*withQuestion)
 }
 
 // equal verifies if our receiver IntransitiveActivity is equals with the "with" IntransitiveActivity

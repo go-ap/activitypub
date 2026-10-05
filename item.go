@@ -150,6 +150,9 @@ func ItemsEqual(it, with Item) bool {
 }
 
 func typedObjectsEqual(it, with ObjectOrLink) bool {
+	if it == nil || with == nil {
+		return it == nil && with == nil
+	}
 	if !typesEqual(it.GetType(), with.GetType()) {
 		return false
 	}

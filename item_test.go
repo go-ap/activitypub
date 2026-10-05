@@ -909,16 +909,374 @@ func Test_compareByType(t *testing.T) {
 		{
 			name: "equal objects",
 			args: args{
-				it:   &Object{ID: "http://example.com"},
-				with: &Object{ID: "http://example.com"},
+				typ:  ImageType,
+				it:   &Object{ID: "http://example.com", Type: ImageType},
+				with: &Object{ID: "http://example.com", Type: ImageType},
 			},
 			want: true,
 		},
 		{
-			name: "object equal actor",
+			name: "objects w/o types not equal",
 			args: args{
+				typ:  ImageType,
 				it:   &Object{ID: "http://example.com"},
-				with: &Actor{ID: "http://example.com", PreferredUsername: DefaultLangValue("jdoe")},
+				with: &Object{ID: "http://example.com"},
+			},
+			want: false,
+		},
+		//
+		{
+			name: "equal Tombstones",
+			args: args{
+				typ:  TombstoneType,
+				it:   &Tombstone{ID: "http://example.com", Type: TombstoneType, FormerType: NoteType},
+				with: &Tombstone{ID: "http://example.com", Type: TombstoneType, FormerType: NoteType},
+			},
+			want: true,
+		},
+		{
+			name: "Tombstones different Summary",
+			args: args{
+				typ:  TombstoneType,
+				it:   &Tombstone{ID: "http://example.com", Type: TombstoneType, Summary: DefaultLangValue("test")},
+				with: &Tombstone{ID: "http://example.com", Type: TombstoneType, Summary: DefaultLangValue("different")},
+			},
+			want: false,
+		},
+		{
+			name: "Tombstones different formerType",
+			args: args{
+				typ:  TombstoneType,
+				it:   &Tombstone{ID: "http://example.com", Type: TombstoneType, FormerType: NoteType},
+				with: &Tombstone{ID: "http://example.com", Type: TombstoneType, FormerType: ArticleType},
+			},
+			want: false,
+		},
+		{
+			name: "Tombstones w/o types not equal",
+			args: args{
+				typ:  TombstoneType,
+				it:   &Tombstone{ID: "http://example.com", FormerType: NoteType},
+				with: &Tombstone{ID: "http://example.com", FormerType: NoteType},
+			},
+			want: false,
+		},
+		//
+		{
+			name: "equal Profiles",
+			args: args{
+				typ:  ProfileType,
+				it:   &Profile{ID: "http://example.com", Type: ProfileType, Describes: IRI("http://example.com/1")},
+				with: &Profile{ID: "http://example.com", Type: ProfileType, Describes: IRI("http://example.com/1")},
+			},
+			want: true,
+		},
+		{
+			name: "Profiles different Summary",
+			args: args{
+				typ:  ProfileType,
+				it:   &Profile{ID: "http://example.com", Type: ProfileType, Summary: DefaultLangValue("test")},
+				with: &Profile{ID: "http://example.com", Type: ProfileType, Summary: DefaultLangValue("different")},
+			},
+			want: false,
+		},
+		{
+			name: "Profiles different describes",
+			args: args{
+				typ:  ProfileType,
+				it:   &Profile{ID: "http://example.com", Type: ProfileType, Describes: IRI("http://example.com/1")},
+				with: &Profile{ID: "http://example.com", Type: ProfileType, Describes: IRI("http://example.com/2")},
+			},
+			want: false,
+		},
+		{
+			name: "Profiles w/o types not equal",
+			args: args{
+				typ:  ProfileType,
+				it:   &Profile{ID: "http://example.com", Describes: IRI("http://example.com/1")},
+				with: &Profile{ID: "http://example.com", Describes: IRI("http://example.com/1")},
+			},
+			want: false,
+		},
+		//
+		{
+			name: "equal Relationships",
+			args: args{
+				typ:  RelationshipType,
+				it:   &Relationship{ID: "http://example.com", Type: RelationshipType, Relationship: IRI("http://example.com/1")},
+				with: &Relationship{ID: "http://example.com", Type: RelationshipType, Relationship: IRI("http://example.com/1")},
+			},
+			want: true,
+		},
+		{
+			name: "Relationships different Summary",
+			args: args{
+				typ:  RelationshipType,
+				it:   &Relationship{ID: "http://example.com", Type: RelationshipType, Summary: DefaultLangValue("test")},
+				with: &Relationship{ID: "http://example.com", Type: RelationshipType, Summary: DefaultLangValue("different")},
+			},
+			want: false,
+		},
+		{
+			name: "Relationships different relationship",
+			args: args{
+				typ:  RelationshipType,
+				it:   &Relationship{ID: "http://example.com", Type: RelationshipType, Relationship: IRI("http://example.com/1")},
+				with: &Relationship{ID: "http://example.com", Type: RelationshipType, Relationship: IRI("http://example.com/2")},
+			},
+			want: false,
+		},
+		{
+			name: "Relationships w/o types not equal",
+			args: args{
+				typ:  RelationshipType,
+				it:   &Relationship{ID: "http://example.com", Relationship: IRI("http://example.com/1")},
+				with: &Relationship{ID: "http://example.com", Relationship: IRI("http://example.com/1")},
+			},
+			want: false,
+		},
+		//
+		{
+			name: "equal Places",
+			args: args{
+				typ:  PlaceType,
+				it:   &Place{ID: "http://example.com", Type: PlaceType, Altitude: 200.1, Longitude: 0.666},
+				with: &Place{ID: "http://example.com", Type: PlaceType, Altitude: 200.1, Longitude: 0.666},
+			},
+			want: true,
+		},
+		{
+			name: "Places different Summary",
+			args: args{
+				typ:  PlaceType,
+				it:   &Place{ID: "http://example.com", Type: PlaceType, Summary: DefaultLangValue("test")},
+				with: &Place{ID: "http://example.com", Type: PlaceType, Summary: DefaultLangValue("different")},
+			},
+			want: false,
+		},
+		{
+			name: "Places different latitude",
+			args: args{
+				typ:  PlaceType,
+				it:   &Place{ID: "http://example.com", Type: PlaceType, Latitude: 6.66},
+				with: &Place{ID: "http://example.com", Type: PlaceType, Latitude: 6.67},
+			},
+			want: false,
+		},
+		{
+			name: "Places w/o types not equal",
+			args: args{
+				typ:  PlaceType,
+				it:   &Place{ID: "http://example.com", Radius: 100},
+				with: &Place{ID: "http://example.com", Radius: 100},
+			},
+			want: false,
+		},
+		//
+		{
+			// NOTE(marius): This might be wrong
+			name: "Actors equal for person type",
+			args: args{
+				typ:  PersonType,
+				it:   &Tombstone{ID: "http://example.com", Type: PersonType},
+				with: &Actor{ID: "http://example.com", Type: PersonType, PreferredUsername: DefaultLangValue("jdoe")},
+			},
+			want: false,
+		},
+		//
+		{
+			name: "questions equal",
+			args: args{
+				typ:  QuestionType,
+				it:   &Question{ID: "http://example.com", Type: QuestionType},
+				with: &Question{ID: "http://example.com", Type: QuestionType},
+			},
+			want: true,
+		},
+		{
+			name: "questions anyOf not equal",
+			args: args{
+				typ:  QuestionType,
+				it:   &Question{ID: "http://example.com", Type: QuestionType, AnyOf: IRIs{"https://example.com/a-1"}},
+				with: &Question{ID: "http://example.com", Type: QuestionType, AnyOf: IRIs{"https://example.com/a-2"}},
+			},
+			want: false,
+		},
+		{
+			name: "questions oneOf nil",
+			args: args{
+				typ:  QuestionType,
+				it:   &Question{ID: "http://example.com", Type: QuestionType, OneOf: IRIs{"https://example.com/a-1"}},
+				with: &Question{ID: "http://example.com", Type: QuestionType},
+			},
+			want: false,
+		},
+		{
+			name: "questions name different",
+			args: args{
+				typ:  QuestionType,
+				it:   &Question{ID: "http://example.com", Type: QuestionType, Name: DefaultLangValue("Q1")},
+				with: &Question{ID: "http://example.com", Type: QuestionType, Name: DefaultLangValue("Q2")},
+			},
+			want: false,
+		},
+		//
+		{
+			name: "intransitiveActivities equal",
+			args: args{
+				typ:  ArriveType,
+				it:   &IntransitiveActivity{ID: "http://example.com", Type: ArriveType},
+				with: &IntransitiveActivity{ID: "http://example.com", Type: ArriveType},
+			},
+			want: true,
+		},
+		{
+			name: "intransitiveActivities actors not equal",
+			args: args{
+				typ:  TravelType,
+				it:   &IntransitiveActivity{ID: "http://example.com", Type: TravelType, Actor: IRIs{"https://example.com/jdoe"}},
+				with: &IntransitiveActivity{ID: "http://example.com", Type: TravelType, Actor: IRIs{"https://example.com/alice"}},
+			},
+			want: false,
+		},
+		{
+			name: "intransitiveActivities target nil",
+			args: args{
+				typ:  TravelType,
+				it:   &IntransitiveActivity{ID: "http://example.com", Type: TravelType, Target: IRIs{"https://example.com/a-1"}},
+				with: &IntransitiveActivity{ID: "http://example.com", Type: TravelType},
+			},
+			want: false,
+		},
+		{
+			name: "intransitiveActivities name different",
+			args: args{
+				typ:  TravelType,
+				it:   &IntransitiveActivity{ID: "http://example.com", Type: TravelType, Name: DefaultLangValue("Q1")},
+				with: &IntransitiveActivity{ID: "http://example.com", Type: TravelType, Name: DefaultLangValue("Q2")},
+			},
+			want: false,
+		},
+		//
+		{
+			name: "activities equal",
+			args: args{
+				typ:  CreateType,
+				it:   &Activity{ID: "http://example.com", Type: CreateType},
+				with: &Activity{ID: "http://example.com", Type: CreateType},
+			},
+			want: true,
+		},
+		{
+			name: "Activities objects not equal",
+			args: args{
+				typ:  UpdateType,
+				it:   &Activity{ID: "http://example.com", Type: UpdateType, Object: IRIs{"https://example.com/o1"}},
+				with: &Activity{ID: "http://example.com", Type: UpdateType, Object: IRIs{"https://example.com/o2"}},
+			},
+			want: false,
+		},
+		{
+			name: "Activities actors not equal",
+			args: args{
+				typ:  DeleteType,
+				it:   &Activity{ID: "http://example.com", Type: DeleteType, Actor: IRIs{"https://example.com/jdoe"}},
+				with: &Activity{ID: "http://example.com", Type: DeleteType, Actor: IRIs{"https://example.com/alice"}},
+			},
+			want: false,
+		},
+		{
+			name: "Activities target nil",
+			args: args{
+				typ:  BlockType,
+				it:   &Activity{ID: "http://example.com", Type: BlockType, Target: IRIs{"https://example.com/a-1"}},
+				with: &Activity{ID: "http://example.com", Type: BlockType},
+			},
+			want: false,
+		},
+		{
+			name: "Activities name different",
+			args: args{
+				typ:  LikeType,
+				it:   &Activity{ID: "http://example.com", Type: LikeType, Content: DefaultLangValue("Q1")},
+				with: &Activity{ID: "http://example.com", Type: LikeType, Content: DefaultLangValue("Q2")},
+			},
+			want: false,
+		},
+		//
+		{
+			name: "Actors equal",
+			args: args{
+				typ:  PersonType,
+				it:   &Actor{ID: "http://example.com", Type: PersonType},
+				with: &Actor{ID: "http://example.com", Type: PersonType},
+			},
+			want: true,
+		},
+		{
+			name: "Actors replies not equal",
+			args: args{
+				typ:  ApplicationType,
+				it:   &Actor{ID: "http://example.com", Type: ApplicationType, Replies: IRIs{"https://example.com/replies"}},
+				with: &Actor{ID: "http://example.com", Type: ApplicationType, Replies: IRIs{"https://example.com/rr"}},
+			},
+			want: false,
+		},
+		{
+			name: "Actors inbox nil",
+			args: args{
+				typ:  ServiceType,
+				it:   &Actor{ID: "http://example.com", Type: ServiceType, Inbox: IRIs{"https://example.com/a-1"}},
+				with: &Actor{ID: "http://example.com", Type: ServiceType},
+			},
+			want: false,
+		},
+		{
+			name: "Actors preferredUsername different",
+			args: args{
+				typ:  GroupType,
+				it:   &Actor{ID: "http://example.com", Type: GroupType, PreferredUsername: DefaultLangValue("Q1")},
+				with: &Actor{ID: "http://example.com", Type: GroupType, PreferredUsername: DefaultLangValue("Q2")},
+			},
+			want: false,
+		},
+		// Collection
+		{
+			name: "collection equals",
+			args: args{
+				typ:  CollectionType,
+				it:   &Collection{Type: CollectionType, First: IRI("http://example.com/1st"), TotalItems: 1, Items: ItemCollection{IRI("http://example.com")}},
+				with: &Collection{Type: CollectionType, First: IRI("http://example.com/1st"), TotalItems: 1, Items: ItemCollection{IRI("http://example.com")}},
+			},
+			want: true,
+		},
+		// OrderedCollection
+		{
+			name: "ordered-collection equals",
+			args: args{
+				typ:  OrderedCollectionType,
+				it:   &OrderedCollection{Type: OrderedCollectionType, First: IRI("http://example.com/1st"), TotalItems: 1, OrderedItems: ItemCollection{IRI("http://example.com")}},
+				with: &OrderedCollection{Type: OrderedCollectionType, First: IRI("http://example.com/1st"), TotalItems: 1, OrderedItems: ItemCollection{IRI("http://example.com")}},
+			},
+			want: true,
+		},
+		// CollectionPage
+		{
+			name: "collection-page equals",
+			args: args{
+				typ:  CollectionPageType,
+				it:   &CollectionPage{Type: CollectionPageType, First: IRI("http://example.com/1st"), TotalItems: 1, Items: ItemCollection{IRI("http://example.com")}},
+				with: &CollectionPage{Type: CollectionPageType, First: IRI("http://example.com/1st"), TotalItems: 1, Items: ItemCollection{IRI("http://example.com")}},
+			},
+			want: true,
+		},
+		// OrderedCollectionPage
+		{
+			name: "ordered-collection-page equals",
+			args: args{
+				typ:  OrderedCollectionPageType,
+				it:   &OrderedCollectionPage{Type: OrderedCollectionPageType, First: IRI("http://example.com/1st"), TotalItems: 1, OrderedItems: ItemCollection{IRI("http://example.com")}},
+				with: &OrderedCollectionPage{Type: OrderedCollectionPageType, First: IRI("http://example.com/1st"), TotalItems: 1, OrderedItems: ItemCollection{IRI("http://example.com")}},
 			},
 			want: true,
 		},
@@ -927,6 +1285,55 @@ func Test_compareByType(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := compareByType(tt.args.typ, tt.args.it, tt.args.with); got != tt.want {
 				t.Errorf("compareByType() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_typedObjectsEqual(t *testing.T) {
+	type args struct {
+		it   ObjectOrLink
+		with ObjectOrLink
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "empty",
+			args: args{},
+			want: true,
+		},
+		{
+			name: "tombstone not equal to object",
+			args: args{
+				it:   &Object{Type: TombstoneType},
+				with: &Tombstone{Type: TombstoneType},
+			},
+			want: false,
+		},
+		{
+			name: "tombstones with different ids",
+			args: args{
+				it:   &Tombstone{ID: "http://example.com", Type: TombstoneType},
+				with: &Tombstone{ID: "http://example.com/1", Type: TombstoneType},
+			},
+			want: false,
+		},
+		{
+			name: "object with different types not equal",
+			args: args{
+				it:   &Object{Type: NoteType},
+				with: &Object{Type: ArticleType},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := typedObjectsEqual(tt.args.it, tt.args.with); got != tt.want {
+				t.Errorf("typedObjectsEqual() = %v, want %v", got, tt.want)
 			}
 		})
 	}
