@@ -265,6 +265,7 @@ func fmtPlaceProps(w io.Writer, n *int) func(*Place) error {
 		return nil
 	}
 }
+
 func (p Place) Format(s fmt.State, verb rune) {
 	typ := p.Type
 	switch verb {

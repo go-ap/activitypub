@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/go-ap/errors"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -755,6 +756,60 @@ func TestFlattenItemCollection(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := FlattenItemCollection(tt.col); !cmp.Equal(got, tt.want) {
 				t.Errorf("FlattenItemCollection() = %s", cmp.Diff(got, tt.want))
+			}
+		})
+	}
+}
+
+func TestItemCollection_UnmarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    []byte
+		want    ItemCollection
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: errors.NotImplementedf("Binary functionality not implemented"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := ItemCollection{}
+			if err := l.UnmarshalBinary(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalBinary() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
+	}
+}
+
+func TestItemCollection_MarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		sub     ItemCollection
+		want    []byte
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			sub:     ItemCollection{},
+			want:    nil,
+			wantErr: errors.NotImplementedf("Binary functionality not implemented"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalBinary()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalBinary() got = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

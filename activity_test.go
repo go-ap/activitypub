@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-ap/errors"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -1675,6 +1676,60 @@ func TestFlattenActivityProperties(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := FlattenActivityProperties(tt.act); !cmp.Equal(got, tt.want) {
 				t.Errorf("FlattenActivityProperties() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestActivity_UnmarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    []byte
+		want    Activity
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: errors.NotImplementedf("Binary functionality not implemented"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Activity{}
+			if err := l.UnmarshalBinary(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalBinary() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
+	}
+}
+
+func TestActivity_MarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		sub     Activity
+		want    []byte
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			sub:     Activity{},
+			want:    nil,
+			wantErr: errors.NotImplementedf("Binary functionality not implemented"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalBinary()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalBinary() got = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

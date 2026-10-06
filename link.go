@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
@@ -135,6 +136,9 @@ func (l Link) equal(with Link) bool {
 		return false
 	}
 	if !TypesEqual(l.Type, with.Type) {
+		return false
+	}
+	if !strings.EqualFold(string(l.MediaType), string(with.MediaType)) {
 		return false
 	}
 	if l.HrefLang != with.HrefLang {

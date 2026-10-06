@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-ap/errors"
 	"github.com/google/go-cmp/cmp"
 	"github.com/valyala/fastjson"
 )
@@ -1004,131 +1005,6 @@ func TestObject_Equals(t *testing.T) {
 	}
 }
 
-func TestObject_MarshalBinary(t *testing.T) {
-	t.Skipf("Binary functionality not implemented")
-	type fields struct {
-		ID           ID
-		Type         Typer
-		Name         NaturalLanguageValues
-		Attachment   Item
-		AttributedTo Item
-		Audience     ItemCollection
-		Content      NaturalLanguageValues
-		Context      Item
-		MediaType    MimeType
-		EndTime      time.Time
-		Generator    Item
-		Icon         Item
-		Image        Item
-		InReplyTo    Item
-		Location     Item
-		Preview      Item
-		Published    time.Time
-		Replies      Item
-		StartTime    time.Time
-		Summary      NaturalLanguageValues
-		Tag          Item
-		Updated      time.Time
-		URL          Item
-		To           ItemCollection
-		Bto          ItemCollection
-		CC           ItemCollection
-		BCC          ItemCollection
-		Duration     time.Duration
-		Likes        Item
-		Shares       Item
-		Source       Source
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		wantErr error
-	}{
-		{
-			name:   "empty",
-			fields: fields{},
-		},
-		{
-			name:   "with ID",
-			fields: fields{ID: ID("https://example.com")},
-		},
-		{
-			name:   "with ID, type",
-			fields: fields{ID: ID("https://example.com"), Type: ObjectType},
-		},
-		{
-			name:   "with ID, type, name",
-			fields: fields{ID: ID("https://example.com"), Type: ObjectType, Name: NaturalLanguageValues{English: Content("ana")}},
-		},
-		{
-			name:   "with Source",
-			fields: fields{Source: Source{MediaType: "image/svg+xml", Content: NaturalLanguageValues{NilLangRef: Content("data:image/svg+xml,%3csvg%3e %3c/svg%3e")}}},
-		},
-		{
-			name:   "with IRI AttributedTo",
-			fields: fields{AttributedTo: IRI("https://example.com/1")},
-		},
-		{
-			name:   "with multiple IRIs AttributedTo",
-			fields: fields{AttributedTo: ItemCollection{IRI("https://example.com/1"), IRI("https://example.com/2")}},
-		},
-		{
-			name:   "with single object AttributedTo",
-			fields: fields{AttributedTo: Object{ID: "https://example.com/1"}},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			o := Object{
-				ID:           tt.fields.ID,
-				Type:         tt.fields.Type,
-				Name:         tt.fields.Name,
-				Attachment:   tt.fields.Attachment,
-				AttributedTo: tt.fields.AttributedTo,
-				Audience:     tt.fields.Audience,
-				Content:      tt.fields.Content,
-				Context:      tt.fields.Context,
-				MediaType:    tt.fields.MediaType,
-				EndTime:      tt.fields.EndTime,
-				Generator:    tt.fields.Generator,
-				Icon:         tt.fields.Icon,
-				Image:        tt.fields.Image,
-				InReplyTo:    tt.fields.InReplyTo,
-				Location:     tt.fields.Location,
-				Preview:      tt.fields.Preview,
-				Published:    tt.fields.Published,
-				Replies:      tt.fields.Replies,
-				StartTime:    tt.fields.StartTime,
-				Summary:      tt.fields.Summary,
-				Tag:          tt.fields.Tag,
-				Updated:      tt.fields.Updated,
-				URL:          tt.fields.URL,
-				To:           tt.fields.To,
-				Bto:          tt.fields.Bto,
-				CC:           tt.fields.CC,
-				BCC:          tt.fields.BCC,
-				Duration:     tt.fields.Duration,
-				Likes:        tt.fields.Likes,
-				Shares:       tt.fields.Shares,
-				Source:       tt.fields.Source,
-			}
-			got, err := o.MarshalBinary()
-			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
-				t.Errorf("MarshalBianry() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
-				return
-			}
-			ob := Object{}
-			if err = ob.UnmarshalBinary(got); err != nil {
-				t.Errorf("UnmarshalBinary() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !ItemsEqual(ob, o) {
-				t.Errorf("ItemsEqual() got = %s", cmp.Diff(ob, o))
-			}
-		})
-	}
-}
-
 type reflectTest[T Objects | Links] struct {
 	name    string
 	arg     any
@@ -1417,4 +1293,58 @@ func ExampleOnObject_item_slices() {
 	// Many[1]: activitypub.Object { id: http://example.com/2 }
 	// Many  : [activitypub.Object { id: http://example.com/1, name: Stompy } activitypub.Tombstone { id: http://example.com/2, name: Stompy }]
 
+}
+
+func TestObject_UnmarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    []byte
+		want    Object
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: errors.NotImplementedf("Binary functionality not implemented"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Object{}
+			if err := l.UnmarshalBinary(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalBinary() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
+	}
+}
+
+func TestObject_MarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		sub     Object
+		want    []byte
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			sub:     Object{},
+			want:    nil,
+			wantErr: errors.NotImplementedf("Binary functionality not implemented"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalBinary()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalBinary() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }

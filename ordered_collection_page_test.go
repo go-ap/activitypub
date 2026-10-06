@@ -921,3 +921,57 @@ func TestCopyOrderedCollectionPageProperties(t *testing.T) {
 		})
 	}
 }
+
+func TestOrderedCollectionPage_UnmarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    []byte
+		want    OrderedCollectionPage
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: errors.NotImplementedf("Binary functionality not implemented"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := OrderedCollectionPage{}
+			if err := l.UnmarshalBinary(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalBinary() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
+	}
+}
+
+func TestOrderedCollectionPage_MarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		sub     OrderedCollectionPage
+		want    []byte
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			sub:     OrderedCollectionPage{},
+			want:    nil,
+			wantErr: errors.NotImplementedf("Binary functionality not implemented"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalBinary()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalBinary() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}

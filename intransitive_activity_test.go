@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-ap/errors"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -688,6 +689,60 @@ func TestFlattenIntransitiveActivityProperties(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := FlattenIntransitiveActivityProperties(tt.act); !cmp.Equal(got, tt.want) {
 				t.Errorf("FlattenIntransitiveActivityProperties() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestIntransitiveActivity_UnmarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    []byte
+		want    IntransitiveActivity
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: errors.NotImplementedf("Binary functionality not implemented"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := IntransitiveActivity{}
+			if err := l.UnmarshalBinary(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalBinary() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
+	}
+}
+
+func TestIntransitiveActivity_MarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		sub     IntransitiveActivity
+		want    []byte
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			sub:     IntransitiveActivity{},
+			want:    nil,
+			wantErr: errors.NotImplementedf("Binary functionality not implemented"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalBinary()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalBinary() got = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

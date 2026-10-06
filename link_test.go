@@ -3,26 +3,93 @@ package activitypub
 import (
 	"fmt"
 	"testing"
+
+	"github.com/go-ap/errors"
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestLink_GetID(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		ID   ID
+		want ID
+	}{
+		{
+			name: "empty",
+			ID:   "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			ID:   "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Link{ID: tt.ID}
+			if got := l.GetID(); got != tt.want {
+				t.Errorf("GetID() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestLink_GetLink(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		ID   ID
+		want IRI
+	}{
+		{
+			name: "empty",
+			ID:   "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			ID:   "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Link{ID: tt.ID}
+			if got := l.GetLink(); got != tt.want {
+				t.Errorf("GetLink() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestLink_GetType(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestLink_UnmarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestLink_IsCollection(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		typ  Typer
+		want Typer
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "mention type",
+			typ:  MentionType,
+			want: MentionType,
+		},
+		{
+			name: "link, mention",
+			typ:  ActivityVocabularyTypes{MentionType, LinkType},
+			want: ActivityVocabularyTypes{MentionType, LinkType},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Link{Type: tt.typ}
+			if got := l.GetType(); !TypesEqual(got, tt.want) {
+				t.Errorf("GetType() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func ExampleLink_initialization() {
@@ -122,4 +189,345 @@ func ExampleOnLink() {
 	// Output:
 	// Link.Type: Link
 	// Link1: activitypub.Link[Link] { href: http://example.com, hrefLang: en }
+}
+
+func TestLink_equal(t *testing.T) {
+	type fields struct {
+		ID        ID
+		Type      Typer
+		Name      NaturalLanguageValues
+		Rel       string
+		MediaType MimeType
+		Height    uint
+		Width     uint
+		Preview   Item
+		Href      IRI
+		HrefLang  LangRef
+	}
+
+	tests := []struct {
+		name   string
+		fields fields
+		with   Link
+		want   bool
+	}{
+		{
+			name:   "empties equal",
+			fields: fields{},
+			with:   Link{},
+			want:   true,
+		},
+		{
+			name: "filled equal",
+			fields: fields{
+				ID:        "http://example.com/id",
+				Type:      MentionType,
+				Name:      DefaultLangValue("test"),
+				Rel:       "alt",
+				MediaType: "text/plain",
+				Height:    10,
+				Width:     20,
+				Preview:   &Object{ID: "http://example.com/preview"},
+				Href:      "http://example.com/href",
+				HrefLang:  English,
+			},
+			with: Link{
+				ID:        "http://example.com/id",
+				Type:      MentionType,
+				Name:      DefaultLangValue("test"),
+				Rel:       "alt",
+				MediaType: "text/plain",
+				Height:    10,
+				Width:     20,
+				Preview:   &Object{ID: "http://example.com/preview"},
+				Href:      "http://example.com/href",
+				HrefLang:  English,
+			},
+			want: true,
+		},
+		{
+			name:   "different types",
+			fields: fields{Type: MentionType},
+			with:   Link{Type: LinkType},
+			want:   false,
+		},
+		{
+			name:   "different id",
+			fields: fields{ID: "http://example.com/different"},
+			with:   Link{ID: "http://example.com/id"},
+			want:   false,
+		},
+		{
+			name:   "different name",
+			fields: fields{Name: DefaultLangValue("test")},
+			with:   Link{Name: DefaultLangValue("different")},
+			want:   false,
+		},
+		{
+			name:   "different rel",
+			fields: fields{Rel: "alt"},
+			with:   Link{Rel: "different"},
+			want:   false,
+		},
+		{
+			name:   "different mediaType",
+			fields: fields{MediaType: "text/plain"},
+			with:   Link{MediaType: "application/json"},
+			want:   false,
+		},
+		{
+			name:   "different height",
+			fields: fields{Height: 666},
+			with:   Link{Height: 10},
+			want:   false,
+		},
+		{
+			name:   "different width",
+			fields: fields{Width: 20},
+			with:   Link{Width: 21},
+			want:   false,
+		},
+		{
+			name:   "different preview",
+			fields: fields{Preview: &Object{ID: "http://example.com/preview"}},
+			with:   Link{Preview: IRI("http://example.com/preview")},
+			want:   false,
+		},
+		{
+			name:   "different href",
+			fields: fields{Href: "http://example.com/href"},
+			with:   Link{Href: "http://example.com/different"},
+			want:   false,
+		},
+		{
+			name:   "different hrefLang",
+			fields: fields{HrefLang: English},
+			with:   Link{HrefLang: French},
+			want:   false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Link{
+				ID:        tt.fields.ID,
+				Type:      tt.fields.Type,
+				Name:      tt.fields.Name,
+				Rel:       tt.fields.Rel,
+				MediaType: tt.fields.MediaType,
+				Height:    tt.fields.Height,
+				Width:     tt.fields.Width,
+				Preview:   tt.fields.Preview,
+				Href:      tt.fields.Href,
+				HrefLang:  tt.fields.HrefLang,
+			}
+			if got := l.equal(tt.with); got != tt.want {
+				t.Errorf("equal() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestLink_Match(t *testing.T) {
+	tests := []struct {
+		name string
+		Type Typer
+		with []ActivityVocabularyType
+		want bool
+	}{
+		{
+			name: "empty types match empty types",
+			want: true,
+		},
+		{
+			name: "link",
+			Type: LinkType,
+			with: ActivityVocabularyTypes{LinkType},
+			want: true,
+		},
+		{
+			name: "mention",
+			Type: MentionType,
+			with: ActivityVocabularyTypes{MentionType},
+			want: true,
+		},
+		{
+			name: "link not match mention",
+			Type: LinkType,
+			with: ActivityVocabularyTypes{MentionType},
+			want: false,
+		},
+		{
+			name: "link match multiple types",
+			Type: LinkType,
+			with: ActivityVocabularyTypes{LinkType, MentionType},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Link{Type: tt.Type}
+			if got := l.Match(tt.with...); got != tt.want {
+				t.Errorf("Match() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestOnLink(t *testing.T) {
+	tests := []struct {
+		name    string
+		it      LinkOrIRI
+		testFn  func(*testing.T) WithLinkFn
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "IRI is not a link",
+			it:   IRI("http://example.com/m1"),
+			testFn: func(t *testing.T) WithLinkFn {
+				return func(l *Link) error {
+					t.Errorf("unexpected to reach execution of link function")
+					return nil
+				}
+			},
+			wantErr: ErrorInvalidType[Link](IRI("")),
+		},
+		{
+			name: "IRIs are not a link",
+			it:   IRIs{"http://example.com/m1"},
+			testFn: func(t *testing.T) WithLinkFn {
+				return func(l *Link) error {
+					t.Errorf("unexpected to reach execution of link function")
+					return nil
+				}
+			},
+			wantErr: ErrorInvalidType[Link](IRI("")),
+		},
+		{
+			name: "IRI in ItemCollection is not a link",
+			it:   ItemCollection{IRI("http://example.com/m1")},
+			testFn: func(t *testing.T) WithLinkFn {
+				return func(l *Link) error {
+					t.Errorf("unexpected to reach execution of link function")
+					return nil
+				}
+			},
+			wantErr: ErrorInvalidType[Link](IRI("")),
+		},
+		{
+			name: "object is not a link",
+			it:   &Object{ID: "http://example.com/m1", Type: MentionType},
+			testFn: func(t *testing.T) WithLinkFn {
+				return func(l *Link) error {
+					t.Errorf("unexpected to reach execution of link function")
+					return nil
+				}
+			},
+			wantErr: ErrorInvalidType[Link](&Object{}),
+		},
+		{
+			name: "single link",
+			it:   &Link{ID: "http://example.com/m1", Type: MentionType},
+			testFn: func(t *testing.T) WithLinkFn {
+				return func(l *Link) error {
+					if !l.ID.Equal("http://example.com/m1") {
+						t.Errorf("unexpected ID for link: %s, wanted %s", l.ID, "http://example.com/m1")
+					}
+					if l.Type != MentionType {
+						t.Errorf("unexpected Type for link: %s, wanted %s", l.Type, MentionType)
+					}
+					return nil
+				}
+			},
+		},
+		{
+			name: "links in item collection",
+			it:   ItemCollection{Link{ID: "http://example.com/1"}, Link{ID: "http://example.com/2"}},
+			testFn: func(t *testing.T) WithLinkFn {
+				cnt := 0
+				return func(link *Link) error {
+					defer func() { cnt++ }()
+					if cnt == 0 {
+						if !link.ID.Equal("http://example.com/1") {
+							t.Errorf("unexpected ID for first link in collection: %s, wanted %s", link.ID, "http://example.com/1")
+						}
+					}
+					if cnt == 1 {
+						if !link.ID.Equal("http://example.com/2") {
+							t.Errorf("unexpected ID for first link in collection: %s, wanted %s", link.ID, "http://example.com/2")
+						}
+					}
+					return nil
+				}
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fn := func(*Link) error { return nil }
+			if tt.testFn != nil {
+				fn = tt.testFn(t)
+			}
+			if err := OnLink(tt.it, fn); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("OnLink() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+		})
+	}
+}
+
+func TestLink_UnmarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    []byte
+		want    Link
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: errors.NotImplementedf("Binary functionality not implemented"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Link{}
+			if err := l.UnmarshalBinary(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalBinary() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
+	}
+}
+
+func TestLink_MarshalBinary(t *testing.T) {
+	tests := []struct {
+		name    string
+		sub     Link
+		want    []byte
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			sub:     Link{},
+			want:    nil,
+			wantErr: errors.NotImplementedf("Binary functionality not implemented"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalBinary()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalBinary() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalBinary() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
