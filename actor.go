@@ -612,3 +612,20 @@ func CopyActorProperties(to, from *Actor) (*Actor, error) {
 	to.PublicKey = replaceIfPublicKey(to.PublicKey, from.PublicKey)
 	return to, nil
 }
+
+// FlattenActorProperties flattens the Actor's properties from Object types to IRI
+func FlattenActorProperties(a *Actor) *Actor {
+	if a == nil {
+		return nil
+	}
+	a.Inbox = Flatten(a.Inbox)
+	a.Outbox = Flatten(a.Outbox)
+	a.Followers = Flatten(a.Followers)
+	a.Following = Flatten(a.Following)
+	a.Liked = Flatten(a.Liked)
+	_ = OnObject(a, func(o *Object) error {
+		FlattenObjectProperties(o)
+		return nil
+	})
+	return a
+}

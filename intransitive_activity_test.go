@@ -666,3 +666,29 @@ func ExampleOnIntransitiveActivity() {
 	// IntransitiveActivity1: activitypub.IntransitiveActivity[Arrive] { summary: I made it!, actor: http://example.com/~jdoe, target: http://example.com/ys }
 	// Question: activitypub.Question[Question] { actor: http://example.com/~jdoe, anyOf: [http://example.com/yay http://example.com/nay] }
 }
+
+func TestFlattenIntransitiveActivityProperties(t *testing.T) {
+	tests := []struct {
+		name string
+		act  *IntransitiveActivity
+		want *IntransitiveActivity
+	}{
+		{
+			name: "blank",
+			act:  &IntransitiveActivity{},
+			want: &IntransitiveActivity{},
+		},
+		{
+			name: "flatten-actor",
+			act:  &IntransitiveActivity{Actor: &Actor{ID: "example-actor-iri"}},
+			want: &IntransitiveActivity{Actor: IRI("example-actor-iri")},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := FlattenIntransitiveActivityProperties(tt.act); !cmp.Equal(got, tt.want) {
+				t.Errorf("FlattenIntransitiveActivityProperties() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}

@@ -774,3 +774,16 @@ func notEmptyActivity(a *Activity) bool {
 	})
 	return notEmpty || a.Object != nil
 }
+
+// FlattenActivityProperties flattens the Activity's properties from Object type to IRI
+func FlattenActivityProperties(act *Activity) *Activity {
+	if act == nil {
+		return nil
+	}
+	_ = OnIntransitiveActivity(act, func(in *IntransitiveActivity) error {
+		FlattenIntransitiveActivityProperties(in)
+		return nil
+	})
+	act.Object = FlattenToIRI(act.Object)
+	return act
+}

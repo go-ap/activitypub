@@ -443,3 +443,13 @@ func CopyCollectionProperties(to, from *Collection) (*Collection, error) {
 	_, err := CopyObjectProperties(oldOb, newOb)
 	return to, err
 }
+
+// FlattenCollection flattens a Collection's objects to their respective IRIs
+func FlattenCollection(col *Collection) *Collection {
+	if col == nil {
+		return col
+	}
+	col.Items = FlattenItemCollection(col.Items)
+
+	return col
+}

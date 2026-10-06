@@ -414,3 +414,24 @@ func OnCollectionIntf(it Item, fn WithCollectionInterfaceFn) error {
 		}
 	}
 }
+
+// FlattenItemCollection flattens an Item Collection to their respective IRIs
+func FlattenItemCollection(col ItemCollection) ItemCollection {
+	if len(col) == 0 {
+		return nil
+	}
+
+	res := make(ItemCollection, 0, len(col))
+	// NOTE(marius): we use a slightly different logic than col.IRIs()
+	//  because we have to keep track of transient objects.
+	for _, it := range col {
+		if IsNil(it) {
+			continue
+		}
+		res = append(res, Flatten(it))
+	}
+	if len(res) == 0 {
+		return nil
+	}
+	return ItemCollectionDeduplication(&res)
+}

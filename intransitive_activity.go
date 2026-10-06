@@ -386,3 +386,21 @@ func notEmptyIntransitiveActivity(i *IntransitiveActivity) bool {
 	})
 	return notEmpty
 }
+
+// FlattenIntransitiveActivityProperties flattens the Activity's properties from Object type to IRI
+func FlattenIntransitiveActivityProperties(act *IntransitiveActivity) *IntransitiveActivity {
+	if act == nil {
+		return nil
+	}
+	act.Actor = FlattenToIRI(act.Actor)
+	act.Target = FlattenToIRI(act.Target)
+	act.Result = FlattenToIRI(act.Result)
+	act.Origin = FlattenToIRI(act.Origin)
+	act.Result = FlattenToIRI(act.Result)
+	act.Instrument = FlattenToIRI(act.Instrument)
+	_ = OnObject(act, func(o *Object) error {
+		FlattenObjectProperties(o)
+		return nil
+	})
+	return act
+}

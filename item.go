@@ -678,3 +678,53 @@ func CopyUnsafeItemProperties(to, from ObjectOrLink) (ObjectOrLink, error) {
 	}
 	return copyAllItemProperties(to, from)
 }
+
+// FlattenProperties flattens the Item's properties from Object types to IRI
+func FlattenProperties(it ObjectOrLink) Item {
+	if IsNil(it) {
+		return nil
+	}
+	typ := it.GetType()
+	switch {
+	case IntransitiveActivityTypes.Match(typ):
+		_ = OnIntransitiveActivity(it, func(a *IntransitiveActivity) error {
+			FlattenIntransitiveActivityProperties(a)
+			return nil
+		})
+	case ActivityTypes.Match(typ):
+		_ = OnActivity(it, func(a *Activity) error {
+			FlattenActivityProperties(a)
+			return nil
+		})
+	case ActorTypes.Match(typ):
+		_ = OnActor(it, func(a *Actor) error {
+			FlattenActorProperties(a)
+			return nil
+		})
+	case ObjectTypes.Match(typ) || typ == nil:
+		_ = OnObject(it, func(o *Object) error {
+			FlattenObjectProperties(o)
+			return nil
+		})
+	}
+	return it
+}
+
+// Flatten checks if Item can be flattened to an IRI or array of IRIs and returns it if so
+func Flatten(it Item) Item {
+	if IsNil(it) {
+		return nil
+	}
+	if IsItemCollection(it) {
+		_ = OnItemCollection(it, func(c *ItemCollection) error {
+			it = FlattenItemCollection(*c).Normalize()
+			return nil
+		})
+		return it
+	}
+	// NOTE(marius): we can't flatten a transient object, that doesn't have a valid ID
+	if it.GetID() != "" {
+		return it.GetID()
+	}
+	return it
+}

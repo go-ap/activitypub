@@ -1588,3 +1588,84 @@ func TestNotEmpty(t *testing.T) {
 		})
 	}
 }
+
+func TestFlatten(t *testing.T) {
+	tests := []struct {
+		name string
+		it   Item
+		want Item
+	}{
+		{
+			name: "nil",
+			it:   nil,
+			want: nil,
+		},
+		{
+			name: "iri",
+			it:   IRI("http://example.com"),
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "object",
+			it:   &Object{ID: IRI("http://example.com")},
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "transient object",
+			it:   &Object{Type: NoteType},
+			want: &Object{Type: NoteType},
+		},
+		{
+			name: "iris as items",
+			it:   ItemCollection{IRI("http://example.com"), IRI("http://jdoe.example.com")},
+			want: ItemCollection{IRI("http://example.com"), IRI("http://jdoe.example.com")},
+		},
+		{
+			name: "same IRI multiple times",
+			it:   ItemCollection{IRI("http://example.com"), IRI("http://example.com")},
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "Object with same ID as IRI",
+			it:   ItemCollection{&Object{ID: "http://example.com"}, IRI("http://example.com")},
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "Objects with same ID",
+			it:   ItemCollection{&Object{ID: "http://example.com"}, &Activity{ID: "http://example.com"}},
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "object and transient object",
+			it:   ItemCollection{&Object{ID: "http://example.com"}, &Activity{Type: CreateType}},
+			want: ItemCollection{IRI("http://example.com"), &Activity{Type: CreateType}},
+		},
+		{
+			name: "ordered collection",
+			it:   &OrderedCollection{ID: "http://example.com"},
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "ordered collection page",
+			it:   &OrderedCollectionPage{ID: "http://example.com"},
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "collection",
+			it:   &Collection{ID: "http://example.com"},
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "collection page",
+			it:   &CollectionPage{ID: "http://example.com"},
+			want: IRI("http://example.com"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Flatten(tt.it); !cmp.Equal(got, tt.want) {
+				t.Errorf("Flatten() = %s", cmp.Diff(got, tt.want))
+			}
+		})
+	}
+}

@@ -713,3 +713,49 @@ func TestDerefItem(t *testing.T) {
 		})
 	}
 }
+
+func TestFlattenItemCollection(t *testing.T) {
+	tests := []struct {
+		name string
+		col  ItemCollection
+		want ItemCollection
+	}{
+		{
+			name: "nil",
+			col:  nil,
+			want: nil,
+		},
+		{
+			name: "empty",
+			col:  ItemCollection{},
+			want: nil,
+		},
+		{
+			name: "with iri",
+			col:  ItemCollection{IRI("http://example.com")},
+			want: ItemCollection{IRI("http://example.com")},
+		},
+		{
+			name: "with object",
+			col:  ItemCollection{&Object{ID: "http://example.com"}},
+			want: ItemCollection{IRI("http://example.com")},
+		},
+		{
+			name: "with objects",
+			col:  ItemCollection{&Object{ID: "http://example.com"}, &Actor{ID: "http://example.com/~jdoe"}},
+			want: ItemCollection{IRI("http://example.com"), IRI("http://example.com/~jdoe")},
+		},
+		{
+			name: "with duplicates",
+			col:  ItemCollection{&Object{ID: "http://example.com"}, &Actor{ID: "http://example.com/~jdoe"}, IRI("http://example.com")},
+			want: ItemCollection{IRI("http://example.com"), IRI("http://example.com/~jdoe")},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := FlattenItemCollection(tt.col); !cmp.Equal(got, tt.want) {
+				t.Errorf("FlattenItemCollection() = %s", cmp.Diff(got, tt.want))
+			}
+		})
+	}
+}

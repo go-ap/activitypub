@@ -898,3 +898,23 @@ func CopyObjectProperties(to, from *Object) (*Object, error) {
 	to.Source = replaceIfSource(to.Source, from.Source)
 	return to, nil
 }
+
+// FlattenObjectProperties flattens the Object's properties from Object types to IRI
+func FlattenObjectProperties(o *Object) *Object {
+	if o == nil {
+		return nil
+	}
+	o.Replies = Flatten(o.Replies)
+	o.Shares = Flatten(o.Shares)
+	o.Likes = Flatten(o.Likes)
+	o.AttributedTo = Flatten(o.AttributedTo)
+	o.InReplyTo = Flatten(o.InReplyTo)
+	o.To = FlattenItemCollection(o.To)
+	o.Bto = FlattenItemCollection(o.Bto)
+	o.CC = FlattenItemCollection(o.CC)
+	o.BCC = FlattenItemCollection(o.BCC)
+	o.Audience = FlattenItemCollection(o.Audience)
+	o.Tag = Flatten(o.Tag) // NOTE(marius): we originally had tags not normalized and kept inline
+	o.Attachment = Flatten(o.Attachment)
+	return o
+}

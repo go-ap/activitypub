@@ -427,3 +427,13 @@ func CopyOrderedCollectionProperties(to, from *OrderedCollection) (*OrderedColle
 	_, err := CopyObjectProperties(oldOb, newOb)
 	return to, err
 }
+
+// FlattenOrderedCollection flattens an OrderedCollection's objects to their respective IRIs
+func FlattenOrderedCollection(col *OrderedCollection) *OrderedCollection {
+	if col == nil {
+		return col
+	}
+	col.OrderedItems = FlattenItemCollection(col.OrderedItems)
+
+	return col
+}

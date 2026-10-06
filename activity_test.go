@@ -1648,3 +1648,34 @@ func ExampleOnActivity() {
 	// Output:
 	// Activity1: activitypub.Activity[Like] { summary: I like it here!, actor: http://example.com/~jdoe, object: http://example.com/ys }
 }
+
+func TestFlattenActivityProperties(t *testing.T) {
+	tests := []struct {
+		name string
+		act  *Activity
+		want *Activity
+	}{
+		{
+			name: "blank",
+			act:  &Activity{},
+			want: &Activity{},
+		},
+		{
+			name: "flatten-actor",
+			act:  &Activity{Actor: &Actor{ID: "example-actor-iri"}},
+			want: &Activity{Actor: IRI("example-actor-iri")},
+		},
+		{
+			name: "flatten-object",
+			act:  &Activity{Object: &Object{ID: "example-actor-iri"}},
+			want: &Activity{Object: IRI("example-actor-iri")},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := FlattenActivityProperties(tt.act); !cmp.Equal(got, tt.want) {
+				t.Errorf("FlattenActivityProperties() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
