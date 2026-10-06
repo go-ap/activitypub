@@ -435,3 +435,10 @@ func FlattenItemCollection(col ItemCollection) ItemCollection {
 	}
 	return ItemCollectionDeduplication(&res)
 }
+
+func replaceIfItemCollection(old, new ItemCollection) ItemCollection {
+	if new == nil {
+		return old
+	}
+	return new
+}

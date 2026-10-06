@@ -739,3 +739,10 @@ func (n NaturalLanguageValues) Equal(with NaturalLanguageValues) bool {
 	}
 	return true
 }
+
+func replaceIfNaturalLanguageValues(old, new NaturalLanguageValues) NaturalLanguageValues {
+	if new == nil {
+		return old
+	}
+	return new
+}

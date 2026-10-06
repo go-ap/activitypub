@@ -918,3 +918,11 @@ func FlattenObjectProperties(o *Object) *Object {
 	o.Attachment = Flatten(o.Attachment)
 	return o
 }
+
+func replaceIfSource(to, from Source) Source {
+	if from.MediaType != to.MediaType {
+		return from
+	}
+	to.Content = replaceIfNaturalLanguageValues(to.Content, from.Content)
+	return to
+}

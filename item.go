@@ -728,3 +728,10 @@ func Flatten(it Item) Item {
 	}
 	return it
 }
+
+func replaceIfItem(old, new Item) Item {
+	if new == nil {
+		return old
+	}
+	return new
+}

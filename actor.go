@@ -629,3 +629,12 @@ func FlattenActorProperties(a *Actor) *Actor {
 	})
 	return a
 }
+
+func replaceIfPublicKey(to, from PublicKey) PublicKey {
+	if from.ID != to.ID {
+		return from
+	}
+	to.Owner = from.Owner
+	to.PublicKeyPem = from.PublicKeyPem
+	return to
+}
