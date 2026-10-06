@@ -145,7 +145,49 @@ func TestOrderedCollectionPage_Collection(t *testing.T) {
 }
 
 func TestOrderedCollectionPage_Contains(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name   string
+		items  ItemCollection
+		search Item
+		want   bool
+	}{
+		{
+			name: "nil",
+			want: false,
+		},
+		{
+			name:   "iri not found",
+			items:  ItemCollection{IRI("http://example.com/1"), IRI("http://example.com/2"), Object{ID: "http://example.com"}},
+			search: IRI("http://example.com"),
+			want:   false,
+		},
+		{
+			name:   "iri found",
+			items:  ItemCollection{IRI("http://example.com")},
+			search: IRI("http://example.com"),
+			want:   true,
+		},
+		{
+			name:   "object not found",
+			items:  ItemCollection{Object{ID: "http://example.com/1", Type: NoteType}},
+			search: Object{ID: "http://example.com/1", Type: VideoType},
+			want:   false,
+		},
+		{
+			name:   "object found",
+			items:  ItemCollection{Object{ID: "http://example.com"}},
+			search: Object{ID: "http://example.com"},
+			want:   true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			o := OrderedCollectionPage{OrderedItems: tt.items}
+			if got := o.Contains(tt.search); got != tt.want {
+				t.Errorf("Contains() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestOrderedCollectionPage_Count(t *testing.T) {
@@ -706,46 +748,11 @@ func TestOrderedCollectionPage_Equals(t *testing.T) {
 
 func TestOrderedCollectionPage_Recipients(t *testing.T) {
 	type fields struct {
-		ID           ID
-		Type         Typer
-		Name         NaturalLanguageValues
-		Attachment   Item
-		AttributedTo Item
-		Audience     ItemCollection
-		Content      NaturalLanguageValues
-		Context      Item
-		MediaType    MimeType
-		EndTime      time.Time
-		Generator    Item
-		Icon         Item
-		Image        Item
-		InReplyTo    Item
-		Location     Item
-		Preview      Item
-		Published    time.Time
-		Replies      Item
-		StartTime    time.Time
-		Summary      NaturalLanguageValues
-		Tag          Item
-		Updated      time.Time
-		URL          Item
-		To           ItemCollection
-		Bto          ItemCollection
-		CC           ItemCollection
-		BCC          ItemCollection
-		Duration     time.Duration
-		Likes        Item
-		Shares       Item
-		Source       Source
-		Current      Item
-		First        Item
-		Last         Item
-		TotalItems   uint
-		OrderedItems ItemCollection
-		PartOf       Item
-		Next         Item
-		Prev         Item
-		StartIndex   uint
+		Audience ItemCollection
+		To       ItemCollection
+		Bto      ItemCollection
+		CC       ItemCollection
+		BCC      ItemCollection
 	}
 	tests := []struct {
 		name   string
@@ -757,53 +764,159 @@ func TestOrderedCollectionPage_Recipients(t *testing.T) {
 			fields: fields{},
 			want:   nil,
 		},
+		{
+			name: "audience",
+			fields: fields{
+				Audience: ItemCollection{IRI("http://example.com/aud")},
+			},
+			want: ItemCollection{IRI("http://example.com/aud")},
+		},
+		{
+			name: "to",
+			fields: fields{
+				To: ItemCollection{IRI("http://example.com/to")},
+			},
+			want: ItemCollection{IRI("http://example.com/to")},
+		},
+		{
+			name: "bto",
+			fields: fields{
+				Bto: ItemCollection{IRI("http://example.com/bto")},
+			},
+			want: ItemCollection{IRI("http://example.com/bto")},
+		},
+		{
+			name: "cc",
+			fields: fields{
+				CC: ItemCollection{IRI("http://example.com/cc")},
+			},
+			want: ItemCollection{IRI("http://example.com/cc")},
+		},
+		{
+			name: "bcc",
+			fields: fields{
+				BCC: ItemCollection{IRI("http://example.com/bcc")},
+			},
+			want: ItemCollection{IRI("http://example.com/bcc")},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			o := &OrderedCollectionPage{
-				ID:           tt.fields.ID,
-				Type:         tt.fields.Type,
-				Name:         tt.fields.Name,
-				Attachment:   tt.fields.Attachment,
-				AttributedTo: tt.fields.AttributedTo,
-				Audience:     tt.fields.Audience,
-				Content:      tt.fields.Content,
-				Context:      tt.fields.Context,
-				MediaType:    tt.fields.MediaType,
-				EndTime:      tt.fields.EndTime,
-				Generator:    tt.fields.Generator,
-				Icon:         tt.fields.Icon,
-				Image:        tt.fields.Image,
-				InReplyTo:    tt.fields.InReplyTo,
-				Location:     tt.fields.Location,
-				Preview:      tt.fields.Preview,
-				Published:    tt.fields.Published,
-				Replies:      tt.fields.Replies,
-				StartTime:    tt.fields.StartTime,
-				Summary:      tt.fields.Summary,
-				Tag:          tt.fields.Tag,
-				Updated:      tt.fields.Updated,
-				URL:          tt.fields.URL,
-				To:           tt.fields.To,
-				Bto:          tt.fields.Bto,
-				CC:           tt.fields.CC,
-				BCC:          tt.fields.BCC,
-				Duration:     tt.fields.Duration,
-				Likes:        tt.fields.Likes,
-				Shares:       tt.fields.Shares,
-				Source:       tt.fields.Source,
-				Current:      tt.fields.Current,
-				First:        tt.fields.First,
-				Last:         tt.fields.Last,
-				TotalItems:   tt.fields.TotalItems,
-				OrderedItems: tt.fields.OrderedItems,
-				PartOf:       tt.fields.PartOf,
-				Next:         tt.fields.Next,
-				Prev:         tt.fields.Prev,
-				StartIndex:   tt.fields.StartIndex,
+			c := &OrderedCollectionPage{
+				Audience: tt.fields.Audience,
+				To:       tt.fields.To,
+				Bto:      tt.fields.Bto,
+				CC:       tt.fields.CC,
+				BCC:      tt.fields.BCC,
 			}
-			if got := o.Recipients(); !cmp.Equal(got, tt.want) {
+			if got := c.Recipients(); !cmp.Equal(got, tt.want) {
 				t.Errorf("Recipients() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestOrderedCollectionPage_ItemsMatch(t *testing.T) {
+	tests := []struct {
+		name   string
+		items  ItemCollection
+		search ItemCollection
+		want   bool
+	}{
+		{
+			name: "nil",
+			want: false,
+		},
+		{
+			name:   "iri not found",
+			items:  ItemCollection{IRI("http://example.com/1"), IRI("http://example.com/2"), Object{ID: "http://example.com"}},
+			search: ItemCollection{IRI("http://example.com")},
+			want:   false,
+		},
+		{
+			name:   "iri found",
+			items:  ItemCollection{IRI("http://example.com")},
+			search: ItemCollection{IRI("http://example.com")},
+			want:   true,
+		},
+		{
+			name:   "object not found",
+			items:  ItemCollection{Object{ID: "http://example.com/1", Type: NoteType}},
+			search: ItemCollection{Object{ID: "http://example.com/1", Type: VideoType}},
+			want:   false,
+		},
+		{
+			name:   "object found",
+			items:  ItemCollection{Object{ID: "http://example.com"}},
+			search: ItemCollection{Object{ID: "http://example.com"}},
+			want:   true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			o := OrderedCollectionPage{OrderedItems: tt.items}
+			if got := o.ItemsMatch(tt.search...); got != tt.want {
+				t.Errorf("ItemsMatch() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCopyOrderedCollectionPageProperties(t *testing.T) {
+	type args struct {
+		to   *OrderedCollectionPage
+		from *OrderedCollectionPage
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *OrderedCollectionPage
+		wantErr error
+	}{
+		{
+			name: "nil",
+			args: args{},
+			want: nil,
+		},
+		{
+			name: "local properties",
+			args: args{
+				to: &OrderedCollectionPage{},
+				from: &OrderedCollectionPage{
+					OrderedItems: ItemCollection{IRI("one")},
+					TotalItems:   1,
+					PartOf:       IRI("http://example.com/partOf"),
+					First:        IRI("http://example.com/first"),
+					Last:         IRI("http://example.com/last"),
+					Current:      IRI("http://example.com/current"),
+					Next:         IRI("http://example.com/next"),
+					Prev:         IRI("http://example.com/prev"),
+					StartIndex:   666,
+				},
+			},
+			want: &OrderedCollectionPage{
+				OrderedItems: ItemCollection{IRI("one")},
+				TotalItems:   1,
+				PartOf:       IRI("http://example.com/partOf"),
+				First:        IRI("http://example.com/first"),
+				Last:         IRI("http://example.com/last"),
+				Current:      IRI("http://example.com/current"),
+				Next:         IRI("http://example.com/next"),
+				Prev:         IRI("http://example.com/prev"),
+				StartIndex:   666,
+			},
+			wantErr: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := CopyOrderedCollectionPageProperties(tt.args.to, tt.args.from)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("CopyOrderedCollectionPageProperties() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("CopyOrderedCollectionPageProperties() got = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

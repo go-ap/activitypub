@@ -412,8 +412,12 @@ func OnOrderedCollection(it Item, fn WithOrderedCollectionFn) error {
 }
 
 func CopyOrderedCollectionProperties(to, from *OrderedCollection) (*OrderedCollection, error) {
+	if to == nil || from == nil {
+		return nil, nil
+	}
 	to.First = replaceIfItem(to.First, from.First)
 	to.Last = replaceIfItem(to.Last, from.Last)
+	to.Current = replaceIfItem(to.Current, from.Current)
 	to.OrderedItems = replaceIfItemCollection(to.OrderedItems, from.OrderedItems)
 	if to.TotalItems == 0 {
 		to.TotalItems = from.TotalItems

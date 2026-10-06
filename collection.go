@@ -331,8 +331,11 @@ func ToCollection(it LinkOrIRI) (*Collection, error) {
 
 // ItemsMatch
 func (c Collection) ItemsMatch(col ...Item) bool {
+	if len(col) == 0 {
+		return false
+	}
 	for _, it := range col {
-		if match := c.Items.Contains(it); !match {
+		if match := c.Contains(it); !match {
 			return false
 		}
 	}
@@ -425,8 +428,12 @@ func OnCollection(it Item, fn WithCollectionFn) error {
 }
 
 func CopyCollectionProperties(to, from *Collection) (*Collection, error) {
+	if to == nil || from == nil {
+		return nil, nil
+	}
 	to.First = replaceIfItem(to.First, from.First)
 	to.Last = replaceIfItem(to.Last, from.Last)
+	to.Current = replaceIfItem(to.Current, from.Current)
 	to.Items = replaceIfItemCollection(to.Items, from.Items)
 	if to.TotalItems == 0 {
 		to.TotalItems = from.TotalItems

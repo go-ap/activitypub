@@ -186,16 +186,11 @@ func (o *OrderedCollectionPage) Remove(it ...Item) {
 }
 
 // Contains verifies if OrderedCollectionPage array contains the received one
-func (o OrderedCollectionPage) Contains(r Item) bool {
+func (o OrderedCollectionPage) Contains(it Item) bool {
 	if len(o.OrderedItems) == 0 {
 		return false
 	}
-	for _, it := range o.OrderedItems {
-		if ItemsEqual(it, r) {
-			return true
-		}
-	}
-	return false
+	return o.OrderedItems.Contains(it)
 }
 
 // UnmarshalJSON decodes an incoming JSON document into the receiver object.
@@ -277,8 +272,11 @@ func ToOrderedCollectionPage(it LinkOrIRI) (*OrderedCollectionPage, error) {
 
 // ItemsMatch
 func (o OrderedCollectionPage) ItemsMatch(col ...Item) bool {
+	if len(col) == 0 {
+		return false
+	}
 	for _, it := range col {
-		if match := o.OrderedItems.Contains(it); !match {
+		if match := o.Contains(it); !match {
 			return false
 		}
 	}
@@ -374,9 +372,13 @@ func OnOrderedCollectionPage(it Item, fn WithOrderedCollectionPageFn) error {
 }
 
 func CopyOrderedCollectionPageProperties(to, from *OrderedCollectionPage) (*OrderedCollectionPage, error) {
+	if to == nil || from == nil {
+		return nil, nil
+	}
 	to.PartOf = replaceIfItem(to.PartOf, from.PartOf)
 	to.Next = replaceIfItem(to.Next, from.Next)
 	to.Prev = replaceIfItem(to.Prev, from.Prev)
+	to.StartIndex = from.StartIndex
 	oldCol, _ := ToOrderedCollection(to)
 	newCol, _ := ToOrderedCollection(from)
 	_, err := CopyOrderedCollectionProperties(oldCol, newCol)

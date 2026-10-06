@@ -256,7 +256,49 @@ func TestToCollectionPage(t *testing.T) {
 }
 
 func TestCollectionPage_Contains(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name   string
+		items  ItemCollection
+		search Item
+		want   bool
+	}{
+		{
+			name: "nil",
+			want: false,
+		},
+		{
+			name:   "iri not found",
+			items:  ItemCollection{IRI("http://example.com/1"), IRI("http://example.com/2"), Object{ID: "http://example.com"}},
+			search: IRI("http://example.com"),
+			want:   false,
+		},
+		{
+			name:   "iri found",
+			items:  ItemCollection{IRI("http://example.com")},
+			search: IRI("http://example.com"),
+			want:   true,
+		},
+		{
+			name:   "object not found",
+			items:  ItemCollection{Object{ID: "http://example.com/1", Type: NoteType}},
+			search: Object{ID: "http://example.com/1", Type: VideoType},
+			want:   false,
+		},
+		{
+			name:   "object found",
+			items:  ItemCollection{Object{ID: "http://example.com"}},
+			search: Object{ID: "http://example.com"},
+			want:   true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			o := CollectionPage{Items: tt.items}
+			if got := o.Contains(tt.search); got != tt.want {
+				t.Errorf("Contains() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestCollectionPage_GetID(t *testing.T) {
@@ -728,23 +770,173 @@ func TestCollectionPage_Equals(t *testing.T) {
 
 func TestCollectionPage_ItemsMatch(t *testing.T) {
 	tests := []struct {
-		name    string
-		items   ItemCollection
-		matches []Item
-		want    bool
+		name   string
+		items  ItemCollection
+		search ItemCollection
+		want   bool
 	}{
 		{
-			name:    "nil",
-			items:   nil,
-			matches: nil,
-			want:    false,
+			name: "nil",
+			want: false,
+		},
+		{
+			name:   "iri not found",
+			items:  ItemCollection{IRI("http://example.com/1"), IRI("http://example.com/2"), Object{ID: "http://example.com"}},
+			search: ItemCollection{IRI("http://example.com")},
+			want:   false,
+		},
+		{
+			name:   "iri found",
+			items:  ItemCollection{IRI("http://example.com")},
+			search: ItemCollection{IRI("http://example.com")},
+			want:   true,
+		},
+		{
+			name:   "object not found",
+			items:  ItemCollection{Object{ID: "http://example.com/1", Type: NoteType}},
+			search: ItemCollection{Object{ID: "http://example.com/1", Type: VideoType}},
+			want:   false,
+		},
+		{
+			name:   "object found",
+			items:  ItemCollection{Object{ID: "http://example.com"}},
+			search: ItemCollection{Object{ID: "http://example.com"}},
+			want:   true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := CollectionPage{Items: tt.items}
-			if got := c.ItemsMatch(tt.matches...); got != tt.want {
+			o := CollectionPage{Items: tt.items}
+			if got := o.ItemsMatch(tt.search...); got != tt.want {
 				t.Errorf("ItemsMatch() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCopyCollectionPageProperties(t *testing.T) {
+	type args struct {
+		to   *CollectionPage
+		from *CollectionPage
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *CollectionPage
+		wantErr error
+	}{
+		{
+			name: "nil",
+			args: args{},
+			want: nil,
+		},
+		{
+			name: "local properties",
+			args: args{
+				to: &CollectionPage{},
+				from: &CollectionPage{
+					Items:      ItemCollection{IRI("one")},
+					TotalItems: 1,
+					PartOf:     IRI("http://example.com/partOf"),
+					First:      IRI("http://example.com/first"),
+					Last:       IRI("http://example.com/last"),
+					Current:    IRI("http://example.com/current"),
+					Next:       IRI("http://example.com/next"),
+					Prev:       IRI("http://example.com/prev"),
+				},
+			},
+			want: &CollectionPage{
+				Items:      ItemCollection{IRI("one")},
+				TotalItems: 1,
+				PartOf:     IRI("http://example.com/partOf"),
+				First:      IRI("http://example.com/first"),
+				Last:       IRI("http://example.com/last"),
+				Current:    IRI("http://example.com/current"),
+				Next:       IRI("http://example.com/next"),
+				Prev:       IRI("http://example.com/prev"),
+			},
+			wantErr: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := CopyCollectionPageProperties(tt.args.to, tt.args.from)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("CopyCollectionPageProperties() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("CopyCollectionPageProperties() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestCollectionPage_Recipients(t *testing.T) {
+	type fields struct {
+		Audience ItemCollection
+		To       ItemCollection
+		Bto      ItemCollection
+		CC       ItemCollection
+		BCC      ItemCollection
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   ItemCollection
+	}{
+		{
+			name:   "nil",
+			fields: fields{},
+			want:   nil,
+		},
+		{
+			name: "audience",
+			fields: fields{
+				Audience: ItemCollection{IRI("http://example.com/aud")},
+			},
+			want: ItemCollection{IRI("http://example.com/aud")},
+		},
+		{
+			name: "to",
+			fields: fields{
+				To: ItemCollection{IRI("http://example.com/to")},
+			},
+			want: ItemCollection{IRI("http://example.com/to")},
+		},
+		{
+			name: "bto",
+			fields: fields{
+				Bto: ItemCollection{IRI("http://example.com/bto")},
+			},
+			want: ItemCollection{IRI("http://example.com/bto")},
+		},
+		{
+			name: "cc",
+			fields: fields{
+				CC: ItemCollection{IRI("http://example.com/cc")},
+			},
+			want: ItemCollection{IRI("http://example.com/cc")},
+		},
+		{
+			name: "bcc",
+			fields: fields{
+				BCC: ItemCollection{IRI("http://example.com/bcc")},
+			},
+			want: ItemCollection{IRI("http://example.com/bcc")},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &CollectionPage{
+				Audience: tt.fields.Audience,
+				To:       tt.fields.To,
+				Bto:      tt.fields.Bto,
+				CC:       tt.fields.CC,
+				BCC:      tt.fields.BCC,
+			}
+			if got := c.Recipients(); !cmp.Equal(got, tt.want) {
+				t.Errorf("Recipients() = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

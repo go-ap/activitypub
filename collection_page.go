@@ -374,6 +374,9 @@ func OnCollectionPage(it Item, fn WithCollectionPageFn) error {
 }
 
 func CopyCollectionPageProperties(to, from *CollectionPage) (*CollectionPage, error) {
+	if to == nil || from == nil {
+		return nil, nil
+	}
 	to.PartOf = replaceIfItem(to.PartOf, from.PartOf)
 	to.Next = replaceIfItem(to.Next, from.Next)
 	to.Prev = replaceIfItem(to.Prev, from.Prev)
