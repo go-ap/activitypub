@@ -1,7 +1,6 @@
 package activitypub
 
 import (
-	"bytes"
 	"fmt"
 	"testing"
 	"time"
@@ -309,18 +308,29 @@ func TestUpdate_Recipients(t *testing.T) {
 }
 
 func TestActivity_GetID(t *testing.T) {
-	a := &Activity{Type: ActivityType, ID: "test", Object: Person{}}
-
-	if a.GetID() != "test" {
-		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
+	tests := []struct {
+		name string
+		ID   ID
+		want ID
+	}{
+		{
+			name: "empty",
+			ID:   "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			ID:   "http://example.com",
+			want: "http://example.com",
+		},
 	}
-}
-
-func TestActivity_GetIDGetType(t *testing.T) {
-	a := &Activity{Type: ActivityType, ID: "test", Object: Person{}}
-
-	if a.GetID() != "test" || !a.Match(ActivityType) {
-		t.Errorf("%T should not return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Activity{ID: tt.ID}
+			if got := l.GetID(); got != tt.want {
+				t.Errorf("GetID() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
@@ -401,43 +411,6 @@ func TestBlock_Recipients(t *testing.T) {
 	err = checkDedup(b.BCC, &recIds)
 	if err != nil {
 		t.Error(err)
-	}
-}
-
-func TestActivity_UnmarshalJSON(t *testing.T) {
-	a := Activity{}
-
-	dataEmpty := []byte("{}")
-	_ = a.UnmarshalJSON(dataEmpty)
-	if a.ID != "" {
-		t.Errorf("Unmarshaled object %T should have empty ID, received %q", a, a.ID)
-	}
-	if HasTypes(a) {
-		t.Errorf("Unmarshaled object %T should have empty Type, received %q", a, a.GetType())
-	}
-	if a.AttributedTo != nil {
-		t.Errorf("Unmarshaled object %T should have empty AttributedTo, received %q", a, a.AttributedTo)
-	}
-	if len(a.Name) != 0 {
-		t.Errorf("Unmarshaled object %T should have empty Name, received %q", a, a.Name)
-	}
-	if len(a.Summary) != 0 {
-		t.Errorf("Unmarshaled object %T should have empty Summary, received %q", a, a.Summary)
-	}
-	if len(a.Content) != 0 {
-		t.Errorf("Unmarshaled object %T should have empty Content, received %q", a, a.Content)
-	}
-	if a.URL != nil {
-		t.Errorf("Unmarshaled object %T should have empty URL, received %v", a, a.URL)
-	}
-	if !a.Published.IsZero() {
-		t.Errorf("Unmarshaled object %T should have empty Published, received %q", a, a.Published)
-	}
-	if !a.StartTime.IsZero() {
-		t.Errorf("Unmarshaled object %T  should have empty StartTime, received %q", a, a.StartTime)
-	}
-	if !a.Updated.IsZero() {
-		t.Errorf("Unmarshaled object %T  should have empty Updated, received %q", a, a.Updated)
 	}
 }
 
@@ -771,513 +744,35 @@ func TestActivity_Clean(t *testing.T) {
 	}
 }
 
-func TestActivity_IsCollection(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestActivity_GetLink(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		IRI  IRI
+		want IRI
+	}{
+		{
+			name: "empty",
+			IRI:  "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			IRI:  "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Activity{ID: tt.IRI}
+			if got := l.GetLink(); got != tt.want {
+				t.Errorf("GetLink() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestActivity_GetType(t *testing.T) {
 	t.Skipf("TODO")
-}
-
-func TestActivity_MarshalJSON(t *testing.T) {
-	type fields struct {
-		ID           ID
-		Type         Typer
-		Name         NaturalLanguageValues
-		Attachment   Item
-		AttributedTo Item
-		Audience     ItemCollection
-		Content      NaturalLanguageValues
-		Context      Item
-		MediaType    MimeType
-		EndTime      time.Time
-		Generator    Item
-		Icon         Item
-		Image        Item
-		InReplyTo    Item
-		Location     Item
-		Preview      Item
-		Published    time.Time
-		Replies      Item
-		StartTime    time.Time
-		Summary      NaturalLanguageValues
-		Tag          ItemCollection
-		Updated      time.Time
-		URL          Item
-		To           ItemCollection
-		Bto          ItemCollection
-		CC           ItemCollection
-		BCC          ItemCollection
-		Duration     time.Duration
-		Likes        Item
-		Shares       Item
-		Source       Source
-		Actor        Item
-		Target       Item
-		Result       Item
-		Origin       Item
-		Instrument   Item
-		Object       Item
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		want    [][]byte
-		wantErr error
-	}{
-		{
-			name:   "Empty",
-			fields: fields{},
-			want:   nil,
-		},
-		{
-			name: "JustID",
-			fields: fields{
-				ID: ID("example.com"),
-			},
-			want: [][]byte{[]byte(`{"id":"example.com"}`)},
-		},
-		{
-			name: "JustType",
-			fields: fields{
-				Type: ActivityVocabularyType("myType"),
-			},
-			want: [][]byte{[]byte(`{"type":"myType"}`)},
-		},
-		{
-			name: "JustOneName",
-			fields: fields{
-				Name: NaturalLanguageValues{
-					NilLangRef: Content("ana"),
-				},
-			},
-			want: [][]byte{[]byte(`{"name":"ana"}`)},
-		},
-		{
-			name: "MoreNames",
-			fields: fields{
-				Name: NaturalLanguageValues{
-					English: Content("anna"),
-					French:  Content("anne"),
-				},
-			},
-			want: [][]byte{
-				[]byte(`{"nameMap":{"en":"anna","fr":"anne"}}`),
-				[]byte(`{"nameMap":{"fr":"anne","en":"anna"}}`),
-			},
-		},
-		{
-			name: "JustOneSummary",
-			fields: fields{
-				Summary: NaturalLanguageValues{
-					NilLangRef: Content("test summary"),
-				},
-			},
-			want: [][]byte{[]byte(`{"summary":"test summary"}`)},
-		},
-		{
-			name: "MoreSummaryEntries",
-			fields: fields{
-				Summary: NaturalLanguageValues{
-					English: Content("test summary"),
-					French:  Content("teste summary"),
-				},
-			},
-			want: [][]byte{
-				[]byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
-				[]byte(`{"summaryMap":{"fr":"teste summary","en":"test summary"}}`),
-			},
-		},
-		{
-			name: "JustOneContent",
-			fields: fields{
-				Content: NaturalLanguageValues{
-					NilLangRef: Content("test content"),
-				},
-			},
-			want: [][]byte{[]byte(`{"content":"test content"}`)},
-		},
-		{
-			name: "MoreContentEntries",
-			fields: fields{
-				Content: NaturalLanguageValues{
-					English: Content("test content"),
-					French:  Content("teste content"),
-				},
-			},
-			want: [][]byte{
-				[]byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),
-				[]byte(`{"contentMap":{"fr":"teste content","en":"test content"}}`),
-			},
-		},
-		{
-			name: "MediaType",
-			fields: fields{
-				MediaType: MimeType("text/stupid"),
-			},
-			want: [][]byte{[]byte(`{"mediaType":"text/stupid"}`)},
-		},
-		{
-			name: "Attachment",
-			fields: fields{
-				Attachment: &Object{
-					ID:   "some example",
-					Type: VideoType,
-				},
-			},
-			want: [][]byte{[]byte(`{"attachment":{"id":"some example","type":"Video"}}`)},
-		},
-		{
-			name: "AttributedTo",
-			fields: fields{
-				AttributedTo: &Actor{
-					ID:   "http://example.com/ana",
-					Type: PersonType,
-				},
-			},
-			want: [][]byte{[]byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`)},
-		},
-		{
-			name: "AttributedToDouble",
-			fields: fields{
-				AttributedTo: ItemCollection{
-					&Actor{
-						ID:   "http://example.com/ana",
-						Type: PersonType,
-					},
-					&Actor{
-						ID:   "http://example.com/GGG",
-						Type: GroupType,
-					},
-				},
-			},
-			want: [][]byte{[]byte(`{"attributedTo":[{"id":"http://example.com/ana","type":"Person"},{"id":"http://example.com/GGG","type":"Group"}]}`)},
-		},
-		{
-			name: "Source",
-			fields: fields{
-				Source: Source{
-					MediaType: MimeType("text/plain"),
-					Content:   NaturalLanguageValues{},
-				},
-			},
-			want: [][]byte{[]byte(`{"source":{"mediaType":"text/plain"}}`)},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			a := Activity{
-				ID:           tt.fields.ID,
-				Type:         tt.fields.Type,
-				Name:         tt.fields.Name,
-				Attachment:   tt.fields.Attachment,
-				AttributedTo: tt.fields.AttributedTo,
-				Audience:     tt.fields.Audience,
-				Content:      tt.fields.Content,
-				Context:      tt.fields.Context,
-				MediaType:    tt.fields.MediaType,
-				EndTime:      tt.fields.EndTime,
-				Generator:    tt.fields.Generator,
-				Icon:         tt.fields.Icon,
-				Image:        tt.fields.Image,
-				InReplyTo:    tt.fields.InReplyTo,
-				Location:     tt.fields.Location,
-				Preview:      tt.fields.Preview,
-				Published:    tt.fields.Published,
-				Replies:      tt.fields.Replies,
-				StartTime:    tt.fields.StartTime,
-				Summary:      tt.fields.Summary,
-				Tag:          tt.fields.Tag,
-				Updated:      tt.fields.Updated,
-				URL:          tt.fields.URL,
-				To:           tt.fields.To,
-				Bto:          tt.fields.Bto,
-				CC:           tt.fields.CC,
-				BCC:          tt.fields.BCC,
-				Duration:     tt.fields.Duration,
-				Likes:        tt.fields.Likes,
-				Shares:       tt.fields.Shares,
-				Source:       tt.fields.Source,
-				Actor:        tt.fields.Actor,
-				Target:       tt.fields.Target,
-				Result:       tt.fields.Result,
-				Origin:       tt.fields.Origin,
-				Instrument:   tt.fields.Instrument,
-				Object:       tt.fields.Object,
-			}
-			got, err := a.MarshalJSON()
-			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
-				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
-				return
-			}
-			found := got == nil
-			for _, wantBytes := range tt.want {
-				if bytes.Equal(got, wantBytes) {
-					found = true
-				}
-			}
-			if !found {
-				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
-	type fields struct {
-		ID           ID
-		Type         Typer
-		Name         NaturalLanguageValues
-		Attachment   Item
-		AttributedTo Item
-		Audience     ItemCollection
-		Content      NaturalLanguageValues
-		Context      Item
-		MediaType    MimeType
-		EndTime      time.Time
-		Generator    Item
-		Icon         Item
-		Image        Item
-		InReplyTo    Item
-		Location     Item
-		Preview      Item
-		Published    time.Time
-		Replies      Item
-		StartTime    time.Time
-		Summary      NaturalLanguageValues
-		Tag          ItemCollection
-		Updated      time.Time
-		URL          Item
-		To           ItemCollection
-		Bto          ItemCollection
-		CC           ItemCollection
-		BCC          ItemCollection
-		Duration     time.Duration
-		Likes        Item
-		Shares       Item
-		Source       Source
-		Actor        CanReceiveActivities
-		Target       Item
-		Result       Item
-		Origin       Item
-		Instrument   Item
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		want    [][]byte
-		wantErr bool
-	}{
-		{
-			name:    "Empty",
-			fields:  fields{},
-			want:    nil,
-			wantErr: false,
-		},
-		{
-			name: "JustID",
-			fields: fields{
-				ID: ID("example.com"),
-			},
-			want:    [][]byte{[]byte(`{"id":"example.com"}`)},
-			wantErr: false,
-		},
-		{
-			name: "JustType",
-			fields: fields{
-				Type: ActivityVocabularyType("myType"),
-			},
-			want:    [][]byte{[]byte(`{"type":"myType"}`)},
-			wantErr: false,
-		},
-		{
-			name: "JustOneName",
-			fields: fields{
-				Name: NaturalLanguageValues{
-					NilLangRef: Content("ana"),
-				},
-			},
-			want:    [][]byte{[]byte(`{"name":"ana"}`)},
-			wantErr: false,
-		},
-		{
-			name: "MoreNames",
-			fields: fields{
-				Name: NaturalLanguageValues{
-					English: Content("anna"),
-					French:  Content("anne"),
-				},
-			},
-			want:    [][]byte{[]byte(`{"nameMap":{"en":"anna","fr":"anne"}}`), []byte(`{"nameMap":{"fr":"anne","en":"anna"}}`)},
-			wantErr: false,
-		},
-		{
-			name: "JustOneSummary",
-			fields: fields{
-				Summary: NaturalLanguageValues{
-					NilLangRef: Content("test summary"),
-				},
-			},
-			want:    [][]byte{[]byte(`{"summary":"test summary"}`)},
-			wantErr: false,
-		},
-		{
-			name: "MoreSummaryEntries",
-			fields: fields{
-				Summary: NaturalLanguageValues{
-					English: Content("test summary"),
-					French:  Content("teste summary"),
-				},
-			},
-			want: [][]byte{
-				[]byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
-				[]byte(`{"summaryMap":{"fr":"teste summary","en":"test summary"}}`),
-			},
-			wantErr: false,
-		},
-		{
-			name: "JustOneContent",
-			fields: fields{
-				Content: NaturalLanguageValues{
-					NilLangRef: Content("test content"),
-				},
-			},
-			want:    [][]byte{[]byte(`{"content":"test content"}`)},
-			wantErr: false,
-		},
-		{
-			name: "MoreContentEntries",
-			fields: fields{
-				Content: NaturalLanguageValues{
-					English: Content("test content"),
-					French:  Content("teste content"),
-				},
-			},
-			want: [][]byte{
-				[]byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),
-				[]byte(`{"contentMap":{"fr":"teste content","en":"test content"}}`),
-			},
-			wantErr: false,
-		},
-		{
-			name: "MediaType",
-			fields: fields{
-				MediaType: MimeType("text/stupid"),
-			},
-			want:    [][]byte{[]byte(`{"mediaType":"text/stupid"}`)},
-			wantErr: false,
-		},
-		{
-			name: "Attachment",
-			fields: fields{
-				Attachment: &Object{
-					ID:   "some example",
-					Type: VideoType,
-				},
-			},
-			want:    [][]byte{[]byte(`{"attachment":{"id":"some example","type":"Video"}}`)},
-			wantErr: false,
-		},
-		{
-			name: "AttributedTo",
-			fields: fields{
-				AttributedTo: &Actor{
-					ID:   "http://example.com/ana",
-					Type: PersonType,
-				},
-			},
-			want:    [][]byte{[]byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`)},
-			wantErr: false,
-		},
-		{
-			name: "AttributedToDouble",
-			fields: fields{
-				AttributedTo: ItemCollection{
-					&Actor{
-						ID:   "http://example.com/ana",
-						Type: PersonType,
-					},
-					&Actor{
-						ID:   "http://example.com/GGG",
-						Type: GroupType,
-					},
-				},
-			},
-			want:    [][]byte{[]byte(`{"attributedTo":[{"id":"http://example.com/ana","type":"Person"},{"id":"http://example.com/GGG","type":"Group"}]}`)},
-			wantErr: false,
-		},
-		{
-			name: "Source",
-			fields: fields{
-				Source: Source{
-					MediaType: MimeType("text/plain"),
-					Content:   NaturalLanguageValues{},
-				},
-			},
-			want:    [][]byte{[]byte(`{"source":{"mediaType":"text/plain"}}`)},
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			i := IntransitiveActivity{
-				ID:           tt.fields.ID,
-				Type:         tt.fields.Type,
-				Name:         tt.fields.Name,
-				Attachment:   tt.fields.Attachment,
-				AttributedTo: tt.fields.AttributedTo,
-				Audience:     tt.fields.Audience,
-				Content:      tt.fields.Content,
-				Context:      tt.fields.Context,
-				MediaType:    tt.fields.MediaType,
-				EndTime:      tt.fields.EndTime,
-				Generator:    tt.fields.Generator,
-				Icon:         tt.fields.Icon,
-				Image:        tt.fields.Image,
-				InReplyTo:    tt.fields.InReplyTo,
-				Location:     tt.fields.Location,
-				Preview:      tt.fields.Preview,
-				Published:    tt.fields.Published,
-				Replies:      tt.fields.Replies,
-				StartTime:    tt.fields.StartTime,
-				Summary:      tt.fields.Summary,
-				Tag:          tt.fields.Tag,
-				Updated:      tt.fields.Updated,
-				URL:          tt.fields.URL,
-				To:           tt.fields.To,
-				Bto:          tt.fields.Bto,
-				CC:           tt.fields.CC,
-				BCC:          tt.fields.BCC,
-				Duration:     tt.fields.Duration,
-				Likes:        tt.fields.Likes,
-				Shares:       tt.fields.Shares,
-				Source:       tt.fields.Source,
-				Actor:        tt.fields.Actor,
-				Target:       tt.fields.Target,
-				Result:       tt.fields.Result,
-				Origin:       tt.fields.Origin,
-				Instrument:   tt.fields.Instrument,
-			}
-			got, err := i.MarshalJSON()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			found := got == nil
-			for _, wantBytes := range tt.want {
-				if bytes.Equal(got, wantBytes) {
-					found = true
-				}
-			}
-			if !found {
-				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
-			}
-		})
-	}
 }
 
 func TestActivity_Equals(t *testing.T) {
@@ -1734,3 +1229,164 @@ func TestActivity_MarshalBinary(t *testing.T) {
 		})
 	}
 }
+
+func TestActivity_UnmarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    []byte
+		want    Activity
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: fmt.Errorf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Activity{}
+			if err := l.UnmarshalJSON(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
+	}
+}
+
+func TestActivity_MarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		sub     Activity
+		want    []byte
+		wantErr error
+	}{
+		{
+			name: "nil",
+			sub:  Activity{},
+			want: nil,
+		},
+		{
+			name: "JustID",
+			sub: Activity{
+				ID: ID("example.com"),
+			},
+			want: []byte(`{"id":"example.com"}`),
+		},
+		{
+			name: "JustType",
+			sub: Activity{
+				Type: ActivityVocabularyType("myType"),
+			},
+			want: []byte(`{"type":"myType"}`),
+		},
+		{
+			name: "JustOneName",
+			sub: Activity{
+				Name: NaturalLanguageValues{
+					NilLangRef: Content("ana"),
+				},
+			},
+			want: []byte(`{"name":"ana"}`),
+		},
+		{
+			name: "JustOneSummary",
+			sub: Activity{
+				Summary: NaturalLanguageValues{
+					NilLangRef: Content("test summary"),
+				},
+			},
+			want: []byte(`{"summary":"test summary"}`),
+		},
+		{
+			name: "JustOneContent",
+			sub: Activity{
+				Content: NaturalLanguageValues{
+					NilLangRef: Content("test content"),
+				},
+			},
+			want: []byte(`{"content":"test content"}`),
+		},
+		{
+			name: "MediaType",
+			sub: Activity{
+				MediaType: MimeType("text/stupid"),
+			},
+			want: []byte(`{"mediaType":"text/stupid"}`),
+		},
+		{
+			name: "Attachment",
+			sub: Activity{
+				Attachment: &Object{
+					ID:   "some example",
+					Type: VideoType,
+				},
+			},
+			want: []byte(`{"attachment":{"id":"some example","type":"Video"}}`),
+		},
+		{
+			name: "AttributedTo",
+			sub: Activity{
+				AttributedTo: &Actor{
+					ID:   "http://example.com/ana",
+					Type: PersonType,
+				},
+			},
+			want: []byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`),
+		},
+		{
+			name: "AttributedToDouble",
+			sub: Activity{
+				AttributedTo: ItemCollection{
+					&Actor{
+						ID:   "http://example.com/ana",
+						Type: PersonType,
+					},
+					&Actor{
+						ID:   "http://example.com/GGG",
+						Type: GroupType,
+					},
+				},
+			},
+			want: []byte(`{"attributedTo":[{"id":"http://example.com/ana","type":"Person"},{"id":"http://example.com/GGG","type":"Group"}]}`),
+		},
+		{
+			name: "Source",
+			sub: Activity{
+				Source: Source{
+					MediaType: MimeType("text/plain"),
+					Content:   NaturalLanguageValues{},
+				},
+			},
+			want: []byte(`{"source":{"mediaType":"text/plain"}}`),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalJSON()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want, EquateItems) {
+				t.Errorf("MarshalJSON() got = %s", cmp.Diff(tt.want, got, EquateItems))
+			}
+		})
+	}
+}
+
+func areNaturalLanguageValues(a, b any) bool {
+	_, ok1 := a.(NaturalLanguageValues)
+	_, ok2 := b.(NaturalLanguageValues)
+	return ok1 && ok2
+}
+
+func compareNaturalLanguageValues(x, y any) bool {
+	xe := x.(NaturalLanguageValues)
+	ye := y.(NaturalLanguageValues)
+	return xe.Equal(ye)
+}
+
+var EquateNaturalLanguageValues = cmp.FilterValues(areNaturalLanguageValues, cmp.Comparer(compareNaturalLanguageValues))

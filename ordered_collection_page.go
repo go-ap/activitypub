@@ -123,7 +123,7 @@ type OrderedCollectionPage struct {
 	// TotalItems is a non-negative integer specifying the total number of objects contained by the
 	// logical view of the OrderedCollection.
 	// This number might not reflect the actual number of items serialized within the OrderedCollection object instance.
-	TotalItems uint `jsonld:"totalItems"`
+	TotalItems uint `jsonld:"totalItems,omitempty"`
 	// OrderedItems identifies the items contained in a OrderedCollection. The items might be ordered or unordered.
 	OrderedItems ItemCollection `jsonld:"orderedItems,omitempty"`
 	// PartOf identifies the OrderedCollection to which an OrderedCollectionPage objects items belong.
@@ -231,7 +231,9 @@ func (o OrderedCollectionPage) MarshalJSON() ([]byte, error) {
 	if o.Prev != nil {
 		notEmpty = JSONWriteItemProp(&b, "prev", o.Prev, notEmpty) || notEmpty
 	}
-	notEmpty = JSONWriteIntProp(&b, "totalItems", int64(o.TotalItems), notEmpty) || notEmpty
+	if o.TotalItems > 0 {
+		notEmpty = JSONWriteIntProp(&b, "totalItems", int64(o.TotalItems), notEmpty) || notEmpty
+	}
 	if o.OrderedItems != nil {
 		notEmpty = JSONWriteItemCollectionProp(&b, "orderedItems", o.OrderedItems, false, notEmpty) || notEmpty
 	}

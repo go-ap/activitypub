@@ -122,7 +122,7 @@ type CollectionPage struct {
 	// TotalItems is a non-negative integer specifying the total number of objects contained by the logical view
 	// of the Collection.
 	// This number might not reflect the actual number of items serialized within the Collection object instance.
-	TotalItems uint `jsonld:"totalItems"`
+	TotalItems uint `jsonld:"totalItems,omitempty"`
 	// Items identifies the items contained in the CollectionPage. The items might be ordered or unordered.
 	Items ItemCollection `jsonld:"items,omitempty"`
 	// PartOf identifies the Collection to which a CollectionPage objects items belong.
@@ -232,7 +232,9 @@ func (c CollectionPage) MarshalJSON() ([]byte, error) {
 	if c.Prev != nil {
 		notEmpty = JSONWriteItemProp(&b, "prev", c.Prev, notEmpty) || notEmpty
 	}
-	notEmpty = JSONWriteIntProp(&b, "totalItems", int64(c.TotalItems), notEmpty) || notEmpty
+	if c.TotalItems > 0 {
+		notEmpty = JSONWriteIntProp(&b, "totalItems", int64(c.TotalItems), notEmpty) || notEmpty
+	}
 	if c.Items != nil {
 		notEmpty = JSONWriteItemCollectionProp(&b, "items", c.Items, false, notEmpty) || notEmpty
 	}

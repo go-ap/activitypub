@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"bytes"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -291,7 +292,63 @@ func TestNaturalLanguageValues_First(t *testing.T) {
 }
 
 func TestNaturalLanguageValues_Get(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		n    NaturalLanguageValues
+		ref  LangRef
+		want Content
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			n:    NaturalLanguageValues{},
+		},
+		{
+			name: "empty does not have undef",
+			n:    NaturalLanguageValues{},
+			ref:  Und,
+		},
+		{
+			name: "empty does not have en",
+			n:    NaturalLanguageValues{},
+			ref:  English,
+		},
+		{
+			name: "en exists",
+			n: NaturalLanguageValues{
+				English: Content("test"),
+			},
+			ref:  English,
+			want: Content("test"),
+		},
+		{
+			name: "fr exists",
+			n: NaturalLanguageValues{
+				English: Content("test"),
+				French:  Content("teste"),
+			},
+			ref:  French,
+			want: Content("teste"),
+		},
+		{
+			name: "en does not exist",
+			n: NaturalLanguageValues{
+				German: Content("test"),
+				French: Content("teste"),
+			},
+			ref:  English,
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.n.Get(tt.ref); !bytes.Equal(got, tt.want) {
+				t.Errorf("Get() = %s, want %s", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestNaturalLanguageValues_MarshalJSON(t *testing.T) {
@@ -397,7 +454,47 @@ func TestNaturalLanguageValues_MarshalText(t *testing.T) {
 }
 
 func TestNaturalLanguageValues_Set(t *testing.T) {
-	t.Skipf("TODO")
+	type args struct {
+		ref LangRef
+		v   Content
+	}
+	tests := []struct {
+		name   string
+		n      NaturalLanguageValues
+		args   args
+		exists bool
+		want   Content
+	}{
+		{
+			name:   "empty",
+			n:      NaturalLanguageValues{},
+			args:   args{ref: und},
+			exists: true, // NOTE(marius): the zero value of the LangRef is und so the Set call adds a nil to the map
+		},
+		{
+			name: "en",
+			n:    NaturalLanguageValues{},
+			args: args{
+				ref: English,
+				v:   Content("test"),
+			},
+			exists: true,
+			want:   Content("test"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.n.Set(tt.args.ref, tt.args.v)
+			got, exists := tt.n[tt.args.ref]
+			if exists != tt.exists {
+				t.Errorf("Check value after Set() = got %t, want %t", exists, tt.exists)
+				return
+			}
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("Check value after Set() = got %s, want %s", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestNaturalLanguageValues_UnmarshalJSON(t *testing.T) {
@@ -462,13 +559,10 @@ func TestNaturalLanguageValues_Count(t *testing.T) {
 }
 
 func TestNaturalLanguageValues_Equals(t *testing.T) {
-	type args struct {
-		with NaturalLanguageValues
-	}
 	tests := []struct {
 		name string
 		n    NaturalLanguageValues
-		args args
+		with NaturalLanguageValues
 		want bool
 	}{
 		{
@@ -476,10 +570,8 @@ func TestNaturalLanguageValues_Equals(t *testing.T) {
 			n: NaturalLanguageValues{
 				English: Content("test123#"),
 			},
-			args: args{
-				with: NaturalLanguageValues{
-					English: Content("test123#"),
-				},
+			with: NaturalLanguageValues{
+				English: Content("test123#"),
 			},
 			want: true,
 		},
@@ -488,10 +580,8 @@ func TestNaturalLanguageValues_Equals(t *testing.T) {
 			n: NaturalLanguageValues{
 				English: Content("test123#"),
 			},
-			args: args{
-				with: NaturalLanguageValues{
-					French: Content("test123#"),
-				},
+			with: NaturalLanguageValues{
+				French: Content("test123#"),
 			},
 			want: false,
 		},
@@ -500,17 +590,39 @@ func TestNaturalLanguageValues_Equals(t *testing.T) {
 			n: NaturalLanguageValues{
 				English: Content("test123#"),
 			},
-			args: args{
-				with: NaturalLanguageValues{
-					English: Content("test123"),
-				},
+			with: NaturalLanguageValues{
+				English: Content("test123"),
 			},
 			want: false,
+		},
+		{
+			name: "multiple-values-same-order",
+			n: NaturalLanguageValues{
+				French:  Content("teste"),
+				English: Content("test"),
+			},
+			with: NaturalLanguageValues{
+				French:  Content("teste"),
+				English: Content("test"),
+			},
+			want: true,
+		},
+		{
+			name: "multiple-values-different-order",
+			n: NaturalLanguageValues{
+				English: Content("test"),
+				French:  Content("teste"),
+			},
+			with: NaturalLanguageValues{
+				French:  Content("teste"),
+				English: Content("test"),
+			},
+			want: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.n.Equal(tt.args.with); got != tt.want {
+			if got := tt.n.Equal(tt.with); got != tt.want {
 				t.Errorf("Equal() = %v, want %v", got, tt.want)
 			}
 		})

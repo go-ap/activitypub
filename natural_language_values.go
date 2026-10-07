@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"maps"
 	"slices"
 	"strings"
 	"unicode/utf8"
@@ -82,18 +83,14 @@ func (n NaturalLanguageValues) String() string {
 }
 
 func (n NaturalLanguageValues) Get(ref LangRef) Content {
-	for k, val := range n {
-		if k == ref {
-			return val
-		}
-	}
-	return nil
+	var c Content
+	c, _ = n[ref]
+	return c
 }
 
 // Set sets a language, value pair in a NaturalLanguageValues array
-func (n *NaturalLanguageValues) Set(ref LangRef, v Content) error {
-	(*n)[ref] = v
-	return nil
+func (n NaturalLanguageValues) Set(ref LangRef, v Content) {
+	n[ref] = v
 }
 
 var hex = "0123456789abcdef"
@@ -651,7 +648,8 @@ func (c Content) Format(s fmt.State, verb rune) {
 
 func unescape(b []byte) []byte {
 	// FIXME(marius): I feel like I'm missing something really obvious about encoding/decoding from Json regarding
-	//    escape characters, and that this function is just a hack. Be better future Marius, find the real problem!
+	//   escape characters, and that this function is just a hack.
+	//   Be better future Marius, find the real problem!
 	b = bytes.ReplaceAll(b, []byte{'\\', 'a'}, []byte{'\a'})
 	b = bytes.ReplaceAll(b, []byte{'\\', 'f'}, []byte{'\f'})
 	b = bytes.ReplaceAll(b, []byte{'\\', 'n'}, []byte{'\n'})
@@ -726,18 +724,7 @@ func (n NaturalLanguageValues) MarshalBinary() ([]byte, error) {
 
 // Equal
 func (n NaturalLanguageValues) Equal(with NaturalLanguageValues) bool {
-	if n.Count() != with.Count() {
-		return false
-	}
-
-	for l, wv := range with {
-		nv, ok := n[l]
-		if ok && nv.Equal(wv) {
-			continue
-		}
-		return false
-	}
-	return true
+	return maps.EqualFunc(n, with, Content.Equal)
 }
 
 func replaceIfNaturalLanguageValues(old, new NaturalLanguageValues) NaturalLanguageValues {

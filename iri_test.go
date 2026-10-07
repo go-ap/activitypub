@@ -170,10 +170,6 @@ func TestIRI_Contains(t *testing.T) {
 	}
 }
 
-func TestIRI_IsCollection(t *testing.T) {
-	t.Skip("TODO")
-}
-
 func TestIRIs_UnmarshalJSON(t *testing.T) {
 	type args struct {
 		d []byte

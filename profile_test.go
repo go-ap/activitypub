@@ -82,27 +82,88 @@ func TestToProfile(t *testing.T) {
 }
 
 func TestProfile_GetID(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		ID   ID
+		want ID
+	}{
+		{
+			name: "empty",
+			ID:   "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			ID:   "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Profile{ID: tt.ID}
+			if got := l.GetID(); got != tt.want {
+				t.Errorf("GetID() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestProfile_GetLink(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		IRI  IRI
+		want IRI
+	}{
+		{
+			name: "empty",
+			IRI:  "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			IRI:  "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Profile{ID: tt.IRI}
+			if got := l.GetLink(); got != tt.want {
+				t.Errorf("GetLink() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestProfile_GetType(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestProfile_IsCollection(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestProfile_IsLink(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestProfile_IsObject(t *testing.T) {
-	t.Skipf("TODO")
+func TestProfile_MarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		sub     Profile
+		want    []byte
+		wantErr error
+	}{
+		{
+			name: "nil",
+			sub:  Profile{},
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalJSON()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestProfile_UnmarshalJSON(t *testing.T) {
@@ -115,7 +176,7 @@ func TestProfile_UnmarshalJSON(t *testing.T) {
 		{
 			name:    "nil",
 			data:    nil,
-			wantErr: errors.Newf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
+			wantErr: fmt.Errorf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
 		},
 		{
 			name: "just with ID",
@@ -138,12 +199,12 @@ func TestProfile_UnmarshalJSON(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := Profile{}
-			if err := p.UnmarshalJSON(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+			l := Profile{}
+			if err := l.UnmarshalJSON(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
 				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
 			}
-			if !cmp.Equal(p, tt.want) {
-				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, p))
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, l))
 			}
 		})
 	}

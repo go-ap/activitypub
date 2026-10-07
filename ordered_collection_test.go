@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -83,23 +84,56 @@ func TestOrderedCollection_Collection(t *testing.T) {
 }
 
 func TestOrderedCollection_GetID(t *testing.T) {
-	id := ID("test")
-
-	c := &OrderedCollection{Type: OrderedCollectionType, ID: id}
-
-	if c.GetID() != id {
-		t.Errorf("GetID should return %q, received %q", id, c.GetID())
+	tests := []struct {
+		name string
+		ID   ID
+		want ID
+	}{
+		{
+			name: "empty",
+			ID:   "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			ID:   "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := OrderedCollection{ID: tt.ID}
+			if got := l.GetID(); got != tt.want {
+				t.Errorf("GetID() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
 func TestOrderedCollection_GetLink(t *testing.T) {
-	id := ID("test")
-	link := IRI(id)
-
-	c := &OrderedCollection{Type: OrderedCollectionType, ID: id}
-
-	if c.GetLink() != link {
-		t.Errorf("GetLink should return %q, received %q", link, c.GetLink())
+	tests := []struct {
+		name string
+		IRI  IRI
+		want IRI
+	}{
+		{
+			name: "empty",
+			IRI:  "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			IRI:  "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := OrderedCollection{ID: tt.IRI}
+			if got := l.GetLink(); got != tt.want {
+				t.Errorf("GetLink() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
@@ -114,45 +148,55 @@ func TestOrderedCollection_GetType(t *testing.T) {
 }
 
 func TestOrderedCollection_UnmarshalJSON(t *testing.T) {
-	c := OrderedCollection{}
+	tests := []struct {
+		name    string
+		data    []byte
+		want    OrderedCollection
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: fmt.Errorf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := OrderedCollection{}
+			if err := l.UnmarshalJSON(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
+	}
+}
 
-	dataEmpty := []byte("{}")
-	c.UnmarshalJSON(dataEmpty)
-	if c.ID != "" {
-		t.Errorf("Unmarshaled object should have empty ID, received %q", c.ID)
+func TestOrderedCollection_MarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		sub     OrderedCollection
+		want    []byte
+		wantErr error
+	}{
+		{
+			name: "nil",
+			sub:  OrderedCollection{},
+			want: nil,
+		},
 	}
-	if HasTypes(c) {
-		t.Errorf("Unmarshaled object should have empty Type, received %q", c.GetType())
-	}
-	if c.AttributedTo != nil {
-		t.Errorf("Unmarshaled object should have empty AttributedTo, received %q", c.AttributedTo)
-	}
-	if len(c.Name) != 0 {
-		t.Errorf("Unmarshaled object should have empty Name, received %q", c.Name)
-	}
-	if len(c.Summary) != 0 {
-		t.Errorf("Unmarshaled object should have empty Summary, received %q", c.Summary)
-	}
-	if len(c.Content) != 0 {
-		t.Errorf("Unmarshaled object should have empty Content, received %q", c.Content)
-	}
-	if c.TotalItems != 0 {
-		t.Errorf("Unmarshaled object should have empty TotalItems, received %d", c.TotalItems)
-	}
-	if len(c.OrderedItems) > 0 {
-		t.Errorf("Unmarshaled object should have empty OrderedItems, received %v", c.OrderedItems)
-	}
-	if c.URL != nil {
-		t.Errorf("Unmarshaled object should have empty URL, received %v", c.URL)
-	}
-	if !c.Published.IsZero() {
-		t.Errorf("Unmarshaled object should have empty Published, received %q", c.Published)
-	}
-	if !c.StartTime.IsZero() {
-		t.Errorf("Unmarshaled object should have empty StartTime, received %q", c.StartTime)
-	}
-	if !c.Updated.IsZero() {
-		t.Errorf("Unmarshaled object should have empty Updated, received %q", c.Updated)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalJSON()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
 	}
 }
 
@@ -325,15 +369,7 @@ func TestOrderedCollection_Contains(t *testing.T) {
 	}
 }
 
-func TestOrderedCollection_MarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestOrderedCollection_ItemMatches(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestOrderedCollection_IsCollection(t *testing.T) {
 	t.Skipf("TODO")
 }
 

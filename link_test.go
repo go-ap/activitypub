@@ -531,3 +531,56 @@ func TestLink_MarshalBinary(t *testing.T) {
 		})
 	}
 }
+
+func TestLink_UnmarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    []byte
+		want    Link
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: fmt.Errorf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Link{}
+			if err := l.UnmarshalJSON(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
+	}
+}
+
+func TestLink_MarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		sub     Link
+		want    []byte
+		wantErr error
+	}{
+		{
+			name: "nil",
+			sub:  Link{},
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalJSON()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}

@@ -3,7 +3,6 @@ package activitypub
 import (
 	"bytes"
 	"fmt"
-	"reflect"
 	"testing"
 	"time"
 
@@ -30,227 +29,87 @@ func Benchmark_OnActor(b *testing.B) {
 	}
 }
 
-func TestActor_Object(t *testing.T) {
-	m := &Actor{Type: ActorType, ID: "test"}
-	if reflect.DeepEqual(ID(""), m.GetID()) {
-		t.Errorf("%#v should not be an empty activity pub object", m.GetID())
-	}
-}
-
-func TestActor_Type(t *testing.T) {
-	m := &Actor{Type: ActorType, ID: "test"}
-	if !cmp.Equal(m.GetType(), ActorType) {
-		t.Errorf("%#v should be an empty Link object", m.GetType())
-	}
-}
-
 func TestActor_UnmarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestActor_GetActor(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name    string
+		data    []byte
+		want    Actor
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: fmt.Errorf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Actor{}
+			if err := l.UnmarshalJSON(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
+	}
 }
 
 func TestActor_GetID(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		ID   ID
+		want ID
+	}{
+		{
+			name: "empty",
+			ID:   "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			ID:   "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Actor{ID: tt.ID}
+			if got := l.GetID(); got != tt.want {
+				t.Errorf("GetID() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestActor_GetLink(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		IRI  IRI
+		want IRI
+	}{
+		{
+			name: "empty",
+			IRI:  "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			IRI:  "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Actor{ID: tt.IRI}
+			if got := l.GetLink(); got != tt.want {
+				t.Errorf("GetLink() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestActor_GetType(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestApplication_GetActor(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestApplication_GetID(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestApplication_GetLink(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestApplication_GetType(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestApplication_IsLink(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestApplication_IsObject(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestGroup_GetActor(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestGroup_GetID(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestGroup_GetLink(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestGroup_GetType(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestGroup_IsLink(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestGroup_IsObject(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestOrganization_GetActor(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestOrganization_GetID(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestOrganization_GetLink(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestOrganization_GetType(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestOrganization_IsLink(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestOrganization_IsObject(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestPerson_GetActor(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestPerson_GetID(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestPerson_GetLink(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestPerson_GetType(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func validateEmptyPerson(p Person, t *testing.T) {
-	if p.ID != "" {
-		t.Errorf("Unmarshaled object %T should have empty ID, received %q", p, p.ID)
-	}
-	if HasTypes(p) {
-		t.Errorf("Unmarshaled object "+
-			"%T should have empty Type, received %s", p, p.GetType())
-	}
-	if p.AttributedTo != nil {
-		t.Errorf("Unmarshaled object %T should have empty AttributedTo, received %q", p, p.AttributedTo)
-	}
-	if len(p.Name) != 0 {
-		t.Errorf("Unmarshaled object %T should have empty Name, received %q", p, p.Name)
-	}
-	if len(p.Summary) != 0 {
-		t.Errorf("Unmarshaled object %T should have empty Summary, received %q", p, p.Summary)
-	}
-	if len(p.Content) != 0 {
-		t.Errorf("Unmarshaled object %T should have empty Content, received %q", p, p.Content)
-	}
-	if p.URL != nil {
-		t.Errorf("Unmarshaled object %T should have empty URL, received %v", p, p.URL)
-	}
-	if !p.Published.IsZero() {
-		t.Errorf("Unmarshaled object %T should have empty Published, received %q", p, p.Published)
-	}
-	if !p.StartTime.IsZero() {
-		t.Errorf("Unmarshaled object %T  should have empty StartTime, received %q", p, p.StartTime)
-	}
-	if !p.Updated.IsZero() {
-		t.Errorf("Unmarshaled object %T  should have empty Updated, received %q", p, p.Updated)
-	}
-}
-
-func TestPerson_UnmarshalJSON(t *testing.T) {
-	p := Person{}
-
-	dataEmpty := []byte("{}")
-	_ = p.UnmarshalJSON(dataEmpty)
-	validateEmptyPerson(p, t)
-}
-
-func TestApplication_UnmarshalJSON(t *testing.T) {
-	a := Application{}
-
-	dataEmpty := []byte("{}")
-	a.UnmarshalJSON(dataEmpty)
-	validateEmptyPerson(Person(a), t)
-}
-
-func TestGroup_UnmarshalJSON(t *testing.T) {
-	g := Group{}
-
-	dataEmpty := []byte("{}")
-	g.UnmarshalJSON(dataEmpty)
-	validateEmptyPerson(Person(g), t)
-}
-
-func TestOrganization_UnmarshalJSON(t *testing.T) {
-	o := Organization{}
-
-	dataEmpty := []byte("{}")
-	o.UnmarshalJSON(dataEmpty)
-	validateEmptyPerson(Person(o), t)
-}
-
-func TestService_UnmarshalJSON(t *testing.T) {
-	s := Service{}
-
-	dataEmpty := []byte("{}")
-	s.UnmarshalJSON(dataEmpty)
-	validateEmptyPerson(Person(s), t)
-}
-
-func TestService_GetActor(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestService_GetID(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestService_GetLink(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestService_GetType(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestService_IsLink(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestService_IsObject(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestToPerson(t *testing.T) {
 	t.Skipf("TODO")
 }
 
@@ -399,10 +258,6 @@ func TestToActor(t *testing.T) {
 	}
 }
 
-func TestActor_IsCollection(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestActor_Recipients(t *testing.T) {
 	t.Skipf("TODO")
 }
@@ -412,7 +267,30 @@ func TestPublicKey_UnmarshalJSON(t *testing.T) {
 }
 
 func TestActor_MarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name    string
+		sub     Actor
+		want    []byte
+		wantErr error
+	}{
+		{
+			name: "nil",
+			sub:  Actor{},
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalJSON()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestEndpoints_MarshalJSON(t *testing.T) {

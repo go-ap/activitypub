@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -83,23 +84,56 @@ func TestCollection_Collection(t *testing.T) {
 }
 
 func TestCollection_GetID(t *testing.T) {
-	id := ID("test")
-
-	c := &Collection{Type: CollectionType, ID: id}
-
-	if c.GetID() != id {
-		t.Errorf("GetID should return %s, received %s", id, c.GetID())
+	tests := []struct {
+		name string
+		ID   ID
+		want ID
+	}{
+		{
+			name: "empty",
+			ID:   "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			ID:   "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Collection{ID: tt.ID}
+			if got := l.GetID(); got != tt.want {
+				t.Errorf("GetID() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
 func TestCollection_GetLink(t *testing.T) {
-	id := ID("test")
-	link := IRI(id)
-
-	c := &Collection{Type: CollectionType, ID: id}
-
-	if c.GetLink() != link {
-		t.Errorf("GetLink should return %q, received %q", link, c.GetLink())
+	tests := []struct {
+		name string
+		IRI  IRI
+		want IRI
+	}{
+		{
+			name: "empty",
+			IRI:  "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			IRI:  "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Collection{ID: tt.IRI}
+			if got := l.GetLink(); got != tt.want {
+				t.Errorf("GetLink() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
@@ -114,45 +148,28 @@ func TestCollection_GetType(t *testing.T) {
 }
 
 func TestCollection_UnmarshalJSON(t *testing.T) {
-	c := Collection{}
-
-	dataEmpty := []byte("{}")
-	c.UnmarshalJSON(dataEmpty)
-	if c.ID != "" {
-		t.Errorf("Unmarshaled object should have empty ID, received %q", c.ID)
+	tests := []struct {
+		name    string
+		data    []byte
+		want    Collection
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: fmt.Errorf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
+		},
 	}
-	if HasTypes(c) {
-		t.Errorf("Unmarshaled object should have empty Type, received %q", c.GetType())
-	}
-	if c.AttributedTo != nil {
-		t.Errorf("Unmarshaled object should have empty AttributedTo, received %q", c.AttributedTo)
-	}
-	if len(c.Name) != 0 {
-		t.Errorf("Unmarshaled object should have empty Name, received %q", c.Name)
-	}
-	if len(c.Summary) != 0 {
-		t.Errorf("Unmarshaled object should have empty Summary, received %q", c.Summary)
-	}
-	if len(c.Content) != 0 {
-		t.Errorf("Unmarshaled object should have empty Content, received %q", c.Content)
-	}
-	if c.TotalItems != 0 {
-		t.Errorf("Unmarshaled object should have empty TotalItems, received %d", c.TotalItems)
-	}
-	if len(c.Items) > 0 {
-		t.Errorf("Unmarshaled object should have empty Items, received %v", c.Items)
-	}
-	if c.URL != nil {
-		t.Errorf("Unmarshaled object should have empty URL, received %v", c.URL)
-	}
-	if !c.Published.IsZero() {
-		t.Errorf("Unmarshaled object should have empty Published, received %q", c.Published)
-	}
-	if !c.StartTime.IsZero() {
-		t.Errorf("Unmarshaled object should have empty StartTime, received %q", c.StartTime)
-	}
-	if !c.Updated.IsZero() {
-		t.Errorf("Unmarshaled object should have empty Updated, received %q", c.Updated)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Collection{}
+			if err := l.UnmarshalJSON(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
 	}
 }
 
@@ -226,12 +243,31 @@ func TestCollection_Contains(t *testing.T) {
 	}
 }
 
-func TestCollection_IsCollection(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestCollection_MarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name    string
+		sub     Collection
+		want    []byte
+		wantErr error
+	}{
+		{
+			name: "nil",
+			sub:  Collection{},
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalJSON()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestCollection_ItemMatches(t *testing.T) {

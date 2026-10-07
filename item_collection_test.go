@@ -41,14 +41,6 @@ func TestItemCollection_GetType(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestItemCollection_IsLink(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestItemCollection_IsObject(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestItemCollection_First(t *testing.T) {
 	t.Skipf("TODO")
 }
@@ -58,10 +50,6 @@ func TestItemCollection_Count(t *testing.T) {
 }
 
 func TestItemCollection_Contains(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestItemCollection_IsCollection(t *testing.T) {
 	t.Skipf("TODO")
 }
 

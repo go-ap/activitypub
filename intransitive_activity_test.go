@@ -115,22 +115,6 @@ func TestIntransitiveActivityRecipients(t *testing.T) {
 	}
 }
 
-func TestIntransitiveActivity_GetLink(t *testing.T) {
-	i := &IntransitiveActivity{Type: QuestionType, ID: "test"}
-
-	if i.GetID() != "test" {
-		t.Errorf("%T should return an empty %T object. Received %#v", i, i, i)
-	}
-}
-
-func TestIntransitiveActivity_GetObject(t *testing.T) {
-	i := &IntransitiveActivity{Type: QuestionType, ID: "test"}
-
-	if i.GetID() != "test" || !i.Match(QuestionType) {
-		t.Errorf("%T should not return an empty %T object. Received %#v", i, i, i)
-	}
-}
-
 func TestIntransitiveActivity_Recipients(t *testing.T) {
 	to := &Person{Type: PersonType, ID: "bob"}
 	o := Object{Type: ArticleType}
@@ -166,10 +150,56 @@ func TestIntransitiveActivity_Recipients(t *testing.T) {
 }
 
 func TestIntransitiveActivity_GetID(t *testing.T) {
-	a := &IntransitiveActivity{Type: IntransitiveActivityType, ID: "test"}
+	tests := []struct {
+		name string
+		ID   ID
+		want ID
+	}{
+		{
+			name: "empty",
+			ID:   "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			ID:   "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := IntransitiveActivity{ID: tt.ID}
+			if got := l.GetID(); got != tt.want {
+				t.Errorf("GetID() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
-	if a.GetID() != "test" {
-		t.Errorf("%T should return an empty %T object. Received %#v", a, a.GetID(), a.GetID())
+func TestIntransitiveActivity_GetLink(t *testing.T) {
+	tests := []struct {
+		name string
+		IRI  IRI
+		want IRI
+	}{
+		{
+			name: "empty",
+			IRI:  "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			IRI:  "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := IntransitiveActivity{ID: tt.IRI}
+			if got := l.GetLink(); got != tt.want {
+				t.Errorf("GetLink() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
@@ -363,14 +393,6 @@ func TestIntransitiveActivity_Clean(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestIntransitiveActivity_IsCollection(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestIntransitiveActivity_UnmarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
 }
 
 func TestIntransitiveActivity_Equals(t *testing.T) {
@@ -743,6 +765,157 @@ func TestIntransitiveActivity_MarshalBinary(t *testing.T) {
 			}
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("MarshalBinary() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestIntransitiveActivity_UnmarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    []byte
+		want    IntransitiveActivity
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: fmt.Errorf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := IntransitiveActivity{}
+			if err := l.UnmarshalJSON(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
+	}
+}
+
+func TestIntransitiveActivity_MarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		sub     IntransitiveActivity
+		want    []byte
+		wantErr error
+	}{
+		{
+			name: "nil",
+			sub:  IntransitiveActivity{},
+			want: nil,
+		},
+		{
+			name: "Empty",
+			want: nil,
+		},
+		{
+			name: "JustID",
+			sub: IntransitiveActivity{
+				ID: ID("example.com"),
+			},
+			want: []byte(`{"id":"example.com"}`),
+		},
+		{
+			name: "JustType",
+			sub: IntransitiveActivity{
+				Type: ActivityVocabularyType("myType"),
+			},
+			want: []byte(`{"type":"myType"}`),
+		},
+		{
+			name: "JustOneName",
+			sub: IntransitiveActivity{
+				Name: NaturalLanguageValues{
+					NilLangRef: Content("ana"),
+				},
+			},
+			want: []byte(`{"name":"ana"}`),
+		},
+		{
+			name: "JustOneSummary",
+			sub: IntransitiveActivity{
+				Summary: NaturalLanguageValues{
+					NilLangRef: Content("test summary"),
+				},
+			},
+			want: []byte(`{"summary":"test summary"}`),
+		},
+		{
+			name: "JustOneContent",
+			sub: IntransitiveActivity{
+				Content: NaturalLanguageValues{
+					NilLangRef: Content("test content"),
+				},
+			},
+			want: []byte(`{"content":"test content"}`),
+		},
+		{
+			name: "MediaType",
+			sub: IntransitiveActivity{
+				MediaType: MimeType("text/stupid"),
+			},
+			want: []byte(`{"mediaType":"text/stupid"}`),
+		},
+		{
+			name: "Attachment",
+			sub: IntransitiveActivity{
+				Attachment: &Object{
+					ID:   "some example",
+					Type: VideoType,
+				},
+			},
+			want: []byte(`{"attachment":{"id":"some example","type":"Video"}}`),
+		},
+		{
+			name: "AttributedTo",
+			sub: IntransitiveActivity{
+				AttributedTo: &Actor{
+					ID:   "http://example.com/ana",
+					Type: PersonType,
+				},
+			},
+			want: []byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`),
+		},
+		{
+			name: "AttributedToDouble",
+			sub: IntransitiveActivity{
+				AttributedTo: ItemCollection{
+					&Actor{
+						ID:   "http://example.com/ana",
+						Type: PersonType,
+					},
+					&Actor{
+						ID:   "http://example.com/GGG",
+						Type: GroupType,
+					},
+				},
+			},
+			want: []byte(`{"attributedTo":[{"id":"http://example.com/ana","type":"Person"},{"id":"http://example.com/GGG","type":"Group"}]}`),
+		},
+		{
+			name: "Source",
+			sub: IntransitiveActivity{
+				Source: Source{
+					MediaType: MimeType("text/plain"),
+					Content:   NaturalLanguageValues{},
+				},
+			},
+			want: []byte(`{"source":{"mediaType":"text/plain"}}`),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalJSON()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

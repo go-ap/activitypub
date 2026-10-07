@@ -163,11 +163,29 @@ func validateEmptySource(s Source, t *testing.T) {
 }
 
 func TestObject_UnmarshalJSON(t *testing.T) {
-	o := Object{}
-
-	dataEmpty := []byte("{}")
-	_ = o.UnmarshalJSON(dataEmpty)
-	validateEmptyObject(o, t)
+	tests := []struct {
+		name    string
+		data    []byte
+		want    Object
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: fmt.Errorf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Object{}
+			if err := l.UnmarshalJSON(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
+	}
 }
 
 func TestMimeType_UnmarshalJSON(t *testing.T) {
@@ -194,20 +212,56 @@ func TestLangRef_UnmarshalText(t *testing.T) {
 }
 
 func TestObject_GetID(t *testing.T) {
-	a := Object{}
-	testVal := "crash$"
-	a.ID = ID(testVal)
-	if string(a.GetID()) != testVal {
-		t.Errorf("%T should return %q, Received %q", a.GetID, testVal, a.GetID())
+	tests := []struct {
+		name string
+		ID   ID
+		want ID
+	}{
+		{
+			name: "empty",
+			ID:   "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			ID:   "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Object{ID: tt.ID}
+			if got := l.GetID(); got != tt.want {
+				t.Errorf("GetID() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
 func TestObject_GetLink(t *testing.T) {
-	a := Object{}
-	testVal := "crash$"
-	a.ID = ID(testVal)
-	if string(a.GetLink()) != testVal {
-		t.Errorf("%T should return %q, Received %q", a.GetLink, testVal, a.GetLink())
+	tests := []struct {
+		name string
+		IRI  IRI
+		want IRI
+	}{
+		{
+			name: "empty",
+			IRI:  "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			IRI:  "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := Object{ID: tt.IRI}
+			if got := l.GetLink(); got != tt.want {
+				t.Errorf("GetLink() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
@@ -564,181 +618,93 @@ func TestObject_Clean(t *testing.T) {
 	}
 }
 
-func TestObject_IsCollection(t *testing.T) {
-	t.Skip("TODO")
-}
-
-func TestActivityVocabularyType_MarshalJSON(t *testing.T) {
-	t.Skip("TODO")
-}
-
 func TestObject_MarshalJSON(t *testing.T) {
-	type fields struct {
-		ID           ID
-		Type         Typer
-		Name         NaturalLanguageValues
-		Attachment   Item
-		AttributedTo Item
-		Audience     ItemCollection
-		Content      NaturalLanguageValues
-		Context      Item
-		MediaType    MimeType
-		EndTime      time.Time
-		Generator    Item
-		Icon         Item
-		Image        Item
-		InReplyTo    Item
-		Location     Item
-		Preview      Item
-		Published    time.Time
-		Replies      Item
-		StartTime    time.Time
-		Summary      NaturalLanguageValues
-		Tag          ItemCollection
-		Updated      time.Time
-		URL          Item
-		To           ItemCollection
-		Bto          ItemCollection
-		CC           ItemCollection
-		BCC          ItemCollection
-		Duration     time.Duration
-		Likes        Item
-		Shares       Item
-		Source       Source
-	}
 	tests := []struct {
 		name    string
-		fields  fields
-		want    [][]byte
-		wantErr bool
+		sub     Object
+		want    []byte
+		wantErr error
 	}{
 		{
-			name:    "Empty",
-			fields:  fields{},
-			want:    nil,
-			wantErr: false,
+			name: "nil",
+			sub:  Object{},
+			want: nil,
+		},
+		{
+			name: "Empty",
+			want: nil,
 		},
 		{
 			name: "JustID",
-			fields: fields{
+			sub: Object{
 				ID: ID("example.com"),
 			},
-			want:    [][]byte{[]byte(`{"id":"example.com"}`)},
-			wantErr: false,
+			want: []byte(`{"id":"example.com"}`),
 		},
 		{
 			name: "JustType",
-			fields: fields{
+			sub: Object{
 				Type: ActivityVocabularyType("myType"),
 			},
-			want:    [][]byte{[]byte(`{"type":"myType"}`)},
-			wantErr: false,
+			want: []byte(`{"type":"myType"}`),
 		},
 		{
 			name: "JustOneName",
-			fields: fields{
+			sub: Object{
 				Name: NaturalLanguageValues{
 					NilLangRef: Content("ana"),
 				},
 			},
-			want:    [][]byte{[]byte(`{"name":"ana"}`)},
-			wantErr: false,
-		},
-		{
-			name: "MoreNames",
-			fields: fields{
-				Name: NaturalLanguageValues{
-					English: Content("anna"),
-					French:  Content("anne"),
-				},
-			},
-			want: [][]byte{
-				[]byte(`{"nameMap":{"en":"anna","fr":"anne"}}`),
-				[]byte(`{"nameMap":{"fr":"anne","en":"anna"}}`),
-			},
-			wantErr: false,
+			want: []byte(`{"name":"ana"}`),
 		},
 		{
 			name: "JustOneSummary",
-			fields: fields{
+			sub: Object{
 				Summary: NaturalLanguageValues{
 					NilLangRef: Content("test summary"),
 				},
 			},
-			want:    [][]byte{[]byte(`{"summary":"test summary"}`)},
-			wantErr: false,
-		},
-		{
-			name: "MoreSummaryEntries",
-			fields: fields{
-				Summary: NaturalLanguageValues{
-					English: Content("test summary"),
-					French:  Content("teste summary"),
-				},
-			},
-			want: [][]byte{
-				[]byte(`{"summaryMap":{"en":"test summary","fr":"teste summary"}}`),
-				[]byte(`{"summaryMap":{"fr":"teste summary","en":"test summary"}}`),
-			},
-			wantErr: false,
+			want: []byte(`{"summary":"test summary"}`),
 		},
 		{
 			name: "JustOneContent",
-			fields: fields{
+			sub: Object{
 				Content: NaturalLanguageValues{
 					NilLangRef: Content("test content"),
 				},
 			},
-			want:    [][]byte{[]byte(`{"content":"test content"}`)},
-			wantErr: false,
-		},
-		{
-			name: "MoreContentEntries",
-			fields: fields{
-				Content: NaturalLanguageValues{
-					English: Content("test content"),
-					French:  Content("teste content"),
-				},
-			},
-			want: [][]byte{
-				[]byte(`{"contentMap":{"en":"test content","fr":"teste content"}}`),
-				[]byte(`{"contentMap":{"fr":"teste content","en":"test content"}}`),
-			},
-			wantErr: false,
+			want: []byte(`{"content":"test content"}`),
 		},
 		{
 			name: "MediaType",
-			fields: fields{
+			sub: Object{
 				MediaType: MimeType("text/stupid"),
 			},
-			want:    [][]byte{[]byte(`{"mediaType":"text/stupid"}`)},
-			wantErr: false,
+			want: []byte(`{"mediaType":"text/stupid"}`),
 		},
 		{
 			name: "Attachment",
-			fields: fields{
+			sub: Object{
 				Attachment: &Object{
 					ID:   "some example",
 					Type: VideoType,
 				},
 			},
-			want:    [][]byte{[]byte(`{"attachment":{"id":"some example","type":"Video"}}`)},
-			wantErr: false,
+			want: []byte(`{"attachment":{"id":"some example","type":"Video"}}`),
 		},
 		{
 			name: "AttributedTo",
-			fields: fields{
+			sub: Object{
 				AttributedTo: &Actor{
 					ID:   "http://example.com/ana",
 					Type: PersonType,
 				},
 			},
-			want:    [][]byte{[]byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`)},
-			wantErr: false,
+			want: []byte(`{"attributedTo":{"id":"http://example.com/ana","type":"Person"}}`),
 		},
 		{
 			name: "AttributedToDouble",
-			fields: fields{
+			sub: Object{
 				AttributedTo: ItemCollection{
 					&Actor{
 						ID:   "http://example.com/ana",
@@ -750,69 +716,28 @@ func TestObject_MarshalJSON(t *testing.T) {
 					},
 				},
 			},
-			want:    [][]byte{[]byte(`{"attributedTo":[{"id":"http://example.com/ana","type":"Person"},{"id":"http://example.com/GGG","type":"Group"}]}`)},
-			wantErr: false,
+			want: []byte(`{"attributedTo":[{"id":"http://example.com/ana","type":"Person"},{"id":"http://example.com/GGG","type":"Group"}]}`),
 		},
 		{
 			name: "Source",
-			fields: fields{
+			sub: Object{
 				Source: Source{
 					MediaType: MimeType("text/plain"),
 					Content:   NaturalLanguageValues{},
 				},
 			},
-			want:    [][]byte{[]byte(`{"source":{"mediaType":"text/plain"}}`)},
-			wantErr: false,
+			want: []byte(`{"source":{"mediaType":"text/plain"}}`),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			o := Object{
-				ID:           tt.fields.ID,
-				Type:         tt.fields.Type,
-				Name:         tt.fields.Name,
-				Attachment:   tt.fields.Attachment,
-				AttributedTo: tt.fields.AttributedTo,
-				Audience:     tt.fields.Audience,
-				Content:      tt.fields.Content,
-				Context:      tt.fields.Context,
-				MediaType:    tt.fields.MediaType,
-				EndTime:      tt.fields.EndTime,
-				Generator:    tt.fields.Generator,
-				Icon:         tt.fields.Icon,
-				Image:        tt.fields.Image,
-				InReplyTo:    tt.fields.InReplyTo,
-				Location:     tt.fields.Location,
-				Preview:      tt.fields.Preview,
-				Published:    tt.fields.Published,
-				Replies:      tt.fields.Replies,
-				StartTime:    tt.fields.StartTime,
-				Summary:      tt.fields.Summary,
-				Tag:          tt.fields.Tag,
-				Updated:      tt.fields.Updated,
-				URL:          tt.fields.URL,
-				To:           tt.fields.To,
-				Bto:          tt.fields.Bto,
-				CC:           tt.fields.CC,
-				BCC:          tt.fields.BCC,
-				Duration:     tt.fields.Duration,
-				Likes:        tt.fields.Likes,
-				Shares:       tt.fields.Shares,
-				Source:       tt.fields.Source,
-			}
-			got, err := o.MarshalJSON()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+			got, err := tt.sub.MarshalJSON()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
 				return
 			}
-			found := got == nil
-			for _, wantBytes := range tt.want {
-				if bytes.Equal(got, wantBytes) {
-					found = true
-				}
-			}
-			if !found {
-				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

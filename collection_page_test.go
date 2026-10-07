@@ -1,6 +1,7 @@
 package activitypub
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -65,63 +66,28 @@ func TestCollectionPage_Append(t *testing.T) {
 }
 
 func TestCollectionPage_UnmarshalJSON(t *testing.T) {
-	p := CollectionPage{}
-
-	dataEmpty := []byte("{}")
-	p.UnmarshalJSON(dataEmpty)
-	if p.ID != "" {
-		t.Errorf("Unmarshaled object should have empty ID, received %q", p.ID)
+	tests := []struct {
+		name    string
+		data    []byte
+		want    CollectionPage
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			wantErr: fmt.Errorf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
+		},
 	}
-	if HasTypes(p) {
-		t.Errorf("Unmarshaled object should have empty Type, received %q", p.GetType())
-	}
-	if p.AttributedTo != nil {
-		t.Errorf("Unmarshaled object should have empty AttributedTo, received %q", p.AttributedTo)
-	}
-	if len(p.Name) != 0 {
-		t.Errorf("Unmarshaled object should have empty Name, received %q", p.Name)
-	}
-	if len(p.Summary) != 0 {
-		t.Errorf("Unmarshaled object should have empty Summary, received %q", p.Summary)
-	}
-	if len(p.Content) != 0 {
-		t.Errorf("Unmarshaled object should have empty Content, received %q", p.Content)
-	}
-	if p.TotalItems != 0 {
-		t.Errorf("Unmarshaled object should have empty TotalItems, received %d", p.TotalItems)
-	}
-	if len(p.Items) > 0 {
-		t.Errorf("Unmarshaled object should have empty Items, received %v", p.Items)
-	}
-	if p.URL != nil {
-		t.Errorf("Unmarshaled object should have empty URL, received %v", p.URL)
-	}
-	if !p.Published.IsZero() {
-		t.Errorf("Unmarshaled object should have empty Published, received %q", p.Published)
-	}
-	if !p.StartTime.IsZero() {
-		t.Errorf("Unmarshaled object should have empty StartTime, received %q", p.StartTime)
-	}
-	if !p.Updated.IsZero() {
-		t.Errorf("Unmarshaled object should have empty Updated, received %q", p.Updated)
-	}
-	if p.PartOf != nil {
-		t.Errorf("Unmarshaled object should have empty PartOf, received %q", p.PartOf)
-	}
-	if p.Current != nil {
-		t.Errorf("Unmarshaled object should have empty Current, received %q", p.Current)
-	}
-	if p.First != nil {
-		t.Errorf("Unmarshaled object should have empty First, received %q", p.First)
-	}
-	if p.Last != nil {
-		t.Errorf("Unmarshaled object should have empty Last, received %q", p.Last)
-	}
-	if p.Next != nil {
-		t.Errorf("Unmarshaled object should have empty Next, received %q", p.Next)
-	}
-	if p.Prev != nil {
-		t.Errorf("Unmarshaled object should have empty Prev, received %q", p.Prev)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := CollectionPage{}
+			if err := l.UnmarshalJSON(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(l, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, l))
+			}
+		})
 	}
 }
 
@@ -302,31 +268,87 @@ func TestCollectionPage_Contains(t *testing.T) {
 }
 
 func TestCollectionPage_GetID(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		ID   ID
+		want ID
+	}{
+		{
+			name: "empty",
+			ID:   "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			ID:   "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := CollectionPage{ID: tt.ID}
+			if got := l.GetID(); got != tt.want {
+				t.Errorf("GetID() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestCollectionPage_GetLink(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		IRI  IRI
+		want IRI
+	}{
+		{
+			name: "empty",
+			IRI:  "",
+			want: "",
+		},
+		{
+			name: "not empty",
+			IRI:  "http://example.com",
+			want: "http://example.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := CollectionPage{ID: tt.IRI}
+			if got := l.GetLink(); got != tt.want {
+				t.Errorf("GetLink() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
-
 func TestCollectionPage_GetType(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestCollectionPage_IsCollection(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestCollectionPage_IsLink(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestCollectionPage_IsObject(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestCollectionPage_MarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name    string
+		sub     CollectionPage
+		want    []byte
+		wantErr error
+	}{
+		{
+			name: "nil",
+			sub:  CollectionPage{},
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalJSON()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestCollectionPage_ItemMatches(t *testing.T) {
