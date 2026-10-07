@@ -213,8 +213,8 @@ func TestIRIs_UnmarshalJSON(t *testing.T) {
 				}
 				return
 			}
-			if !assertDeepEquals(t.Errorf, tt.obj, tt.want) {
-				t.Errorf("UnmarshalJSON() got = %#v, want %#v", tt.obj, tt.want)
+			if !cmp.Equal(tt.obj, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, tt.obj))
 			}
 		})
 	}

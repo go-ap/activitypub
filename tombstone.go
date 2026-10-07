@@ -279,7 +279,7 @@ func ToTombstone(it LinkOrIRI) (*Tombstone, error) {
 	}
 }
 
-type withTombstoneFn func(*Tombstone) error
+type WithTombstoneFn func(*Tombstone) error
 
 // OnTombstone calls function fn on it Item if it can be asserted to type *Tombstone
 //

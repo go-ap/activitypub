@@ -273,59 +273,71 @@ func TestPlace_Clean(t *testing.T) {
 	}
 }
 
-func assertPlaceWithTesting(fn logFn, expected *Place) WithPlaceFn {
-	return func(p *Place) error {
-		if !assertDeepEquals(fn, p, expected) {
-			return fmt.Errorf("not equal")
-		}
-		return nil
-	}
-}
-
 func TestOnPlace(t *testing.T) {
-	testPlace := Place{
-		ID: "https://example.com",
-	}
 	type args struct {
 		it Item
-		fn func(logFn, *Place) WithPlaceFn
+		fn func(*testing.T) WithPlaceFn
 	}
 	tests := []struct {
 		name    string
 		args    args
-		wantErr bool
+		want    *Profile
+		wantErr error
 	}{
 		{
-			name:    "single",
-			args:    args{testPlace, assertPlaceWithTesting},
-			wantErr: false,
+			name: "single",
+			args: args{
+				it: Place{
+					ID: "https://example.com",
+				},
+				fn: func(t *testing.T) WithPlaceFn {
+					return func(place *Place) error {
+						return nil
+					}
+				},
+			},
 		},
 		{
-			name:    "single fails",
-			args:    args{Place{ID: "https://not-equals"}, assertPlaceWithTesting},
-			wantErr: true,
+			name: "single fails",
+			args: args{
+				it: Place{ID: "https://not-equals"},
+				fn: func(t *testing.T) WithPlaceFn {
+					return func(place *Place) error {
+						return fmt.Errorf("test")
+					}
+				},
+			},
+			wantErr: fmt.Errorf("test"),
 		},
 		{
-			name:    "collectionOfPlaces",
-			args:    args{ItemCollection{testPlace, testPlace}, assertPlaceWithTesting},
-			wantErr: false,
+			name: "collectionOfPlaces",
+			args: args{
+				it: ItemCollection{Place{ID: "https://example.com/p0"}, Place{ID: "https://example.com/p1"}},
+				fn: func(t *testing.T) WithPlaceFn {
+					return func(place *Place) error {
+						return nil
+					}
+				},
+			},
 		},
 		{
-			name:    "collectionOfPlaces fails",
-			args:    args{ItemCollection{testPlace, Place{ID: "https://not-equals"}}, assertPlaceWithTesting},
-			wantErr: true,
+			name: "collectionOfPlaces fails",
+			args: args{
+				it: ItemCollection{Place{ID: "https://example.com/p0"}, Place{ID: "https://not-equals"}},
+				fn: func(t *testing.T) WithPlaceFn {
+					return func(place *Place) error {
+						return fmt.Errorf("test")
+					}
+				},
+			},
+			wantErr: fmt.Errorf("test"),
 		},
 	}
 	for _, tt := range tests {
-		var logFn logFn
-		if tt.wantErr {
-			logFn = t.Logf
-		} else {
-			logFn = t.Errorf
-		}
 		t.Run(tt.name, func(t *testing.T) {
-			if err := OnPlace(tt.args.it, tt.args.fn(logFn, &testPlace)); (err != nil) != tt.wantErr {
-				t.Errorf("OnPlace() error = %v, wantErr %v", err, tt.wantErr)
+			err := OnPlace(tt.args.it, tt.args.fn(t))
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("OnPlace() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
 			}
 		})
 	}

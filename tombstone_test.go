@@ -195,59 +195,68 @@ func TestTombstone_Clean(t *testing.T) {
 	}
 }
 
-func assertTombstoneWithTesting(fn logFn, expected *Tombstone) withTombstoneFn {
-	return func(p *Tombstone) error {
-		if !assertDeepEquals(fn, p, expected) {
-			return fmt.Errorf("not equal")
-		}
-		return nil
-	}
-}
-
 func TestOnTombstone(t *testing.T) {
-	testTombstone := Tombstone{
-		ID: "https://example.com",
-	}
 	type args struct {
 		it Item
-		fn func(logFn, *Tombstone) withTombstoneFn
+		fn func(*testing.T) WithTombstoneFn
 	}
 	tests := []struct {
 		name    string
 		args    args
-		wantErr bool
+		wantErr error
 	}{
 		{
-			name:    "single",
-			args:    args{testTombstone, assertTombstoneWithTesting},
-			wantErr: false,
+			name: "single",
+			args: args{
+				it: Tombstone{ID: "https://example.com"},
+				fn: func(t *testing.T) WithTombstoneFn {
+					return func(p *Tombstone) error {
+						return nil
+					}
+				},
+			},
 		},
 		{
-			name:    "single fails",
-			args:    args{&Tombstone{ID: "https://not-equal"}, assertTombstoneWithTesting},
-			wantErr: true,
+			name: "single fails",
+			args: args{
+				it: &Tombstone{ID: "https://not-equal"},
+				fn: func(t *testing.T) WithTombstoneFn {
+					return func(p *Tombstone) error {
+						return fmt.Errorf("test")
+					}
+				},
+			},
+			wantErr: fmt.Errorf("test"),
 		},
 		{
-			name:    "collection of profiles",
-			args:    args{ItemCollection{testTombstone, testTombstone}, assertTombstoneWithTesting},
-			wantErr: false,
+			name: "collection of profiles",
+			args: args{
+				it: ItemCollection{Tombstone{ID: "https://example.com/p1"}, Tombstone{ID: "https://example.com/p2"}},
+				fn: func(t *testing.T) WithTombstoneFn {
+					return func(p *Tombstone) error {
+						return nil
+					}
+				},
+			},
 		},
 		{
-			name:    "collection of profiles fails",
-			args:    args{ItemCollection{testTombstone, &Tombstone{ID: "not-equal"}}, assertTombstoneWithTesting},
-			wantErr: true,
+			name: "collection of profiles fails",
+			args: args{
+				it: ItemCollection{Tombstone{ID: "https://example.com"}, &Tombstone{ID: "not-equal"}},
+				fn: func(t *testing.T) WithTombstoneFn {
+					return func(p *Tombstone) error {
+						return fmt.Errorf("test")
+					}
+				},
+			},
+			wantErr: fmt.Errorf("test"),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var logFn logFn
-			if tt.wantErr {
-				logFn = t.Logf
-			} else {
-				logFn = t.Errorf
-			}
-			if err := OnTombstone(tt.args.it, tt.args.fn(logFn, &testTombstone)); (err != nil) != tt.wantErr {
-				t.Errorf("OnTombstone() error = %v, wantErr %v", err, tt.wantErr)
+			err := OnTombstone(tt.args.it, tt.args.fn(t))
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("OnTombstone() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
 			}
 		})
 	}

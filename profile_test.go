@@ -286,59 +286,68 @@ func TestProfile_Clean(t *testing.T) {
 	}
 }
 
-func assertProfileWithTesting(fn logFn, expected *Profile) WithProfileFn {
-	return func(p *Profile) error {
-		if !assertDeepEquals(fn, p, expected) {
-			return fmt.Errorf("not equal")
-		}
-		return nil
-	}
-}
-
 func TestOnProfile(t *testing.T) {
-	testProfile := Profile{
-		ID: "https://example.com",
-	}
 	type args struct {
 		it Item
-		fn func(logFn, *Profile) WithProfileFn
+		fn func(*testing.T) WithProfileFn
 	}
 	tests := []struct {
 		name    string
 		args    args
-		wantErr bool
+		wantErr error
 	}{
 		{
-			name:    "single",
-			args:    args{testProfile, assertProfileWithTesting},
-			wantErr: false,
+			name: "single",
+			args: args{
+				it: Profile{ID: "https://example.com"},
+				fn: func(t *testing.T) WithProfileFn {
+					return func(p *Profile) error {
+						return nil
+					}
+				},
+			},
 		},
 		{
-			name:    "single fails",
-			args:    args{&Profile{ID: "https://not-equal"}, assertProfileWithTesting},
-			wantErr: true,
+			name: "single fails",
+			args: args{
+				it: &Profile{ID: "https://not-equal"},
+				fn: func(t *testing.T) WithProfileFn {
+					return func(p *Profile) error {
+						return fmt.Errorf("test")
+					}
+				},
+			},
+			wantErr: fmt.Errorf("test"),
 		},
 		{
-			name:    "collection of profiles",
-			args:    args{ItemCollection{testProfile, testProfile}, assertProfileWithTesting},
-			wantErr: false,
+			name: "collection of profiles",
+			args: args{
+				it: ItemCollection{Profile{ID: "https://example.com/p1"}, Profile{ID: "https://example.com/p2"}},
+				fn: func(t *testing.T) WithProfileFn {
+					return func(p *Profile) error {
+						return nil
+					}
+				},
+			},
 		},
 		{
-			name:    "collection of profiles fails",
-			args:    args{ItemCollection{testProfile, &Profile{ID: "not-equal"}}, assertProfileWithTesting},
-			wantErr: true,
+			name: "collection of profiles fails",
+			args: args{
+				it: ItemCollection{Profile{ID: "https://example.com"}, &Profile{ID: "not-equal"}},
+				fn: func(t *testing.T) WithProfileFn {
+					return func(p *Profile) error {
+						return fmt.Errorf("test")
+					}
+				},
+			},
+			wantErr: fmt.Errorf("test"),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var logFn logFn
-			if tt.wantErr {
-				logFn = t.Logf
-			} else {
-				logFn = t.Errorf
-			}
-			if err := OnProfile(tt.args.it, tt.args.fn(logFn, &testProfile)); (err != nil) != tt.wantErr {
-				t.Errorf("OnProfile() error = %v, wantErr %v", err, tt.wantErr)
+			err := OnProfile(tt.args.it, tt.args.fn(t))
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("OnProfile() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
 			}
 		})
 	}
