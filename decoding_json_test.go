@@ -13,53 +13,20 @@ import (
 type testPairs map[ActivityVocabularyType]reflect.Type
 
 var (
-	objectPtrType                = reflect.TypeOf(new(*Object)).Elem()
-	tombstoneType                = reflect.TypeOf(new(*Tombstone)).Elem()
-	profileType                  = reflect.TypeOf(new(*Profile)).Elem()
-	placeType                    = reflect.TypeOf(new(*Place)).Elem()
-	relationshipType             = reflect.TypeOf(new(*Relationship)).Elem()
-	linkPtrType                  = reflect.TypeOf(new(*Link)).Elem()
-	mentionPtrType               = reflect.TypeOf(new(*Mention)).Elem()
-	activityPtrType              = reflect.TypeOf(new(*Activity)).Elem()
-	intransitiveActivityPtrType  = reflect.TypeOf(new(*IntransitiveActivity)).Elem()
-	collectionPtrType            = reflect.TypeOf(new(*Collection)).Elem()
-	collectionPagePtrType        = reflect.TypeOf(new(*CollectionPage)).Elem()
-	orderedCollectionPtrType     = reflect.TypeOf(new(*OrderedCollection)).Elem()
-	orderedCollectionPagePtrType = reflect.TypeOf(new(*OrderedCollectionPage)).Elem()
-	actorPtrType                 = reflect.TypeOf(new(*Actor)).Elem()
-	applicationPtrType           = reflect.TypeOf(new(*Application)).Elem()
-	servicePtrType               = reflect.TypeOf(new(*Service)).Elem()
-	personPtrType                = reflect.TypeOf(new(*Person)).Elem()
-	groupPtrType                 = reflect.TypeOf(new(*Group)).Elem()
-	organizationPtrType          = reflect.TypeOf(new(*Organization)).Elem()
-	acceptPtrType                = reflect.TypeOf(new(*Accept)).Elem()
-	addPtrType                   = reflect.TypeOf(new(*Add)).Elem()
-	announcePtrType              = reflect.TypeOf(new(*Announce)).Elem()
-	arrivePtrType                = reflect.TypeOf(new(*Arrive)).Elem()
-	blockPtrType                 = reflect.TypeOf(new(*Block)).Elem()
-	createPtrType                = reflect.TypeOf(new(*Create)).Elem()
-	deletePtrType                = reflect.TypeOf(new(*Delete)).Elem()
-	dislikePtrType               = reflect.TypeOf(new(*Dislike)).Elem()
-	flagPtrType                  = reflect.TypeOf(new(*Flag)).Elem()
-	followPtrType                = reflect.TypeOf(new(*Follow)).Elem()
-	ignorePtrType                = reflect.TypeOf(new(*Ignore)).Elem()
-	invitePtrType                = reflect.TypeOf(new(*Invite)).Elem()
-	joinPtrType                  = reflect.TypeOf(new(*Join)).Elem()
-	leavePtrType                 = reflect.TypeOf(new(*Leave)).Elem()
-	likePtrType                  = reflect.TypeOf(new(*Like)).Elem()
-	listenPtrType                = reflect.TypeOf(new(*Listen)).Elem()
-	movePtrType                  = reflect.TypeOf(new(*Move)).Elem()
-	offerPtrType                 = reflect.TypeOf(new(*Offer)).Elem()
-	questionPtrType              = reflect.TypeOf(new(*Question)).Elem()
-	rejectPtrType                = reflect.TypeOf(new(*Reject)).Elem()
-	readPtrType                  = reflect.TypeOf(new(*Read)).Elem()
-	removePtrType                = reflect.TypeOf(new(*Remove)).Elem()
-	tentativeRejectPtrType       = reflect.TypeOf(new(*TentativeReject)).Elem()
-	tentativeAcceptPtrType       = reflect.TypeOf(new(*TentativeAccept)).Elem()
-	travelPtrType                = reflect.TypeOf(new(*Travel)).Elem()
-	undoPtrType                  = reflect.TypeOf(new(*Undo)).Elem()
-	updatePtrType                = reflect.TypeOf(new(*Update)).Elem()
-	viewPtrType                  = reflect.TypeOf(new(*View)).Elem()
+	objectPtrType                = reflect.TypeFor[*Object]()
+	tombstoneType                = reflect.TypeFor[*Tombstone]()
+	profileType                  = reflect.TypeFor[*Profile]()
+	placeType                    = reflect.TypeFor[*Place]()
+	relationshipType             = reflect.TypeFor[*Relationship]()
+	linkPtrType                  = reflect.TypeFor[*Link]()
+	activityPtrType              = reflect.TypeFor[*Activity]()
+	intransitiveActivityPtrType  = reflect.TypeFor[*IntransitiveActivity]()
+	collectionPtrType            = reflect.TypeFor[*Collection]()
+	collectionPagePtrType        = reflect.TypeFor[*CollectionPage]()
+	orderedCollectionPtrType     = reflect.TypeFor[*OrderedCollection]()
+	orderedCollectionPagePtrType = reflect.TypeFor[*OrderedCollectionPage]()
+	actorPtrType                 = reflect.TypeFor[*Actor]()
+	questionPtrType              = reflect.TypeFor[*Question]()
 )
 
 var tests = testPairs{
@@ -76,47 +43,47 @@ var tests = testPairs{
 	TombstoneType:             tombstoneType,
 	VideoType:                 objectPtrType,
 	LinkType:                  linkPtrType,
-	MentionType:               mentionPtrType,
+	MentionType:               linkPtrType,
 	CollectionType:            collectionPtrType,
 	CollectionPageType:        collectionPagePtrType,
 	OrderedCollectionType:     orderedCollectionPtrType,
 	OrderedCollectionPageType: orderedCollectionPagePtrType,
 	ActorType:                 actorPtrType,
-	ApplicationType:           applicationPtrType,
-	ServiceType:               servicePtrType,
-	PersonType:                personPtrType,
-	GroupType:                 groupPtrType,
-	OrganizationType:          organizationPtrType,
+	ApplicationType:           actorPtrType,
+	ServiceType:               actorPtrType,
+	PersonType:                actorPtrType,
+	GroupType:                 actorPtrType,
+	OrganizationType:          actorPtrType,
 	ActivityType:              activityPtrType,
 	IntransitiveActivityType:  intransitiveActivityPtrType,
-	AcceptType:                acceptPtrType,
-	AddType:                   addPtrType,
-	AnnounceType:              announcePtrType,
-	ArriveType:                arrivePtrType,
-	BlockType:                 blockPtrType,
-	CreateType:                createPtrType,
-	DeleteType:                deletePtrType,
-	DislikeType:               dislikePtrType,
-	FlagType:                  flagPtrType,
-	FollowType:                followPtrType,
-	IgnoreType:                ignorePtrType,
-	InviteType:                invitePtrType,
-	JoinType:                  joinPtrType,
-	LeaveType:                 leavePtrType,
-	LikeType:                  likePtrType,
-	ListenType:                listenPtrType,
-	MoveType:                  movePtrType,
-	OfferType:                 offerPtrType,
+	AcceptType:                activityPtrType,
+	AddType:                   activityPtrType,
+	AnnounceType:              activityPtrType,
+	ArriveType:                intransitiveActivityPtrType,
+	BlockType:                 activityPtrType,
+	CreateType:                activityPtrType,
+	DeleteType:                activityPtrType,
+	DislikeType:               activityPtrType,
+	FlagType:                  activityPtrType,
+	FollowType:                activityPtrType,
+	IgnoreType:                activityPtrType,
+	InviteType:                activityPtrType,
+	JoinType:                  activityPtrType,
+	LeaveType:                 activityPtrType,
+	LikeType:                  activityPtrType,
+	ListenType:                activityPtrType,
+	MoveType:                  activityPtrType,
+	OfferType:                 activityPtrType,
 	QuestionType:              questionPtrType,
-	RejectType:                rejectPtrType,
-	ReadType:                  readPtrType,
-	RemoveType:                removePtrType,
-	TentativeRejectType:       tentativeRejectPtrType,
-	TentativeAcceptType:       tentativeAcceptPtrType,
-	TravelType:                travelPtrType,
-	UndoType:                  undoPtrType,
-	UpdateType:                updatePtrType,
-	ViewType:                  viewPtrType,
+	RejectType:                activityPtrType,
+	ReadType:                  activityPtrType,
+	RemoveType:                activityPtrType,
+	TentativeRejectType:       activityPtrType,
+	TentativeAcceptType:       activityPtrType,
+	TravelType:                intransitiveActivityPtrType,
+	UndoType:                  activityPtrType,
+	UpdateType:                activityPtrType,
+	ViewType:                  activityPtrType,
 }
 
 func TestJSONGetItemByType(t *testing.T) {
@@ -244,14 +211,132 @@ func TestUnmarshalJSON(t *testing.T) {
 }
 
 func TestJSONGetDuration(t *testing.T) {
-	t.Skipf("TODO")
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want time.Duration
+	}{
+		{
+			name: "nil",
+			args: args{},
+		},
+		{
+			name: "empty",
+			args: args{
+				val:  &fastjson.Value{},
+				prop: "not-there",
+			},
+			want: 0,
+		},
+		{
+			name: "found-value",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": "P2DT1M"}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: 48*time.Hour + time.Minute,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetDuration(tt.args.val, tt.args.prop); !cmp.Equal(got, tt.want) {
+				t.Errorf("JSONGetDuration() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestJSONGetInt(t *testing.T) {
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want int64
+	}{
+		{
+			name: "nil",
+			args: args{},
+		},
+		{
+			name: "empty",
+			args: args{
+				val:  &fastjson.Value{},
+				prop: "not-there",
+			},
+			want: 0,
+		},
+		{
+			name: "found-value",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": 666}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: 666,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetInt(tt.args.val, tt.args.prop); got != tt.want {
+				t.Errorf("JSONGetInt() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestJSONGetIRI(t *testing.T) {
-	t.Skipf("TODO")
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want IRI
+	}{
+		{
+			name: "nil",
+			args: args{},
+		},
+		{
+			name: "empty",
+			args: args{
+				val:  &fastjson.Value{},
+				prop: "not-there",
+			},
+			want: "",
+		},
+		{
+			name: "found-value",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": "http://example.com/123"}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: "http://example.com/123",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetIRI(tt.args.val, tt.args.prop); got != tt.want {
+				t.Errorf("JSONGetIRI() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestJSONGetItem(t *testing.T) {
@@ -269,63 +354,200 @@ func TestJSONGetMimeType(t *testing.T) {
 	t.Skipf("TODO")
 }
 
-func TestJSONGetID(t *testing.T) {
-	t.Skipf("TODO")
-}
-
 func TestJSONGetNaturalLanguageField(t *testing.T) {
-	t.Skipf("TODO")
+	jsonVal := func(data string) *fastjson.Value {
+		p := fastjson.Parser{}
+		val, _ := p.Parse(data)
+		return val
+	}
+
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want NaturalLanguageValues
+	}{
+		{
+			name: "nil",
+			args: args{},
+		},
+		{
+			name: "empty",
+			args: args{
+				val:  jsonVal(`{}`),
+				prop: "",
+			},
+			want: nil,
+		},
+		{
+			name: "not found",
+			args: args{
+				val:  jsonVal(`{"content": "test"}`),
+				prop: "not-found",
+			},
+			want: nil,
+		},
+		{
+			name: "found",
+			args: args{
+				val:  jsonVal(`{"found": "Lorem ipsum"}`),
+				prop: "found",
+			},
+			want: DefaultLangValue("Lorem ipsum"),
+		},
+		{
+			name: "found-with-multiple-langs",
+			args: args{
+				val:  jsonVal(`{"found":{"en":"Lorem ipsum","fr":"Ipsum"}}`),
+				prop: "found",
+			},
+			want: NaturalLanguageValues{
+				English: Content("Lorem ipsum"),
+				French:  Content("Ipsum"),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := JSONGetNaturalLanguageField(tt.args.val, tt.args.prop)
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("JSONGetNaturalLanguageField() got = %s", cmp.Diff(got, tt.want))
+			}
+		})
+	}
 }
 
 func TestJSONGetString(t *testing.T) {
-	t.Skipf("TODO")
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "nil",
+			args: args{},
+		},
+		{
+			name: "empty",
+			args: args{
+				val:  &fastjson.Value{},
+				prop: "not-there",
+			},
+			want: "",
+		},
+		{
+			name: "found-value",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": "Lorem ipsum dolor sic amet"}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: "Lorem ipsum dolor sic amet",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetString(tt.args.val, tt.args.prop); got != tt.want {
+				t.Errorf("JSONGetString() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestJSONGetTime(t *testing.T) {
-	t.Skipf("TODO")
-}
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want time.Time
+	}{
+		{
+			name: "nil",
+			args: args{},
+		},
+		{
+			name: "empty",
+			args: args{
+				val:  &fastjson.Value{},
+				prop: "not-there",
+			},
+			want: time.Time{},
+		},
+		{
+			name: "found-value",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": "2001-01-01T06:06:06.666Z"}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: time.Date(2001, time.January, 1, 6, 6, 6, 666000000, time.UTC),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetTime(tt.args.val, tt.args.prop); !cmp.Equal(got, tt.want) {
+				t.Errorf("JSONGetTime() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 
-func TestJSONGetType(t *testing.T) {
-	t.Skipf("TODO")
 }
 
 func TestJSONGetTypes(t *testing.T) {
 	tests := []struct {
-		name string
-		data []byte
-		want Typer
-		err  error
+		name    string
+		data    []byte
+		want    Typer
+		wantErr error
 	}{
 		{
-			name: "empty",
-			data: []byte{'{', '}'},
-			want: nil,
-			err:  nil,
+			name:    "nil",
+			wantErr: fmt.Errorf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
 		},
 		{
-			name: "single Activity type",
-			data: []byte(`{"type":"Activity"}`),
-			want: ActivityType,
-			err:  nil,
+			name:    "empty",
+			data:    []byte{'{', '}'},
+			want:    nil,
+			wantErr: nil,
 		},
 		{
-			name: "multiple Activity type",
-			data: []byte(`{"type":["Activity","Accept"]}`),
-			want: ActivityVocabularyTypes{ActivityType, AcceptType},
-			err:  nil,
+			name:    "single Activity type",
+			data:    []byte(`{"type":"Activity"}`),
+			want:    ActivityType,
+			wantErr: nil,
+		},
+		{
+			name:    "multiple Activity type",
+			data:    []byte(`{"type":["Activity","Accept"]}`),
+			want:    ActivityVocabularyTypes{ActivityType, AcceptType},
+			wantErr: nil,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := fastjson.Parser{}
 			val, err := p.ParseBytes(tt.data)
-			if (err != nil && tt.err == nil) || (err == nil && tt.err != nil) {
-				if !cmp.Equal(err, tt.err, EquateWeakErrors) {
-					t.Errorf("JSONGetTypes() error = %v, wantErr %v", err, tt.err)
+			if (err != nil && tt.wantErr == nil) || (err == nil && tt.wantErr != nil) {
+				if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+					t.Errorf("JSONGetTypes() error = %v, wantErr %v", err, tt.wantErr)
 				}
 				return
 			}
-			got := JSONGetTypes(val)
+			got := JSONGetTypes(val, "type")
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("JSONGetTypes() got = %s", cmp.Diff(got, tt.want))
 			}
@@ -342,25 +564,337 @@ func TestJSONUnmarshalToItem(t *testing.T) {
 }
 
 func TestJSONGetActorEndpoints(t *testing.T) {
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want *Endpoints
+	}{
+		{
+			name: "nil",
+			args: args{},
+		},
+		{
+			name: "empty",
+			args: args{
+				val:  &fastjson.Value{},
+				prop: "",
+			},
+		},
+		{
+			name: "empty value",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"found":nil}`)
+					return val
+				}(),
+				prop: "found",
+			},
+		},
+		{
+			name: "endpoints with upload-media",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"found":{"uploadMedia":"http://example.com/upload"}}`)
+					return val
+				}(),
+				prop: "found",
+			},
+			want: &Endpoints{UploadMedia: IRI("http://example.com/upload")},
+		},
+		{
+			name: "endpoints with authorization-endpoint",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"found":{"oauthAuthorizationEndpoint":"http://example.com/auth"}}`)
+					return val
+				}(),
+				prop: "found",
+			},
+			want: &Endpoints{OauthAuthorizationEndpoint: IRI("http://example.com/auth")},
+		},
+		{
+			name: "endpoints with token-endpoint",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"found":{"oauthTokenEndpoint":"http://example.com/token"}}`)
+					return val
+				}(),
+				prop: "found",
+			},
+			want: &Endpoints{OauthTokenEndpoint: IRI("http://example.com/token")},
+		},
+		{
+			name: "endpoints with shared-inbox",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"found":{"sharedInbox":"http://example.com/shared-inbox"}}`)
+					return val
+				}(),
+				prop: "found",
+			},
+			want: &Endpoints{SharedInbox: IRI("http://example.com/shared-inbox")},
+		},
+		{
+			name: "endpoints with proxy-url",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"found":{"proxyUrl":"http://example.com/proxy-url"}}`)
+					return val
+				}(),
+				prop: "found",
+			},
+			want: &Endpoints{ProxyURL: "http://example.com/proxy-url"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetActorEndpoints(tt.args.val, tt.args.prop); !cmp.Equal(got, tt.want) {
+				t.Errorf("JSONGetActorEndpoints() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 	t.Skipf("TODO")
 }
 
 func TestJSONGetBoolean(t *testing.T) {
-	t.Skipf("TODO")
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "nil",
+			args: args{},
+		},
+		{
+			name: "empty",
+			args: args{
+				val:  &fastjson.Value{},
+				prop: "not-there",
+			},
+			want: false,
+		},
+		{
+			name: "found-value",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": true}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetBoolean(tt.args.val, tt.args.prop); got != tt.want {
+				t.Errorf("JSONGetBoolean() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestJSONGetBytes(t *testing.T) {
-	t.Skipf("TODO")
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{
+			name: "nil",
+			args: args{},
+		},
+		{
+			name: "empty",
+			args: args{
+				val:  &fastjson.Value{},
+				prop: "not-there",
+			},
+			want: nil,
+		},
+		{
+			name: "found-value",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": "\u000a\u000d"}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: []byte{'\n', '\r'},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetBytes(tt.args.val, tt.args.prop); !cmp.Equal(got, tt.want) {
+				t.Errorf("JSONGetBytes() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestJSONGetFloat(t *testing.T) {
-	t.Skipf("TODO")
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want float64
+	}{
+		{
+			name: "nil",
+			args: args{},
+		},
+		{
+			name: "empty",
+			args: args{
+				val:  &fastjson.Value{},
+				prop: "not-there",
+			},
+			want: 0,
+		},
+		{
+			name: "found-value",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": 6.66}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: 6.66,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetFloat(tt.args.val, tt.args.prop); got != tt.want {
+				t.Errorf("JSONGetFloat() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestJSONGetPublicKey(t *testing.T) {
-	t.Skipf("TODO")
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want PublicKey
+	}{
+		{
+			name: "nil",
+			args: args{},
+		},
+		{
+			name: "empty",
+			args: args{
+				val:  &fastjson.Value{},
+				prop: "",
+			},
+			want: PublicKey{},
+		},
+		{
+			name: "empty value",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"key":nil}`)
+					return val
+				}(),
+				prop: "key",
+			},
+			want: PublicKey{},
+		},
+		{
+			name: "key with id",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"key":{"id":"http://example.com#main"}}`)
+					return val
+				}(),
+				prop: "key",
+			},
+			want: PublicKey{ID: "http://example.com#main"},
+		},
+		{
+			name: "key with owner",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"key":{"owner":"http://example.com/~jdoe"}}`)
+					return val
+				}(),
+				prop: "key",
+			},
+			want: PublicKey{Owner: "http://example.com/~jdoe"},
+		},
+		{
+			name: "key with pem",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"key":{"publicKeyPem":"--NOT A PUBLIC KEY--"}}`)
+					return val
+				}(),
+				prop: "key",
+			},
+			want: PublicKey{PublicKeyPem: "--NOT A PUBLIC KEY--"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetPublicKey(tt.args.val, tt.args.prop); !cmp.Equal(got, tt.want) {
+				t.Errorf("JSONGetPublicKey() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
-func TestJSONGetStreams(t *testing.T) {
-	t.Skipf("TODO")
+func TestJSONLoadActor(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    Actor
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: Actor{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			act := Actor{}
+			err := JSONLoadActor(tt.val, &act)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadActor() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(act, tt.want) {
+				t.Errorf("JSONLoadActor() got = %s", cmp.Diff(tt.want, act))
+			}
+		})
+	}
 }

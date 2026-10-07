@@ -1,21 +1,13 @@
 package activitypub
 
 import (
-	"encoding"
-	"encoding/json"
 	"fmt"
 	"net/url"
-	"reflect"
 	"strings"
 	"time"
 
+	"git.sr.ht/~mariusor/go-xsd-duration"
 	"github.com/valyala/fastjson"
-)
-
-var (
-	apUnmarshalerType   = reflect.TypeOf(new(Item)).Elem()
-	unmarshalerType     = reflect.TypeOf(new(json.Unmarshaler)).Elem()
-	textUnmarshalerType = reflect.TypeOf(new(encoding.TextUnmarshaler)).Elem()
 )
 
 // ItemTyperFunc will return an instance of a struct that implements activitypub.Item
@@ -39,36 +31,28 @@ type JSONUnmarshalerFn func(Typer, *fastjson.Value, Item) error
 // NotEmptyCheckerFn is the type of the function that checks if an object is empty
 type NotEmptyCheckerFn func(Item) bool
 
-func JSONGetID(val *fastjson.Value) ID {
-	i := val.Get("id").GetStringBytes()
-	return ID(i)
-}
-
-func JSONGetTypes(val *fastjson.Value) Typer {
-	value := val.Get("type")
-	if value == nil {
+func JSONGetTypes(val *fastjson.Value, prop string) Typer {
+	if val == nil || !val.Exists(prop) {
 		return nil
 	}
+	value := val.Get(prop)
 	switch value.Type() {
 	case fastjson.TypeString:
 		return ActivityVocabularyType(value.GetStringBytes())
 	case fastjson.TypeArray:
-		valArr, err := value.Array()
-		if err != nil {
-			return ActivityVocabularyTypes{}
+		valArr, _ := value.Array()
+		typ := make(ActivityVocabularyTypes, 0, len(valArr))
+		for _, v := range valArr {
+			typ = append(typ, ActivityVocabularyType(v.GetStringBytes()))
 		}
-		types := make(ActivityVocabularyTypes, len(valArr))
-		for i, v := range valArr {
-			types[i] = ActivityVocabularyType(v.GetStringBytes())
-		}
-		return types
+		return typ
 	default:
 		return nil
 	}
 }
 
 func JSONGetMimeType(val *fastjson.Value, prop string) MimeType {
-	if !val.Exists(prop) {
+	if val == nil || !val.Exists(prop) {
 		return ""
 	}
 	t := val.GetStringBytes(prop)
@@ -76,7 +60,7 @@ func JSONGetMimeType(val *fastjson.Value, prop string) MimeType {
 }
 
 func JSONGetInt(val *fastjson.Value, prop string) int64 {
-	if !val.Exists(prop) {
+	if val == nil || !val.Exists(prop) {
 		return 0
 	}
 	i := val.Get(prop).GetInt64()
@@ -84,15 +68,15 @@ func JSONGetInt(val *fastjson.Value, prop string) int64 {
 }
 
 func JSONGetFloat(val *fastjson.Value, prop string) float64 {
-	if !val.Exists(prop) {
-		return 0.0
+	if val == nil || !val.Exists(prop) {
+		return 0
 	}
 	f := val.Get(prop).GetFloat64()
 	return f
 }
 
 func JSONGetString(val *fastjson.Value, prop string) string {
-	if !val.Exists(prop) {
+	if val == nil || !val.Exists(prop) {
 		return ""
 	}
 	s := val.Get(prop).GetStringBytes()
@@ -100,7 +84,7 @@ func JSONGetString(val *fastjson.Value, prop string) string {
 }
 
 func JSONGetBytes(val *fastjson.Value, prop string) []byte {
-	if !val.Exists(prop) {
+	if val == nil || !val.Exists(prop) {
 		return nil
 	}
 	s := val.Get(prop).GetStringBytes()
@@ -108,7 +92,7 @@ func JSONGetBytes(val *fastjson.Value, prop string) []byte {
 }
 
 func JSONGetBoolean(val *fastjson.Value, prop string) bool {
-	if !val.Exists(prop) {
+	if val == nil || !val.Exists(prop) {
 		return false
 	}
 	t, _ := val.Get(prop).Bool()
@@ -116,24 +100,20 @@ func JSONGetBoolean(val *fastjson.Value, prop string) bool {
 }
 
 func JSONGetNaturalLanguageField(val *fastjson.Value, prop string) NaturalLanguageValues {
-	n := make(NaturalLanguageValues)
-	if val == nil {
-		return n
-	}
-	v := val.Get(prop)
-	if v == nil {
+	if val == nil || !val.Exists(prop) {
 		return nil
 	}
+
+	v := val.Get(prop)
+	n := make(NaturalLanguageValues)
 	switch v.Type() {
 	case fastjson.TypeObject:
 		ob, _ := v.Object()
 		ob.Visit(func(key []byte, v *fastjson.Value) {
-			cont := Content{}
+			cont := Content(v.GetStringBytes())
 			ref := MakeRef(key)
-			if err := cont.UnmarshalJSON(v.GetStringBytes()); err == nil {
-				if ref != NilLangRef || len(cont) > 0 {
-					n[ref] = cont
-				}
+			if ref != NilLangRef || len(cont) > 0 {
+				n[ref] = cont
 			}
 		})
 	case fastjson.TypeString:
@@ -147,40 +127,39 @@ func JSONGetNaturalLanguageField(val *fastjson.Value, prop string) NaturalLangua
 
 func JSONGetTime(val *fastjson.Value, prop string) time.Time {
 	t := time.Time{}
-	if val == nil {
+	if val == nil || !val.Exists(prop) {
 		return t
 	}
 
-	if str := val.Get(prop).GetStringBytes(); len(str) > 0 {
-		t.UnmarshalText(str)
-		return t.UTC()
-	}
-	return t
+	tt := val.Get(prop)
+	_ = t.UnmarshalText(tt.GetStringBytes())
+	return t.UTC()
 }
 
 func JSONGetDuration(val *fastjson.Value, prop string) time.Duration {
-	if str := val.Get(prop).GetStringBytes(); len(str) > 0 {
-		// TODO(marius): this needs to be replaced to be compatible with xsd:duration
-		d, _ := time.ParseDuration(string(str))
-		return d
+	if val == nil || !val.Exists(prop) {
+		return 0
 	}
-	return 0
+
+	var d time.Duration
+	dur := val.Get(prop)
+	_ = xsd.Unmarshal(dur.GetStringBytes(), &d)
+	return d
 }
 
 func JSONGetPublicKey(val *fastjson.Value, prop string) PublicKey {
 	key := PublicKey{}
-	if val == nil {
+	if val == nil || !val.Exists(prop) {
 		return key
 	}
-	val = val.Get(prop)
-	if val == nil {
-		return key
-	}
-	JSONLoadPublicKey(val, &key)
+	_ = JSONLoadPublicKey(val.Get(prop), &key)
 	return key
 }
 
 func JSONItemsFn(val *fastjson.Value) (Item, error) {
+	if val == nil {
+		return nil, nil
+	}
 	if val.Type() == fastjson.TypeArray {
 		it := val.GetArray()
 		items := make(ItemCollection, 0)
@@ -195,11 +174,14 @@ func JSONItemsFn(val *fastjson.Value) (Item, error) {
 }
 
 func looksLikeALink(val *fastjson.Value) bool {
-	return val.Exists("href")
+	return val != nil && val.Exists("href")
 }
 
 func JSONLoadItem(val *fastjson.Value) (Item, error) {
-	typ := JSONGetTypes(val)
+	if val == nil {
+		return nil, nil
+	}
+	typ := JSONGetTypes(val, "type")
 	if typ == nil {
 		typ = NilType
 	}
@@ -431,8 +413,8 @@ func JSONGetIRI(val *fastjson.Value, prop string) IRI {
 	return IRI(s)
 }
 
-// UnmarshalJSON tries to detect the type of the object in the json data and then outputs a matching
-// ActivityStreams object, if possible
+// UnmarshalJSON tries to detect the type of the object in the JSON data and then outputs a matching
+// activity vocabulary object, if possible
 func UnmarshalJSON(data []byte) (Item, error) {
 	if len(data) == 0 {
 		return nil, nil
@@ -489,12 +471,10 @@ func GetItemByType(typ Typer) (Item, error) {
 }
 
 func JSONGetActorEndpoints(val *fastjson.Value, prop string) *Endpoints {
-	if val == nil {
+	if val == nil || !val.Exists(prop) {
 		return nil
 	}
-	if val = val.Get(prop); val == nil {
-		return nil
-	}
+	val = val.Get(prop)
 
 	e := Endpoints{}
 	e.UploadMedia = JSONGetURIItem(val, "uploadMedia")
@@ -509,8 +489,8 @@ func JSONGetActorEndpoints(val *fastjson.Value, prop string) *Endpoints {
 }
 
 func JSONLoadObject(val *fastjson.Value, o *Object) error {
-	o.ID = JSONGetID(val)
-	o.Type = JSONGetTypes(val)
+	o.ID = JSONGetIRI(val, "id")
+	o.Type = JSONGetTypes(val, "type")
 	o.Name = JSONGetNaturalLanguageField(val, "name")
 	o.Content = JSONGetNaturalLanguageField(val, "content")
 	o.Summary = JSONGetNaturalLanguageField(val, "summary")
@@ -663,8 +643,8 @@ func JSONLoadTombstone(val *fastjson.Value, t *Tombstone) error {
 }
 
 func jsonLoadToLink(val *fastjson.Value, l *Link) error {
-	l.ID = JSONGetID(val)
-	l.Type = JSONGetTypes(val)
+	l.ID = JSONGetIRI(val, "id")
+	l.Type = JSONGetTypes(val, "type")
 	l.MediaType = JSONGetMimeType(val, "mediaType")
 	l.Preview = JSONGetItem(val, "preview")
 	if h := JSONGetInt(val, "height"); h != 0 {
@@ -694,7 +674,10 @@ func JSONLoadLink(val *fastjson.Value) (Item, error) {
 }
 
 func JSONLoadPublicKey(val *fastjson.Value, p *PublicKey) error {
-	p.ID = JSONGetID(val)
+	if val == nil {
+		return nil
+	}
+	p.ID = JSONGetIRI(val, "id")
 	p.Owner = JSONGetIRI(val, "owner")
 	if pub := val.GetStringBytes("publicKeyPem"); len(pub) > 0 {
 		p.PublicKeyPem = string(pub)

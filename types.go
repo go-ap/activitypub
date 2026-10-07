@@ -119,7 +119,7 @@ func (at *ActivityVocabularyTypes) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	if types := JSONGetTypes(val); types != nil {
+	if types := JSONGetTypes(val, "typ"); types != nil {
 		if typ, ok := types.(ActivityVocabularyType); ok {
 			*at = ActivityVocabularyTypes{typ}
 		}
