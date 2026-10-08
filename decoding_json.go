@@ -36,6 +36,13 @@ func JSONGetTypes(val *fastjson.Value, prop string) Typer {
 		return nil
 	}
 	value := val.Get(prop)
+	return jsonGetTyper(value)
+}
+
+func jsonGetTyper(value *fastjson.Value) Typer {
+	if value == nil {
+		return nil
+	}
 	switch value.Type() {
 	case fastjson.TypeString:
 		return ActivityVocabularyType(value.GetStringBytes())

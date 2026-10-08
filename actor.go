@@ -532,6 +532,12 @@ func (a Actor) equal(with Actor) bool {
 	if !ItemsEqual(a.Outbox, with.Outbox) {
 		return false
 	}
+	if !ItemsEqual(a.Followers, with.Followers) {
+		return false
+	}
+	if !ItemsEqual(a.Following, with.Following) {
+		return false
+	}
 	if !ItemsEqual(a.Liked, with.Liked) {
 		return false
 	}
@@ -595,14 +601,12 @@ func notEmptyActor(a *Actor) bool {
 	return notEmpty
 }
 
-// CopyActorProperties
+// CopyActorProperties copies the "from" Actor's properties onto the "to" Actor.
 func CopyActorProperties(to, from *Actor) (*Actor, error) {
-	oldOb, _ := ToObject(to)
-	newOb, _ := ToObject(from)
-	_, err := CopyObjectProperties(oldOb, newOb)
-	if err != nil {
-		return to, err
+	if to == nil || from == nil {
+		return nil, nil
 	}
+
 	to.Inbox = replaceIfItem(to.Inbox, from.Inbox)
 	to.Outbox = replaceIfItem(to.Outbox, from.Outbox)
 	to.Following = replaceIfItem(to.Following, from.Following)
@@ -610,7 +614,17 @@ func CopyActorProperties(to, from *Actor) (*Actor, error) {
 	to.Liked = replaceIfItem(to.Liked, from.Liked)
 	to.PreferredUsername = replaceIfNaturalLanguageValues(to.PreferredUsername, from.PreferredUsername)
 	to.PublicKey = replaceIfPublicKey(to.PublicKey, from.PublicKey)
-	return to, nil
+	to.Streams = replaceIfItemCollection(to.Streams, from.Streams)
+	to.Endpoints = replaceIfEndpoints(to.Endpoints, from.Endpoints)
+
+	err := OnObject(to, func(oldOb *Object) error {
+		return OnObject(from, func(newOb *Object) error {
+			_, err := CopyObjectProperties(oldOb, newOb)
+			return err
+		})
+	})
+
+	return to, err
 }
 
 // FlattenActorProperties flattens the Actor's properties from Object types to IRI
@@ -624,7 +638,7 @@ func FlattenActorProperties(a *Actor) *Actor {
 	a.Following = Flatten(a.Following)
 	a.Liked = Flatten(a.Liked)
 	_ = OnObject(a, func(o *Object) error {
-		FlattenObjectProperties(o)
+		_ = FlattenObjectProperties(o)
 		return nil
 	})
 	return a
@@ -637,4 +651,11 @@ func replaceIfPublicKey(to, from PublicKey) PublicKey {
 	to.Owner = from.Owner
 	to.PublicKeyPem = from.PublicKeyPem
 	return to
+}
+
+func replaceIfEndpoints(to, from *Endpoints) *Endpoints {
+	if from == nil {
+		return to
+	}
+	return from
 }

@@ -2,6 +2,7 @@ package activitypub
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -798,6 +799,197 @@ func TestActivityVocabularyType_UnmarshalBinary(t *testing.T) {
 			}
 			if *typ != tt.want {
 				t.Errorf("UnmarshalBinary() got = %s, want = %s", *typ, tt.want)
+			}
+		})
+	}
+}
+
+func TestActivityVocabularyType_MarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		a       ActivityVocabularyType
+		want    []byte
+		wantErr error
+	}{
+		{
+			name: "empty",
+			a:    "",
+			want: []byte{},
+		},
+		{
+			name: "one Note",
+			a:    NoteType,
+			want: []byte(`"Note"`),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.a.MarshalJSON()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestActivityVocabularyTypes_MarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		a       ActivityVocabularyTypes
+		want    []byte
+		wantErr error
+	}{
+		{
+			name: "empty",
+			want: []byte{},
+		},
+		{
+			name: "one Note",
+			a:    ActivityVocabularyTypes{NoteType},
+			want: []byte(`"Note"`),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.a.MarshalJSON()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s, want %s", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestActivityVocabularyTypes_UnmarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    []byte
+		want    ActivityVocabularyTypes
+		wantErr error
+	}{
+		{
+			name:    "empty",
+			wantErr: fmt.Errorf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
+		},
+		{
+			name: "Note",
+			data: []byte(`"Note"`),
+			want: ActivityVocabularyTypes{NoteType},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			typ := new(ActivityVocabularyTypes)
+			if err := typ.UnmarshalJSON(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(*typ, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, *typ))
+			}
+		})
+	}
+}
+
+func TestTypesEqual(t *testing.T) {
+	type args struct {
+		r1 Typer
+		r2 Typer
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "nils equal",
+			args: args{},
+			want: true,
+		},
+		{
+			name: "empty equals nil",
+			args: args{
+				r1: ActivityVocabularyTypes{},
+				r2: nil,
+			},
+			want: true,
+		},
+		{
+			name: "empty equals nil type",
+			args: args{
+				r1: ActivityVocabularyTypes{},
+				r2: NilType,
+			},
+			want: true,
+		},
+		{
+			name: "empties equal",
+			args: args{
+				r1: ActivityVocabularyTypes{},
+				r2: ActivityVocabularyTypes{},
+			},
+			want: true,
+		},
+		{
+			name: "nil types equal",
+			args: args{
+				r1: NilType,
+				r2: NilType,
+			},
+			want: true,
+		},
+		{
+			name: "Note types equal",
+			args: args{
+				r1: NoteType,
+				r2: NoteType,
+			},
+			want: true,
+		},
+		{
+			name: "{Note} equals Note",
+			args: args{
+				r1: ActivityVocabularyTypes{NoteType},
+				r2: NoteType,
+			},
+			want: true,
+		},
+		{
+			name: "Article not equal Note",
+			args: args{
+				r1: ArticleType,
+				r2: NoteType,
+			},
+			want: false,
+		},
+		{
+			name: "{Note, Article} not equal Note",
+			args: args{
+				r1: ActivityVocabularyTypes{NoteType, ArticleType},
+				r2: NoteType,
+			},
+			want: false,
+		},
+		{
+			name: "{Note, Article} equal",
+			args: args{
+				r1: ActivityVocabularyTypes{NoteType, ArticleType},
+				r2: ActivityVocabularyTypes{ArticleType, NoteType},
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := TypesEqual(tt.args.r1, tt.args.r2); got != tt.want {
+				t.Errorf("TypesEqual() = %v, want %v", got, tt.want)
 			}
 		})
 	}

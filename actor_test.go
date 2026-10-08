@@ -548,87 +548,104 @@ func TestActor_Equals(t *testing.T) {
 		PublicKey         PublicKey
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		arg    Item
-		want   bool
+		name string
+		act  Actor
+		arg  Item
+		want bool
 	}{
 		{
-			name:   "equal-empty-actor",
-			fields: fields{},
-			arg:    Actor{},
-			want:   true,
+			name: "equal-empty-actor",
+			arg:  Actor{},
+			want: true,
 		},
 		{
-			name:   "equal-actor-just-id",
-			fields: fields{ID: "test"},
-			arg:    Actor{ID: "test"},
-			want:   true,
+			name: "equal-actor-just-id",
+			act:  Actor{ID: "test"},
+			arg:  Actor{ID: "test"},
+			want: true,
 		},
 		{
-			name:   "equal-actor-id",
-			fields: fields{ID: "test", URL: IRI("example.com")},
-			arg:    Actor{ID: "test"},
-			want:   false,
+			name: "equal-actor-id",
+			act:  Actor{ID: "test", URL: IRI("example.com")},
+			arg:  Actor{ID: "test"},
+			want: false,
 		},
 		{
-			name:   "equal-false-with-id-and-url",
-			fields: fields{ID: "test"},
-			arg:    Actor{ID: "test", URL: IRI("example.com")},
-			want:   false,
+			name: "equal-false-with-id-and-url",
+			act:  Actor{ID: "test"},
+			arg:  Actor{ID: "test", URL: IRI("example.com")},
+			want: false,
 		},
 		{
-			name:   "not a valid actor",
-			fields: fields{ID: "http://example.com"},
-			arg:    Activity{ID: "http://example.com"},
-			want:   false,
+			name: "not a valid actor",
+			act:  Actor{ID: "http://example.com"},
+			arg:  Activity{ID: "http://example.com"},
+			want: false,
+		},
+		{
+			name: "inbox different",
+			act:  Actor{Inbox: CollectionPath("test").IRI(IRI("http://example.com"))},
+			arg:  Actor{Inbox: IRI("http://example.com")},
+			want: false,
+		},
+		{
+			name: "inbox same",
+			act:  Actor{Inbox: CollectionPath("test").IRI(IRI("http://example.com"))},
+			arg:  Actor{Inbox: IRI("http://example.com/test")},
+			want: true,
+		},
+		{
+			name: "outbox different",
+			act:  Actor{Outbox: CollectionPath("test").IRI(IRI("http://example.com"))},
+			arg:  Actor{Outbox: IRI("http://example.com")},
+			want: false,
+		},
+		{
+			name: "outbox same",
+			act:  Actor{Outbox: CollectionPath("test").IRI(IRI("http://example.com"))},
+			arg:  Actor{Outbox: IRI("http://example.com/test")},
+			want: true,
+		},
+		{
+			name: "following different",
+			act:  Actor{Following: CollectionPath("test").IRI(IRI("http://example.com"))},
+			arg:  Actor{Following: IRI("http://example.com")},
+			want: false,
+		},
+		{
+			name: "following same",
+			act:  Actor{Following: CollectionPath("test").IRI(IRI("http://example.com"))},
+			arg:  Actor{Following: IRI("http://example.com/test")},
+			want: true,
+		},
+		{
+			name: "followers different",
+			act:  Actor{Followers: CollectionPath("test").IRI(IRI("http://example.com"))},
+			arg:  Actor{Followers: IRI("http://example.com")},
+			want: false,
+		},
+		{
+			name: "followers same",
+			act:  Actor{Followers: CollectionPath("test").IRI(IRI("http://example.com"))},
+			arg:  Actor{Followers: IRI("http://example.com/test")},
+			want: true,
+		},
+		{
+			name: "liked different",
+			act:  Actor{Liked: CollectionPath("test").IRI(IRI("http://example.com"))},
+			arg:  Actor{Liked: IRI("http://example.com")},
+			want: false,
+		},
+		{
+			name: "liked same",
+			act:  Actor{Liked: CollectionPath("test").IRI(IRI("http://example.com"))},
+			arg:  Actor{Liked: IRI("http://example.com/test")},
+			want: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := Actor{
-				ID:                tt.fields.ID,
-				Type:              tt.fields.Type,
-				Name:              tt.fields.Name,
-				Attachment:        tt.fields.Attachment,
-				AttributedTo:      tt.fields.AttributedTo,
-				Audience:          tt.fields.Audience,
-				Content:           tt.fields.Content,
-				Context:           tt.fields.Context,
-				MediaType:         tt.fields.MediaType,
-				EndTime:           tt.fields.EndTime,
-				Generator:         tt.fields.Generator,
-				Icon:              tt.fields.Icon,
-				Image:             tt.fields.Image,
-				InReplyTo:         tt.fields.InReplyTo,
-				Location:          tt.fields.Location,
-				Preview:           tt.fields.Preview,
-				Published:         tt.fields.Published,
-				Replies:           tt.fields.Replies,
-				StartTime:         tt.fields.StartTime,
-				Summary:           tt.fields.Summary,
-				Tag:               tt.fields.Tag,
-				Updated:           tt.fields.Updated,
-				URL:               tt.fields.URL,
-				To:                tt.fields.To,
-				Bto:               tt.fields.Bto,
-				CC:                tt.fields.CC,
-				BCC:               tt.fields.BCC,
-				Duration:          tt.fields.Duration,
-				Likes:             tt.fields.Likes,
-				Shares:            tt.fields.Shares,
-				Source:            tt.fields.Source,
-				Inbox:             tt.fields.Inbox,
-				Outbox:            tt.fields.Outbox,
-				Following:         tt.fields.Following,
-				Followers:         tt.fields.Followers,
-				Liked:             tt.fields.Liked,
-				PreferredUsername: tt.fields.PreferredUsername,
-				Endpoints:         tt.fields.Endpoints,
-				Streams:           tt.fields.Streams,
-				PublicKey:         tt.fields.PublicKey,
-			}
-			if got := a.Equals(tt.arg); got != tt.want {
+			if got := tt.act.Equals(tt.arg); got != tt.want {
 				t.Errorf("Equal() = %v, want %v", got, tt.want)
 			}
 		})
@@ -837,6 +854,185 @@ func TestActor_MarshalBinary(t *testing.T) {
 			}
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("MarshalBinary() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestCopyActorProperties(t *testing.T) {
+	type args struct {
+		to   *Actor
+		from *Actor
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Actor
+		wantErr error
+	}{
+		{
+			name: "nil",
+			args: args{},
+			want: nil,
+		},
+		{
+			name: string(Inbox),
+			args: args{
+				to:   &Actor{},
+				from: &Actor{Inbox: CollectionPath("test").IRI(IRI("http://example.com"))},
+			},
+			want: &Actor{Inbox: IRI("http://example.com/test")},
+		},
+		{
+			name: string(Outbox),
+			args: args{
+				to:   &Actor{},
+				from: &Actor{Outbox: CollectionPath("test").IRI(IRI("http://example.com"))},
+			},
+			want: &Actor{Outbox: IRI("http://example.com/test")},
+		},
+		{
+			name: string(Following),
+			args: args{
+				to:   &Actor{},
+				from: &Actor{Following: CollectionPath("test").IRI(IRI("http://example.com"))},
+			},
+			want: &Actor{Following: IRI("http://example.com/test")},
+		},
+		{
+			name: string(Followers),
+			args: args{
+				to:   &Actor{},
+				from: &Actor{Followers: CollectionPath("test").IRI(IRI("http://example.com"))},
+			},
+			want: &Actor{Followers: IRI("http://example.com/test")},
+		},
+		{
+			name: string(Liked),
+			args: args{
+				to:   &Actor{},
+				from: &Actor{Liked: CollectionPath("test").IRI(IRI("http://example.com"))},
+			},
+			want: &Actor{Liked: IRI("http://example.com/test")},
+		},
+		{
+			name: "preferredUsername",
+			args: args{
+				to:   &Actor{},
+				from: &Actor{PreferredUsername: DefaultLangValue("jdoe")},
+			},
+			want: &Actor{PreferredUsername: DefaultLangValue("jdoe")},
+		},
+		{
+			name: "endpoints",
+			args: args{
+				to: &Actor{},
+				from: &Actor{Endpoints: &Endpoints{
+					UploadMedia:                IRI("http://example.com/upload"),
+					OauthAuthorizationEndpoint: IRI("http://example.com/auth-url"),
+					OauthTokenEndpoint:         IRI("http://example.com/token-url"),
+					SharedInbox:                IRI("http://example.com/shared-inbox"),
+					ProxyURL:                   "http://example.com/proxy-url",
+				}},
+			},
+			want: &Actor{Endpoints: &Endpoints{
+				UploadMedia:                IRI("http://example.com/upload"),
+				OauthAuthorizationEndpoint: IRI("http://example.com/auth-url"),
+				OauthTokenEndpoint:         IRI("http://example.com/token-url"),
+				SharedInbox:                IRI("http://example.com/shared-inbox"),
+				ProxyURL:                   "http://example.com/proxy-url",
+			}},
+		},
+		{
+			name: "streams",
+			args: args{
+				to:   &Actor{},
+				from: &Actor{Streams: ItemCollection{IRI("http://example.com/stream1"), IRI("stream2")}},
+			},
+			want: &Actor{Streams: ItemCollection{IRI("http://example.com/stream1"), IRI("stream2")}},
+		},
+		{
+			name: "publickKey",
+			args: args{
+				to: &Actor{},
+				from: &Actor{PublicKey: PublicKey{
+					ID:           "http://example.com/public-key",
+					Owner:        "http://example.com/~jdoe",
+					PublicKeyPem: "--- NOT A PUBLIC KEY ---",
+				}},
+			},
+			want: &Actor{PublicKey: PublicKey{
+				ID:           "http://example.com/public-key",
+				Owner:        "http://example.com/~jdoe",
+				PublicKeyPem: "--- NOT A PUBLIC KEY ---",
+			}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := CopyActorProperties(tt.args.to, tt.args.from)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("CopyActorProperties() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("CopyActorProperties() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestFlattenActorProperties(t *testing.T) {
+	tests := []struct {
+		name string
+		a    *Actor
+		want *Actor
+	}{
+		{
+			name: "nil",
+			a:    nil,
+			want: nil,
+		},
+		{
+			name: string(Inbox),
+			a: &Actor{
+				Inbox: Object{ID: CollectionPath("test").IRI(IRI("http://example.com"))},
+			},
+			want: &Actor{Inbox: IRI("http://example.com/test")},
+		},
+		{
+			name: string(Outbox),
+			a: &Actor{
+				Outbox: Object{ID: CollectionPath("test").IRI(IRI("http://example.com"))},
+			},
+			want: &Actor{Outbox: IRI("http://example.com/test")},
+		},
+		{
+			name: string(Following),
+			a: &Actor{
+				Following: Object{ID: CollectionPath("test").IRI(IRI("http://example.com"))},
+			},
+			want: &Actor{Following: IRI("http://example.com/test")},
+		},
+		{
+			name: string(Followers),
+			a: &Actor{
+				Followers: Object{ID: CollectionPath("test").IRI(IRI("http://example.com"))},
+			},
+			want: &Actor{Followers: IRI("http://example.com/test")},
+		},
+		{
+			name: string(Liked),
+			a: &Actor{
+				Liked: Object{ID: CollectionPath("test").IRI(IRI("http://example.com"))},
+			},
+			want: &Actor{Liked: IRI("http://example.com/test")},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := FlattenActorProperties(tt.a); !cmp.Equal(got, tt.want) {
+				t.Errorf("FlattenActorProperties() = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

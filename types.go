@@ -102,6 +102,9 @@ func (at ActivityVocabularyTypes) Match(other Typer) bool {
 
 // MarshalJSON encodes the receiver object to a JSON document.
 func (at ActivityVocabularyTypes) MarshalJSON() ([]byte, error) {
+	if len(at) == 0 {
+		return nil, nil
+	}
 	b := bytes.Buffer{}
 	if !JSONWriteActivityVocabularyTypes(&b, at) {
 		return nil, fmt.Errorf("error JSON encoding ActivityVocabularyTypes")
@@ -111,15 +114,12 @@ func (at ActivityVocabularyTypes) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON decodes the receiver type from the JSON document.
 func (at *ActivityVocabularyTypes) UnmarshalJSON(b []byte) error {
-	if at == nil {
-		return fmt.Errorf("nil ActivityVocabularyTypes receiver")
-	}
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(b)
 	if err != nil {
 		return err
 	}
-	if types := JSONGetTypes(val, "typ"); types != nil {
+	if types := jsonGetTyper(val); types != nil {
 		if typ, ok := types.(ActivityVocabularyType); ok {
 			*at = ActivityVocabularyTypes{typ}
 		}
@@ -137,7 +137,7 @@ func HasTypes(it ActivityObject) bool {
 	return !EmptyTypes(it.GetType().AsTypes()...)
 }
 
-func TypesEqual(m1, m2 Typer) bool {
+func TypesEqual(r1, r2 Typer) bool {
 	matcherIsNilOrZero := func(m Typer) bool {
 		if m == nil {
 			return true
@@ -153,13 +153,21 @@ func TypesEqual(m1, m2 Typer) bool {
 		}
 		return true
 	}
-	if m1 == nil || m2 == nil {
-		return matcherIsNilOrZero(m1) && matcherIsNilOrZero(m2)
+	if r1 == nil || r2 == nil {
+		return matcherIsNilOrZero(r1) && matcherIsNilOrZero(r2)
 	}
 
-	t1 := m1.AsTypes()
-	t2 := m2.AsTypes()
-	return AnyTypes(t1...).Match(t2...)
+	t1 := r1.AsTypes()
+	t2 := r2.AsTypes()
+	if len(t1) != len(t2) {
+		return false
+	}
+	for _, tt1 := range t1 {
+		if !t2.Match(tt1) {
+			return false
+		}
+	}
+	return true
 }
 
 func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
@@ -173,17 +181,6 @@ func (a ActivityVocabularyType) MarshalJSON() ([]byte, error) {
 
 func (t ActivityVocabularyType) String() string {
 	return string(t)
-}
-
-// GobEncode
-func (a ActivityVocabularyType) GobEncode() ([]byte, error) {
-	return []byte(a), nil
-}
-
-// GobDecode
-func (a *ActivityVocabularyType) GobDecode(data []byte) error {
-	*a = ActivityVocabularyType(data)
-	return nil
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
