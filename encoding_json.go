@@ -22,9 +22,9 @@ func JSONWriteProp(b *bytes.Buffer, name string, val []byte, needsComma bool) (n
 		JSONWriteComma(b)
 	}
 	success := JSONWritePropName(b, name) && JSONWriteValue(b, val)
-	//if !success {
-	//	_ = b.UnreadByte()
-	//}
+	if !success && needsComma {
+		b.Truncate(b.Len() - 1)
+	}
 	return success
 }
 
@@ -102,12 +102,14 @@ func JSONWriteDurationProp(b *bytes.Buffer, n string, d time.Duration, needsComm
 }
 
 func JSONWriteIRIProp(b *bytes.Buffer, n string, i LinkOrIRI, needsComma bool) (notEmpty bool) {
+	if IsNil(i) {
+		return false
+	}
 	url := i.GetLink().String()
 	if len(url) == 0 {
 		return false
 	}
-	JSONWriteStringProp(b, n, url, needsComma)
-	return true
+	return JSONWriteStringProp(b, n, url, needsComma)
 }
 
 func JSONWriteItemProp(b *bytes.Buffer, n string, i Item, needsComma bool) (notEmpty bool) {
@@ -207,8 +209,8 @@ func JSONWriteItemCollectionProp(b *bytes.Buffer, n string, col ItemCollection, 
 		JSONWriteComma(b)
 	}
 	success := JSONWritePropName(b, n) && JSONWriteItemCollectionValue(b, col, compact)
-	if !success {
-		_ = b.UnreadByte()
+	if !success && needsComma {
+		b.Truncate(b.Len() - 1)
 	}
 	return success
 }

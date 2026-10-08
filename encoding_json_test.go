@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func Test_JSONWrite(t *testing.T) {
@@ -32,6 +34,7 @@ func Test_JSONWriteActivity(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
 		// TODO: Add test cases.
@@ -40,6 +43,9 @@ func Test_JSONWriteActivity(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteActivityValue(tt.args.b, tt.args.a); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteActivityValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteActivityValue() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -55,6 +61,7 @@ func Test_JSONWriteBoolProp(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
 		// TODO: Add test cases.
@@ -63,6 +70,9 @@ func Test_JSONWriteBoolProp(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteBoolProp(tt.args.b, tt.args.n, tt.args.t, tt.args.writeComma); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteBoolProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteBoolProp() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -94,6 +104,7 @@ func Test_JSONWriteDurationProp(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
 		// TODO: Add test cases.
@@ -102,6 +113,9 @@ func Test_JSONWriteDurationProp(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteDurationProp(tt.args.b, tt.args.n, tt.args.d, tt.args.wantComma); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteDurationProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteDurationProp() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -117,6 +131,7 @@ func Test_JSONWriteFloatProp(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
 		// TODO: Add test cases.
@@ -125,6 +140,9 @@ func Test_JSONWriteFloatProp(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteFloatProp(tt.args.b, tt.args.n, tt.args.f, tt.args.wantComma); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteFloatProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteFloatProp() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -140,14 +158,34 @@ func Test_JSONWriteIRIProp(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "empty",
+			args: args{
+				b: &bytes.Buffer{},
+			},
+			wantNotEmpty: false,
+		},
+		{
+			name: "iri",
+			args: args{
+				b:         &bytes.Buffer{},
+				n:         "test",
+				i:         IRI(""),
+				wantComma: false,
+			},
+			wantNotEmpty: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteIRIProp(tt.args.b, tt.args.n, tt.args.i, tt.args.wantComma); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteIRIProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteIRIProp() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -163,6 +201,7 @@ func Test_JSONWriteIntProp(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
 		// TODO: Add test cases.
@@ -171,6 +210,9 @@ func Test_JSONWriteIntProp(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteIntProp(tt.args.b, tt.args.n, tt.args.d, tt.args.wantComma); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteIntProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteIntProp() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -184,6 +226,7 @@ func Test_JSONWriteIntransitiveActivity(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
 		// TODO: Add test cases.
@@ -192,6 +235,9 @@ func Test_JSONWriteIntransitiveActivity(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteIntransitiveActivityValue(tt.args.b, tt.args.i); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteIntransitiveActivityValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteIntransitiveActivityValue() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -205,6 +251,7 @@ func Test_JSONWriteItemCollection(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
 		// TODO: Add test cases.
@@ -213,6 +260,9 @@ func Test_JSONWriteItemCollection(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteItemCollectionValue(tt.args.b, tt.args.col, true); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteItemCollectionValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteItemCollectionValue() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -228,14 +278,92 @@ func Test_JSONWriteItemCollectionProp(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "empty",
+			args: args{
+				b: &bytes.Buffer{},
+			},
+			wantNotEmpty: false,
+		},
+		{
+			name: "prop but no value",
+			args: args{
+				b:         &bytes.Buffer{},
+				n:         "test-prop",
+				col:       nil,
+				wantComma: false,
+			},
+			wantNotEmpty: false,
+		},
+		{
+			name: "prop with empty collection",
+			args: args{
+				b:         &bytes.Buffer{},
+				n:         "test-prop",
+				col:       ItemCollection{},
+				wantComma: false,
+			},
+			wantNotEmpty: false,
+		},
+
+		{
+			name: "prop with single item collection",
+			args: args{
+				b:         &bytes.Buffer{},
+				n:         "test-prop",
+				col:       ItemCollection{IRI("test")},
+				wantComma: false,
+			},
+			want:         []byte(`"test-prop":"test"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "prop with multi item collection",
+			args: args{
+				b:         &bytes.Buffer{},
+				n:         "test-prop",
+				col:       ItemCollection{IRI("test"), Object{ID: "test123"}},
+				wantComma: false,
+			},
+			want:         []byte(`"test-prop":["test",{"id":"test123"}]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "prop with multi item collection that needs comma",
+			args: args{
+				b:         &bytes.Buffer{},
+				n:         "test-prop",
+				col:       ItemCollection{IRI("test"), Object{ID: "test123"}},
+				wantComma: true,
+			},
+			want:         []byte(`,"test-prop":["test",{"id":"test123"}]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "unwrite comma on failure",
+			args: args{
+				b:         &bytes.Buffer{},
+				n:         "",
+				col:       ItemCollection{IRI("test"), Object{ID: "test123"}},
+				wantComma: true,
+			},
+			want:         []byte(``),
+			wantNotEmpty: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteItemCollectionProp(tt.args.b, tt.args.n, tt.args.col, true, tt.args.wantComma); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteItemCollectionProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteObjectValue() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -251,6 +379,7 @@ func Test_JSONWriteItemProp(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
 		// TODO: Add test cases.
@@ -259,6 +388,9 @@ func Test_JSONWriteItemProp(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteItemProp(tt.args.b, tt.args.n, tt.args.i, tt.args.wantComma); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteItemProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteItemProp() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -274,6 +406,7 @@ func Test_JSONWriteNaturalLanguageProp(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
 		// TODO: Add test cases.
@@ -282,6 +415,9 @@ func Test_JSONWriteNaturalLanguageProp(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteNaturalLanguageProp(tt.args.b, tt.args.n, tt.args.nl, tt.args.wantComma); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteNaturalLanguageProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteNaturalLanguageProp() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -295,14 +431,413 @@ func Test_JSONWriteObjectValue(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
-		// TODO: Add test cases.
+		{
+			name:         "empty",
+			args:         args{b: &bytes.Buffer{}},
+			wantNotEmpty: false,
+		},
+		{
+			name: "with id",
+			args: args{
+				o: Object{ID: "http://example.com"},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"id":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with single item audience",
+			args: args{
+				o: Object{Audience: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"audience":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items audience",
+			args: args{
+				o: Object{Audience: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"audience":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with single item context",
+			args: args{
+				o: Object{Context: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"context":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items context",
+			args: args{
+				o: Object{Context: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"context":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item Generator",
+			args: args{
+				o: Object{Generator: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"generator":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items Generator",
+			args: args{
+				o: Object{Generator: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"generator":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item Icon",
+			args: args{
+				o: Object{Icon: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"icon":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items Icon",
+			args: args{
+				o: Object{Icon: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"icon":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item Image",
+			args: args{
+				o: Object{Image: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"image":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items Image",
+			args: args{
+				o: Object{Image: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"image":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item InReplyTo",
+			args: args{
+				o: Object{InReplyTo: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"inReplyTo":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items InReplyTo",
+			args: args{
+				o: Object{InReplyTo: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"inReplyTo":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item Location",
+			args: args{
+				o: Object{Location: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"location":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items Location",
+			args: args{
+				o: Object{Location: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"location":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item Preview",
+			args: args{
+				o: Object{Preview: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"preview":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items Preview",
+			args: args{
+				o: Object{Preview: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"preview":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item Replies",
+			args: args{
+				o: Object{Replies: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"replies":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items Replies",
+			args: args{
+				o: Object{Replies: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"replies":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item Tag",
+			args: args{
+				o: Object{Tag: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"tag":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items Tag",
+			args: args{
+				o: Object{Tag: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"tag":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item URL",
+			args: args{
+				o: Object{URL: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"url":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items URL",
+			args: args{
+				o: Object{URL: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"url":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item To",
+			args: args{
+				o: Object{To: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"to":["http://example.com"]`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items To",
+			args: args{
+				o: Object{To: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"to":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item CC",
+			args: args{
+				o: Object{CC: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"cc":["http://example.com"]`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items CC",
+			args: args{
+				o: Object{CC: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"cc":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item Bto",
+			args: args{
+				o: Object{Bto: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"bto":["http://example.com"]`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items Bto",
+			args: args{
+				o: Object{Bto: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"bto":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item BCC",
+			args: args{
+				o: Object{BCC: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"bcc":["http://example.com"]`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items BCC",
+			args: args{
+				o: Object{BCC: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"bcc":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item likes",
+			args: args{
+				o: Object{Likes: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"likes":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items likes",
+			args: args{
+				o: Object{Likes: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"likes":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item shares",
+			args: args{
+				o: Object{Shares: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"shares":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi items shares",
+			args: args{
+				o: Object{Shares: ItemCollection{&Object{ID: "http://example.com/1"}, IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"shares":[{"id":"http://example.com/1"},"http://example.com"]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "duration",
+			args: args{
+				o: Object{Duration: 666 * time.Minute},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"duration":"PT11H6M"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "start-time",
+			args: args{
+				o: Object{StartTime: time.Date(2001, time.January, 1, 6, 6, 6, 666000000, time.UTC)},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"startTime":"2001-01-01T06:06:06.666Z"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "end-time",
+			args: args{
+				o: Object{EndTime: time.Date(2001, time.January, 1, 6, 6, 6, 666000000, time.UTC)},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"endTime":"2001-01-01T06:06:06.666Z"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "published",
+			args: args{
+				o: Object{Published: time.Date(2001, time.January, 1, 6, 6, 6, 666000000, time.UTC)},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"published":"2001-01-01T06:06:06.666Z"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "updated",
+			args: args{
+				o: Object{Updated: time.Date(2001, time.January, 1, 6, 6, 6, 666000000, time.UTC)},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"updated":"2001-01-01T06:06:06.666Z"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "multiple props",
+			args: args{
+				o: Object{ID: "http://example.com", Type: VideoType},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"id":"http://example.com","type":"Video"`),
+			wantNotEmpty: true,
+		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteObjectValue(tt.args.b, tt.args.o); gotNotEmpty != tt.wantNotEmpty {
-				t.Errorf("JSONWriteObjectValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+				t.Errorf("JSONWriteObjectValue() = want empty %t, want %t", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteObjectValue() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -318,6 +853,7 @@ func Test_JSONWriteProp(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
 		// TODO: Add test cases.
@@ -326,6 +862,9 @@ func Test_JSONWriteProp(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteProp(tt.args.b, tt.args.name, tt.args.val, tt.args.wantComma); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteProp() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -339,6 +878,7 @@ func Test_JSONWritePropName(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
 		// TODO: Add test cases.
@@ -347,6 +887,9 @@ func Test_JSONWritePropName(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWritePropName(tt.args.b, tt.args.s); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWritePropName() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWritePropName() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
