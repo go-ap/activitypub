@@ -11,49 +11,324 @@ import (
 )
 
 func TestItemCollection_Append(t *testing.T) {
-	d := make(ItemCollection, 0)
-
-	val := Object{ID: ID("grrr")}
-
-	_ = d.Append(val)
-
-	if len(d) != 1 {
-		t.Errorf("Objects array should have exactly an element")
+	tests := []struct {
+		name     string
+		items    ItemCollection
+		toAppend ItemCollection
+		want     ItemCollection
+		wantErr  error
+	}{
+		{
+			name:     "empty_collection_nil_item",
+			items:    ItemCollection{},
+			toAppend: nil,
+			want:     ItemCollection{},
+		},
+		{
+			name:     "empty_collection_non_nil_item",
+			items:    ItemCollection{},
+			toAppend: ItemCollection{&Object{}},
+			want:     ItemCollection{&Object{}},
+		},
+		{
+			name:     "non_empty_collection_nil_item",
+			items:    ItemCollection{&Object{ID: "test"}},
+			toAppend: nil,
+			want:     ItemCollection{&Object{ID: "test"}},
+		},
+		{
+			name:     "non_empty_collection_non_contained_item_empty_ID",
+			items:    ItemCollection{&Object{ID: "test"}},
+			toAppend: ItemCollection{&Object{}},
+			want:     ItemCollection{&Object{ID: "test"}, &Object{}},
+		},
+		{
+			name:     "non_empty_collection_non_contained_item",
+			items:    ItemCollection{&Object{ID: "test"}},
+			toAppend: ItemCollection{&Object{ID: "test123"}},
+			want:     ItemCollection{&Object{ID: "test"}, &Object{ID: "test123"}},
+		},
+		{
+			name:     "non_empty_collection_just_contained_item",
+			items:    ItemCollection{&Object{ID: "test"}},
+			toAppend: ItemCollection{&Object{ID: "test"}},
+			want:     ItemCollection{&Object{ID: "test"}},
+		},
+		{
+			name:     "non_empty_collection_contained_item_first_pos",
+			items:    ItemCollection{&Object{ID: "test"}, &Object{ID: "test123"}},
+			toAppend: ItemCollection{&Object{ID: "test"}},
+			want:     ItemCollection{&Object{ID: "test"}, &Object{ID: "test123"}},
+		},
+		{
+			name: "non_empty_collection_contained_item_not_first_pos",
+			items: ItemCollection{&Object{ID: "test123"}, &Object{ID: "test"}, &Object{ID: "test321"},
+			},
+			toAppend: ItemCollection{&Object{ID: "test"}},
+			want:     ItemCollection{&Object{ID: "test123"}, &Object{ID: "test321"}, &Object{ID: "test"}},
+		},
+		{
+			name:     "non_empty_collection_add_item",
+			items:    ItemCollection{&Object{ID: "test123"}, &Object{ID: "test"}},
+			toAppend: ItemCollection{&Object{ID: "test1234"}},
+			want:     ItemCollection{&Object{ID: "test123"}, &Object{ID: "test"}, &Object{ID: "test1234"}},
+		},
 	}
-	if !reflect.DeepEqual(d[0], val) {
-		t.Errorf("First item in object array does not match %q", val.ID)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.items.Append(tt.toAppend...)
+			if !cmp.Equal(err, tt.wantErr) {
+				t.Errorf("Append() error = %s", cmp.Diff(tt.wantErr, err))
+			}
+
+			if tt.want.Count() != tt.items.Count() {
+				t.Errorf("Post Append() %T has count %d different than expected %d", tt.items, tt.items.Count(), tt.want.Count())
+			}
+			for _, it := range tt.toAppend {
+				if !tt.items.Contains(it) {
+					t.Errorf("Post Append() unable able to find %s in %T Items %v", it.GetLink(), tt.items, tt.items)
+				}
+			}
+		})
 	}
 }
 
 func TestItemCollection_Collection(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		i    *ItemCollection
+		want ItemCollection
+	}{
+		{
+			name: "empty",
+			i:    nil,
+		},
+		{
+			name: "no-items",
+			i:    &ItemCollection{},
+		},
+		{
+			name: "one-nil",
+			i:    &ItemCollection{nil},
+			want: ItemCollection{nil},
+		},
+		{
+			name: "two-nils",
+			i:    &ItemCollection{nil, nil},
+			want: ItemCollection{nil, nil},
+		},
+		{
+			name: "one",
+			i:    &ItemCollection{&Object{}},
+			want: ItemCollection{&Object{}},
+		},
+		{
+			name: "three",
+			i:    &ItemCollection{&Object{}, IRI("test"), Item(nil)},
+			want: ItemCollection{&Object{}, IRI("test"), Item(nil)},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Collection(); !cmp.Equal(got, tt.want) {
+				t.Errorf("Collection() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestItemCollection_GetID(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		ic   ItemCollection
+		want IRI
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "not-empty",
+			ic:   ItemCollection{IRI("http://example.com")},
+			want: "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.ic.GetID(); got != tt.want {
+				t.Errorf("GetID() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestItemCollection_GetLink(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		ic   ItemCollection
+		want IRI
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "not-empty",
+			ic:   ItemCollection{IRI("http://example.com")},
+			want: "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.ic.GetLink(); got != tt.want {
+				t.Errorf("GetLink() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestItemCollection_GetType(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		ic   ItemCollection
+		want ActivityVocabularyType
+	}{
+		{
+			name: "empty",
+			want: CollectionOfItems,
+		},
+		{
+			name: "not-empty",
+			ic:   ItemCollection{IRI("http://example.com")},
+			want: CollectionOfItems,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.ic.GetType(); got != tt.want {
+				t.Errorf("GetID() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestItemCollection_First(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		i    ItemCollection
+		want Item
+	}{
+		{
+			name: "empty",
+			i:    nil,
+			want: nil,
+		},
+		{
+			name: "nil item",
+			i:    ItemCollection{nil},
+			want: nil,
+		},
+		{
+			name: "nil item from two",
+			i:    ItemCollection{nil, IRI("test")},
+			want: nil,
+		},
+		{
+			name: "iri from two",
+			i:    ItemCollection{IRI("test"), Object{}},
+			want: IRI("test"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.First(); !cmp.Equal(got, tt.want) {
+				t.Errorf("First() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestItemCollection_Last(t *testing.T) {
+	tests := []struct {
+		name string
+		i    ItemCollection
+		want Item
+	}{
+		{
+			name: "empty",
+			i:    nil,
+			want: nil,
+		},
+		{
+			name: "nil item",
+			i:    ItemCollection{nil},
+			want: nil,
+		},
+		{
+			name: "nil item from two",
+			i:    ItemCollection{IRI("test"), nil},
+			want: nil,
+		},
+		{
+			name: "iri from two",
+			i:    ItemCollection{Object{}, IRI("test")},
+			want: IRI("test"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Last(); !cmp.Equal(got, tt.want) {
+				t.Errorf("Last() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestItemCollection_Count(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		i    *ItemCollection
+		want uint
+	}{
+		{
+			name: "empty",
+			i:    nil,
+			want: 0,
+		},
+		{
+			name: "no-items",
+			i:    &ItemCollection{},
+			want: 0,
+		},
+		{
+			name: "one-nil",
+			i:    &ItemCollection{nil},
+			want: 1,
+		},
+		{
+			name: "two-nils",
+			i:    &ItemCollection{nil, nil},
+			want: 2,
+		},
+		{
+			name: "one",
+			i:    &ItemCollection{&Object{}},
+			want: 1,
+		},
+		{
+			name: "three",
+			i:    &ItemCollection{&Object{}, IRI("test"), Item(nil)},
+			want: 3,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Count(); got != tt.want {
+				t.Errorf("Count() = got %d, expected %d", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestItemCollection_Contains(t *testing.T) {
-	t.Skipf("TODO")
-}
-
-func TestToItemCollection(t *testing.T) {
 	t.Skipf("TODO")
 }
 
@@ -306,84 +581,205 @@ func TestItemCollectionDeduplication(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ItemCollectionDeduplication(tt.args...); !tt.want.Equals(got) {
-				t.Errorf("ItemCollectionDeduplication() = %v, want %v", got, tt.want)
-			}
-			if len(tt.remaining) != len(tt.args) {
-				t.Errorf("ItemCollectionDeduplication() arguments count %d, want %d", len(tt.args), len(tt.remaining))
-			}
-			for i, remArg := range tt.remaining {
-				arg := tt.args[i]
-				if !remArg.Equals(arg) {
-					t.Errorf("ItemCollectionDeduplication() argument at pos %d = %v, want %v", i, arg, remArg)
-				}
+			if got := ItemCollectionDeduplication(tt.args...); !cmp.Equal(tt.want, got) {
+				t.Errorf("ItemCollectionDeduplication() = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}
 }
 
-func TestToItemCollection1(t *testing.T) {
+func TestToItemCollection(t *testing.T) {
+	iri := IRI("https://example.com")
 	tests := []struct {
 		name    string
-		it      Item
+		it      LinkOrIRI
 		want    *ItemCollection
-		wantErr bool
+		wantErr error
 	}{
 		{
 			name: "empty",
 		},
 		{
-			name:    "IRIs to ItemCollection",
-			it:      IRIs{"https://example.com", "https://example.com/example"},
-			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
-			wantErr: false,
+			name: "IRI to ItemCollection",
+			it:   IRI("https://example.com"),
+			want: &ItemCollection{IRI("https://example.com")},
 		},
 		{
-			name:    "ItemCollection to ItemCollection",
-			it:      ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
-			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
-			wantErr: false,
+			name: "*IRI to ItemCollection",
+			it:   &iri,
+			want: &ItemCollection{IRI("https://example.com")},
 		},
 		{
-			name:    "*ItemCollection to ItemCollection",
-			it:      &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
-			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
-			wantErr: false,
+			name: "IRIs to ItemCollection",
+			it:   IRIs{"https://example.com", "https://example.com/example"},
+			want: &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
 		},
 		{
-			name:    "Collection to ItemCollection",
-			it:      &Collection{Items: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
-			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
-			wantErr: false,
+			name: "*IRIs to ItemCollection",
+			it:   &IRIs{"https://example.com", "https://example.com/example"},
+			want: &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
 		},
 		{
-			name:    "CollectionPage to ItemCollection",
-			it:      &CollectionPage{Items: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
-			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
-			wantErr: false,
+			name: "ItemCollection to ItemCollection",
+			it:   ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+			want: &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
 		},
 		{
-			name:    "OrderedCollection to ItemCollection",
-			it:      &OrderedCollection{OrderedItems: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
-			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
-			wantErr: false,
+			name: "*ItemCollection to ItemCollection",
+			it:   &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+			want: &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
 		},
 		{
-			name:    "OrderedCollectionPage to ItemOrderedCollection",
-			it:      &OrderedCollectionPage{OrderedItems: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
-			want:    &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
-			wantErr: false,
+			name: "*Collection to ItemCollection",
+			it:   &Collection{Items: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
+			want: &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+		},
+		{
+			name: "Collection to ItemCollection",
+			it:   Collection{Items: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
+			want: &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+		},
+		{
+			name: "*CollectionPage to ItemCollection",
+			it:   &CollectionPage{Items: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
+			want: &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+		},
+		{
+			name: "CollectionPage to ItemCollection",
+			it:   CollectionPage{Items: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
+			want: &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+		},
+		{
+			name: "*OrderedCollection to ItemCollection",
+			it:   &OrderedCollection{OrderedItems: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
+			want: &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+		},
+		{
+			name: "OrderedCollection to ItemCollection",
+			it:   OrderedCollection{OrderedItems: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
+			want: &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+		},
+		{
+			name: "*OrderedCollectionPage to ItemOrderedCollection",
+			it:   &OrderedCollectionPage{OrderedItems: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
+			want: &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+		},
+		{
+			name: "OrderedCollectionPage to ItemOrderedCollection",
+			it:   OrderedCollectionPage{OrderedItems: ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")}},
+			want: &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+		},
+		{
+			name: "no-items",
+			it:   &ItemCollection{},
+			want: &ItemCollection{},
+		},
+		{
+			name: "one-nil",
+			it:   &ItemCollection{nil},
+			want: &ItemCollection{nil},
+		},
+		{
+			name: "two-nils",
+			it:   &ItemCollection{nil, nil},
+			want: &ItemCollection{nil, nil},
+		},
+		{
+			name: "one",
+			it:   &ItemCollection{&Object{}},
+			want: &ItemCollection{&Object{}},
+		},
+		{
+			name: "three",
+			it:   &ItemCollection{&Object{}, IRI("test"), Item(nil)},
+			want: &ItemCollection{&Object{}, IRI("test"), Item(nil)},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := ToItemCollection(tt.it)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ToItemCollection() error = %v, wantErr %v", err, tt.wantErr)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("ToItemCollection() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ToItemCollection() got = %v, want %v", got, tt.want)
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("ToItemCollection() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestToIRIs(t *testing.T) {
+	iri := IRI("https://example.com")
+	tests := []struct {
+		name    string
+		it      LinkOrIRI
+		want    *IRIs
+		wantErr error
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name: "IRI to ItemCollection",
+			it:   IRI("https://example.com"),
+			want: &IRIs{"https://example.com"},
+		},
+		{
+			name: "*IRI to ItemCollection",
+			it:   &iri,
+			want: &IRIs{"https://example.com"},
+		},
+		{
+			name: "IRIs to ItemCollection",
+			it:   IRIs{"https://example.com", "https://example.com/example"},
+			want: &IRIs{"https://example.com", "https://example.com/example"},
+		},
+		{
+			name: "*IRIs to ItemCollection",
+			it:   &IRIs{"https://example.com", "https://example.com/example"},
+			want: &IRIs{"https://example.com", "https://example.com/example"},
+		},
+		{
+			name: "ItemCollection to ItemCollection",
+			it:   ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+			want: &IRIs{"https://example.com", "https://example.com/example"},
+		},
+		{
+			name: "*ItemCollection to ItemCollection",
+			it:   &ItemCollection{IRI("https://example.com"), IRI("https://example.com/example")},
+			want: &IRIs{"https://example.com", "https://example.com/example"},
+		},
+		{
+			name: "no-items",
+			it:   &ItemCollection{},
+			want: &IRIs{},
+		},
+		{
+			name: "just-nils",
+			it:   &ItemCollection{nil, nil},
+			want: &IRIs{},
+		},
+		{
+			name: "just-nils in item collection",
+			it:   ItemCollection{nil, nil},
+			want: &IRIs{},
+		},
+		{
+			name: "with nils",
+			it:   &ItemCollection{IRI("test"), Item(nil)},
+			want: &IRIs{IRI("test")},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ToIRIs(tt.it)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("ToIRIs() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("ToIRIs() got = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}
@@ -798,6 +1194,220 @@ func TestItemCollection_MarshalBinary(t *testing.T) {
 			}
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("MarshalBinary() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestItemCollection_Match(t *testing.T) {
+	tests := []struct {
+		name string
+		i    ItemCollection
+		tt   ActivityVocabularyTypes
+		want bool
+	}{
+		{
+			name: "nil",
+			i:    nil,
+			tt:   nil,
+			want: false,
+		},
+		{
+			name: "empty",
+			i:    ItemCollection{},
+			tt:   nil,
+			want: false,
+		},
+		{
+			name: "match-collectionOfItems",
+			i:    ItemCollection{},
+			tt:   ActivityVocabularyTypes{CollectionOfItems},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Match(tt.tt...); got != tt.want {
+				t.Errorf("Match() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestItemCollection_ItemsMatch(t *testing.T) {
+	tests := []struct {
+		name    string
+		i       ItemCollection
+		toCheck []Item
+		want    bool
+	}{
+		{
+			name:    "nil match nil",
+			i:       nil,
+			toCheck: nil,
+			want:    true,
+		},
+		{
+			name:    "empty match nil",
+			i:       ItemCollection{},
+			toCheck: nil,
+			want:    true,
+		},
+		{
+			name:    "not-empty match nil toCheck",
+			i:       ItemCollection{IRI("http://example.com")},
+			toCheck: nil,
+			want:    true,
+		},
+		{
+			name:    "item-collection, no match",
+			i:       ItemCollection{IRI("http://example.com")},
+			toCheck: ItemCollection{Object{}},
+			want:    false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.ItemsMatch(tt.toCheck...); got != tt.want {
+				t.Errorf("ItemsMatch() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestItemCollection_Equals(t *testing.T) {
+	tests := []struct {
+		name string
+		i    ItemCollection
+		with Item
+		want bool
+	}{
+		{
+			name: "nil",
+			i:    nil,
+			with: nil,
+			want: false,
+		},
+		{
+			name: "collection not equals non-collection",
+			i:    ItemCollection{},
+			with: &Object{},
+			want: false,
+		},
+		{
+			name: "empty equals empty",
+			i:    ItemCollection{},
+			with: ItemCollection{},
+			want: true,
+		},
+		{
+			name: "empty not equals not empty",
+			i:    ItemCollection{},
+			with: ItemCollection{nil},
+			want: false,
+		},
+		{
+			name: "equal with one IRI",
+			i:    ItemCollection{IRI("http://example.com")},
+			with: ItemCollection{IRI("http://example.com")},
+			want: true,
+		},
+		{
+			name: "equal with empty object",
+			i:    ItemCollection{&Object{}},
+			with: ItemCollection{&Object{}},
+			want: true,
+		},
+		{
+			name: "not equal with different counts",
+			i:    ItemCollection{&Object{}, IRI("http://example.com")},
+			with: ItemCollection{&Object{}},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Equals(tt.with); got != tt.want {
+				t.Errorf("Equals() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestItemCollection_Recipients(t *testing.T) {
+	tests := []struct {
+		name string
+		i    ItemCollection
+		want ItemCollection
+	}{
+		{
+			name: "nil",
+			i:    nil,
+			want: nil,
+		},
+		{
+			name: "empty",
+			i:    ItemCollection{},
+			want: nil,
+		},
+		{
+			name: "one object with Audience",
+			i:    ItemCollection{&Object{Audience: ItemCollection{PublicNS}}},
+			want: ItemCollection{PublicNS},
+		},
+		{
+			name: "one object with To",
+			i:    ItemCollection{&Object{To: ItemCollection{IRI("http://example.com")}}},
+			want: ItemCollection{IRI("http://example.com")},
+		},
+		{
+			name: "one object with CC",
+			i:    ItemCollection{&Object{CC: ItemCollection{IRI("http://example.com")}}},
+			want: ItemCollection{IRI("http://example.com")},
+		},
+		{
+			name: "one object with Bto",
+			i:    ItemCollection{&Object{Bto: ItemCollection{IRI("http://example.com"), &Object{ID: "http://example.com/ob"}}}},
+			want: ItemCollection{IRI("http://example.com"), IRI("http://example.com/ob")},
+		},
+		{
+			name: "one object with BCC",
+			i:    ItemCollection{&Object{BCC: ItemCollection{IRI("http://example.com"), &Actor{ID: "http://example.com/~jdoe"}}}},
+			want: ItemCollection{IRI("http://example.com"), IRI("http://example.com/~jdoe")},
+		},
+		//
+		{
+			name: "two objects",
+			i: ItemCollection{
+				&Object{
+					Audience: ItemCollection{PublicNS},
+				},
+				&Actor{
+					To: ItemCollection{PublicNS},
+				},
+				&Actor{
+					Bto: ItemCollection{IRI("http://example.com/followers")},
+				},
+				&Object{
+					Bto: ItemCollection{
+						&Collection{ID: "http://example.com/hidden-to"},
+					},
+				},
+				&Object{
+					BCC: ItemCollection{
+						IRI("http://example.com"),
+						&Actor{ID: "http://example.com/~jdoe"},
+					},
+				},
+				Link{ID: "http://example.com/no-recipients"},
+			},
+			want: ItemCollection{PublicNS, IRI("http://example.com/followers"), IRI("http://example.com/hidden-to"), IRI("http://example.com"), IRI("http://example.com/~jdoe")},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.i.Recipients(); !cmp.Equal(got, tt.want) {
+				t.Errorf("Recipients() = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

@@ -42,7 +42,7 @@ func (i ItemCollection) IRIs() IRIs {
 		if IsNil(it) {
 			continue
 		}
-		iris = append(iris, it.GetLink())
+		_ = iris.Append(it.GetLink())
 	}
 	return iris
 }
@@ -94,12 +94,20 @@ func (i *ItemCollection) Count() uint {
 	return uint(len(*i))
 }
 
-// First returns the ID corresponding to ItemCollection
+// First returns the ID corresponding to the first item in the ItemCollection
 func (i ItemCollection) First() Item {
 	if len(i) == 0 {
 		return nil
 	}
 	return i[0]
+}
+
+// Last returns the ID corresponding to the last item in the ItemCollection
+func (i ItemCollection) Last() Item {
+	if len(i) == 0 {
+		return nil
+	}
+	return i[len(i)-1]
 }
 
 // Normalize returns the first item if the collection contains only one,
@@ -117,6 +125,9 @@ func (i ItemCollection) Normalize() Item {
 
 // Collection returns the current object as collection interface
 func (i *ItemCollection) Collection() ItemCollection {
+	if i == nil {
+		return nil
+	}
 	return *i
 }
 
@@ -249,20 +260,20 @@ func ToIRIs(it LinkOrIRI) (*IRIs, error) {
 		return &i, nil
 	case ItemCollection:
 		iris := make(IRIs, 0, len(i))
-		for j, ob := range i {
+		for _, ob := range i {
 			if !IsIRI(ob) {
 				continue
 			}
-			iris[j] = ob.GetLink()
+			_ = iris.Append(ob.GetLink())
 		}
 		return &iris, nil
 	case *ItemCollection:
 		iris := make(IRIs, 0, len(*i))
-		for j, ob := range *i {
+		for _, ob := range *i {
 			if !IsIRI(ob) {
 				continue
 			}
-			iris[j] = ob.GetLink()
+			_ = iris.Append(ob.GetLink())
 		}
 		return &iris, nil
 	default:
@@ -271,9 +282,9 @@ func ToIRIs(it LinkOrIRI) (*IRIs, error) {
 	return nil, ErrorInvalidType[ItemCollection](it)
 }
 
-// ItemsMatch
-func (i ItemCollection) ItemsMatch(col ...Item) bool {
-	for _, it := range col {
+// ItemsMatch checks if all the "toCheck" items are contained within the receiver ItemCollection.
+func (i ItemCollection) ItemsMatch(toCheck ...Item) bool {
+	for _, it := range toCheck {
 		if match := i.Contains(it); !match {
 			return false
 		}
@@ -281,9 +292,9 @@ func (i ItemCollection) ItemsMatch(col ...Item) bool {
 	return true
 }
 
-// Equals verifies if our receiver ItemCollection is equals with the "with" Item
+// Equals verifies if our receiver ItemCollection is equals with the "with" Item.
 func (i ItemCollection) Equals(with Item) bool {
-	if !IsItemCollection(with) {
+	if IsNil(with) {
 		return false
 	}
 	itemCollection, err := ToItemCollection(with)
@@ -325,13 +336,13 @@ func (i ItemCollection) Clean() Item {
 func (i ItemCollection) Recipients() ItemCollection {
 	all := make(ItemCollection, 0)
 	for _, it := range i {
-		_ = OnObject(it, func(ob *Object) error {
-			aud := ob.Audience
-			_ = all.Append(ItemCollectionDeduplication(&ob.To, &ob.CC, &ob.Bto, &ob.BCC, &aud)...)
-			return nil
-		})
+		rr, ok := it.(HasRecipients)
+		if !ok {
+			continue
+		}
+		_ = all.Append(rr.Recipients()...)
 	}
-	return ItemCollectionDeduplication(&all)
+	return all
 }
 
 // WithItemCollectionFn represents a function type that can be used as a parameter for OnItemCollection helper function

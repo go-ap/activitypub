@@ -3,8 +3,6 @@ package activitypub
 import (
 	"path/filepath"
 	"strings"
-
-	"github.com/go-ap/errors"
 )
 
 // CollectionPath
@@ -113,7 +111,6 @@ var (
 		Inbox,
 		Likes,
 		Shares,
-		Replies, // activitystreams
 	}
 	OfObject = CollectionPaths{
 		Likes,
@@ -209,11 +206,11 @@ func (t CollectionPath) IRI(i Item) IRI {
 }
 
 func (t CollectionPath) ofItemCollection(col ItemCollection) Item {
-	iriCol := make(ItemCollection, len(col))
-	for i, it := range col {
-		iriCol[i] = t.Of(it)
+	iris := make(ItemCollection, 0, len(col))
+	for _, it := range col {
+		_ = iris.Append(t.Of(it))
 	}
-	return iriCol
+	return iris
 }
 
 func (t CollectionPath) ofObject(ob *Object) Item {
@@ -258,21 +255,20 @@ func (t CollectionPath) ofItem(i Item) Item {
 		return nil
 	}
 	var it Item
-	if IsIRI(i) {
+	switch {
+	case IsIRI(i):
 		it = t.ofIRI(i.GetLink())
-	}
-	if IsItemCollection(i) {
+	case IsItemCollection(i):
 		_ = OnItemCollection(i, func(col *ItemCollection) error {
 			it = t.ofItemCollection(*col)
 			return nil
 		})
-	}
-	if OfActor.Contains(t) {
+	case OfActor.Contains(t):
 		_ = OnActor(i, func(a *Actor) error {
 			it = t.ofActor(a)
 			return nil
 		})
-	} else {
+	default:
 		_ = OnObject(i, func(o *Object) error {
 			it = t.ofObject(o)
 			return nil
@@ -285,16 +281,6 @@ func (t CollectionPath) ofItem(i Item) Item {
 // If it's missing, it returns nil.
 func (t CollectionPath) Of(i Item) Item {
 	return t.ofItem(i)
-}
-
-// OfActor returns the base IRI of received i, if i represents an IRI matching CollectionPath type t
-func (t CollectionPath) OfActor(i IRI) (IRI, error) {
-	maybeActor, maybeCol := filepath.Split(i.String())
-	if strings.EqualFold(maybeCol, string(t)) {
-		maybeActor = strings.TrimRight(maybeActor, "/")
-		return IRI(maybeActor), nil
-	}
-	return EmptyIRI, errors.Newf("IRI does not represent a valid %s CollectionPath", t)
 }
 
 // Split returns the base IRI of received i, if i represents an IRI matching CollectionPath type t
@@ -318,6 +304,7 @@ var validObjectCollection = []CollectionPath{
 	Following,
 	Followers,
 	Liked,
+	Replies, // activitystreams
 }
 
 func getValidObjectCollection(typ CollectionPath) CollectionPath {
@@ -356,12 +343,13 @@ func ValidCollectionIRI(i IRI) bool {
 // AddTo adds CollectionPath type IRI on the corresponding property of the i Item
 func (t CollectionPath) AddTo(i Item) (IRI, bool) {
 	if IsNil(i) || !IsObject(i) {
-		return NilIRI, false
+		return EmptyIRI, false
 	}
 	status := false
 	var iri IRI
-	if OfActor.Contains(t) {
-		OnActor(i, func(a *Actor) error {
+	switch {
+	case OfActor.Contains(t):
+		_ = OnActor(i, func(a *Actor) error {
 			if status = t == Inbox && IsNil(a.Inbox); status {
 				a.Inbox = IRIf(a.GetLink(), t)
 				iri = a.Inbox.GetLink()
@@ -380,8 +368,8 @@ func (t CollectionPath) AddTo(i Item) (IRI, bool) {
 			}
 			return nil
 		})
-	} else if OfObject.Contains(t) {
-		OnObject(i, func(o *Object) error {
+	case OfObject.Contains(t):
+		_ = OnObject(i, func(o *Object) error {
 			if status = t == Likes && IsNil(o.Likes); status {
 				o.Likes = IRIf(o.GetLink(), t)
 				iri = o.Likes.GetLink()
@@ -394,8 +382,9 @@ func (t CollectionPath) AddTo(i Item) (IRI, bool) {
 			}
 			return nil
 		})
-	} else {
+	default:
 		iri = IRIf(i.GetLink(), t)
+		status = true
 	}
 	return iri, status
 }

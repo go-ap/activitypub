@@ -1,8 +1,9 @@
 package activitypub
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestPathTyper_Type(t *testing.T) {
@@ -10,23 +11,227 @@ func TestPathTyper_Type(t *testing.T) {
 }
 
 func TestValidActivityCollection(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		typ  CollectionPath
+		want bool
+	}{
+		{
+			name: "empty",
+			typ:  "",
+			want: false,
+		},
+		{
+			name: "invalid",
+			typ:  "invalid",
+			want: false,
+		},
+		{
+			name: "valid",
+			typ:  "inbox",
+			want: true,
+		},
+		{
+			name: "valid-outbox",
+			typ:  Outbox,
+			want: true,
+		},
+		{
+			name: "invalid-replies",
+			typ:  Replies,
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ValidActivityCollection(tt.typ); got != tt.want {
+				t.Errorf("ValidActivityCollection() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestValidCollection(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		typ  CollectionPath
+		want bool
+	}{
+		{
+			name: "empty",
+			typ:  "",
+			want: false,
+		},
+		{
+			name: "invalid",
+			typ:  "invalid",
+			want: false,
+		},
+		{
+			name: "valid",
+			typ:  "inbox",
+			want: true,
+		},
+		{
+			name: "valid-outbox",
+			typ:  Outbox,
+			want: true,
+		},
+		{
+			name: "valid-replies",
+			typ:  Replies,
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ValidCollection(tt.typ); got != tt.want {
+				t.Errorf("ValidCollection() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestValidObjectCollection(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		typ  CollectionPath
+		want bool
+	}{
+		{
+			name: "empty",
+			typ:  "",
+			want: false,
+		},
+		{
+			name: "invalid",
+			typ:  "invalid",
+			want: false,
+		},
+		{
+			name: "valid",
+			typ:  "followers",
+			want: true,
+		},
+		{
+			name: "invalid-outbox",
+			typ:  Outbox,
+			want: false,
+		},
+		{
+			name: "valid-replies",
+			typ:  Replies,
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ValidObjectCollection(tt.typ); got != tt.want {
+				t.Errorf("ValidObjectCollection() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestValidCollectionIRI(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name string
+		i    IRI
+		want bool
+	}{
+		{
+			name: "empty",
+			i:    "",
+			want: false,
+		},
+		{
+			name: "not-a-collection",
+			i:    "http://example.com",
+			want: false,
+		},
+		{
+			name: "inbox",
+			i:    "http://example.com/inbox",
+			want: true,
+		},
+		{
+			name: string(Shares),
+			i:    Shares.IRI(IRI("http://example.com")),
+			want: true,
+		},
+		{
+			name: string(Followers),
+			i:    Followers.IRI(IRI("http://example.com")),
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ValidCollectionIRI(tt.i); got != tt.want {
+				t.Errorf("ValidCollectionIRI() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestSplit(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name     string
+		i        IRI
+		wantIRI  IRI
+		wantPath CollectionPath
+	}{
+		{
+			name: "empty",
+		},
+		{
+			name:     "no-path",
+			i:        "http://example.com",
+			wantIRI:  "http://example.com",
+			wantPath: "",
+		},
+		{
+			name:     "with-inbox",
+			i:        "http://example.com/inbox",
+			wantIRI:  "http://example.com",
+			wantPath: "inbox",
+		},
+		{
+			name:     string(Inbox),
+			i:        Inbox.IRI(IRI("http://example.com")),
+			wantIRI:  "http://example.com",
+			wantPath: Inbox,
+		},
+		{
+			name:     string(Outbox),
+			i:        Outbox.IRI(IRI("http://example.com")),
+			wantIRI:  "http://example.com",
+			wantPath: Outbox,
+		},
+		{
+			name:     string(Followers),
+			i:        Followers.IRI(IRI("http://example.com")),
+			wantIRI:  "http://example.com",
+			wantPath: Followers,
+		},
+		{
+			name:     string(Replies),
+			i:        Replies.IRI(IRI("http://example.com")),
+			wantIRI:  "http://example.com",
+			wantPath: Replies,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotIRI, gotPath := Split(tt.i)
+			if gotIRI != tt.wantIRI {
+				t.Errorf("Split() got = %v, want %v", gotIRI, tt.wantIRI)
+			}
+			if gotPath != tt.wantPath {
+				t.Errorf("Split() got1 = %v, want %v", gotPath, tt.wantPath)
+			}
+		})
+	}
 }
 
 func TestCollectionTypes_Of(t *testing.T) {
@@ -214,73 +419,135 @@ func TestIRIf(t *testing.T) {
 	}
 }
 
-func TestCollectionType_AddTo(t *testing.T) {
-	type args struct {
-		i Item
-	}
-	var i Item
-	var o *Object
+func TestCollectionPath_AddTo(t *testing.T) {
 	tests := []struct {
-		name  string
-		t     CollectionPath
-		args  args
-		want  IRI
-		want1 bool
+		name        string
+		t           CollectionPath
+		i           Item
+		wantIRI     IRI
+		wantSuccess bool
 	}{
 		{
-			name: "simple",
-			t:    "test",
-			args: args{
-				i: &Object{ID: "http://example.com/addTo"},
-			},
-			want:  "http://example.com/addTo/test",
-			want1: false, // this seems to always be false
+			name:        "empty",
+			t:           "",
+			i:           nil,
+			wantIRI:     EmptyIRI,
+			wantSuccess: false,
 		},
 		{
-			name: "on-nil-item",
-			t:    "test",
-			args: args{
-				i: i,
-			},
-			want:  NilIRI,
-			want1: false,
+			name:        "simple",
+			t:           "test",
+			i:           &Object{ID: "http://example.com/addTo"},
+			wantIRI:     "http://example.com/addTo/test",
+			wantSuccess: true,
 		},
 		{
-			name: "on-nil",
-			t:    "test",
-			args: args{
-				i: nil,
-			},
-			want:  NilIRI,
-			want1: false,
+			name:        "on-nil-item",
+			t:           "test",
+			i:           Item(nil),
+			wantIRI:     EmptyIRI,
+			wantSuccess: false,
 		},
 		{
-			name: "on-nil-object",
-			t:    "test",
-			args: args{
-				i: o,
-			},
-			want:  NilIRI,
-			want1: false,
+			name:        "on-nil",
+			t:           "test",
+			i:           nil,
+			wantIRI:     EmptyIRI,
+			wantSuccess: false,
 		},
 		{
-			name: "on-nil-item",
-			t:    "test",
-			args: args{
-				i: i,
-			},
-			want:  NilIRI,
-			want1: false,
+			name:        "on-nil-object",
+			t:           "test",
+			i:           o,
+			wantIRI:     EmptyIRI,
+			wantSuccess: false,
+		},
+		{
+			name:        "on-nil-item",
+			t:           "test",
+			i:           Item(nil),
+			wantIRI:     EmptyIRI,
+			wantSuccess: false,
+		},
+		{
+			name:        "inbox-on-Actor",
+			t:           Inbox,
+			i:           &Actor{ID: "http://example.com/~jdoe"},
+			wantIRI:     "http://example.com/~jdoe/inbox",
+			wantSuccess: true,
+		},
+		{
+			name:        "outbox-on-Actor",
+			t:           Outbox,
+			i:           &Actor{ID: "http://example.com/~jdoe"},
+			wantIRI:     "http://example.com/~jdoe/outbox",
+			wantSuccess: true,
+		},
+		{
+			name:        "liked-on-Actor",
+			t:           Liked,
+			i:           &Actor{ID: "http://example.com/~jdoe"},
+			wantIRI:     "http://example.com/~jdoe/liked",
+			wantSuccess: true,
+		},
+		{
+			name:        "likes-on-Actor",
+			t:           Likes,
+			i:           &Actor{ID: "http://example.com/~jdoe"},
+			wantIRI:     "http://example.com/~jdoe/likes",
+			wantSuccess: true,
+		},
+		{
+			name:        "following-on-Actor",
+			t:           Following,
+			i:           &Actor{ID: "http://example.com/~jdoe"},
+			wantIRI:     "http://example.com/~jdoe/following",
+			wantSuccess: true,
+		},
+		{
+			name:        "followers-on-Actor",
+			t:           Followers,
+			i:           &Actor{ID: "http://example.com/~jdoe"},
+			wantIRI:     "http://example.com/~jdoe/followers",
+			wantSuccess: true,
+		},
+		{
+			name:        "likes-on-object",
+			t:           Likes,
+			i:           &Object{ID: "http://example.com/ob-1"},
+			wantIRI:     "http://example.com/ob-1/likes",
+			wantSuccess: true,
+		},
+		{
+			name:        "shares-on-object",
+			t:           Shares,
+			i:           &Object{ID: "http://example.com/ob-1"},
+			wantIRI:     "http://example.com/ob-1/shares",
+			wantSuccess: true,
+		},
+		{
+			name:        "replies-on-object",
+			t:           Replies,
+			i:           &Object{ID: "http://example.com/ob-1"},
+			wantIRI:     "http://example.com/ob-1/replies",
+			wantSuccess: true,
+		},
+		{
+			name:        "random-path-on-Object",
+			t:           "random-path",
+			i:           &Object{ID: "http://example.com/ob-1"},
+			wantIRI:     "http://example.com/ob-1/random-path",
+			wantSuccess: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := tt.t.AddTo(tt.args.i)
-			if got != tt.want {
-				t.Errorf("AddTo() got = %v, want %v", got, tt.want)
+			gotIRI, gotOK := tt.t.AddTo(tt.i)
+			if gotIRI != tt.wantIRI {
+				t.Errorf("AddTo() got IRI = %v, want %v", gotIRI, tt.wantIRI)
 			}
-			if got1 != tt.want1 {
-				t.Errorf("AddTo() got1 = %v, want %v", got1, tt.want1)
+			if gotOK != tt.wantSuccess {
+				t.Errorf("AddTo() got  OK = %v, want %v", gotOK, tt.wantSuccess)
 			}
 		})
 	}
@@ -535,11 +802,29 @@ func TestCollectionPath_Of(t *testing.T) {
 			},
 			want: IRI("https://example.com/r466"),
 		},
+		{
+			name: "replies-on-iri",
+			t:    Replies,
+			arg:  IRI("http://example.com"),
+			want: IRI("http://example.com/replies"),
+		},
+		{
+			name: "replies-on-item-collection",
+			t:    Likes,
+			arg: ItemCollection{
+				Object{ID: "http://example.com/ob1", Likes: IRI("http://example.com/ob1/likes")},
+				Actor{ID: "http://example.com/~jdoe", Likes: IRI("http://example.com/~jdoe/likes")},
+			},
+			want: ItemCollection{
+				IRI("http://example.com/ob1/likes"),
+				IRI("http://example.com/~jdoe/likes"),
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.t.Of(tt.arg); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Of() = %v, want %v", got, tt.want)
+			if got := tt.t.Of(tt.arg); !cmp.Equal(got, tt.want) {
+				t.Errorf("Of() = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}
