@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-ap/errors"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 var (
@@ -114,7 +113,30 @@ func TestActor_GetType(t *testing.T) {
 }
 
 func TestEndpoints_UnmarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name    string
+		data    []byte
+		want    Endpoints
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			data:    nil,
+			want:    Endpoints{},
+			wantErr: fmt.Errorf(`cannot parse JSON: cannot parse empty string; unparsed tail: ""`),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := Endpoints{}
+			if err := e.UnmarshalJSON(tt.data); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("UnmarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(e, tt.want) {
+				t.Errorf("UnmarshalJSON() got = %s", cmp.Diff(tt.want, e))
+			}
+		})
+	}
 }
 
 func TestActor_Clean(t *testing.T) {
@@ -294,7 +316,30 @@ func TestActor_MarshalJSON(t *testing.T) {
 }
 
 func TestEndpoints_MarshalJSON(t *testing.T) {
-	t.Skipf("TODO")
+	tests := []struct {
+		name    string
+		sub     Endpoints
+		want    []byte
+		wantErr error
+	}{
+		{
+			name: "nil",
+			sub:  Endpoints{},
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.sub.MarshalJSON()
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("MarshalJSON() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("MarshalJSON() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestPublicKey_MarshalJSON(t *testing.T) {
@@ -378,37 +423,10 @@ func TestPublicKey_MarshalJSON(t *testing.T) {
 	}
 }
 
-func personNilFn(t *testing.T, expected Item) WithActorFn {
-	return func(_ *Actor) error {
-		return nil
-	}
-}
-
-func personIsNotEqual(t *testing.T, expected Item) WithActorFn {
-	return func(p *Person) error {
-		if cmp.Equal(p, expected) {
-			t.Errorf("Person equal assert failed %s", cmp.Diff(expected, p))
-		}
-		return nil
-	}
-}
-
-func personIsEqual(t *testing.T, expected Item) WithActorFn {
-	return func(p *Person) error {
-		if !cmp.Equal(p, expected) {
-			t.Errorf("Person equal assert failed %s", cmp.Diff(expected, p))
-		}
-		return nil
-	}
-}
-
 func TestOnActor(t *testing.T) {
-	testPerson := Actor{
-		ID: "https://example.com",
-	}
 	type args struct {
 		it Item
-		fn func(*testing.T, Item) WithActorFn
+		fn func(*testing.T) WithActorFn
 	}
 	tests := []struct {
 		name     string
@@ -418,34 +436,69 @@ func TestOnActor(t *testing.T) {
 	}{
 		{
 			name: "empty",
-			args: args{nil, personNilFn},
+			args: args{
+				it: nil,
+				fn: func(t *testing.T) WithActorFn {
+					return nil
+				},
+			},
 		},
 		{
-			name:     "single",
-			args:     args{testPerson, personNilFn},
-			expected: &testPerson,
+			name: "single",
+			args: args{
+				it: Actor{ID: "https://example.com"},
+				fn: func(t *testing.T) WithActorFn {
+					return func(actor *Actor) error {
+						return nil
+					}
+				},
+			},
+			expected: &Actor{ID: "https://example.com"},
 		},
 		{
-			name:     "single fails",
-			args:     args{Person{ID: "https://not-equals"}, personIsNotEqual},
-			expected: &testPerson,
+			name: "single fails",
+			args: args{
+				it: Person{ID: "https://not-equals"},
+				fn: func(t *testing.T) WithActorFn {
+					return func(actor *Actor) error {
+						return nil
+					}
+				}},
+			expected: &Actor{ID: "https://example.com"},
 		},
 		{
-			name:     "collectionOfPersons",
-			args:     args{ItemCollection{testPerson, testPerson}, personIsEqual},
-			expected: &testPerson,
+			name: "collectionOfPersons",
+			args: args{
+				it: ItemCollection{
+					Actor{ID: "https://example.com"},
+					Actor{ID: "https://example.com"},
+				},
+				fn: func(t *testing.T) WithActorFn {
+					return func(actor *Actor) error {
+						return nil
+					}
+				},
+			},
+			expected: &Actor{ID: "https://example.com"},
 		},
 		{
-			name:     "collectionOfPersons fails",
-			args:     args{ItemCollection{Person{}, Person{ID: "https://not-equals"}}, personIsNotEqual},
-			expected: &testPerson,
+			name: "collectionOfPersons fails",
+			args: args{
+				it: ItemCollection{Person{}, Person{ID: "https://not-equals"}},
+				fn: func(t *testing.T) WithActorFn {
+					return func(actor *Actor) error {
+						return nil
+					}
+				},
+			},
+			expected: &Actor{ID: "https://example.com"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := OnActor(tt.args.it, tt.args.fn(t, tt.expected))
-			if !cmp.Equal(err, tt.wantErr, cmpopts.EquateErrors()) {
-				t.Errorf("OnPerson() error = %s", cmp.Diff(tt.wantErr, err, cmpopts.EquateErrors()))
+			err := OnActor(tt.args.it, tt.args.fn(t))
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("OnPerson() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
 			}
 		})
 	}
