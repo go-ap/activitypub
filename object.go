@@ -853,18 +853,13 @@ func notEmptyObject(o *Object) bool {
 func CopyObjectProperties(to, from *Object) (*Object, error) {
 	to.ID = from.ID
 	to.Type = from.Type
-	to.Name = replaceIfNaturalLanguageValues(to.Name, from.Name)
-	to.Attachment = replaceIfItem(to.Attachment, from.Attachment)
-	to.AttributedTo = replaceIfItem(to.AttributedTo, from.AttributedTo)
 	to.Audience = replaceIfItemCollection(to.Audience, from.Audience)
+	to.Name = replaceIfNaturalLanguageValues(to.Name, from.Name)
+	to.Summary = replaceIfNaturalLanguageValues(to.Summary, from.Summary)
 	to.Content = replaceIfNaturalLanguageValues(to.Content, from.Content)
+	to.Source = replaceIfSource(to.Source, from.Source)
+	to.AttributedTo = replaceIfItem(to.AttributedTo, from.AttributedTo)
 	to.Context = replaceIfItem(to.Context, from.Context)
-	if len(from.MediaType) > 0 {
-		to.MediaType = from.MediaType
-	}
-	if !from.EndTime.IsZero() {
-		to.EndTime = from.EndTime
-	}
 	to.Generator = replaceIfItem(to.Generator, from.Generator)
 	to.Icon = replaceIfItem(to.Icon, from.Icon)
 	to.Image = replaceIfItem(to.Image, from.Image)
@@ -874,6 +869,16 @@ func CopyObjectProperties(to, from *Object) (*Object, error) {
 	to.Replies = replaceIfItem(to.Replies, from.Replies)
 	to.Likes = replaceIfItem(to.Likes, from.Likes)
 	to.Shares = replaceIfItem(to.Shares, from.Shares)
+	to.URL = replaceIfItem(to.URL, from.URL)
+	to.Attachment = replaceIfItem(to.Attachment, from.Attachment)
+	to.Tag = replaceIfItem(to.Tag, from.Tag)
+	to.To = replaceIfItemCollection(to.To, from.To)
+	to.Bto = replaceIfItemCollection(to.Bto, from.Bto)
+	to.CC = replaceIfItemCollection(to.CC, from.CC)
+	to.BCC = replaceIfItemCollection(to.BCC, from.BCC)
+	if len(from.MediaType) > 0 {
+		to.MediaType = from.MediaType
+	}
 	if !from.Published.IsZero() {
 		to.Published = from.Published
 	}
@@ -883,19 +888,12 @@ func CopyObjectProperties(to, from *Object) (*Object, error) {
 	if !from.StartTime.IsZero() {
 		to.StartTime = from.StartTime
 	}
-	to.Summary = replaceIfNaturalLanguageValues(to.Summary, from.Summary)
-	to.Tag = replaceIfItem(to.Tag, from.Tag)
-	if from.URL != nil {
-		to.URL = from.URL
+	if !from.EndTime.IsZero() {
+		to.EndTime = from.EndTime
 	}
-	to.To = replaceIfItemCollection(to.To, from.To)
-	to.Bto = replaceIfItemCollection(to.Bto, from.Bto)
-	to.CC = replaceIfItemCollection(to.CC, from.CC)
-	to.BCC = replaceIfItemCollection(to.BCC, from.BCC)
 	if from.Duration == 0 {
 		to.Duration = from.Duration
 	}
-	to.Source = replaceIfSource(to.Source, from.Source)
 	return to, nil
 }
 

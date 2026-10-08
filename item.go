@@ -593,7 +593,7 @@ func copyAllItemProperties(to, from ObjectOrLink) (ObjectOrLink, error) {
 	case CollectionType.Match(to.GetType()):
 		o, err := ToCollection(to)
 		if err != nil {
-			return o, err
+			return to, err
 		}
 		n, err := ToCollection(from)
 		if err != nil {
@@ -603,7 +603,7 @@ func copyAllItemProperties(to, from ObjectOrLink) (ObjectOrLink, error) {
 	case CollectionPageType.Match(to.GetType()):
 		o, err := ToCollectionPage(to)
 		if err != nil {
-			return o, err
+			return to, err
 		}
 		n, err := ToCollectionPage(from)
 		if err != nil {
@@ -613,7 +613,7 @@ func copyAllItemProperties(to, from ObjectOrLink) (ObjectOrLink, error) {
 	case OrderedCollectionType.Match(to.GetType()):
 		o, err := ToOrderedCollection(to)
 		if err != nil {
-			return o, err
+			return to, err
 		}
 		n, err := ToOrderedCollection(from)
 		if err != nil {
@@ -623,7 +623,7 @@ func copyAllItemProperties(to, from ObjectOrLink) (ObjectOrLink, error) {
 	case OrderedCollectionPageType.Match(to.GetType()):
 		o, err := ToOrderedCollectionPage(to)
 		if err != nil {
-			return o, err
+			return to, err
 		}
 		n, err := ToOrderedCollectionPage(from)
 		if err != nil {
@@ -633,7 +633,7 @@ func copyAllItemProperties(to, from ObjectOrLink) (ObjectOrLink, error) {
 	case ActorTypes.Match(to.GetType()):
 		o, err := ToActor(to)
 		if err != nil {
-			return o, err
+			return to, err
 		}
 		n, err := ToActor(from)
 		if err != nil {
@@ -643,7 +643,7 @@ func copyAllItemProperties(to, from ObjectOrLink) (ObjectOrLink, error) {
 	case !HasTypes(to) || ObjectTypes.Match(to.GetType()):
 		o, err := ToObject(to)
 		if err != nil {
-			return o, err
+			return to, err
 		}
 		n, err := ToObject(from)
 		if err != nil {

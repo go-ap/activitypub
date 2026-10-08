@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/go-ap/errors"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -1671,6 +1672,7 @@ func TestFlatten(t *testing.T) {
 }
 
 func TestClone(t *testing.T) {
+	iri := IRI("http://example.com")
 	tests := []struct {
 		name string
 		it   Item
@@ -1710,14 +1712,24 @@ func TestClone(t *testing.T) {
 			want: &Object{Type: NoteType},
 		},
 		{
-			name: "*collection",
+			name: "*Collection",
 			it:   &Collection{Type: CollectionType},
 			want: &Collection{Type: CollectionType},
 		},
 		{
-			name: "collection",
+			name: "Collection",
 			it:   Collection{Type: CollectionType},
 			want: &Collection{Type: CollectionType},
+		},
+		{
+			name: "*CollectionPage",
+			it:   &CollectionPage{Type: CollectionPageType},
+			want: &CollectionPage{Type: CollectionPageType},
+		},
+		{
+			name: "CollectionPage",
+			it:   CollectionPage{Type: CollectionPageType},
+			want: &CollectionPage{Type: CollectionPageType},
 		},
 		{
 			name: "*collection with items",
@@ -1779,12 +1791,348 @@ func TestClone(t *testing.T) {
 			it:   IRI("http://example.com"),
 			want: IRI("http://example.com"),
 		},
+		{
+			name: "*IRI",
+			it:   &iri,
+			want: IRI("http://example.com"),
+		},
+		{
+			name: "Link",
+			it:   Link{ID: "http://example.com", Href: "http://example.com#test"},
+			want: &Link{ID: "http://example.com", Href: "http://example.com#test"},
+		},
+		{
+			name: "*Link",
+			it:   &Link{ID: "http://example.com", Href: "http://example.com#test"},
+			want: &Link{ID: "http://example.com", Href: "http://example.com#test"},
+		},
+		{
+			name: "*Place with ID",
+			it:   &Place{ID: "http://example.com"},
+			want: &Place{ID: "http://example.com"},
+		},
+		{
+			name: "Place with ID",
+			it:   Place{ID: "http://example.com"},
+			want: &Place{ID: "http://example.com"},
+		},
+
+		{
+			name: "*Profile with ID",
+			it:   &Profile{ID: "http://example.com"},
+			want: &Profile{ID: "http://example.com"},
+		},
+		{
+			name: "Profile with ID",
+			it:   Profile{ID: "http://example.com"},
+			want: &Profile{ID: "http://example.com"},
+		},
+		{
+			name: "*Relationship with ID",
+			it:   &Relationship{ID: "http://example.com"},
+			want: &Relationship{ID: "http://example.com"},
+		},
+		{
+			name: "Relationship with ID",
+			it:   Relationship{ID: "http://example.com"},
+			want: &Relationship{ID: "http://example.com"},
+		},
+		{
+			name: "*Tombstone with ID",
+			it:   &Tombstone{ID: "http://example.com"},
+			want: &Tombstone{ID: "http://example.com"},
+		},
+		{
+			name: "Tombstone with ID",
+			it:   Tombstone{ID: "http://example.com"},
+			want: &Tombstone{ID: "http://example.com"},
+		},
+		{
+			name: "*Activity with ID",
+			it:   &Activity{ID: "http://example.com"},
+			want: &Activity{ID: "http://example.com"},
+		},
+		{
+			name: "Activity with ID",
+			it:   Activity{ID: "http://example.com"},
+			want: &Activity{ID: "http://example.com"},
+		},
+
+		{
+			name: "*IntransitiveActivity with ID",
+			it:   &IntransitiveActivity{ID: "http://example.com"},
+			want: &IntransitiveActivity{ID: "http://example.com"},
+		},
+		{
+			name: "IntransitiveActivity with ID",
+			it:   IntransitiveActivity{ID: "http://example.com"},
+			want: &IntransitiveActivity{ID: "http://example.com"},
+		},
+		{
+			name: "*Question with ID",
+			it:   &Question{ID: "http://example.com"},
+			want: &Question{ID: "http://example.com"},
+		},
+		{
+			name: "Question with ID",
+			it:   Question{ID: "http://example.com"},
+			want: &Question{ID: "http://example.com"},
+		},
+		{
+			name: "*Actor with ID",
+			it:   &Actor{ID: "http://example.com"},
+			want: &Actor{ID: "http://example.com"},
+		},
+		{
+			name: "Actor with ID",
+			it:   Actor{ID: "http://example.com"},
+			want: &Actor{ID: "http://example.com"},
+		},
+		{
+			name: "*OrderedCollection with ID",
+			it:   &OrderedCollection{ID: "http://example.com"},
+			want: &OrderedCollection{ID: "http://example.com"},
+		},
+		{
+			name: "OrderedCollection with ID",
+			it:   OrderedCollection{ID: "http://example.com"},
+			want: &OrderedCollection{ID: "http://example.com"},
+		},
+		{
+			name: "*OrderedCollectionPage with ID",
+			it:   &OrderedCollectionPage{ID: "http://example.com"},
+			want: &OrderedCollectionPage{ID: "http://example.com"},
+		},
+		{
+			name: "OrderedCollectionPage with ID",
+			it:   OrderedCollectionPage{ID: "http://example.com"},
+			want: &OrderedCollectionPage{ID: "http://example.com"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := Clone(tt.it)
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("Clone() got = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestCopyItemProperties(t *testing.T) {
+	type args struct {
+		to   ObjectOrLink
+		from ObjectOrLink
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    Item
+		wantErr error
+	}{
+		{
+			name:    "nil",
+			args:    args{},
+			want:    nil,
+			wantErr: errors.Errorf("nil object to update"),
+		},
+		{
+			name: "nil from",
+			args: args{
+				to:   &Object{},
+				from: nil,
+			},
+			want:    &Object{},
+			wantErr: errors.Errorf("nil object for update"),
+		},
+		{
+			name: "different ids",
+			args: args{
+				to:   &Object{ID: "http://example.com/1"},
+				from: &Object{ID: "http://example.com/2"},
+			},
+			want:    &Object{ID: "http://example.com/1"},
+			wantErr: errors.Errorf("object IDs don't match"),
+		},
+		{
+			name: "copy to not object",
+			args: args{
+				to:   &Link{ID: "http://example.com/1"},
+				from: &Object{ID: "http://example.com/1"},
+			},
+			want:    &Link{ID: "http://example.com/1"},
+			wantErr: errors.Newf("unable to convert %T to %T", &Link{}, &Object{}),
+		},
+		{
+			name: "copy from not object",
+			args: args{
+				to:   &Object{ID: "http://example.com/1"},
+				from: &Link{ID: "http://example.com/1"},
+			},
+			want:    &Object{ID: "http://example.com/1"},
+			wantErr: errors.Newf("unable to convert %T to %T", &Link{}, &Object{}),
+		},
+		{
+			name: "copy object no types",
+			args: args{
+				to:   &Object{ID: "http://example.com/1"},
+				from: &Object{ID: "http://example.com/1"},
+			},
+			want: &Object{ID: "http://example.com/1"},
+		},
+		{
+			name: "copy object",
+			args: args{
+				to:   &Object{ID: "http://example.com/1", Type: ArticleType},
+				from: &Object{ID: "http://example.com/1", Type: NoteType},
+			},
+			want: &Object{ID: "http://example.com/1", Type: NoteType},
+		},
+
+		{
+			name: "copy to not Actor",
+			args: args{
+				to:   &Link{ID: "http://example.com/1", Type: PersonType},
+				from: &Actor{ID: "http://example.com/1", Type: PersonType},
+			},
+			want:    &Link{ID: "http://example.com/1", Type: PersonType},
+			wantErr: errors.Newf("unable to convert %T to %T", &Link{}, &Actor{}),
+		},
+		{
+			name: "copy from not Actor",
+			args: args{
+				to:   &Actor{ID: "http://example.com/1", Type: PersonType},
+				from: &Link{ID: "http://example.com/1", Type: PersonType},
+			},
+			want:    &Actor{ID: "http://example.com/1", Type: PersonType},
+			wantErr: errors.Newf("unable to convert %T to %T", &Link{}, &Actor{}),
+		},
+		{
+			name: "copy Actor",
+			args: args{
+				to:   &Actor{ID: "http://example.com/1", Type: GroupType},
+				from: &Actor{ID: "http://example.com/1", Type: PersonType},
+			},
+			want: &Actor{ID: "http://example.com/1", Type: PersonType},
+		},
+
+		{
+			name: "copy to not OrderedCollectionPage",
+			args: args{
+				to:   &Link{ID: "http://example.com/1", Type: OrderedCollectionPageType},
+				from: &OrderedCollectionPage{ID: "http://example.com/1", Type: OrderedCollectionPageType},
+			},
+			want:    &Link{ID: "http://example.com/1", Type: OrderedCollectionPageType},
+			wantErr: errors.Newf("unable to convert %T to %T", &Link{}, &OrderedCollectionPage{}),
+		},
+		{
+			name: "copy from not OrderedCollectionPage",
+			args: args{
+				to:   &OrderedCollectionPage{ID: "http://example.com/1", Type: OrderedCollectionPageType},
+				from: &Link{ID: "http://example.com/1", Type: OrderedCollectionPageType},
+			},
+			want:    &OrderedCollectionPage{ID: "http://example.com/1", Type: OrderedCollectionPageType},
+			wantErr: errors.Newf("unable to convert %T to %T", &Link{}, &OrderedCollectionPage{}),
+		},
+		{
+			name: "copy OrderedCollectionPage",
+			args: args{
+				to:   &OrderedCollectionPage{ID: "http://example.com/1", Type: OrderedCollectionPageType},
+				from: &OrderedCollectionPage{ID: "http://example.com/1", Type: OrderedCollectionPageType},
+			},
+			want: &OrderedCollectionPage{ID: "http://example.com/1", Type: OrderedCollectionPageType},
+		},
+
+		{
+			name: "copy to not OrderedCollection",
+			args: args{
+				to:   &Link{ID: "http://example.com/1", Type: OrderedCollectionType},
+				from: &OrderedCollection{ID: "http://example.com/1", Type: OrderedCollectionType},
+			},
+			want:    &Link{ID: "http://example.com/1", Type: OrderedCollectionType},
+			wantErr: errors.Newf("unable to convert %T to %T", &Link{}, &OrderedCollection{}),
+		},
+		{
+			name: "copy from not OrderedCollection",
+			args: args{
+				to:   &OrderedCollection{ID: "http://example.com/1", Type: OrderedCollectionType},
+				from: &Link{ID: "http://example.com/1", Type: OrderedCollectionType},
+			},
+			want:    &OrderedCollection{ID: "http://example.com/1", Type: OrderedCollectionType},
+			wantErr: errors.Newf("unable to convert %T to %T", &Link{}, &OrderedCollection{}),
+		},
+		{
+			name: "copy OrderedCollection",
+			args: args{
+				to:   &OrderedCollection{ID: "http://example.com/1", Type: OrderedCollectionType},
+				from: &OrderedCollection{ID: "http://example.com/1", Type: OrderedCollectionType},
+			},
+			want: &OrderedCollection{ID: "http://example.com/1", Type: OrderedCollectionType},
+		},
+
+		{
+			name: "copy to not CollectionPage",
+			args: args{
+				to:   &Link{ID: "http://example.com/1", Type: CollectionPageType},
+				from: &CollectionPage{ID: "http://example.com/1", Type: CollectionPageType},
+			},
+			want:    &Link{ID: "http://example.com/1", Type: CollectionPageType},
+			wantErr: errors.Newf("unable to convert %T to %T", &Link{}, &CollectionPage{}),
+		},
+		{
+			name: "copy from not CollectionPage",
+			args: args{
+				to:   &CollectionPage{ID: "http://example.com/1", Type: CollectionPageType},
+				from: &Link{ID: "http://example.com/1", Type: CollectionPageType},
+			},
+			want:    &CollectionPage{ID: "http://example.com/1", Type: CollectionPageType},
+			wantErr: errors.Newf("unable to convert %T to %T", &Link{}, &CollectionPage{}),
+		},
+		{
+			name: "copy CollectionPage",
+			args: args{
+				to:   &CollectionPage{ID: "http://example.com/1", Type: CollectionPageType},
+				from: &CollectionPage{ID: "http://example.com/1", Type: CollectionPageType},
+			},
+			want: &CollectionPage{ID: "http://example.com/1", Type: CollectionPageType},
+		},
+
+		{
+			name: "copy to not Collection",
+			args: args{
+				to:   &Link{ID: "http://example.com/1", Type: CollectionType},
+				from: &Collection{ID: "http://example.com/1", Type: CollectionType},
+			},
+			want:    &Link{ID: "http://example.com/1", Type: CollectionType},
+			wantErr: errors.Newf("unable to convert %T to %T", &Link{}, &Collection{}),
+		},
+		{
+			name: "copy from not Collection",
+			args: args{
+				to:   &Collection{ID: "http://example.com/1", Type: CollectionType},
+				from: &Link{ID: "http://example.com/1", Type: CollectionType},
+			},
+			want:    &Collection{ID: "http://example.com/1", Type: CollectionType},
+			wantErr: errors.Newf("unable to convert %T to %T", &Link{}, &Collection{}),
+		},
+		{
+			name: "copy Collection",
+			args: args{
+				to:   &Collection{ID: "http://example.com/1", Type: CollectionType},
+				from: &Collection{ID: "http://example.com/1", Type: CollectionType},
+			},
+			want: &Collection{ID: "http://example.com/1", Type: CollectionType},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := CopyItemProperties(tt.args.to, tt.args.from)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("CopyItemProperties() error = %s", cmp.Diff(tt.wantErr, err))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("CopyItemProperties() got = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

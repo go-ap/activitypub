@@ -61,9 +61,8 @@ func TestItemCollection_Append(t *testing.T) {
 			want:     ItemCollection{&Object{ID: "test"}, &Object{ID: "test123"}},
 		},
 		{
-			name: "non_empty_collection_contained_item_not_first_pos",
-			items: ItemCollection{&Object{ID: "test123"}, &Object{ID: "test"}, &Object{ID: "test321"},
-			},
+			name:     "non_empty_collection_contained_item_not_first_pos",
+			items:    ItemCollection{&Object{ID: "test123"}, &Object{ID: "test"}, &Object{ID: "test321"}},
 			toAppend: ItemCollection{&Object{ID: "test"}},
 			want:     ItemCollection{&Object{ID: "test123"}, &Object{ID: "test321"}, &Object{ID: "test"}},
 		},
