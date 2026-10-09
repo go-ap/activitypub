@@ -3,7 +3,7 @@ package activitypub
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"strconv"
 	"time"
 
 	"git.sr.ht/~mariusor/go-xsd-duration"
@@ -66,19 +66,19 @@ func JSONWriteNaturalLanguageProp(b *bytes.Buffer, n string, nl NaturalLanguageV
 }
 
 func JSONWriteStringProp(b *bytes.Buffer, n string, s string, needsComma bool) (notEmpty bool) {
-	return JSONWriteProp(b, n, []byte(fmt.Sprintf(`"%s"`, s)), needsComma)
+	return JSONWriteProp(b, n, []byte(`"`+s+`"`), needsComma)
 }
 
 func JSONWriteBoolProp(b *bytes.Buffer, n string, t bool, needsComma bool) (notEmpty bool) {
-	return JSONWriteProp(b, n, []byte(fmt.Sprintf(`"%t"`, t)), needsComma)
+	return JSONWriteProp(b, n, []byte(strconv.FormatBool(t)), needsComma)
 }
 
 func JSONWriteIntProp(b *bytes.Buffer, n string, d int64, needsComma bool) (notEmpty bool) {
-	return JSONWriteProp(b, n, []byte(fmt.Sprintf("%d", d)), needsComma)
+	return JSONWriteProp(b, n, []byte(strconv.FormatInt(d, 10)), needsComma)
 }
 
 func JSONWriteFloatProp(b *bytes.Buffer, n string, f float64, needsComma bool) (notEmpty bool) {
-	return JSONWriteProp(b, n, []byte(fmt.Sprintf("%f", f)), needsComma)
+	return JSONWriteProp(b, n, []byte(strconv.FormatFloat(f, 'f', 5, 64)), needsComma)
 }
 
 const RFC3339Milli = "2006-01-02T15:04:05.000Z07:00"
@@ -105,11 +105,8 @@ func JSONWriteIRIProp(b *bytes.Buffer, n string, i LinkOrIRI, needsComma bool) (
 	if IsNil(i) {
 		return false
 	}
-	url := i.GetLink().String()
-	if len(url) == 0 {
-		return false
-	}
-	return JSONWriteStringProp(b, n, url, needsComma)
+	url := i.GetLink()
+	return JSONWriteStringProp(b, n, url.String(), needsComma)
 }
 
 func JSONWriteItemProp(b *bytes.Buffer, n string, i Item, needsComma bool) (notEmpty bool) {
@@ -368,7 +365,7 @@ func JSONWriteQuestionValue(b *bytes.Buffer, q Question) (notEmpty bool) {
 	if q.AnyOf != nil {
 		notEmpty = JSONWriteItemProp(b, "anyOf", q.AnyOf, notEmpty) || notEmpty
 	}
-	if notEmpty || q.Closed {
+	if q.Closed {
 		notEmpty = JSONWriteBoolProp(b, "closed", q.Closed, notEmpty) || notEmpty
 	}
 	return notEmpty
@@ -405,7 +402,7 @@ func JSONWriteLinkValue(b *bytes.Buffer, l Link) (notEmpty bool) {
 		notEmpty = JSONWriteIntProp(b, "width", int64(l.Width), notEmpty) || notEmpty
 	}
 	if l.Preview != nil {
-		notEmpty = JSONWriteItemProp(b, "rel", l.Preview, notEmpty) || notEmpty
+		notEmpty = JSONWriteItemProp(b, "preview", l.Preview, notEmpty) || notEmpty
 	}
 	if v, err := l.Href.MarshalJSON(); err == nil && len(v) > 0 {
 		notEmpty = JSONWriteProp(b, "href", v, notEmpty) || notEmpty

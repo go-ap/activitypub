@@ -1,12 +1,12 @@
 package activitypub
 
 import (
-	"fmt"
 	"net/url"
 	"strings"
 	"time"
 
 	"git.sr.ht/~mariusor/go-xsd-duration"
+	"github.com/go-ap/errors"
 	"github.com/valyala/fastjson"
 )
 
@@ -188,17 +188,28 @@ func JSONLoadItem(val *fastjson.Value) (Item, error) {
 	if val == nil {
 		return nil, nil
 	}
-	typ := JSONGetTypes(val, "type")
-	if typ == nil {
-		typ = NilType
-	}
 
-	if EmptyTypes(typ.AsTypes()...) && val.Type() == fastjson.TypeString {
-		// try to see if it's an IRI
+	switch val.Type() {
+	case fastjson.TypeString:
 		if i, ok := asIRI(val); ok {
+			// try to see if it's an IRI
 			return i, nil
 		}
+	case fastjson.TypeArray:
+		it, _ := JSONItemsFn(val)
+		return it, nil
+	case fastjson.TypeFalse, fastjson.TypeNumber:
+		return nil, errors.Newf("unsupported JSON value for loading item")
+	case fastjson.TypeObject:
+		fallthrough
+	default:
 	}
+
+	var typ Typer = NilType
+	if val.Exists("type") {
+		typ = JSONGetTypes(val, "type")
+	}
+
 	i, err := ItemTyperFunc(typ)
 	if err != nil || IsNil(i) {
 		return nil, nil
@@ -246,7 +257,11 @@ func JSONLoadItem(val *fastjson.Value) (Item, error) {
 	case NilType.Match(typ):
 		if looksLikeALink(val) {
 			// NOTE(marius): this handles Links without a type
-			return JSONLoadLink(val)
+			i = new(Link)
+			err = OnLink(i, func(l *Link) error {
+				return JSONLoadLink(val, l)
+			})
+			return i, err
 		}
 		err = OnObject(i, func(ob *Object) error {
 			// NOTE(marius): this handles Tags which usually don't have types
@@ -260,7 +275,7 @@ func JSONLoadItem(val *fastjson.Value) (Item, error) {
 		// NOTE(marius): if we have a clear link type, we override
 		i = new(Link)
 		err = OnLink(i, func(l *Link) error {
-			return jsonLoadToLink(val, l)
+			return JSONLoadLink(val, l)
 		})
 	case ActivityVocabularyTypes{ActivityType, AcceptType, AddType, AnnounceType, BlockType, CreateType, DeleteType, DislikeType,
 		FlagType, FollowType, IgnoreType, InviteType, JoinType, LeaveType, LikeType, ListenType, MoveType, OfferType,
@@ -278,7 +293,7 @@ func JSONLoadItem(val *fastjson.Value) (Item, error) {
 		})
 	default:
 		if JSONItemUnmarshal == nil {
-			return nil, fmt.Errorf("unable to unmarshal custom type %s, you need to set a correct function for JSONItemUnmarshal", typ)
+			return nil, errors.Newf("unable to unmarshal custom type %q, you need to set a correct function for JSONItemUnmarshal", typ)
 		}
 		err = JSONItemUnmarshal(typ, val, i)
 	}
@@ -290,28 +305,6 @@ func JSONLoadItem(val *fastjson.Value) (Item, error) {
 	}
 
 	return i, nil
-}
-
-func JSONUnmarshalToItem(val *fastjson.Value) Item {
-	var (
-		i   Item
-		err error
-	)
-	switch val.Type() {
-	case fastjson.TypeArray:
-		i, err = JSONItemsFn(val)
-	case fastjson.TypeObject:
-		i, err = JSONLoadItem(val)
-	case fastjson.TypeString:
-		if iri, ok := asIRI(val); ok {
-			// try to see if it's an IRI
-			i = iri
-		}
-	}
-	if err != nil {
-		return nil
-	}
-	return i
 }
 
 func asIRI(val *fastjson.Value) (IRI, bool) {
@@ -328,41 +321,20 @@ func asIRI(val *fastjson.Value) (IRI, bool) {
 }
 
 func JSONGetItem(val *fastjson.Value, prop string) Item {
-	if val == nil {
+	if val == nil || !val.Exists(prop) {
 		return nil
 	}
-	if val = val.Get(prop); val == nil {
-		return nil
-	}
-	switch val.Type() {
-	case fastjson.TypeString:
-		if i, ok := asIRI(val); ok {
-			// try to see if it's an IRI
-			return i
-		}
-	case fastjson.TypeArray:
-		it, _ := JSONItemsFn(val)
-		return it
-	case fastjson.TypeObject:
-		it, _ := JSONLoadItem(val)
-		return it
-	case fastjson.TypeNumber:
-		fallthrough
-	case fastjson.TypeNull:
-		fallthrough
-	default:
-		return nil
-	}
-	return nil
+
+	it, _ := JSONLoadItem(val.Get(prop))
+	return it
 }
 
 func JSONGetURIItem(val *fastjson.Value, prop string) Item {
-	if val == nil {
+	if val == nil || !val.Exists(prop) {
 		return nil
 	}
-	if val = val.Get(prop); val == nil {
-		return nil
-	}
+
+	val = val.Get(prop)
 	switch val.Type() {
 	case fastjson.TypeObject:
 		if it, _ := JSONLoadItem(val); it != nil {
@@ -374,6 +346,7 @@ func JSONGetURIItem(val *fastjson.Value, prop string) Item {
 		}
 	case fastjson.TypeString:
 		return IRI(val.GetStringBytes())
+	default:
 	}
 
 	return nil
@@ -431,7 +404,7 @@ func UnmarshalJSON(data []byte) (Item, error) {
 	if err != nil {
 		return nil, err
 	}
-	return JSONUnmarshalToItem(val), nil
+	return JSONLoadItem(val)
 }
 
 func GetItemByType(typ Typer) (Item, error) {
@@ -496,6 +469,9 @@ func JSONGetActorEndpoints(val *fastjson.Value, prop string) *Endpoints {
 }
 
 func JSONLoadObject(val *fastjson.Value, o *Object) error {
+	if val == nil {
+		return nil
+	}
 	o.ID = JSONGetIRI(val, "id")
 	o.Type = JSONGetTypes(val, "type")
 	o.Name = JSONGetNaturalLanguageField(val, "name")
@@ -531,6 +507,9 @@ func JSONLoadObject(val *fastjson.Value, o *Object) error {
 }
 
 func JSONLoadIntransitiveActivity(val *fastjson.Value, i *IntransitiveActivity) error {
+	if val == nil {
+		return nil
+	}
 	i.Actor = JSONGetItem(val, "actor")
 	i.Target = JSONGetItem(val, "target")
 	i.Result = JSONGetItem(val, "result")
@@ -542,6 +521,9 @@ func JSONLoadIntransitiveActivity(val *fastjson.Value, i *IntransitiveActivity) 
 }
 
 func JSONLoadActivity(val *fastjson.Value, a *Activity) error {
+	if val == nil {
+		return nil
+	}
 	a.Object = JSONGetItem(val, "object")
 	return OnIntransitiveActivity(a, func(i *IntransitiveActivity) error {
 		return JSONLoadIntransitiveActivity(val, i)
@@ -549,6 +531,9 @@ func JSONLoadActivity(val *fastjson.Value, a *Activity) error {
 }
 
 func JSONLoadQuestion(val *fastjson.Value, q *Question) error {
+	if val == nil {
+		return nil
+	}
 	q.OneOf = JSONGetItem(val, "oneOf")
 	q.AnyOf = JSONGetItem(val, "anyOf")
 	q.Closed = JSONGetBoolean(val, "closed")
@@ -558,6 +543,9 @@ func JSONLoadQuestion(val *fastjson.Value, q *Question) error {
 }
 
 func JSONLoadActor(val *fastjson.Value, a *Actor) error {
+	if val == nil {
+		return nil
+	}
 	a.PreferredUsername = JSONGetNaturalLanguageField(val, "preferredUsername")
 	a.Followers = JSONGetItem(val, "followers")
 	a.Following = JSONGetItem(val, "following")
@@ -573,6 +561,9 @@ func JSONLoadActor(val *fastjson.Value, a *Actor) error {
 }
 
 func JSONLoadCollection(val *fastjson.Value, c *Collection) error {
+	if val == nil {
+		return nil
+	}
 	c.Current = JSONGetItem(val, "current")
 	c.First = JSONGetItem(val, "first")
 	c.Last = JSONGetItem(val, "last")
@@ -584,6 +575,9 @@ func JSONLoadCollection(val *fastjson.Value, c *Collection) error {
 }
 
 func JSONLoadCollectionPage(val *fastjson.Value, c *CollectionPage) error {
+	if val == nil {
+		return nil
+	}
 	c.Next = JSONGetItem(val, "next")
 	c.Prev = JSONGetItem(val, "prev")
 	c.PartOf = JSONGetItem(val, "partOf")
@@ -593,6 +587,9 @@ func JSONLoadCollectionPage(val *fastjson.Value, c *CollectionPage) error {
 }
 
 func JSONLoadOrderedCollection(val *fastjson.Value, c *OrderedCollection) error {
+	if val == nil {
+		return nil
+	}
 	c.Current = JSONGetItem(val, "current")
 	c.First = JSONGetItem(val, "first")
 	c.Last = JSONGetItem(val, "last")
@@ -604,6 +601,9 @@ func JSONLoadOrderedCollection(val *fastjson.Value, c *OrderedCollection) error 
 }
 
 func JSONLoadOrderedCollectionPage(val *fastjson.Value, c *OrderedCollectionPage) error {
+	if val == nil {
+		return nil
+	}
 	c.Next = JSONGetItem(val, "next")
 	c.Prev = JSONGetItem(val, "prev")
 	c.PartOf = JSONGetItem(val, "partOf")
@@ -614,6 +614,9 @@ func JSONLoadOrderedCollectionPage(val *fastjson.Value, c *OrderedCollectionPage
 }
 
 func JSONLoadPlace(val *fastjson.Value, p *Place) error {
+	if val == nil {
+		return nil
+	}
 	p.Accuracy = JSONGetFloat(val, "accuracy")
 	p.Altitude = JSONGetFloat(val, "altitude")
 	p.Latitude = JSONGetFloat(val, "latitude")
@@ -626,6 +629,9 @@ func JSONLoadPlace(val *fastjson.Value, p *Place) error {
 }
 
 func JSONLoadProfile(val *fastjson.Value, p *Profile) error {
+	if val == nil {
+		return nil
+	}
 	p.Describes = JSONGetItem(val, "describes")
 	return OnObject(p, func(o *Object) error {
 		return JSONLoadObject(val, o)
@@ -633,6 +639,9 @@ func JSONLoadProfile(val *fastjson.Value, p *Profile) error {
 }
 
 func JSONLoadRelationship(val *fastjson.Value, r *Relationship) error {
+	if val == nil {
+		return nil
+	}
 	r.Subject = JSONGetItem(val, "subject")
 	r.Object = JSONGetItem(val, "object")
 	r.Relationship = JSONGetItem(val, "relationship")
@@ -642,14 +651,20 @@ func JSONLoadRelationship(val *fastjson.Value, r *Relationship) error {
 }
 
 func JSONLoadTombstone(val *fastjson.Value, t *Tombstone) error {
-	t.FormerType = ActivityVocabularyType(JSONGetString(val, "formerType"))
+	if val == nil {
+		return nil
+	}
+	t.FormerType = JSONGetTypes(val, "formerType")
 	t.Deleted = JSONGetTime(val, "deleted")
 	return OnObject(t, func(o *Object) error {
 		return JSONLoadObject(val, o)
 	})
 }
 
-func jsonLoadToLink(val *fastjson.Value, l *Link) error {
+func JSONLoadLink(val *fastjson.Value, l *Link) error {
+	if val == nil {
+		return nil
+	}
 	l.ID = JSONGetIRI(val, "id")
 	l.Type = JSONGetTypes(val, "type")
 	l.MediaType = JSONGetMimeType(val, "mediaType")
@@ -673,11 +688,6 @@ func jsonLoadToLink(val *fastjson.Value, l *Link) error {
 		l.Rel = rel
 	}
 	return nil
-}
-
-func JSONLoadLink(val *fastjson.Value) (Item, error) {
-	l := new(Link)
-	return l, jsonLoadToLink(val, l)
 }
 
 func JSONLoadPublicKey(val *fastjson.Value, p *PublicKey) error {

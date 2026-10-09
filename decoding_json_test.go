@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-ap/errors"
 	"github.com/google/go-cmp/cmp"
 	"github.com/valyala/fastjson"
 )
@@ -340,18 +341,178 @@ func TestJSONGetIRI(t *testing.T) {
 }
 
 func TestJSONGetItem(t *testing.T) {
-	t.Skipf("TODO")
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want Item
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{}`)
+					return val
+				}(),
+			},
+			want: nil,
+		},
+		{
+			name: "prop not found",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"something":{}}`)
+					return val
+				}(),
+				prop: "not-there",
+			},
+			want: nil,
+		},
+
+		{
+			name: "number",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"here":321}`)
+					return val
+				}(),
+				prop: "here",
+			},
+			want: nil,
+		},
+
+		{
+			name: "object is nil",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"here":{}}`)
+					return val
+				}(),
+				prop: "here",
+			},
+			want: nil,
+		},
+
+		{
+			name: "object with id",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"here":{"id":"http://example.com"}}`)
+					return val
+				}(),
+				prop: "here",
+			},
+			want: &Object{ID: "http://example.com"},
+		},
+
+		{
+			name: "item collection",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"here":[{"id":"http://example.com/one"},{"id":"http://example.com/two"}]}`)
+					return val
+				}(),
+				prop: "here",
+			},
+			want: ItemCollection{
+				&Object{ID: "http://example.com/one"},
+				&Object{ID: "http://example.com/two"},
+			},
+		},
+
+		{
+			name: "iris",
+			args: args{
+				val: func() *fastjson.Value {
+					val, _ := fastjson.Parse(`{"here":["http://example.com/one","http://example.com/two"]}`)
+					return val
+				}(),
+				prop: "here",
+			},
+			want: ItemCollection{
+				IRI("http://example.com/one"),
+				IRI("http://example.com/two"),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetItem(tt.args.val, tt.args.prop); !cmp.Equal(got, tt.want) {
+				t.Errorf("JSONGetItem() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestJSONGetItems(t *testing.T) {
 }
 
 func TestJSONGetLangRefField(t *testing.T) {
-	t.Skipf("TODO")
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want LangRef
+	}{
+		{
+			name: "found-value",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": "fr"}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: French,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetLangRefField(tt.args.val, tt.args.prop); !got.Equal(tt.want) {
+				t.Errorf("JSONGetLangRefField() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestJSONGetMimeType(t *testing.T) {
-	t.Skipf("TODO")
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want MimeType
+	}{
+		{
+			name: "found-value",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": "not-a-mime-type"}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: MimeType("not-a-mime-type"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetMimeType(tt.args.val, tt.args.prop); !cmp.Equal(got, tt.want) {
+				t.Errorf("JSONGetMimeType() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestJSONGetNaturalLanguageField(t *testing.T) {
@@ -556,7 +717,82 @@ func TestJSONGetTypes(t *testing.T) {
 }
 
 func TestJSONGetURIItem(t *testing.T) {
-	t.Skipf("TODO")
+	type args struct {
+		val  *fastjson.Value
+		prop string
+	}
+	tests := []struct {
+		name string
+		args args
+		want Item
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			args: args{
+				val:  &fastjson.Value{},
+				prop: "not-there",
+			},
+			want: nil,
+		},
+
+		{
+			name: "invalid-type",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": false}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: nil,
+		},
+
+		{
+			name: "found-value",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": "not-really-an-iri"}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: IRI("not-really-an-iri"),
+		},
+
+		{
+			name: "IRIs",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": ["http://example.com/one","http://example.com/two"]}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: ItemCollection{IRI("http://example.com/one"), IRI("http://example.com/two")},
+		},
+
+		{
+			name: "object",
+			args: args{
+				val: func() *fastjson.Value {
+					v, _ := fastjson.Parse(`{"there": {"id":"http://example.com/one"}}`)
+					return v
+				}(),
+				prop: "there",
+			},
+			want: &Object{ID: "http://example.com/one"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JSONGetURIItem(tt.args.val, tt.args.prop); !cmp.Equal(got, tt.want) {
+				t.Errorf("JSONGetURIItem() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
 }
 
 func TestJSONUnmarshalToItem(t *testing.T) {
@@ -865,6 +1101,39 @@ func TestJSONGetPublicKey(t *testing.T) {
 	}
 }
 
+func TestJSONLoadObject(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    Object
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: Object{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sub := Object{}
+			if err := JSONLoadObject(tt.val, &sub); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadObject() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(sub, tt.want) {
+				t.Errorf("JSONLoadObject() got = %s", cmp.Diff(tt.want, sub))
+			}
+		})
+	}
+}
+
 func TestJSONLoadActor(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -894,6 +1163,740 @@ func TestJSONLoadActor(t *testing.T) {
 			}
 			if !cmp.Equal(act, tt.want) {
 				t.Errorf("JSONLoadActor() got = %s", cmp.Diff(tt.want, act))
+			}
+		})
+	}
+}
+
+func TestJSONLoadPublicKey(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    PublicKey
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: PublicKey{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			act := PublicKey{}
+			err := JSONLoadPublicKey(tt.val, &act)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadPublicKey() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(act, tt.want) {
+				t.Errorf("JSONLoadPublicKey() got = %s", cmp.Diff(tt.want, act))
+			}
+		})
+	}
+}
+
+func TestJSONLoadActivity(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    Activity
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: Activity{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			q := Activity{}
+			if err := JSONLoadActivity(tt.val, &q); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadActivity() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(q, tt.want) {
+				t.Errorf("JSONLoadActivity() got = %s", cmp.Diff(tt.want, q))
+			}
+		})
+	}
+}
+
+func TestJSONLoadIntransitiveActivity(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    IntransitiveActivity
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: IntransitiveActivity{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			q := IntransitiveActivity{}
+			if err := JSONLoadIntransitiveActivity(tt.val, &q); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadIntransitiveActivity() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(q, tt.want) {
+				t.Errorf("JSONLoadIntransitiveActivity() got = %s", cmp.Diff(tt.want, q))
+			}
+		})
+	}
+}
+
+func TestJSONLoadQuestion(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    Question
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: Question{},
+		},
+
+		{
+			name: "with oneOf is an iri",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{"oneOf":"http://example.com"}`)
+				return val
+			}(),
+			want: Question{OneOf: IRI("http://example.com")},
+		},
+		{
+			name: "with oneOf is multiple iris",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{"oneOf":["http://example.com/1","http://example.com/2"]}`)
+				return val
+			}(),
+			want: Question{OneOf: ItemCollection{IRI("http://example.com/1"), IRI("http://example.com/2")}},
+		},
+		{
+			name: "with oneOf is multiple items",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{"oneOf":["http://example.com/1",{"id":"http://example.com/2"}]}`)
+				return val
+			}(),
+			want: Question{OneOf: ItemCollection{IRI("http://example.com/1"), &Object{ID: "http://example.com/2"}}},
+		},
+
+		{
+			name: "with anyOf is an iri",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{"anyOf":"http://example.com"}`)
+				return val
+			}(),
+			want: Question{AnyOf: IRI("http://example.com")},
+		},
+
+		{
+			name: "with closed",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{"closed":true}`)
+				return val
+			}(),
+			want: Question{Closed: true},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			q := Question{}
+			if err := JSONLoadQuestion(tt.val, &q); !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadQuestion() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+			}
+			if !cmp.Equal(q, tt.want) {
+				t.Errorf("JSONLoadQuestion() got = %s", cmp.Diff(tt.want, q))
+			}
+		})
+	}
+}
+
+func TestJSONLoadCollection(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    Collection
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: Collection{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			act := Collection{}
+			err := JSONLoadCollection(tt.val, &act)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadCollection() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(act, tt.want) {
+				t.Errorf("JSONLoadCollection() got = %s", cmp.Diff(tt.want, act))
+			}
+		})
+	}
+}
+
+func TestJSONLoadCollectionPage(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    CollectionPage
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: CollectionPage{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			act := CollectionPage{}
+			err := JSONLoadCollectionPage(tt.val, &act)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadCollectionPage() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(act, tt.want) {
+				t.Errorf("JSONLoadCollectionPage() got = %s", cmp.Diff(tt.want, act))
+			}
+		})
+	}
+}
+
+func TestJSONLoadOrderedCollection(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    OrderedCollection
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: OrderedCollection{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			act := OrderedCollection{}
+			err := JSONLoadOrderedCollection(tt.val, &act)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadOrderedCollection() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(act, tt.want) {
+				t.Errorf("JSONLoadOrderedCollection() got = %s", cmp.Diff(tt.want, act))
+			}
+		})
+	}
+}
+
+func TestJSONLoadOrderedCollectionPage(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    OrderedCollectionPage
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: OrderedCollectionPage{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			act := OrderedCollectionPage{}
+			err := JSONLoadOrderedCollectionPage(tt.val, &act)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadOrderedCollectionPage() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(act, tt.want) {
+				t.Errorf("JSONLoadOrderedCollectionPage() got = %s", cmp.Diff(tt.want, act))
+			}
+		})
+	}
+}
+
+func TestJSONLoadProfile(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    Profile
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: Profile{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			pr := Profile{}
+			err := JSONLoadProfile(tt.val, &pr)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadProfile() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(pr, tt.want) {
+				t.Errorf("JSONLoadProfile() got = %s", cmp.Diff(tt.want, pr))
+			}
+		})
+	}
+}
+
+func TestJSONLoadPlace(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    Place
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: Place{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			act := Place{}
+			err := JSONLoadPlace(tt.val, &act)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadPlace() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(act, tt.want) {
+				t.Errorf("JSONLoadPlace() got = %s", cmp.Diff(tt.want, act))
+			}
+		})
+	}
+}
+
+func TestJSONLoadRelationship(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    Relationship
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: Relationship{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			act := Relationship{}
+			err := JSONLoadRelationship(tt.val, &act)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadRelationship() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(act, tt.want) {
+				t.Errorf("JSONLoadRelationship() got = %s", cmp.Diff(tt.want, act))
+			}
+		})
+	}
+}
+
+func TestJSONLoadTombstone(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    Tombstone
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: Tombstone{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			act := Tombstone{}
+			err := JSONLoadTombstone(tt.val, &act)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadTombstone() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(act, tt.want) {
+				t.Errorf("JSONLoadTombstone() got = %s", cmp.Diff(tt.want, act))
+			}
+		})
+	}
+}
+
+func TestJSONLoadLink(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    Link
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{}`)
+				return val
+			}(),
+			want: Link{},
+		},
+
+		{
+			name: "with height",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{"height":3333}`)
+				return val
+			}(),
+			want: Link{Height: 3333},
+		},
+
+		{
+			name: "with width",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{"width":777}`)
+				return val
+			}(),
+			want: Link{Width: 777},
+		},
+
+		{
+			name: "with href",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{"href":"http://example.com/href"}`)
+				return val
+			}(),
+			want: Link{Href: "http://example.com/href"},
+		},
+
+		{
+			name: "with hrefLang",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{"hrefLang":"it"}`)
+				return val
+			}(),
+			want: Link{HrefLang: Italian},
+		},
+
+		{
+			name: "with rel",
+			val: func() *fastjson.Value {
+				val, _ := fastjson.Parse(`{"rel":"alternate"}`)
+				return val
+			}(),
+			want: Link{Rel: "alternate"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			act := Link{}
+			err := JSONLoadLink(tt.val, &act)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadLink() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(act, tt.want) {
+				t.Errorf("JSONLoadLink() got = %s", cmp.Diff(tt.want, act))
+			}
+		})
+	}
+}
+
+func TestJSONLoadItem(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     *fastjson.Value
+		want    Item
+		wantErr error
+	}{
+		{
+			name: "nil",
+		},
+		{
+			name: "empty",
+			val:  &fastjson.Value{},
+			want: nil,
+		},
+
+		{
+			name: "invalid-type",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`false`)
+				return v
+			}(),
+			want:    nil,
+			wantErr: errors.Newf("unsupported JSON value for loading item"),
+		},
+
+		{
+			name: "IRI",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`"http://example.com"`)
+				return v
+			}(),
+			want: IRI("http://example.com"),
+		},
+
+		{
+			name: "IRIs",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`["http://example.com/one","http://example.com/two"]`)
+				return v
+			}(),
+			want: ItemCollection{IRI("http://example.com/one"), IRI("http://example.com/two")},
+		},
+
+		{
+			name: "object",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"id":"http://example.com/one"}`)
+				return v
+			}(),
+			want: &Object{ID: "http://example.com/one"},
+		},
+
+		{
+			name: "unknown type",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"sssdfgh"}`)
+				return v
+			}(),
+			wantErr: errors.Newf(`unable to unmarshal custom type "sssdfgh", you need to set a correct function for JSONItemUnmarshal`),
+		},
+
+		{
+			name: "collection",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"Collection"}`)
+				return v
+			}(),
+			want: &Collection{Type: CollectionType},
+		},
+		{
+			name: "collection page",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"CollectionPage"}`)
+				return v
+			}(),
+			want: &CollectionPage{Type: CollectionPageType},
+		},
+
+		{
+			name: "ordered collection",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"OrderedCollection"}`)
+				return v
+			}(),
+			want: &OrderedCollection{Type: OrderedCollectionType},
+		},
+		{
+			name: "ordered collection page",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"OrderedCollectionPage"}`)
+				return v
+			}(),
+			want: &OrderedCollectionPage{Type: OrderedCollectionPageType},
+		},
+
+		{
+			name: "nil type with id",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"id":"http://example.com"}`)
+				return v
+			}(),
+			want: &Object{ID: "http://example.com"},
+		},
+		{
+			name: "nil type looks like a link",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"href":"http://example.com"}`)
+				return v
+			}(),
+			want: &Link{Href: "http://example.com"},
+		},
+
+		{
+			name: "Link",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"Link"}`)
+				return v
+			}(),
+			want: &Link{Type: LinkType},
+		},
+
+		{
+			name: "Place",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"Place"}`)
+				return v
+			}(),
+			want: &Place{Type: PlaceType},
+		},
+
+		{
+			name: "Profile",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"Profile"}`)
+				return v
+			}(),
+			want: &Profile{Type: ProfileType},
+		},
+
+		{
+			name: "Relationship",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"Relationship"}`)
+				return v
+			}(),
+			want: &Relationship{Type: RelationshipType},
+		},
+
+		{
+			name: "Tombstone",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"Tombstone"}`)
+				return v
+			}(),
+			want: &Tombstone{Type: TombstoneType},
+		},
+
+		{
+			name: "Question",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"Question"}`)
+				return v
+			}(),
+			want: &Question{Type: QuestionType},
+		},
+
+		{
+			name: "Activity",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"Block"}`)
+				return v
+			}(),
+			want: &Activity{Type: BlockType},
+		},
+
+		{
+			name: "IntransitiveActivity",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"Travel"}`)
+				return v
+			}(),
+			want: &IntransitiveActivity{Type: TravelType},
+		},
+
+		{
+			name: "Actor",
+			val: func() *fastjson.Value {
+				v, _ := fastjson.Parse(`{"type":"Group"}`)
+				return v
+			}(),
+			want: &Actor{Type: GroupType},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := JSONLoadItem(tt.val)
+			if !cmp.Equal(err, tt.wantErr, EquateWeakErrors) {
+				t.Errorf("JSONLoadItem() error = %s", cmp.Diff(tt.wantErr, err, EquateWeakErrors))
+				return
+			}
+			if !cmp.Equal(got, tt.want) {
+				t.Errorf("JSONLoadItem() got = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

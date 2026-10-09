@@ -9,23 +9,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func Test_JSONWrite(t *testing.T) {
-	type args struct {
-		b *[]byte
-		c []byte
-	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-		})
-	}
-}
-
 func Test_JSONWriteActivity(t *testing.T) {
 	type args struct {
 		b *bytes.Buffer
@@ -37,7 +20,39 @@ func Test_JSONWriteActivity(t *testing.T) {
 		want         []byte
 		wantNotEmpty bool
 	}{
-		// TODO: Add test cases.
+		{
+			name:         "empty",
+			args:         args{b: &bytes.Buffer{}},
+			wantNotEmpty: false,
+		},
+		{
+			name: "with id",
+			args: args{
+				a: Activity{ID: "http://example.com"},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"id":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item object",
+			args: args{
+				a: Activity{Object: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"object":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi item object",
+			args: args{
+				a: Activity{Object: ItemCollection{IRI("http://example.com"), &Actor{ID: "http://example.com/~jdoe"}}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"object":["http://example.com",{"id":"http://example.com/~jdoe"}]`),
+			wantNotEmpty: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -64,7 +79,35 @@ func Test_JSONWriteBoolProp(t *testing.T) {
 		want         []byte
 		wantNotEmpty bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "empty",
+			args: args{
+				b: &bytes.Buffer{},
+			},
+			wantNotEmpty: false,
+		},
+		{
+			name: "false",
+			args: args{
+				b:          &bytes.Buffer{},
+				n:          "test",
+				t:          false,
+				writeComma: false,
+			},
+			want:         []byte(`"test":false`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "true",
+			args: args{
+				b:          &bytes.Buffer{},
+				n:          "test",
+				t:          true,
+				writeComma: false,
+			},
+			want:         []byte(`"test":true`),
+			wantNotEmpty: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -74,22 +117,6 @@ func Test_JSONWriteBoolProp(t *testing.T) {
 			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
 				t.Errorf("JSONWriteBoolProp() = got '%s', expected '%s'", got, tt.want)
 			}
-		})
-	}
-}
-
-func Test_JSONWriteComma(t *testing.T) {
-	type args struct {
-		b *[]byte
-	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
 		})
 	}
 }
@@ -107,7 +134,24 @@ func Test_JSONWriteDurationProp(t *testing.T) {
 		want         []byte
 		wantNotEmpty bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "empty",
+			args: args{
+				b: &bytes.Buffer{},
+			},
+			wantNotEmpty: false,
+		},
+		{
+			name: "0seconds",
+			args: args{
+				b:         &bytes.Buffer{},
+				n:         "test",
+				d:         0,
+				wantComma: false,
+			},
+			want:         []byte(`"test":"PT0S"`),
+			wantNotEmpty: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -134,7 +178,24 @@ func Test_JSONWriteFloatProp(t *testing.T) {
 		want         []byte
 		wantNotEmpty bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "empty",
+			args: args{
+				b: &bytes.Buffer{},
+			},
+			wantNotEmpty: false,
+		},
+		{
+			name: "zero",
+			args: args{
+				b:         &bytes.Buffer{},
+				n:         "test",
+				f:         0,
+				wantComma: false,
+			},
+			want:         []byte(`"test":0.00000`),
+			wantNotEmpty: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -169,7 +230,7 @@ func Test_JSONWriteIRIProp(t *testing.T) {
 			wantNotEmpty: false,
 		},
 		{
-			name: "iri",
+			name: "empty iri",
 			args: args{
 				b:         &bytes.Buffer{},
 				n:         "test",
@@ -177,6 +238,17 @@ func Test_JSONWriteIRIProp(t *testing.T) {
 				wantComma: false,
 			},
 			wantNotEmpty: false,
+		},
+		{
+			name: "not empty iri",
+			args: args{
+				b:         &bytes.Buffer{},
+				n:         "test",
+				i:         IRI("http://example.com"),
+				wantComma: false,
+			},
+			want:         []byte(`"test":"http://example.com"`),
+			wantNotEmpty: true,
 		},
 	}
 	for _, tt := range tests {
@@ -204,7 +276,24 @@ func Test_JSONWriteIntProp(t *testing.T) {
 		want         []byte
 		wantNotEmpty bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "empty",
+			args: args{
+				b: &bytes.Buffer{},
+			},
+			wantNotEmpty: false,
+		},
+		{
+			name: "zero",
+			args: args{
+				b:         &bytes.Buffer{},
+				n:         "test",
+				d:         0,
+				wantComma: false,
+			},
+			want:         []byte(`"test":0`),
+			wantNotEmpty: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -229,7 +318,115 @@ func Test_JSONWriteIntransitiveActivity(t *testing.T) {
 		want         []byte
 		wantNotEmpty bool
 	}{
-		// TODO: Add test cases.
+		{
+			name:         "empty",
+			args:         args{b: &bytes.Buffer{}},
+			wantNotEmpty: false,
+		},
+		{
+			name: "with id",
+			args: args{
+				i: IntransitiveActivity{ID: "http://example.com"},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"id":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item actor",
+			args: args{
+				i: IntransitiveActivity{Actor: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"actor":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi item actor",
+			args: args{
+				i: IntransitiveActivity{Actor: ItemCollection{IRI("http://example.com"), &Actor{ID: "http://example.com/~jdoe"}}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"actor":["http://example.com",{"id":"http://example.com/~jdoe"}]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item target",
+			args: args{
+				i: IntransitiveActivity{Target: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"target":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi item target",
+			args: args{
+				i: IntransitiveActivity{Target: ItemCollection{IRI("http://example.com"), &Actor{ID: "http://example.com/~jdoe"}}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"target":["http://example.com",{"id":"http://example.com/~jdoe"}]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item result",
+			args: args{
+				i: IntransitiveActivity{Result: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"result":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi item result",
+			args: args{
+				i: IntransitiveActivity{Result: ItemCollection{IRI("http://example.com"), &Actor{ID: "http://example.com/~jdoe"}}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"result":["http://example.com",{"id":"http://example.com/~jdoe"}]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item origin",
+			args: args{
+				i: IntransitiveActivity{Origin: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"origin":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi item origin",
+			args: args{
+				i: IntransitiveActivity{Origin: ItemCollection{IRI("http://example.com"), &Actor{ID: "http://example.com/~jdoe"}}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"origin":["http://example.com",{"id":"http://example.com/~jdoe"}]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item instrument",
+			args: args{
+				i: IntransitiveActivity{Instrument: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"instrument":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi item instrument",
+			args: args{
+				i: IntransitiveActivity{Instrument: ItemCollection{IRI("http://example.com"), &Actor{ID: "http://example.com/~jdoe"}}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"instrument":["http://example.com",{"id":"http://example.com/~jdoe"}]`),
+			wantNotEmpty: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -363,7 +560,7 @@ func Test_JSONWriteItemCollectionProp(t *testing.T) {
 				t.Errorf("JSONWriteItemCollectionProp() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
 			}
 			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
-				t.Errorf("JSONWriteObjectValue() = got '%s', expected '%s'", got, tt.want)
+				t.Errorf("JSONWriteItemCollectoinProp() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -903,14 +1100,79 @@ func Test_JSONWriteQuestionValue(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
+		want         []byte
 		wantNotEmpty bool
 	}{
-		// TODO: Add test cases.
+		{
+			name:         "empty",
+			args:         args{b: &bytes.Buffer{}},
+			wantNotEmpty: false,
+		},
+		{
+			name: "with id",
+			args: args{
+				q: Question{ID: "http://example.com"},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"id":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item anyOf",
+			args: args{
+				q: Question{AnyOf: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"anyOf":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi item anyOf",
+			args: args{
+				q: Question{AnyOf: ItemCollection{IRI("http://example.com"), &Actor{ID: "http://example.com/~jdoe"}}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"anyOf":["http://example.com",{"id":"http://example.com/~jdoe"}]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item oneOf",
+			args: args{
+				q: Question{OneOf: ItemCollection{IRI("http://example.com")}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"oneOf":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+		{
+			name: "with multi item oneOf",
+			args: args{
+				q: Question{OneOf: ItemCollection{IRI("http://example.com"), &Actor{ID: "http://example.com/~jdoe"}}},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"oneOf":["http://example.com",{"id":"http://example.com/~jdoe"}]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with closed",
+			args: args{
+				q: Question{Closed: true},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"closed":true`),
+			wantNotEmpty: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotNotEmpty := JSONWriteQuestionValue(tt.args.b, tt.args.q); gotNotEmpty != tt.wantNotEmpty {
 				t.Errorf("JSONWriteQuestionValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !cmp.Equal(tt.want, got) {
+				t.Errorf("JSONWriteQuestionValue() = got '%s', expected '%s'", got, tt.want)
 			}
 		})
 	}
@@ -1225,6 +1487,144 @@ func TestJSONWriteActivityVocabularyTypes(t *testing.T) {
 			}
 			if tt.wantNotEmpty && tt.want != tt.args.b.String() {
 				t.Errorf("JSONWriteActivityVocabularyTypes() = %s, want %s", tt.args.b, tt.want)
+			}
+		})
+	}
+}
+
+func TestJSONWriteLinkValue(t *testing.T) {
+	type args struct {
+		b *bytes.Buffer
+		l Link
+	}
+	tests := []struct {
+		name         string
+		args         args
+		want         []byte
+		wantNotEmpty bool
+	}{
+		{
+			name:         "empty",
+			args:         args{b: &bytes.Buffer{}},
+			wantNotEmpty: false,
+		},
+		{
+			name: "with id",
+			args: args{
+				l: Link{ID: "http://example.com"},
+				b: &bytes.Buffer{},
+			},
+			want:         []byte(`"id":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with type",
+			args: args{
+				b: &bytes.Buffer{},
+				l: Link{Type: MentionType},
+			},
+			want:         []byte(`"type":"Mention"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with mediaType",
+			args: args{
+				b: &bytes.Buffer{},
+				l: Link{MediaType: "application/json-123"},
+			},
+			want:         []byte(`"mediaType":"application/json-123"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with name",
+			args: args{
+				b: &bytes.Buffer{},
+				l: Link{Name: DefaultLangValue("test-link")},
+			},
+			want:         []byte(`"name":"test-link"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with rel",
+			args: args{
+				b: &bytes.Buffer{},
+				l: Link{Rel: "unknown"},
+			},
+			want:         []byte(`"rel":"unknown"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with height",
+			args: args{
+				b: &bytes.Buffer{},
+				l: Link{Height: 777},
+			},
+			want:         []byte(`"height":777`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with width",
+			args: args{
+				b: &bytes.Buffer{},
+				l: Link{Width: 9999},
+			},
+			want:         []byte(`"width":9999`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with single item preview",
+			args: args{
+				b: &bytes.Buffer{},
+				l: Link{Preview: IRI("http://example.com")},
+			},
+			want:         []byte(`"preview":"http://example.com"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with multi item preview",
+			args: args{
+				b: &bytes.Buffer{},
+				l: Link{Preview: ItemCollection{IRI("http://example.com"), &Object{ID: "http://example.com/preview"}}},
+			},
+			want:         []byte(`"preview":["http://example.com",{"id":"http://example.com/preview"}]`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with href",
+			args: args{
+				b: &bytes.Buffer{},
+				l: Link{Href: "http://example.com/1"},
+			},
+			want:         []byte(`"href":"http://example.com/1"`),
+			wantNotEmpty: true,
+		},
+
+		{
+			name: "with hrefLang",
+			args: args{
+				b: &bytes.Buffer{},
+				l: Link{HrefLang: German},
+			},
+			want:         []byte(`"hrefLang":"de"`),
+			wantNotEmpty: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotNotEmpty := JSONWriteLinkValue(tt.args.b, tt.args.l); gotNotEmpty != tt.wantNotEmpty {
+				t.Errorf("JSONWriteLinkValue() = %v, want %v", gotNotEmpty, tt.wantNotEmpty)
+			}
+			if got := tt.args.b.Bytes(); !bytes.Equal(tt.want, got) {
+				t.Errorf("JSONWriteLinkValue() = %s, want %s", got, tt.want)
 			}
 		})
 	}

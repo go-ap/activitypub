@@ -118,7 +118,7 @@ func (l *Link) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	return jsonLoadToLink(val, l)
+	return JSONLoadLink(val, l)
 }
 
 // Equals verifies if our receiver Link is equals with the "with" Item
