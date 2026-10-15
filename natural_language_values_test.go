@@ -3,7 +3,6 @@ package activitypub
 import (
 	"bytes"
 	"fmt"
-	"reflect"
 	"strconv"
 	"testing"
 
@@ -783,24 +782,16 @@ func TestLangRefValue_UnmarshalJSON(t *testing.T) {
 		{
 			name: "empty",
 			data: []byte(""),
-			want: LangRefValue{
-				Ref: NilLangRef,
-			},
+			want: LangRefValue{Ref: DefaultLang},
 		},
 		{
 			name: "empty LangRef, not empty Value",
-			want: LangRefValue{
-				Ref:   NilLangRef,
-				Value: Content("not empty"),
-			},
+			want: LangRefValue{Ref: DefaultLang, Value: Content("not empty")},
 			data: []byte("not empty"),
 		},
 		{
 			name: "nil LangRef, non empty Value",
-			want: LangRefValue{
-				Ref:   NilLangRef,
-				Value: Content("test"),
-			},
+			want: LangRefValue{Ref: DefaultLang, Value: Content("test")},
 			data: []byte("test"),
 		},
 		{
@@ -815,7 +806,7 @@ func TestLangRefValue_UnmarshalJSON(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := LangRefValue{}
-			if _ = l.UnmarshalJSON(tt.data); !reflect.DeepEqual(l, tt.want) {
+			if _ = l.UnmarshalJSON(tt.data); !cmp.Equal(l, tt.want) {
 				t.Errorf("UnmarshalJSON() got = %+v, want %+v", l, tt.want)
 			}
 		})

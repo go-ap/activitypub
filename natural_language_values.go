@@ -546,7 +546,7 @@ func (l *LangRefValue) UnmarshalJSON(data []byte) error {
 	p := fastjson.Parser{}
 	val, err := p.ParseBytes(data)
 	if err != nil {
-		l.Ref = NilLangRef
+		l.Ref = DefaultLang
 		l.Value = unescape(data)
 		return nil
 	}
@@ -558,7 +558,7 @@ func (l *LangRefValue) UnmarshalJSON(data []byte) error {
 			l.Value = unescape(v.GetStringBytes())
 		})
 	case fastjson.TypeString:
-		l.Ref = NilLangRef
+		l.Ref = DefaultLang
 		l.Value = unescape(val.GetStringBytes())
 	}
 
