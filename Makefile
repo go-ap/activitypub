@@ -29,12 +29,11 @@ test: go.sum
 $(GOCOVERDIR):
 	mkdir -p $(GOCOVERDIR)
 
-coverage: TEST_FLAGS += -coverpkg github.com/go-ap/activitypub -covermode=count -args -test.gocoverdir=$(GOCOVERDIR)
+coverage: TEST_FLAGS += -covermode=count -args -test.gocoverdir=$(GOCOVERDIR)
 coverage: $(GOCOVERDIR)
 	$(TEST) $(TEST_FLAGS)  $(TEST_TARGET) > /dev/null
 	$(GO) tool covdata percent -i=$(GOCOVERDIR) -o $(PROJECT).coverprofile
 	$(MAKE) clean
 
 clean:
-	@$(RM) -v *.coverprofile
 	$(RM) -r $(GOCOVERDIR)
