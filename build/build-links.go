@@ -27,6 +27,13 @@ func WithHref(i vocab.IRI) vocab.WithLinkFn {
 	}
 }
 
+func WithHrefLang(r vocab.LangRef) vocab.WithLinkFn {
+	return func(l *vocab.Link) error {
+		l.HrefLang = r
+		return nil
+	}
+}
+
 func Link(initFn ...InitFn) *vocab.Link {
 	lnk := new(vocab.Link)
 	_ob := vocab.Object{}

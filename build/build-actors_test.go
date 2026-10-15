@@ -1,6 +1,9 @@
 package build
 
 import (
+	"crypto"
+	"crypto/rand"
+	"crypto/rsa"
 	"testing"
 
 	vocab "github.com/go-ap/activitypub"
@@ -8,6 +11,10 @@ import (
 )
 
 func TestActor(t *testing.T) {
+	pk, _ := rsa.GenerateKey(rand.Reader, 2048)
+	pub := pk.Public()
+	pem, _ := pemPublicKey(pub)
+
 	tests := []struct {
 		name string
 		args []InitFn
@@ -106,6 +113,16 @@ func TestActor(t *testing.T) {
 			name: "WithStreams",
 			args: []InitFn{WithStreams(vocab.IRI("http://example.com/s1"), vocab.IRI("http://example.com/s2"))},
 			want: &vocab.Actor{Streams: vocab.ItemCollection{vocab.IRI("http://example.com/s1"), vocab.IRI("http://example.com/s2")}},
+		},
+		{
+			name: "WithPublicKey, no id",
+			args: []InitFn{WithPublicKey(PublicKey("http://example.com", pub))},
+			want: &vocab.Actor{PublicKey: vocab.PublicKey{ID: "http://example.com", PublicKeyPem: pem}},
+		},
+		{
+			name: "WithPublicKey",
+			args: []InitFn{WithID("http://example.com/~jdoe"), WithPublicKey(PublicKey("", pub))},
+			want: &vocab.Actor{ID: "http://example.com/~jdoe", PublicKey: vocab.PublicKey{ID: "http://example.com/~jdoe#main", Owner: "http://example.com/~jdoe", PublicKeyPem: pem}},
 		},
 	}
 	for _, tt := range tests {
@@ -212,6 +229,47 @@ func TestService(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := Service(tt.args...); !cmp.Equal(got, tt.want) {
 				t.Errorf("Service() = %s", cmp.Diff(tt.want, got))
+			}
+		})
+	}
+}
+
+func TestPublicKey(t *testing.T) {
+	pk, _ := rsa.GenerateKey(rand.Reader, 2048)
+	pem, _ := pemPublicKey(pk.Public())
+
+	type args struct {
+		id vocab.IRI
+		k  crypto.PublicKey
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want vocab.PublicKey
+	}{
+		{
+			name: "empty",
+			args: args{},
+			want: vocab.PublicKey{},
+		},
+		{
+			name: "withIRI",
+			args: args{
+				id: "http://example.com#main",
+			},
+			want: vocab.PublicKey{ID: "http://example.com#main"},
+		},
+		{
+			name: "withPublicKey",
+			args: args{k: &pk.PublicKey},
+			want: vocab.PublicKey{PublicKeyPem: pem},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := PublicKey(tt.args.id, tt.args.k); !cmp.Equal(got, tt.want) {
+				t.Errorf("PublicKey() = %s", cmp.Diff(tt.want, got))
 			}
 		})
 	}

@@ -4,7 +4,6 @@ import (
 	"crypto"
 	"crypto/x509"
 	"encoding/pem"
-	"fmt"
 
 	vocab "github.com/go-ap/activitypub"
 )
@@ -42,8 +41,8 @@ func Service(initFn ...InitFn) *vocab.Actor {
 	return Actor(initFn...)
 }
 
-func WithPreferredUsername[T ~string | vocab.NaturalLanguageValues](c T) vocab.WithActorFn {
-	v := nlv(c)
+func WithPreferredUsername[T ~string | []byte | vocab.LangRefValue | vocab.NaturalLanguageValues](c T) vocab.WithActorFn {
+	v := argNLV(c)
 	return func(act *vocab.Actor) error {
 		act.PreferredUsername = v
 		return nil
@@ -147,15 +146,32 @@ func WithStreams(i ...vocab.Item) vocab.WithActorFn {
 	}
 }
 
-func WithPublicKey(k crypto.PublicKey) vocab.WithActorFn {
-	pubEnc, _ := x509.MarshalPKIXPublicKey(k)
+func pemPublicKey(k crypto.PublicKey) (string, bool) {
+	pubEnc, err := x509.MarshalPKIXPublicKey(k)
+	if err != nil {
+		return "", false
+	}
 	pubEncoded := pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: pubEnc})
+	return string(pubEncoded), true
+}
+
+func PublicKey(id vocab.IRI, k crypto.PublicKey) vocab.PublicKey {
+	pk := vocab.PublicKey{ID: id}
+	if pem, ok := pemPublicKey(k); ok {
+		pk.PublicKeyPem = pem
+	}
+	return pk
+}
+
+func WithPublicKey(v vocab.PublicKey) vocab.WithActorFn {
 	return func(act *vocab.Actor) error {
-		act.PublicKey = vocab.PublicKey{
-			ID:           vocab.IRI(fmt.Sprintf("%s#main", act.ID)),
-			Owner:        act.ID,
-			PublicKeyPem: string(pubEncoded),
+		if vocab.EmptyIRI.Equal(v.ID) {
+			v.ID = act.ID + "#main"
 		}
+		if vocab.EmptyIRI.Equal(v.Owner) {
+			v.Owner = act.ID
+		}
+		act.PublicKey = v
 		return nil
 	}
 }

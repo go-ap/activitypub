@@ -27,6 +27,26 @@ func TestCollection(t *testing.T) {
 			args: []InitFn{WithType("invalid-type")},
 			want: &vocab.Collection{Type: vocab.ActivityVocabularyType("invalid-type")},
 		},
+		{
+			name: "WithFirst",
+			args: []InitFn{WithFirst(vocab.IRI("http://example.com/first"))},
+			want: &vocab.Collection{Type: vocab.CollectionType, First: vocab.IRI("http://example.com/first")},
+		},
+		{
+			name: "WithLast",
+			args: []InitFn{WithLast(vocab.IRI("http://example.com/last"))},
+			want: &vocab.Collection{Type: vocab.CollectionType, Last: vocab.IRI("http://example.com/last")},
+		},
+		{
+			name: "WithTotalItems",
+			args: []InitFn{WithTotalItems(23456)},
+			want: &vocab.Collection{Type: vocab.CollectionType, TotalItems: 23456},
+		},
+		{
+			name: "WithItems",
+			args: []InitFn{WithItems(vocab.IRI("http://example.com/1"), vocab.IRI("http://example.com/2"), vocab.IRI("http://example.com/3"))},
+			want: &vocab.Collection{Type: vocab.CollectionType, Items: vocab.ItemCollection{vocab.IRI("http://example.com/1"), vocab.IRI("http://example.com/2"), vocab.IRI("http://example.com/3")}},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -56,6 +76,32 @@ func TestCollectionPage(t *testing.T) {
 			name: "WithType",
 			args: []InitFn{WithType("invalid-type")},
 			want: &vocab.CollectionPage{Type: vocab.ActivityVocabularyType("invalid-type")},
+		},
+		{
+			name: "WithTotalItems",
+			args: []InitFn{WithTotalItems(23456)},
+			want: &vocab.CollectionPage{Type: vocab.CollectionPageType, TotalItems: 23456},
+		},
+
+		{
+			name: "WithPrev",
+			args: []InitFn{WithPrev(vocab.IRI("http://example.com/prev"))},
+			want: &vocab.CollectionPage{Type: vocab.CollectionPageType, Prev: vocab.IRI("http://example.com/prev")},
+		},
+		{
+			name: "WithNext",
+			args: []InitFn{WithNext(vocab.IRI("http://example.com/next"))},
+			want: &vocab.CollectionPage{Type: vocab.CollectionPageType, Next: vocab.IRI("http://example.com/next")},
+		},
+		{
+			name: "WithCurrent",
+			args: []InitFn{WithCurrent(vocab.IRI("http://example.com/cur"))},
+			want: &vocab.CollectionPage{Type: vocab.CollectionPageType, Current: vocab.IRI("http://example.com/cur")},
+		},
+		{
+			name: "WithPartOf",
+			args: []InitFn{WithPartOf(vocab.IRI("http://example.com"))},
+			want: &vocab.CollectionPage{Type: vocab.CollectionPageType, PartOf: vocab.IRI("http://example.com")},
 		},
 	}
 	for _, tt := range tests {
@@ -87,6 +133,26 @@ func TestOrderedCollection(t *testing.T) {
 			args: []InitFn{WithType("invalid-type")},
 			want: &vocab.OrderedCollection{Type: vocab.ActivityVocabularyType("invalid-type")},
 		},
+		{
+			name: "WithFirst",
+			args: []InitFn{WithFirst(vocab.IRI("http://example.com/first"))},
+			want: &vocab.OrderedCollection{Type: vocab.OrderedCollectionType, First: vocab.IRI("http://example.com/first")},
+		},
+		{
+			name: "WithLast",
+			args: []InitFn{WithLast(vocab.IRI("http://example.com/last"))},
+			want: &vocab.OrderedCollection{Type: vocab.OrderedCollectionType, Last: vocab.IRI("http://example.com/last")},
+		},
+		{
+			name: "WithTotalItems",
+			args: []InitFn{WithTotalItems(23456)},
+			want: &vocab.OrderedCollection{Type: vocab.OrderedCollectionType, TotalItems: 23456},
+		},
+		{
+			name: "WithOrderedItems",
+			args: []InitFn{WithOrderedItems(vocab.IRI("http://example.com/1"), vocab.IRI("http://example.com/2"), vocab.IRI("http://example.com/3"))},
+			want: &vocab.OrderedCollection{Type: vocab.OrderedCollectionType, OrderedItems: vocab.ItemCollection{vocab.IRI("http://example.com/1"), vocab.IRI("http://example.com/2"), vocab.IRI("http://example.com/3")}},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -116,6 +182,21 @@ func TestOrderedCollectionPage(t *testing.T) {
 			name: "WithType",
 			args: []InitFn{WithType("invalid-type")},
 			want: &vocab.OrderedCollectionPage{Type: vocab.ActivityVocabularyType("invalid-type")},
+		},
+		{
+			name: "WithTotalItems",
+			args: []InitFn{WithTotalItems(23456)},
+			want: &vocab.OrderedCollectionPage{Type: vocab.OrderedCollectionPageType, TotalItems: 23456},
+		},
+		{
+			name: "WithOrderedItems",
+			args: []InitFn{WithOrderedItems(vocab.IRI("http://example.com/1"), vocab.IRI("http://example.com/2"), vocab.IRI("http://example.com/3"))},
+			want: &vocab.OrderedCollectionPage{Type: vocab.OrderedCollectionPageType, OrderedItems: vocab.ItemCollection{vocab.IRI("http://example.com/1"), vocab.IRI("http://example.com/2"), vocab.IRI("http://example.com/3")}},
+		},
+		{
+			name: "WithPartOf",
+			args: []InitFn{WithPartOf(vocab.IRI("http://example.com"))},
+			want: &vocab.OrderedCollectionPage{Type: vocab.OrderedCollectionPageType, PartOf: vocab.IRI("http://example.com")},
 		},
 	}
 	for _, tt := range tests {

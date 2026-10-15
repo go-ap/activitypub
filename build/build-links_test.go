@@ -47,6 +47,11 @@ func TestLink(t *testing.T) {
 			args: []InitFn{WithHref("http://example.com/href")},
 			want: &vocab.Link{Href: "http://example.com/href"},
 		},
+		{
+			name: "WithHrefLang",
+			args: []InitFn{WithHrefLang(vocab.French)},
+			want: &vocab.Link{HrefLang: vocab.French},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

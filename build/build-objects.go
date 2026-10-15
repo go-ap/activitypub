@@ -8,11 +8,24 @@ import (
 
 type InitFn = any
 
-var EN = vocab.DefaultLangValue[string]
-
-func NL[T ~string](content T) vocab.NaturalLanguageValues {
-	return vocab.LangValues(vocab.RefValue(vocab.NilLangRef, content))
+func Lang[T ~string](l vocab.LangRef) func(T) vocab.LangRefValue {
+	return func(t T) vocab.LangRefValue {
+		return vocab.LangRefValue{Ref: l, Value: []byte(t)}
+	}
 }
+
+func LangMap(v ...vocab.LangRefValue) vocab.NaturalLanguageValues {
+	res := make(vocab.NaturalLanguageValues)
+	for _, vv := range v {
+		res[vv.Ref] = vv.Value
+	}
+	return res
+}
+
+var (
+	EN = Lang[string](vocab.English)
+	FR = Lang[string](vocab.French)
+)
 
 func Object(initFn ...InitFn) *vocab.Object {
 	ob := new(vocab.Object)
@@ -256,6 +269,22 @@ func WithURL(i ...vocab.Item) vocab.WithObjectFn {
 	}
 }
 
+func WithIcon(i ...vocab.Item) vocab.WithObjectFn {
+	ato := vocab.ItemCollection(i)
+	return func(ob *vocab.Object) error {
+		ob.Icon = ato.Normalize()
+		return nil
+	}
+}
+
+func WithImage(i ...vocab.Item) vocab.WithObjectFn {
+	ato := vocab.ItemCollection(i)
+	return func(ob *vocab.Object) error {
+		ob.Image = ato.Normalize()
+		return nil
+	}
+}
+
 func WithAttachment(a ...vocab.Item) vocab.WithObjectFn {
 	at := vocab.ItemCollection(a)
 	return func(ob *vocab.Object) error {
@@ -296,39 +325,43 @@ func WithBCC(i ...vocab.Item) vocab.WithObjectFn {
 	}
 }
 
-func nlv[T ~string | vocab.NaturalLanguageValues](c T) vocab.NaturalLanguageValues {
+func argNLV[T ~string | []byte | vocab.LangRefValue | vocab.NaturalLanguageValues](c T) vocab.NaturalLanguageValues {
 	var result vocab.NaturalLanguageValues
 	switch v := any(c).(type) {
 	case string:
-		if v != "" {
+		if len(v) > 0 {
 			result = vocab.DefaultLangValue(v)
 		}
 	case []byte:
-		result = vocab.DefaultLangValue(string(v))
+		if len(v) > 0 {
+			result = vocab.DefaultLangValue(string(v))
+		}
+	case vocab.LangRefValue:
+		result[v.Ref] = v.Value
 	case vocab.NaturalLanguageValues:
 		result = v
 	}
 	return result
 }
 
-func WithName[T ~string | vocab.NaturalLanguageValues](c T) vocab.WithObjectFn {
-	v := nlv(c)
+func WithName[T ~string | []byte | vocab.LangRefValue | vocab.NaturalLanguageValues](c T) vocab.WithObjectFn {
+	v := argNLV(c)
 	return func(ob *vocab.Object) error {
 		ob.Name = v
 		return nil
 	}
 }
 
-func WithSummary[T ~string | vocab.NaturalLanguageValues](c T) vocab.WithObjectFn {
-	v := nlv(c)
+func WithSummary[T ~string | []byte | vocab.LangRefValue | vocab.NaturalLanguageValues](c T) vocab.WithObjectFn {
+	v := argNLV(c)
 	return func(ob *vocab.Object) error {
 		ob.Summary = v
 		return nil
 	}
 }
 
-func WithContent[T ~string | vocab.NaturalLanguageValues](c T) vocab.WithObjectFn {
-	v := nlv(c)
+func WithContent[T ~string | []byte | vocab.LangRefValue | vocab.NaturalLanguageValues](c T) vocab.WithObjectFn {
+	v := argNLV(c)
 	return func(ob *vocab.Object) error {
 		ob.Content = v
 		return nil
@@ -342,8 +375,8 @@ func WithSource(s vocab.Source) vocab.WithObjectFn {
 	}
 }
 
-func WithSourceContent[T ~string | vocab.NaturalLanguageValues](c T) vocab.WithObjectFn {
-	v := nlv(c)
+func WithSourceContent[T ~string | []byte | vocab.LangRefValue | vocab.NaturalLanguageValues](c T) vocab.WithObjectFn {
+	v := argNLV(c)
 	return func(ob *vocab.Object) error {
 		ob.Source.Content = v
 		return nil
@@ -357,21 +390,26 @@ func WithSourceMediaType(m string) vocab.WithObjectFn {
 	}
 }
 
-func WithMediaType(m string) vocab.WithObjectFn {
+func WithMediaType[T ~string](m T) vocab.WithObjectFn {
 	return func(ob *vocab.Object) error {
 		ob.MediaType = vocab.MimeType(m)
 		return nil
 	}
 }
 
-func WithPublished[T string | time.Time](s T) vocab.WithObjectFn {
-	var p time.Time
+func argTime[T string | time.Time](s T) time.Time {
 	switch ss := any(s).(type) {
 	case string:
-		p, _ = time.Parse(time.RFC3339Nano, ss)
+		p, _ := time.Parse(time.RFC3339Nano, ss)
+		return p
 	case time.Time:
-		p = ss
+		return ss
 	}
+	return time.Time{}
+}
+
+func WithPublished[T string | time.Time](s T) vocab.WithObjectFn {
+	p := argTime(s)
 	return func(ob *vocab.Object) error {
 		ob.Published = p
 		return nil
@@ -379,13 +417,7 @@ func WithPublished[T string | time.Time](s T) vocab.WithObjectFn {
 }
 
 func WithUpdated[T string | time.Time](s T) vocab.WithObjectFn {
-	var u time.Time
-	switch ss := any(s).(type) {
-	case string:
-		u, _ = time.Parse(time.RFC3339Nano, ss)
-	case time.Time:
-		u = ss
-	}
+	u := argTime(s)
 	return func(ob *vocab.Object) error {
 		ob.Updated = u
 		return nil

@@ -77,14 +77,29 @@ func TestObject(t *testing.T) {
 			},
 		},
 		{
+			name: "WithReplies nil",
+			args: []InitFn{WithID("http://example.com"), WithReplies()},
+			want: &vocab.Object{ID: "http://example.com", Replies: vocab.IRI("http://example.com/replies")},
+		},
+		{
 			name: "WithReplies",
-			args: []InitFn{WithID("http://example.com/"), WithShares()},
-			want: &vocab.Object{ID: "http://example.com/", Shares: vocab.Shares.IRI(vocab.IRI("http://example.com"))},
+			args: []InitFn{WithReplies(vocab.IRI("http://example.com/replies"))},
+			want: &vocab.Object{Replies: vocab.IRI("http://example.com/replies")},
+		},
+		{
+			name: "WithShares nil",
+			args: []InitFn{WithID("http://example.com"), WithShares()},
+			want: &vocab.Object{ID: "http://example.com", Shares: vocab.IRI("http://example.com/shares")},
 		},
 		{
 			name: "WithShares",
 			args: []InitFn{WithShares(vocab.IRI("http://example.com/shares"))},
 			want: &vocab.Object{Shares: vocab.IRI("http://example.com/shares")},
+		},
+		{
+			name: "WithLikes nil",
+			args: []InitFn{WithID("http://example.com"), WithLikes()},
+			want: &vocab.Object{ID: "http://example.com", Likes: vocab.IRI("http://example.com/likes")},
 		},
 		{
 			name: "WithLikes",
@@ -161,6 +176,16 @@ func TestObject(t *testing.T) {
 			args: []InitFn{WithAudience(vocab.IRI("http://exaple.com"))},
 			want: &vocab.Object{Audience: vocab.ItemCollection{vocab.IRI("http://exaple.com")}},
 		},
+		{
+			name: "WithIcon",
+			args: []InitFn{WithIcon(vocab.IRI("http://exaple.com"))},
+			want: &vocab.Object{Icon: vocab.IRI("http://exaple.com")},
+		},
+		{
+			name: "WithImage",
+			args: []InitFn{WithImage(vocab.IRI("http://exaple.com"))},
+			want: &vocab.Object{Image: vocab.IRI("http://exaple.com")},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -227,9 +252,34 @@ func TestPlace(t *testing.T) {
 			want: &vocab.Place{Type: vocab.ActivityVocabularyType("invalid-type")},
 		},
 		{
+			name: "WithAccuracy",
+			args: []InitFn{WithAccuracy(3.333)},
+			want: &vocab.Place{Type: vocab.PlaceType, Accuracy: 3.333},
+		},
+		{
+			name: "WithLatitude",
+			args: []InitFn{WithLatitude(0.123)},
+			want: &vocab.Place{Type: vocab.PlaceType, Latitude: 0.123},
+		},
+		{
+			name: "WithLongitude",
+			args: []InitFn{WithLongitude(0.234)},
+			want: &vocab.Place{Type: vocab.PlaceType, Longitude: 0.234},
+		},
+		{
+			name: "WithAltitude",
+			args: []InitFn{WithAltitude(0.321)},
+			want: &vocab.Place{Type: vocab.PlaceType, Altitude: 0.321},
+		},
+		{
 			name: "WithRadius",
 			args: []InitFn{WithRadius(666)},
 			want: &vocab.Place{Type: vocab.PlaceType, Radius: 666},
+		},
+		{
+			name: "WithUnits",
+			args: []InitFn{WithUnits("span")},
+			want: &vocab.Place{Type: vocab.PlaceType, Units: "span"},
 		},
 	}
 	for _, tt := range tests {
