@@ -10,7 +10,7 @@ func Activity(initFn ...InitFn) *vocab.Activity {
 			_ = vocab.OnObject(act, fn)
 		case vocab.WithIntransitiveActivityFn:
 			_ = vocab.OnIntransitiveActivity(act, fn)
-		case func(*vocab.Activity) error:
+		case vocab.WithActivityFn:
 			_ = vocab.OnActivity(act, fn)
 		}
 	}
@@ -50,6 +50,11 @@ func Like(initFn ...InitFn) *vocab.Activity {
 	return Activity(initFn...)
 }
 
+func Dislike(initFn ...InitFn) *vocab.Activity {
+	initFn = append([]InitFn{WithType(vocab.DislikeType)}, initFn...)
+	return Activity(initFn...)
+}
+
 func Announce(initFn ...InitFn) *vocab.Activity {
 	initFn = append([]InitFn{WithType(vocab.AnnounceType)}, initFn...)
 	return Activity(initFn...)
@@ -80,6 +85,11 @@ func Ignore(initFn ...InitFn) *vocab.Activity {
 	return Activity(initFn...)
 }
 
+func Flag(initFn ...InitFn) *vocab.Activity {
+	initFn = append([]InitFn{WithType(vocab.FlagType)}, initFn...)
+	return Activity(initFn...)
+}
+
 func Undo(initFn ...InitFn) *vocab.Activity {
 	initFn = append([]InitFn{WithType(vocab.UndoType)}, initFn...)
 	return Activity(initFn...)
@@ -100,6 +110,13 @@ func Move(initFn ...InitFn) *vocab.Activity {
 	return Activity(initFn...)
 }
 
+func WithObject(o ...vocab.Item) vocab.WithActivityFn {
+	return func(act *vocab.Activity) error {
+		act.Object = vocab.ItemCollection(o).Normalize()
+		return nil
+	}
+}
+
 func WithActor(a ...vocab.Item) vocab.WithIntransitiveActivityFn {
 	return func(act *vocab.IntransitiveActivity) error {
 		act.Actor = vocab.ItemCollection(a).Normalize()
@@ -107,35 +124,28 @@ func WithActor(a ...vocab.Item) vocab.WithIntransitiveActivityFn {
 	}
 }
 
-func WithObject(o ...vocab.Item) func(*vocab.Activity) error {
-	return func(act *vocab.Activity) error {
-		act.Object = vocab.ItemCollection(o).Normalize()
-		return nil
-	}
-}
-
-func WithOrigin(o ...vocab.Item) func(*vocab.Activity) error {
-	return func(act *vocab.Activity) error {
+func WithOrigin(o ...vocab.Item) vocab.WithIntransitiveActivityFn {
+	return func(act *vocab.IntransitiveActivity) error {
 		act.Origin = vocab.ItemCollection(o).Normalize()
 		return nil
 	}
 }
 
-func WithTarget(t ...vocab.Item) func(*vocab.Activity) error {
-	return func(act *vocab.Activity) error {
+func WithTarget(t ...vocab.Item) vocab.WithIntransitiveActivityFn {
+	return func(act *vocab.IntransitiveActivity) error {
 		act.Target = vocab.ItemCollection(t).Normalize()
 		return nil
 	}
 }
 
-func AnyOf(o ...vocab.Item) vocab.WithQuestionFn {
+func WithAnyOf(o ...vocab.Item) vocab.WithQuestionFn {
 	return func(act *vocab.Question) error {
 		act.AnyOf = vocab.ItemCollection(o).Normalize()
 		return nil
 	}
 }
 
-func OneOf(o ...vocab.Item) vocab.WithQuestionFn {
+func WithOneOf(o ...vocab.Item) vocab.WithQuestionFn {
 	return func(act *vocab.Question) error {
 		act.OneOf = vocab.ItemCollection(o).Normalize()
 		return nil
