@@ -66,11 +66,19 @@ func JSONGetMimeType(val *fastjson.Value, prop string) MimeType {
 	return MimeType(t)
 }
 
-func JSONGetInt(val *fastjson.Value, prop string) int64 {
+func JSONGetUint(val *fastjson.Value, prop string) uint {
 	if val == nil || !val.Exists(prop) {
 		return 0
 	}
-	i := val.Get(prop).GetInt64()
+	i := val.Get(prop).GetUint()
+	return i
+}
+
+func JSONGetInt(val *fastjson.Value, prop string) int {
+	if val == nil || !val.Exists(prop) {
+		return 0
+	}
+	i := val.Get(prop).GetInt()
 	return i
 }
 
@@ -567,7 +575,7 @@ func JSONLoadCollection(val *fastjson.Value, c *Collection) error {
 	c.Current = JSONGetItem(val, "current")
 	c.First = JSONGetItem(val, "first")
 	c.Last = JSONGetItem(val, "last")
-	c.TotalItems = uint(JSONGetInt(val, "totalItems"))
+	c.TotalItems = JSONGetUint(val, "totalItems")
 	c.Items = JSONGetItems(val, "items")
 	return OnObject(c, func(o *Object) error {
 		return JSONLoadObject(val, o)
@@ -593,7 +601,7 @@ func JSONLoadOrderedCollection(val *fastjson.Value, c *OrderedCollection) error 
 	c.Current = JSONGetItem(val, "current")
 	c.First = JSONGetItem(val, "first")
 	c.Last = JSONGetItem(val, "last")
-	c.TotalItems = uint(JSONGetInt(val, "totalItems"))
+	c.TotalItems = JSONGetUint(val, "totalItems")
 	c.OrderedItems = JSONGetItems(val, "orderedItems")
 	return OnObject(c, func(o *Object) error {
 		return JSONLoadObject(val, o)
@@ -621,7 +629,7 @@ func JSONLoadPlace(val *fastjson.Value, p *Place) error {
 	p.Altitude = JSONGetFloat(val, "altitude")
 	p.Latitude = JSONGetFloat(val, "latitude")
 	p.Longitude = JSONGetFloat(val, "longitude")
-	p.Radius = JSONGetInt(val, "radius")
+	p.Radius = int64(JSONGetInt(val, "radius"))
 	p.Units = JSONGetString(val, "units")
 	return OnObject(p, func(o *Object) error {
 		return JSONLoadObject(val, o)
