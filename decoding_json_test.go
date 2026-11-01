@@ -262,7 +262,7 @@ func TestJSONGetInt(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want int64
+		want int
 	}{
 		{
 			name: "nil",
