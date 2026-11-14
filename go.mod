@@ -8,7 +8,7 @@ require (
 	github.com/go-ap/jsonld v0.0.0-20261107170435-a7bb5ba3f894
 	github.com/google/go-cmp v0.7.0
 	github.com/valyala/fastjson v1.6.10
-	golang.org/x/text v0.43.0
+	golang.org/x/text v0.44.0
 )
 
 require (

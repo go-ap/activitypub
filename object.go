@@ -918,8 +918,8 @@ func FlattenObjectProperties(o *Object) *Object {
 }
 
 func replaceIfSource(to, from Source) Source {
-	if from.MediaType != to.MediaType {
-		return from
+	if from.MediaType != "" {
+		to.MediaType = from.MediaType
 	}
 	to.Content = replaceIfNaturalLanguageValues(to.Content, from.Content)
 	return to
