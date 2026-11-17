@@ -2,7 +2,10 @@ package activitypub
 
 import (
 	"bytes"
+	"crypto"
+	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
 	"fmt"
 	"io"
 	"time"
@@ -242,6 +245,19 @@ func (p PublicKey) MarshalJSON() ([]byte, error) {
 	}
 	JSONWrite(&b, '}')
 	return b.Bytes(), nil
+}
+
+func (p *PublicKey) CryptoValue() (crypto.PublicKey, error) {
+	pubBytes, _ := pem.Decode([]byte(p.PublicKeyPem))
+	if pubBytes == nil {
+		return nil, errors.Newf("unable to decode PEM payload for public key")
+	}
+	pk, _ := x509.ParsePKIXPublicKey(pubBytes.Bytes)
+	if pk != nil {
+		return pk, nil
+	}
+	pk, err := x509.ParsePKCS1PublicKey(pubBytes.Bytes)
+	return pk, err
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
